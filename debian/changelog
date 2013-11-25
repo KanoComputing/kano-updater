@@ -1,5 +1,9 @@
-kano-updater (1.0-1) UNRELEASED; urgency=low
+kano-updater (1.0-1.1) unstable; urgency=low
 
+  [ Alex ]
   * Initial release. (Closes: #XXXXXX)
 
- -- Alex <alex@Kano>  Mon, 25 Nov 2013 18:47:51 +0000
+  [ Team Kano ]
+  * Package rebuilt, updated to revision 1345cdfa.
+
+ -- Team Kano <hello@kano.me>  Mon, 25 Nov 2013 18:54:48 +0000
