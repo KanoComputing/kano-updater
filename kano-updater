@@ -1,0 +1,41 @@
+#!/bin/bash
+
+function update()
+{
+   sudo apt-get update
+   sudo apt-get dist-upgrade
+   sudo apt-get clean
+}
+
+# Check for internet connection
+ping -q www.google.com -c 1 &> /dev/null
+RESULT=$?
+if [ $RESULT != 0 ]; then
+  zenity --text="Please connect to the Internet first" --info
+  exit 1
+fi
+
+# Call the update function and capture the PID
+update &
+PID=$!
+
+# progress dialog and give focus
+(
+for I in 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99; do
+  sleep 2
+  # Check if the Update process is still alive
+  if ! ps -p $PID > /dev/null 2>&1; then
+        # the update is ready
+        echo "99"
+        echo "#Ready"
+        sleep 3
+        break
+  fi
+  echo "$I"
+done
+
+echo "100"
+) |
+zenity --progress --no-cancel --text="Updating Kanux..." --width=300 --height=90 --auto-close --auto-kill
+
+exit 0
