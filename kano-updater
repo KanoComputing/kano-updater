@@ -2,9 +2,10 @@
 
 function update()
 {
-   sudo apt-get update
-   sudo apt-get dist-upgrade
-   sudo apt-get clean
+   sudo apt-get -y update
+   sudo apt-get -y dist-upgrade
+   sudo apt-get -y autoremove
+   sudo apt-get -y autoclean
 }
 
 # Check for internet connection
@@ -21,7 +22,7 @@ PID=$!
 
 # progress dialog and give focus
 (
-for I in 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99; do
+for I in {0..99..2}; do
   sleep 2
   # Check if the Update process is still alive
   if ! ps -p $PID > /dev/null 2>&1; then
