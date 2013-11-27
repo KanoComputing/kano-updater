@@ -1,1 +1,2 @@
 ./kano-updater /usr/bin
+./expand-rootfs /usr/bin
