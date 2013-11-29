@@ -19,49 +19,58 @@ function expand()
 # Check for internet connection
 ping -q www.google.com -c 1 &> /dev/null
 RESULT=$?
+
 if [ $RESULT != 0 ]; then
   zenity --text="Please connect to the Internet first" --info
-  exit 1
-fi
 
-# Resize the root partition if needed, then
-# call the update function and capture the PID
-expand
-rc=$?
-if [ $rc -eq 0 ]; then
-   zenity --info --text="Disk partition scheduled for resize\nThe system will reboot now.\nSee you in 2 mins!"
-   sudo /sbin/reboot
-   exit 0
 else
-   if [ $rc -eq 1 ]; then
-     echo "disk partition has already been resized - continuing with updates"
-   else
-     echo "error resizing root file system rc=$rc - continuing with updates"
-   fi
-fi
+  # Ask for system package upgrades
+  # then follow progress with Zenity dialog
+  update &
+  PID=$!
 
-# Ask for system package upgrades
-# then follow progress with Zenity dialog
-update &
-PID=$!
-
-# progress dialog and give focus
-(
-for I in {0..99..2}; do
-  sleep 2
-  # Check if the Update process is still alive
-  if ! ps -p $PID > /dev/null 2>&1; then
+  # progress dialog and give focus
+  (
+  for I in {0..99..1}; do
+    sleep 2
+    # Check if the Update process is still alive
+    if ! ps -p $PID > /dev/null 2>&1; then
         # the update is ready
         echo "99"
         echo "#Ready"
         sleep 3
         break
-  fi
-  echo "$I"
-done
+    fi
+    echo "$I"
+  done
+  
+  echo "100"
+  ) |
+  zenity --progress --no-cancel --text="Updating Kanux..." --width=300 --height=90 --auto-close --auto-kill
 
-echo "100"
-) |
-zenity --progress --no-cancel --text="Updating Kanux..." --width=300 --height=90 --auto-close --auto-kill
+  # Make sure we don't check partition resizing
+  # until update has finished
+  while true; do
+    if ! ps -p $PID > /dev/null 2>&1; then
+      break
+    else
+      sleep 1
+    fi
+  done
+fi
+
+# Resize the root partition if needed
+expand
+rc=$?
+if [ $rc -eq 0 ]; then
+   zenity --info --text="Disk partition scheduled for resize\nThe system will reboot now.\nSee you in 2 mins!"
+   sudo /sbin/reboot
+# else
+#   if [ $rc -eq 1 ]; then
+#     echo "disk partition has already been resized - continuing with updates"
+#   else
+#     echo "error resizing root file system rc=$rc - continuing with updates"
+#   fi
+fi
 
 exit 0
