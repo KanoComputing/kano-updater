@@ -3,6 +3,8 @@
 #  Updates system packages, expands root partition if needed
 #
 
+source /usr/bin/make-common
+
 function update()
 {
    sudo apt-get -y update
@@ -15,6 +17,9 @@ function expand()
 {
    sudo /usr/bin/expand-rootfs
 }
+
+# Close open projects
+restart_daemons
 
 # Check for internet connection
 ping -q www.google.com -c 1 &> /dev/null
