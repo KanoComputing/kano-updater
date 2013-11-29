@@ -1,3 +1,9 @@
+kano-updater (1.0-4) unstable; urgency=low
+
+  * Package rebuilt, updated to revision 39b38998.
+
+ -- Team Kano <hello@kano.me>  Fri, 29 Nov 2013 22:18:52 +0000
+
 kano-updater (1.0-3) unstable; urgency=low
 
   * Package rebuilt, updated to revision 58889fe7.
