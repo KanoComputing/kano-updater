@@ -1,18 +1,18 @@
-# Kanux-utils
+# Kanux-updater
 
-This repo contains various utilities for the Kanux OS.
+Utility to keep Kanux up to date
 
-## Structure
+## Kanux-updater
 
-Each project in this repository resides in it's own branch (so the commit
-history is not mixed up). Therefore, there is nothing in the master branch.
+Updates system packages, expands root partition if needed
 
-Please switch to the appropriate branch to get the code.
+## expand-rootfs
 
-## Projects
+Part of raspi-config http://github.com/asb/raspi-config
 
-Currently there are:
+See LICENSE file for copyright and license details
 
-* **kanux-init** - a replacement for [raspi-config](https://github.com/asb/raspi-config)
-                   to initialize Kanux image
-
+Used in Kanux during interactive partition resizing - kano-update
+rc=0 means resize scheduled for next reboot
+rc=1 means partition already resized
+any other value means error, look at syslog for details
