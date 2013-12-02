@@ -1,7 +1,11 @@
 #!/bin/sh
+
+# expand-rootfs
+#
+# Copyright (C) 2013 Kano Computing Ltd.
+# License:   http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
 #
 # Part of raspi-config http://github.com/asb/raspi-config
-#
 # See LICENSE file for copyright and license details
 #
 # Used in Kanux during interactive partition resizing - kano-update
