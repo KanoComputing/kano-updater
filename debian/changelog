@@ -1,3 +1,45 @@
+kano-updater (1.0-11) unstable; urgency=low
+
+  * Package rebuilt, updated to revision 025bb996.
+
+ -- Team Kano <hello@kano.me>  Mon, 09 Dec 2013 02:43:59 +0000
+
+kano-updater (1.0-10) unstable; urgency=low
+
+  * Package rebuilt, updated to revision a605cee4.
+
+ -- Team Kano <hello@kano.me>  Sun, 08 Dec 2013 02:43:47 +0000
+
+kano-updater (1.0-9) unstable; urgency=low
+
+  * Package rebuilt, updated to revision 1417ab6c.
+
+ -- Team Kano <hello@kano.me>  Sat, 07 Dec 2013 02:43:59 +0000
+
+kano-updater (1.0-8) unstable; urgency=low
+
+  * Package rebuilt, updated to revision 5c94085e.
+
+ -- Team Kano <hello@kano.me>  Thu, 05 Dec 2013 18:46:37 +0000
+
+kano-updater (1.0-7) unstable; urgency=low
+
+  * Package rebuilt, updated to revision bdb1d67d.
+
+ -- Team Kano <hello@kano.me>  Wed, 04 Dec 2013 02:43:26 +0000
+
+kano-updater (1.0-6) unstable; urgency=low
+
+  * Package rebuilt, updated to revision 846e5b8d.
+
+ -- Team Kano <hello@kano.me>  Tue, 03 Dec 2013 22:31:38 +0000
+
+kano-updater (1.0-5) unstable; urgency=low
+
+  * Package rebuilt, updated to revision c3949cd4.
+
+ -- Team Kano <hello@kano.me>  Mon, 02 Dec 2013 22:14:02 +0000
+
 kano-updater (1.0-4) unstable; urgency=low
 
   * Package rebuilt, updated to revision 39b38998.
