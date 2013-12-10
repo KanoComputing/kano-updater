@@ -8,7 +8,7 @@
 # Updates system packages and firmware, expands root partition if needed
 #
 
-source /usr/bin/make-common
+source /usr/share/kano-toolset/make-common
 
 # Wait on infinite loop until PS has died
 function waitTillPSEnds()
