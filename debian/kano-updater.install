@@ -1,2 +1,5 @@
 ./kano-updater /usr/bin
 ./expand-rootfs /usr/bin
+
+./icon/Updater /usr/share/kano-desktop/extras
+./icon/kano-updater.png /usr/share/kano-desktop/icons
