@@ -118,13 +118,16 @@ elif [ $rc -eq 1 ] && [ $INTERNET_ON -eq 0 ]; then
   echo "100"
   ) |
   zenity --progress --no-cancel --text="Updating firmware..." --width=300 --height=90 --auto-close --auto-kill
+# If no internet needs to be checked here because SD card can be resized without it
+elif [ $INTERNET_ON -eq 2 ]; then
+  zenity --text="Please connect to the Internet first" --info
+  exit 0
 fi
 
 # Update has finished
 if [ $UPDATED -eq 0 ]; then
-  zenity --text="Kanux successfully updated. Thank you!" --info
-elif [ $INTERNET_ON -eq 2 ]; then
-  zenity --text="Please connect to the Internet first" --info
+  line=$(tail -1 /etc/kanux_version)
+  zenity --text="Kanux successfully updated.\nVersion: $line \n\nThank you!" --info
 fi
 
 exit 0
