@@ -10,6 +10,9 @@
 
 source /usr/share/kano-toolset/make-common
 
+APT_LOG=/var/log/apt/history.log
+APT_AUX=/tmp/history_aux.log
+
 # Wait on infinite loop until PS has died
 function waitTillPSEnds()
 {
@@ -40,7 +43,6 @@ function updateFirmware()
   sudo rpi-update
 }
 
-
 # Check for root priviledges
 if [ `id -u` -ne 0 ]; then
   echo "Error: kano-updater must be executed with root privileges" 1>&2
@@ -56,6 +58,14 @@ INTERNET_ON=$?
 UPDATED=2
 
 if [ $INTERNET_ON -eq 0 ]; then
+
+  # Create a copy of the current history log
+  if [ -e $APT_LOG ]; then
+    cp $APT_LOG $APT_AUX
+  else
+    touch $APT_AUX
+  fi
+
   # Ask for system package upgrades
   # then follow progress with Zenity dialog
   update &
@@ -73,7 +83,7 @@ if [ $INTERNET_ON -eq 0 ]; then
     fi
     echo "$I"
   done
-  
+
   waitTillPSEnds $PID
   echo "#Ready"
   sleep 1
@@ -84,15 +94,11 @@ fi
 
 # Resize the root partition if needed
 expand
-rc=$?
-if [ $rc -eq 0 ]; then
-  UPDATED=1
-  zenity --info --text="Disk partition scheduled for resize\nThe system will reboot now.\nSee you in 2 mins!"
-  sudo /sbin/reboot
-  exit 0
-# Check for a firmware update 
+RESIZED=$?
+
+# Check for a firmware update
 # if disk partition has already been resized and there is internet
-elif [ $rc -eq 1 ] && [ $INTERNET_ON -eq 0 ]; then
+if [ $RESIZED -eq 1 ] && [ $INTERNET_ON -eq 0 ]; then
 
   # Ask for firmware update
   # then follow progress with Zenity dialog
@@ -111,7 +117,7 @@ elif [ $rc -eq 1 ] && [ $INTERNET_ON -eq 0 ]; then
     fi
     echo "$I"
   done
-  
+
   waitTillPSEnds $PID
   echo "#Ready"
   sleep 1
@@ -128,6 +134,23 @@ fi
 if [ $UPDATED -eq 0 ]; then
   line=$(tail -1 /etc/kanux_version)
   zenity --text="Kanux successfully updated.\nVersion: $line \n\nThank you!" --info
+
+  # Display log file
+  FILE=/tmp/update.log
+  # Create diff file
+  grep -Fxvf $APT_AUX $APT_LOG > $FILE
+  if [ -s $FILE ]; then
+    zenity --text-info --title="Changelog" --filename=$FILE
+  fi
+  # Clean-up
+  rm -f $FILE
+  rm -f $APT_AUX
+fi
+
+# Resizing took place > reboot
+if [ $RESIZED -eq 0 ]; then
+  zenity --info --text="Disk partition scheduled for resize.\nRebooting the system, see you in 2 mins!"
+  sudo /sbin/reboot
 fi
 
 exit 0
