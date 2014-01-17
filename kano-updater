@@ -137,12 +137,16 @@ if [ $UPDATED -eq 0 ]; then
 
   # Display log file
   FILE=/tmp/update.log
+  TMP=/tmp/tmp.log
   # Create diff file
-  grep -Fxvf $APT_AUX $APT_LOG > $FILE
+  grep -Fxvf $APT_AUX $APT_LOG > $TMP
+  cat $TMP | grep 'Install' > $FILE
+  cat $TMP | grep 'Upgrade' >> $FILE
   if [ -s $FILE ]; then
     zenity --text-info --title="Changelog" --filename=$FILE
   fi
   # Clean-up
+  rm -f $TMP
   rm -f $FILE
   rm -f $APT_AUX
 fi
