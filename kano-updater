@@ -1,20 +1,20 @@
-#!/bin/bash
+#!/bin/sh
 
 # kano-updater
 #
-# Copyright (C) 2013 Kano Computing Ltd.
-# License:   http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+# Copyright (C) 2014 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
 #
 # Updates system packages and firmware, expands root partition if needed
 #
 
-source /usr/share/kano-toolset/make-common
+. /usr/share/kano-toolset/make-common
 
 APT_LOG=/var/log/apt/history.log
 APT_AUX=/tmp/history_aux.log
 
 # Wait on infinite loop until PS has died
-function waitTillPSEnds()
+waitTillPSEnds()
 {
   while true; do
     if ! ps -p $1 > /dev/null 2>&1; then
@@ -25,7 +25,7 @@ function waitTillPSEnds()
   done
 }
 
-function update()
+update()
 {
    sudo apt-get -y update
    sudo apt-get -y dist-upgrade
@@ -33,12 +33,12 @@ function update()
    sudo apt-get -y autoclean
 }
 
-function expand()
+expand()
 {
    sudo /usr/bin/expand-rootfs
 }
 
-function updateFirmware()
+updateFirmware()
 {
   sudo rpi-update
 }
@@ -53,7 +53,7 @@ fi
 kill_apps
 
 # Check for internet connection
-ping -q www.google.com -c 1 &> /dev/null
+ping -q www.google.com -c 1 >/dev/null 2>&1
 INTERNET_ON=$?
 UPDATED=2
 
@@ -73,15 +73,16 @@ if [ $INTERNET_ON -eq 0 ]; then
   UPDATED=0
   # progress dialog
   (
-  for I in {0..99..1}; do
-    sleep 2
-    # Check if the Update process is still alive
-    if ! ps -p $PID > /dev/null 2>&1; then
-        # the update is ready
+  i=0 ; while [ "$i" -lt 100 ]; do
+     sleep 2
+     # Check if the Update process is still alive
+     if ! ps -p $PID > /dev/null 2>&1; then
+        # The update is ready
         echo "99"
         break
-    fi
-    echo "$I"
+     fi
+     echo "$i"
+     i=$(($i+1))
   done
 
   waitTillPSEnds $PID
@@ -107,15 +108,16 @@ if [ $RESIZED -eq 1 ] && [ $INTERNET_ON -eq 0 ]; then
   UPDATED=0
   # progress dialog
   (
-  for I in {0..99..1}; do
+  i=0 ; while [ "$i" -lt 100 ]; do
     sleep 3
     # Check if the Firmware Update process is still alive
     if ! ps -p $PID > /dev/null 2>&1; then
-        # the update is ready
+        # The update is ready
         echo "99"
         break
     fi
-    echo "$I"
+    echo "$i"
+    i=$(($i+1))
   done
 
   waitTillPSEnds $PID
