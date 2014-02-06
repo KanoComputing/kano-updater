@@ -44,11 +44,6 @@ expand()
    sudo /usr/bin/expand-rootfs
 }
 
-updateFirmware()
-{
-  sudo rpi-update
-}
-
 # Check for root priviledges
 if [ `id -u` -ne 0 ]; then
   echo "Error: kano-updater must be executed with root privileges" 1>&2
@@ -103,37 +98,8 @@ fi
 expand
 RESIZED=$?
 
-# Check for a firmware update
-# if disk partition has already been resized and there is internet
-if [ $RESIZED -eq 1 ] && [ $INTERNET_ON -eq 0 ]; then
-
-  # Ask for firmware update
-  # then follow progress with Zenity dialog
-  updateFirmware &
-  PID=$!
-  UPDATED=0
-  # progress dialog
-  (
-  i=0 ; while [ "$i" -lt 100 ]; do
-    sleep 3
-    # Check if the Firmware Update process is still alive
-    if ! ps -p $PID > /dev/null 2>&1; then
-        # The update is ready
-        echo "99"
-        break
-    fi
-    echo "$i"
-    i=$(($i+1))
-  done
-
-  waitTillPSEnds $PID
-  echo "#Ready"
-  sleep 1
-  echo "100"
-  ) |
-  zenity --progress --no-cancel --text="Updating firmware..." --width=300 --height=90 --auto-close --auto-kill
 # If no internet needs to be checked here because SD card can be resized without it
-elif [ $INTERNET_ON -eq 2 ]; then
+if [ $RESIZED -ne 0 ] && [ $INTERNET_ON -eq 2 ]; then
   zenity --text="Please connect to the Internet first" --info
   exit 0
 fi
