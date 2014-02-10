@@ -28,15 +28,22 @@ waitTillPSEnds()
 update()
 {
    # Update system
+   printf "\nUpdating system\n"
    sudo apt-get -y update
    sudo apt-get -y -o Dpkg::Options::="--force-confnew" -o Dpkg::Options::="--force-confmiss" dist-upgrade
+   echo "System update complete"
    
+
    # Update python modules
+   printf "\nUpdating Python modules\n"
    easy_install --upgrade requests tzupdate
+   echo "Python module update complete"
    
    # Clean up
+   printf "\nCleaning up\n"
    sudo apt-get -y autoremove
    sudo apt-get -y autoclean
+   echo "Cleaning up complete"
 }
 
 expand()
@@ -95,8 +102,10 @@ if [ $INTERNET_ON -eq 0 ]; then
 fi
 
 # Resize the root partition if needed
+printf "\nExpanding partition\n"
 expand
 RESIZED=$?
+echo "Partition expanding complete"
 
 # If no internet needs to be checked here because SD card can be resized without it
 if [ $RESIZED -ne 0 ] && [ $INTERNET_ON -eq 2 ]; then
