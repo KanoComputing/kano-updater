@@ -28,22 +28,20 @@ waitTillPSEnds()
 update()
 {
    # Update system
-   printf "\nUpdating system\n"
    sudo apt-get -y update
    sudo apt-get -y -o Dpkg::Options::="--force-confnew" -o Dpkg::Options::="--force-confmiss" dist-upgrade
-   echo "System update complete"
    
-
    # Update python modules
-   printf "\nUpdating Python modules\n"
    easy_install --upgrade requests tzupdate
-   echo "Python module update complete"
+   
+   # Upgrade youtube-dl manually if needed
+   youtube-dl -U
+   echo "yes" > /tmp/yes
+   youtube-dl < /tmp/yes
    
    # Clean up
-   printf "\nCleaning up\n"
    sudo apt-get -y autoremove
    sudo apt-get -y autoclean
-   echo "Cleaning up complete"
 }
 
 expand()
@@ -61,7 +59,7 @@ fi
 kill_apps
 
 # Check for internet connection
-ping -q www.google.com -c 1 >/dev/null 2>&1
+ping -q 8.8.8.8 -c 1 >/dev/null 2>&1
 INTERNET_ON=$?
 UPDATED=2
 
@@ -102,10 +100,8 @@ if [ $INTERNET_ON -eq 0 ]; then
 fi
 
 # Resize the root partition if needed
-printf "\nExpanding partition\n"
 expand
 RESIZED=$?
-echo "Partition expanding complete"
 
 # If no internet needs to be checked here because SD card can be resized without it
 if [ $RESIZED -ne 0 ] && [ $INTERNET_ON -eq 2 ]; then
