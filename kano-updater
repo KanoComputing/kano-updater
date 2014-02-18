@@ -33,12 +33,7 @@ update()
    
    # Update python modules
    easy_install --upgrade requests tzupdate
-   
-   # Upgrade youtube-dl manually if needed
-   youtube-dl -U
-   echo "yes" > /tmp/yes
-   youtube-dl < /tmp/yes
-   
+
    # Clean up
    sudo apt-get -y autoremove
    sudo apt-get -y autoclean
