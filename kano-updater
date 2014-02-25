@@ -107,7 +107,7 @@ expand
 RESIZED=$?
 
 # If no internet needs to be checked here because SD card can be resized without it
-if [ $RESIZED -ne 0 ] && [ $INTERNET_ON -eq 2 ]; then
+if [ $RESIZED -ne 0 ] && [ $INTERNET_ON -ne 0 ]; then
   zenity --text="Please connect to the Internet first" --info
   exit 0
 fi
