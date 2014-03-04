@@ -1,142 +1,244 @@
-#!/bin/sh
+#!/usr/bin/env python
 
 # kano-updater
 #
 # Copyright (C) 2014 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
 #
-# Updates system packages and firmware, expands root partition if needed
+# Updates system packages, Python modules and expands root partition if needed
 #
 
-. /usr/share/kano-toolset/make-common
+import os
+import sys
+import helper as h
 
-APT_LOG=/var/log/apt/history.log
-APT_AUX=/tmp/history_aux.log
 
-# Wait on infinite loop until PS has died
-waitTillPSEnds()
-{
-  while true; do
-    if ! ps -p $1 > /dev/null 2>&1; then
-      break
-    else
-      sleep 1
-    fi
-  done
-}
+def upgrade_debian():
+    # setting up apt-get for non-interactive mode
+    os.environ['DEBIAN_FRONTEND'] = 'noninteractive'
 
-update()
-{
-    export DEBIAN_FRONTEND=noninteractive
+    # apt update
+    id = h.zenity_show_progress("Updating package list")
+    cmd = 'apt-get -y update'
+    h.run_print_output_error(cmd)
+    h.kill_child_processes(id)
 
-    # Update system
-    sudo apt-get -y update
-    yes '' | apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade
+    # apt upgrade
+    id = h.zenity_show_progress("Upgrading packages")
+    cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade'
+    _, debian_err, _ = h.run_print_output_error(cmd)
+    h.kill_child_processes(id)
 
-    # Update python modules
-    easy_install --upgrade requests tzupdate
+    # apt autoremove
+    id = h.zenity_show_progress("Cleaning up packages")
+    cmd = 'apt-get -y autoremove'
+    h.run_print_output_error(cmd)
 
-    # Clean up
-    sudo apt-get -y autoremove
-    sudo apt-get -y autoclean
-}
+    # apt autoclean
+    cmd = 'apt-get -y autoclean'
+    h.run_print_output_error(cmd)
+    h.kill_child_processes(id)
 
-expand()
-{
-   sudo /usr/bin/expand-rootfs
-}
+    # writing error log
+    with open(err_log_file, 'w') as outfile:
+        outfile.write(debian_err)
 
-# Check for root priviledges
-if [ `id -u` -ne 0 ]; then
-  echo "Error: kano-updater must be executed with root privileges" 1>&2
-  exit 1
-fi
+    # parsing debian error log
+    if debian_err:
+        err_split = debian_err.splitlines()
+        dirs_delete = []
+        err_packages = []
 
-# Close open projects
-kill_apps
+        for l in err_split:
+            if 'dpkg: warning: unable to delete old directory' in l:
+                parts = l.split("'")
+                dirs_delete.append(parts[1].strip())
 
-# Show confirmation message
-zenity --question --text "Are you sure you want to update Kanux?"
-if [ $? -eq 1 ]; then
-  exit 0
-fi
+            if 'dpkg: error processing' in l:
+                parts = l.split('/var/cache/apt/archives/')
+                packagename = parts[1].split()[0].strip()[:-4]
+                err_packages.append(packagename)
 
-# Check for internet connection
-/usr/bin/is_internet
-INTERNET_ON=$?
-UPDATED=2
+        # remove left-over non-empty directories
+        for dir in dirs_delete:
+            h.deletedir(dir)
 
-if [ $INTERNET_ON -eq 0 ]; then
+        # return err_packages
+        return err_packages
 
-  # Create a copy of the current history log
-  if [ -e $APT_LOG ]; then
-    cp $APT_LOG $APT_AUX
-  else
-    touch $APT_AUX
-  fi
 
-  # Ask for system package upgrades
-  # then follow progress with Zenity dialog
-  update &
-  PID=$!
-  UPDATED=0
-  # progress dialog
-  (
-  i=0 ; while [ "$i" -lt 100 ]; do
-     sleep 2
-     # Check if the Update process is still alive
-     if ! ps -p $PID > /dev/null 2>&1; then
-        # The update is ready
-        echo "99"
-        break
-     fi
-     echo "$i"
-     i=$(($i+1))
-  done
+def upgrade_python():
+    id = h.zenity_show_progress("Upgrading Python modules")
 
-  waitTillPSEnds $PID
-  echo "#Ready"
-  sleep 1
-  echo "100"
-  ) |
-  zenity --progress --no-cancel --text="Updating Kanux..." --width=300 --height=90 --auto-close --auto-kill
-fi
+    # remove old pip and setuptools
+    cmd = 'yes "" | apt-get -y purge python-setuptools python-virtualenv python-pip'
+    h.run_print_output_error(cmd)
 
-# Resize the root partition if needed
-expand
-RESIZED=$?
+    # upgrading pip
+    _, _, rc = h.run_cmd('which pip')
+    if rc == 0:
+        cmd = 'pip install --upgrade pip'
+        h.run_print_output_error(cmd)
+    else:
+        cmd = 'wget -q --no-check-certificate https://raw.github.com/pypa/pip/master/contrib/get-pip.py -O get-pip.py'
+        h.run_cmd(cmd)
 
-# If no internet needs to be checked here because SD card can be resized without it
-if [ $RESIZED -ne 0 ] && [ $INTERNET_ON -ne 0 ]; then
-  zenity --text="Please connect to the Internet first" --info
-  exit 0
-fi
+        cmd = 'python get-pip.py'
+        h.run_print_output_error(cmd)
 
-# Update has finished
-if [ $UPDATED -eq 0 ]; then
-  line=$(tail -1 /etc/kanux_version)
-  zenity --text="Kanux successfully updated.\nVersion: $line \n\nThank you!" --info
+        h.deletefile('get-pip.py')
 
-  # Display log file
-  FILE=/tmp/update.log
-  TMP=/tmp/tmp.log
-  # Create diff file
-  grep -Fxvf $APT_AUX $APT_LOG > $TMP
-  cat $TMP | grep 'Install' > $FILE
-  cat $TMP | grep 'Upgrade' >> $FILE
-  if [ -s $FILE ]; then
-    zenity --text-info --title="Changelog" --filename=$FILE
-  fi
-  # Clean-up
-  rm -f $TMP
-  rm -f $FILE
-  rm -f $APT_AUX
-fi
+    # parse python modules
+    python_modules = h.read_file_contents_as_lines(python_modules_file)
 
-# Resizing took place > reboot
-if [ $RESIZED -eq 0 ]; then
-  zenity --info --text="Disk partition scheduled for resize.\nRebooting the system, see you in 2 mins!"
-  sudo /sbin/reboot
-fi
+    ok_modules = []
+    error_modules = []
 
-exit 0
+    for module in python_modules:
+        o, e, rc = h.run_cmd('pip install --upgrade {}'.format(module))
+
+        if rc == 0:
+            if 'Successfully installed' in o:
+                ok_modules.append(module)
+        else:
+            error_modules.append(module)
+    h.kill_child_processes(id)
+
+    return ok_modules, error_modules
+
+
+def expand_rootfs():
+    cmd = '/usr/bin/expand-rootfs'
+    _, _, rc = h.run_print_output_error(cmd)
+    return rc == 0
+
+err_log_file = '/var/log/kano-updater-log'
+python_modules_file = '/usr/share/kano-updater/python_modules'
+pre_update_file = '/usr/share/kano-updater/pre_update'
+post_update_file = '/usr/share/kano-updater/post_update'
+
+# root check
+user = os.environ['LOGNAME']
+if user != 'root':
+    msg = 'Error: kano-updater must be executed with root privileges'
+    if h.is_gui():
+        h.run_cmd('zenity --info --text "{}"'.format(msg))
+    sys.exit(msg)
+
+# upgrade python command line
+if len(sys.argv) == 2 and sys.argv[1] == 'python_upgrade':
+    upgrade_python()
+    sys.exit()
+
+# no internet warning
+if not h.is_internet():
+    msg = "WARNING: No internet connection detected\n"
+    msg += "Please connect to internet using the cable or the WiFi utility in Extras"
+    if h.is_gui():
+        h.run_cmd('zenity --info --text "{}"'.format(msg))
+    else:
+        print msg
+        print 'Press any key to continue'
+        answer = raw_input()
+
+# do upgrade
+if h.is_internet():
+    # asking user
+    msg = "Are you sure you want to update Kanux?"
+    if h.is_gui():
+        _, _, rc = h.run_cmd('zenity --question --text "{}"'.format(msg))
+        if rc != 0:
+            sys.exit()
+    else:
+        print msg + " [y/n]"
+        answer = raw_input().lower()
+        if answer != 'y':
+            sys.exit()
+
+    # kill_apps
+    kill_apps_list = ['minecraft-pi', 'make-music', 'make-video', 'make-snake', 'pcmanfm']
+    for app in kill_apps_list:
+        h.run_cmd('killall -q {}'.format(app))
+
+    # upgrade itself
+
+    # get app-state before upgrading
+    appstate_before, _ = h.get_dpkg_dict()
+
+    # pre upgrade
+    h.run_print_output_error(pre_update_file)
+
+    # upgrade python
+    python_ok, python_err = upgrade_python()
+
+    # upgrade debian
+    debian_err_packages = upgrade_debian()
+
+    # post upgrade
+    h.run_print_output_error(post_update_file)
+
+    # get app-state after upgrading
+    appstate_after, appstate_after_nonclean = h.get_dpkg_dict()
+
+    msg_upgraded = ''
+    msg_added = ''
+    msg_removed = ''
+
+    # compare appstates
+    for app, version in appstate_after.iteritems():
+        if app in appstate_before and version != appstate_before[app]:
+            msg_upgraded += "{}: {} -> {}\n".format(app, appstate_before[app], version)
+
+        if app not in appstate_before:
+            msg_added += "{}: {}\n".format(app, version)
+
+    for app, version in appstate_before.iteritems():
+        if app not in appstate_after:
+            msg_removed += "{}\n".format(app)
+
+    msg = '\nresults:'
+
+    if msg_upgraded:
+        msg += "apps upgraded:\n" + msg_upgraded
+
+    if msg_added:
+        msg += "apps added:\n" + msg_added
+
+    if msg_removed:
+        msg += "apps removed:\n" + msg_removed
+
+    if debian_err_packages:
+        msg += "apps with errors:\n{}\n".format('\n'.join(debian_err_packages))
+
+    if appstate_after_nonclean:
+        msg += "apps with non-clean state:\n{}\n".format('\n'.join(appstate_after_nonclean.iterkeys()))
+
+    if python_ok:
+        msg += "python modules upgraded:\n{}\n".format('\n'.join(python_ok))
+
+    if python_err:
+        msg += "python modules with error:\n{}\n".format('\n'.join(python_err))
+
+    if h.is_gui():
+        with open('msg', 'w') as outfile:
+            outfile.write(msg)
+        h.run_cmd('zenity --text-info --title="Update result" --filename=msg')
+        h.deletefile('msg')
+    else:
+        print msg
+        print 'Press any key to continue'
+        answer = raw_input()
+
+
+# expand filesystem
+if expand_rootfs():
+    msg = "Disk partition scheduled for resize."
+    msg += "Rebooting the system, see you in 2 mins!"
+    if h.is_gui():
+        h.run_cmd('zenity --info --text "{}"'.format(msg))
+    else:
+        print msg
+        print 'Press any key to continue'
+        answer = raw_input()
+    h.run_cmd('reboot')
+
