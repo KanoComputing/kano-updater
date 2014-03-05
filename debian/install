@@ -1,9 +1,9 @@
-kano-updater /usr/bin/
-expand-rootfs /usr/bin/
+kano-updater /usr/bin
+expand-rootfs /usr/bin
 
-pre_update /usr/share/kano-updater/
-post_update /usr/share/kano-updater/
-python_modules /usr/share/kano-updater/
+pre_update /usr/share/kano-updater
+post_update /usr/share/kano-updater
+python_modules /usr/share/kano-updater
 
-icon/Updater /usr/share/kano-desktop/extras/
-icon/kano-updater.png /usr/share/kano-desktop/icons/
+icon/Updater /usr/share/kano-desktop/extras
+icon/kano-updater.png /usr/share/kano-desktop/icons
