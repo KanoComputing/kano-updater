@@ -10,7 +10,7 @@
 
 import os
 import sys
-import kano_utilslib as h
+import kano.utils as h
 from kanowifilib import is_internet
 
 
