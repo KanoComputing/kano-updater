@@ -10,10 +10,12 @@
 
 import os
 import sys
-import helper as h
+import kano_utilslib as h
+from kanowifilib import is_internet
 
 
 def upgrade_debian():
+    global err_log
     # setting up apt-get for non-interactive mode
     os.environ['DEBIAN_FRONTEND'] = 'noninteractive'
 
@@ -27,6 +29,7 @@ def upgrade_debian():
     id = h.zenity_show_progress("Upgrading packages")
     cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade'
     _, debian_err, _ = h.run_print_output_error(cmd)
+    err_log += debian_err
     h.kill_child_processes(id)
 
     # apt autoremove
@@ -38,10 +41,6 @@ def upgrade_debian():
     cmd = 'apt-get -y autoclean'
     h.run_print_output_error(cmd)
     h.kill_child_processes(id)
-
-    # writing error log
-    with open(err_log_file, 'w') as outfile:
-        outfile.write(debian_err)
 
     # parsing debian error log
     if debian_err:
@@ -70,13 +69,14 @@ def upgrade_debian():
 def upgrade_python():
     id = h.zenity_show_progress("Upgrading Python modules")
 
-    # remove old pip and setuptools
-    cmd = 'yes "" | apt-get -y purge python-setuptools python-virtualenv python-pip'
-    h.run_print_output_error(cmd)
+    if 'python-pip' in appstate_before or 'python-setuptools' in appstate_before:
+        # remove old pip and setuptools
+        cmd = 'yes "" | apt-get -y purge python-setuptools python-virtualenv python-pip'
+        h.run_print_output_error(cmd)
 
-    # upgrading pip
-    _, _, rc = h.run_cmd('which pip')
-    if rc == 0:
+    # installing/upgrading pip
+    o, _, _ = h.run_cmd('pip -V')
+    if 'pip 1.' in o:
         cmd = 'pip install --upgrade pip'
         h.run_print_output_error(cmd)
     else:
@@ -117,11 +117,15 @@ python_modules_file = '/usr/share/kano-updater/python_modules'
 pre_update_file = '/usr/share/kano-updater/pre_update'
 post_update_file = '/usr/share/kano-updater/post_update'
 
+is_gui = h.is_gui()
+kanux_version = h.read_file_contents('/etc/kanux_version')
+err_log = 'build version: {}\nupgrade date: {}\n'.format(kanux_version, h.get_date_now())
+
 # root check
 user = os.environ['LOGNAME']
 if user != 'root':
     msg = 'Error: kano-updater must be executed with root privileges'
-    if h.is_gui():
+    if is_gui:
         h.run_cmd('zenity --info --text "{}"'.format(msg))
     sys.exit(msg)
 
@@ -131,10 +135,10 @@ if len(sys.argv) == 2 and sys.argv[1] == 'python_upgrade':
     sys.exit()
 
 # no internet warning
-if not h.is_internet():
+if not is_internet():
     msg = "WARNING: No internet connection detected\n"
     msg += "Please connect to internet using the cable or the WiFi utility in Extras"
-    if h.is_gui():
+    if is_gui:
         h.run_cmd('zenity --info --text "{}"'.format(msg))
     else:
         print msg
@@ -142,10 +146,10 @@ if not h.is_internet():
         answer = raw_input()
 
 # do upgrade
-if h.is_internet():
+else:
     # asking user
     msg = "Are you sure you want to update Kanux?"
-    if h.is_gui():
+    if is_gui:
         _, _, rc = h.run_cmd('zenity --question --text "{}"'.format(msg))
         if rc != 0:
             sys.exit()
@@ -160,7 +164,7 @@ if h.is_internet():
     for app in kill_apps_list:
         h.run_cmd('killall -q {}'.format(app))
 
-    # upgrade itself
+    # TODO upgrade itself
 
     # get app-state before upgrading
     appstate_before, _ = h.get_dpkg_dict()
@@ -196,7 +200,7 @@ if h.is_internet():
         if app not in appstate_after:
             msg_removed += "{}\n".format(app)
 
-    msg = '\nresults:'
+    msg = 'results:\n'
 
     if msg_upgraded:
         msg += "apps upgraded:\n" + msg_upgraded
@@ -219,7 +223,12 @@ if h.is_internet():
     if python_err:
         msg += "python modules with error:\n{}\n".format('\n'.join(python_err))
 
-    if h.is_gui():
+    # write error log
+    err_log += '\n' + msg + '\n'
+    with open(err_log_file, 'w') as outfile:
+        outfile.write(err_log)
+
+    if is_gui:
         with open('msg', 'w') as outfile:
             outfile.write(msg)
         h.run_cmd('zenity --text-info --title="Update result" --filename=msg')
@@ -234,7 +243,7 @@ if h.is_internet():
 if expand_rootfs():
     msg = "Disk partition scheduled for resize."
     msg += "Rebooting the system, see you in 2 mins!"
-    if h.is_gui():
+    if is_gui:
         h.run_cmd('zenity --info --text "{}"'.format(msg))
     else:
         print msg
