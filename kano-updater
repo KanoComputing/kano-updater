@@ -34,7 +34,7 @@ def upgrade_debian():
 
     # apt autoremove
     id = h.zenity_show_progress("Cleaning up packages")
-    cmd = 'apt-get -y autoremove'
+    cmd = 'apt-get -y autoremove --purge'
     h.run_print_output_error(cmd)
 
     # apt autoclean
