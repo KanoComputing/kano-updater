@@ -131,6 +131,7 @@ if user != 'root':
 
 # upgrade python command line
 if len(sys.argv) == 2 and sys.argv[1] == 'python_upgrade':
+    appstate_before, _ = h.get_dpkg_dict()
     upgrade_python()
     sys.exit()
 
