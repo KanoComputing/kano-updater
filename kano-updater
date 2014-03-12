@@ -135,9 +135,21 @@ if len(sys.argv) == 2 and sys.argv[1] == 'python_upgrade':
     upgrade_python()
     sys.exit()
 
+# ask confirmation from user
+msg = "Are you sure you want to update Kanux?"
+if is_gui:
+    _, _, rc = h.run_cmd('zenity --question --text "{}"'.format(msg))
+    if rc != 0:
+        sys.exit()
+else:
+    print msg + " [y/n]"
+    answer = raw_input().lower()
+    if answer != 'y':
+        sys.exit()
+
 # no internet warning
 if not is_internet():
-    msg = "WARNING: No internet connection detected\n"
+    msg = "No internet connection detected\n"
     msg += "Please connect to internet using the cable or the WiFi utility in Extras"
     if is_gui:
         h.run_cmd('zenity --info --text "{}"'.format(msg))
@@ -145,27 +157,14 @@ if not is_internet():
         print msg
         print 'Press any key to continue'
         answer = raw_input()
-
 # do upgrade
 else:
-    # asking user
-    msg = "Are you sure you want to update Kanux?"
-    if is_gui:
-        _, _, rc = h.run_cmd('zenity --question --text "{}"'.format(msg))
-        if rc != 0:
-            sys.exit()
-    else:
-        print msg + " [y/n]"
-        answer = raw_input().lower()
-        if answer != 'y':
-            sys.exit()
-
     # kill_apps
     kill_apps_list = ['minecraft-pi', 'make-music', 'make-video', 'make-snake', 'pcmanfm']
     for app in kill_apps_list:
         h.run_cmd('killall -q {}'.format(app))
 
-    # TODO upgrade itself
+    # TODO upgrade kano-updater itself
 
     # get app-state before upgrading
     appstate_before, _ = h.get_dpkg_dict()
@@ -201,28 +200,27 @@ else:
         if app not in appstate_after:
             msg_removed += "{}\n".format(app)
 
-    msg = 'results:\n'
-
+    msg = ''
     if msg_upgraded:
-        msg += "apps upgraded:\n" + msg_upgraded
+        msg += "* apps upgraded:\n" + msg_upgraded
 
     if msg_added:
-        msg += "apps added:\n" + msg_added
+        msg += "* apps added:\n" + msg_added
 
     if msg_removed:
-        msg += "apps removed:\n" + msg_removed
+        msg += "* apps removed:\n" + msg_removed
 
     if debian_err_packages:
-        msg += "apps with errors:\n{}\n".format('\n'.join(debian_err_packages))
+        msg += "* apps with errors:\n{}\n".format('\n'.join(debian_err_packages))
 
     if appstate_after_nonclean:
-        msg += "apps with non-clean state:\n{}\n".format('\n'.join(appstate_after_nonclean.iterkeys()))
+        msg += "* apps with non-clean state:\n{}\n".format('\n'.join(appstate_after_nonclean.iterkeys()))
 
     if python_ok:
-        msg += "python modules upgraded:\n{}\n".format('\n'.join(python_ok))
+        msg += "* python modules upgraded:\n{}\n".format('\n'.join(python_ok))
 
     if python_err:
-        msg += "python modules with error:\n{}\n".format('\n'.join(python_err))
+        msg += "* python modules with error:\n{}\n".format('\n'.join(python_err))
 
     # write error log
     err_log += '\n' + msg + '\n'
@@ -239,11 +237,10 @@ else:
         print 'Press any key to continue'
         answer = raw_input()
 
-
 # expand filesystem
 if expand_rootfs():
-    msg = "Disk partition scheduled for resize."
-    msg += "Rebooting the system, see you in 2 mins!"
+    msg = "Disk partition scheduled for resize.\n"
+    msg += "Rebooting the system, see you in 1 minute!"
     if is_gui:
         h.run_cmd('zenity --info --text "{}"'.format(msg))
     else:
@@ -251,4 +248,3 @@ if expand_rootfs():
         print 'Press any key to continue'
         answer = raw_input()
     h.run_cmd('reboot')
-
