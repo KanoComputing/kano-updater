@@ -117,6 +117,12 @@ def expand_rootfs():
     _, _, rc = h.run_print_output_error(cmd)
     return rc == 0
 
+
+def get_installed_version(pkg):
+    out, _, _ = h.run_cmd('dpkg-query -s kano-updater | grep "Version:"')
+    return out.strip()[9:]
+
+
 err_log_file = '/var/log/kano-updater-log'
 python_modules_file = '/usr/share/kano-updater/python_modules'
 pre_update_file = '/usr/share/kano-updater/pre_update'
@@ -144,16 +150,17 @@ if len(sys.argv) == 2 and sys.argv[1] == 'python_upgrade':
     sys.exit()
 
 # ask confirmation from user
-msg = "Are you sure you want to update Kanux?"
-if is_gui:
-    _, _, rc = h.run_cmd('zenity --question --text "{}"'.format(msg))
-    if rc != 0:
-        sys.exit()
-else:
-    print msg + " [y/n]"
-    answer = raw_input().lower()
-    if answer != 'y':
-        sys.exit()
+if not (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force']):
+    msg = "Are you sure you want to update Kanux?"
+    if is_gui:
+        _, _, rc = h.run_cmd('zenity --question --text "{}"'.format(msg))
+        if rc != 0:
+            sys.exit()
+    else:
+        print msg + " [y/n]"
+        answer = raw_input().lower()
+        if answer != 'y':
+            sys.exit()
 
 # no internet warning
 if not is_internet():
@@ -174,7 +181,13 @@ else:
     for app in kill_apps_list:
         h.run_cmd('killall -q {}'.format(app))
 
-    # TODO upgrade kano-updater itself
+    # upgrade kano-updater itself
+    current_updater_version = get_installed_version('kano-updater')
+    _ = h.run_cmd('apt-get install kano-updater -y --force-yes')
+    new_updater_version = get_installed_version('kano-updater')
+
+    if new_updater_version != current_updater_version:
+        os.execvp('./kano-updater', ['./kano-updater', '-f'])
 
     # get app-state before upgrading
     appstate_before, _ = h.get_dpkg_dict()
