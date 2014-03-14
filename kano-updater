@@ -27,7 +27,8 @@ def upgrade_debian():
 
     # apt upgrade
     id = h.zenity_show_progress("Upgrading packages")
-    cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade'
+    cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
+          '-o Dpkg::Options::="--force-confold" dist-upgrade'
     _, debian_err, _ = h.run_print_output_error(cmd)
     err_log += debian_err
     h.kill_child_processes(id)
@@ -69,9 +70,11 @@ def upgrade_debian():
 def upgrade_python():
     id = h.zenity_show_progress("Upgrading Python modules")
 
-    if 'python-pip' in appstate_before or 'python-setuptools' in appstate_before:
+    if 'python-pip' in appstate_before or \
+       'python-setuptools' in appstate_before:
         # remove old pip and setuptools
-        cmd = 'yes "" | apt-get -y purge python-setuptools python-virtualenv python-pip'
+        cmd = 'yes "" | apt-get -y purge python-setuptools ' + \
+              'python-virtualenv python-pip'
         h.run_print_output_error(cmd)
 
     # installing/upgrading pip
@@ -80,7 +83,9 @@ def upgrade_python():
         cmd = 'pip install --upgrade pip'
         h.run_print_output_error(cmd)
     else:
-        cmd = 'wget -q --no-check-certificate https://raw.github.com/pypa/pip/master/contrib/get-pip.py -O get-pip.py'
+        cmd = 'wget -q --no-check-certificate ' + \
+              'https://raw.github.com/pypa/pip/master/contrib/get-pip.py ' + \
+              '-O get-pip.py'
         h.run_cmd(cmd)
 
         cmd = 'python get-pip.py'
@@ -119,7 +124,10 @@ post_update_file = '/usr/share/kano-updater/post_update'
 
 is_gui = h.is_gui()
 kanux_version = h.read_file_contents('/etc/kanux_version')
-err_log = 'build version: {}\nupgrade date: {}\n'.format(kanux_version, h.get_date_now())
+err_log = 'build version: {}\nupgrade date: {}\n'.format(
+    kanux_version,
+    h.get_date_now()
+)
 
 # root check
 user = os.environ['LOGNAME']
@@ -150,7 +158,8 @@ else:
 # no internet warning
 if not is_internet():
     msg = "No internet connection detected\n"
-    msg += "Please connect to internet using the cable or the WiFi utility in Extras"
+    msg += "Please connect to internet using the cable "
+    msg += "or the WiFi utility in Extras"
     if is_gui:
         h.run_cmd('zenity --info --text "{}"'.format(msg))
     else:
@@ -160,7 +169,8 @@ if not is_internet():
 # do upgrade
 else:
     # kill_apps
-    kill_apps_list = ['minecraft-pi', 'make-music', 'make-video', 'make-snake', 'pcmanfm']
+    kill_apps_list = ['minecraft-pi', 'make-music', 'make-video',
+                      'make-snake', 'pcmanfm']
     for app in kill_apps_list:
         h.run_cmd('killall -q {}'.format(app))
 
@@ -191,7 +201,11 @@ else:
     # compare appstates
     for app, version in appstate_after.iteritems():
         if app in appstate_before and version != appstate_before[app]:
-            msg_upgraded += "{}: {} -> {}\n".format(app, appstate_before[app], version)
+            msg_upgraded += "{}: {} -> {}\n".format(
+                app,
+                appstate_before[app],
+                version
+            )
 
         if app not in appstate_before:
             msg_added += "{}: {}\n".format(app, version)
@@ -214,13 +228,15 @@ else:
         msg += "* apps with errors:\n{}\n".format('\n'.join(debian_err_packages))
 
     if appstate_after_nonclean:
-        msg += "* apps with non-clean state:\n{}\n".format('\n'.join(appstate_after_nonclean.iterkeys()))
+        non_clean_list = '\n'.join(appstate_after_nonclean.iterkeys())
+        msg += "* apps with non-clean state:\n{}\n".format(non_clean_list)
 
     if python_ok:
         msg += "* python modules upgraded:\n{}\n".format('\n'.join(python_ok))
 
     if python_err:
-        msg += "* python modules with error:\n{}\n".format('\n'.join(python_err))
+        err_list = '\n'.join(python_err)
+        msg += "* python modules with error:\n{}\n".format(err_list)
 
     # write error log
     err_log += '\n' + msg + '\n'
