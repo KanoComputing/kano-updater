@@ -60,7 +60,7 @@ def upgrade_debian():
 
         # remove left-over non-empty directories
         for dir in dirs_delete:
-            h.deletedir(dir)
+            h.delete_dir(dir)
 
         # return err_packages
         return err_packages
@@ -86,7 +86,7 @@ def upgrade_python():
         cmd = 'python get-pip.py'
         h.run_print_output_error(cmd)
 
-        h.deletefile('get-pip.py')
+        h.delete_file('get-pip.py')
 
     # parse python modules
     python_modules = h.read_file_contents_as_lines(python_modules_file)
@@ -231,7 +231,7 @@ else:
         with open('msg', 'w') as outfile:
             outfile.write(msg)
         h.run_cmd('zenity --text-info --title="Update result" --filename=msg')
-        h.deletefile('msg')
+        h.delete_file('msg')
     else:
         print msg
         print 'Press any key to continue'
