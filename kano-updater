@@ -19,12 +19,6 @@ def upgrade_debian():
     # setting up apt-get for non-interactive mode
     os.environ['DEBIAN_FRONTEND'] = 'noninteractive'
 
-    # apt update
-    id = h.zenity_show_progress("Updating package list")
-    cmd = 'apt-get -y update'
-    h.run_print_output_error(cmd)
-    h.kill_child_processes(id)
-
     # apt upgrade
     id = h.zenity_show_progress("Upgrading packages")
     cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
@@ -181,11 +175,18 @@ else:
     for app in kill_apps_list:
         h.run_cmd('killall -q {}'.format(app))
 
-    # upgrade kano-updater itself
-    current_updater_version = get_installed_version('kano-updater')
-    _ = h.run_cmd('apt-get install kano-updater -y --force-yes')
-    new_updater_version = get_installed_version('kano-updater')
+    progress_bar = h.zenity_show_progress("Downloading package lists")
+    h.run_print_output_error('apt-get -y update')
+    h.kill_child_processes(progress_bar)
 
+    # upgrade kano-updater itself
+    progress_bar = h.zenity_show_progress("Updating the updater itself")
+    current_updater_version = get_installed_version('kano-updater')
+    h.run_cmd('apt-get install kano-updater -y --force-yes')
+    new_updater_version = get_installed_version('kano-updater')
+    h.kill_child_processes(progress_bar)
+
+    # re-run the updater in case it was updated
     if new_updater_version != current_updater_version:
         os.execvp('./kano-updater', ['./kano-updater', '-f'])
 
