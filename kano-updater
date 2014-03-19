@@ -13,6 +13,36 @@ import sys
 import kano.utils as h
 from kanowifilib import is_internet
 
+class OSVersion:
+    def __init__(self, os=None, codename=None, version=None):
+        self._os = os
+        self._codename = codename
+        self._number = version
+
+    def from_version_file(self, vfile_path):
+        try:
+            with open(vfile_path, "r") as vfile:
+                vstr = vfile.read().strip()
+                self._os, self._codename, self._number = vstr.split("-")
+        except:
+            raise Exception("Unknown version string format ({})".format(vstr))
+
+        return self
+
+    def to_issue(self):
+        return "{} {} {} \\l".format(self._os, self._codename, self._number)
+
+    def to_version_string(self):
+        return "{}-{}-{}".format(self._os, self._codename, self._number)
+
+
+def bump_system_version(ver, version_file_path, issue_file_path):
+    with open(version_file_path, "w") as vfile:
+        vfile.write(ver.to_version_string() + "\n")
+
+    with open(issue_file_path, "w") as ifile:
+        ifile.write(ver.to_issue() + "\n")
+
 
 def upgrade_debian():
     global err_log
@@ -116,6 +146,10 @@ def get_installed_version(pkg):
     out, _, _ = h.run_cmd('dpkg-query -s kano-updater | grep "Version:"')
     return out.strip()[9:]
 
+issue_file = "/etc/issue"
+version_file = "/etc/kanux_version"
+old_version = OSVersion().from_version_file(version_file)
+new_version = OSVersion("Kanux", "Beta", "1.1")
 
 err_log_file = '/var/log/kano-updater-log'
 python_modules_file = '/usr/share/kano-updater/python_modules'
@@ -194,7 +228,10 @@ else:
     appstate_before, _ = h.get_dpkg_dict()
 
     # pre upgrade
-    h.run_print_output_error(pre_update_file)
+    preup_cmd = "{} '{}' '{}'".format(pre_update_file,
+                                      old_version.to_version_string(),
+                                      new_version.to_version_string())
+    h.run_print_output_error(preup_cmd)
 
     # upgrade python
     python_ok, python_err = upgrade_python()
@@ -203,7 +240,12 @@ else:
     debian_err_packages = upgrade_debian()
 
     # post upgrade
-    h.run_print_output_error(post_update_file)
+    postup_cmd = "{} '{}' '{}'".format(post_update_file,
+                                       old_version.to_version_string(),
+                                       new_version.to_version_string())
+    h.run_print_output_error(postup_cmd)
+
+    bump_system_version(new_version, version_file, issue_file)
 
     # get app-state after upgrading
     appstate_after, appstate_after_nonclean = h.get_dpkg_dict()
