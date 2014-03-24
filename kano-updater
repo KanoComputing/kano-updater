@@ -223,7 +223,7 @@ else:
 
     # re-run the updater in case it was updated
     if new_updater_version != current_updater_version:
-        os.execvp('./kano-updater', ['./kano-updater', '-f'])
+        os.execvp('kano-updater', ['kano-updater', '-f'])
 
     # get app-state before upgrading
     appstate_before, _ = h.get_dpkg_dict()
