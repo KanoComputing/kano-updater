@@ -216,7 +216,8 @@ else:
     # upgrade kano-updater itself
     progress_bar = h.zenity_show_progress("Updating the updater itself")
     current_updater_version = get_installed_version('kano-updater')
-    h.run_cmd('apt-get install kano-updater -y --force-yes')
+    h.run_cmd('apt-get install -o Dpkg::Options::="--force-confdef" ' + \
+              '-o Dpkg::Options::="--force-confold" -y --force-yes kano-updater')
     new_updater_version = get_installed_version('kano-updater')
     h.kill_child_processes(progress_bar)
 
