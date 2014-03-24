@@ -20,12 +20,12 @@ class OSVersion:
         self._number = version
 
     def from_version_file(self, vfile_path):
-        try:
-            with open(vfile_path, "r") as vfile:
-                vstr = vfile.read().strip()
+        with open(vfile_path, "r") as vfile:
+            vstr = vfile.read().strip()
+            try:
                 self._os, self._codename, self._number = vstr.split("-")
-        except:
-            raise Exception("Unknown version string format ({})".format(vstr))
+            except:
+                raise Exception("Unknown version string format ({})".format(vstr))
 
         return self
 
