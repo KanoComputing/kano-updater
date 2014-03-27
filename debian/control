@@ -7,6 +7,9 @@ Build-Depends: debhelper (>= 9)
 
 Package: kano-updater
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, kano-toolset (>= 1.0-60.20140318), kano-connect, python
+Depends: ${shlibs:Depends}, ${misc:Depends}, kano-toolset (>= 1.0-61), python
 Description: Tool to update Kanux
  A tool written in Python to upgrade Debian packages, upgrade Python modules and extend filesystem.
+
+
+
