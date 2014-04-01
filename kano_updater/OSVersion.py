@@ -22,7 +22,7 @@ class OSVersion:
             vstr = vfile.read().strip()
             return OSVersion.from_version_string(vstr)
 
-    def __init__(self, os=None, codename=None, version=None):
+    def __init__(self, os="Kanux", codename=None, version=None):
         self._os = os
         self._codename = codename
         self._number = version
