@@ -6,7 +6,8 @@
 #
 
 import sys
-from kano_updater.Utils import Update
+from kano_updater.Utils import install, remove, purge
+from kano_updater.Update import Update
 
 update = Update(sys.argv[1], sys.argv[2])
 
