@@ -34,7 +34,7 @@ class OSVersion:
         return "{}-{}-{}".format(self._os, self._codename, self._number)
 
     def __str__(self):
-        return to_version_string()
+        return self.to_version_string()
 
     def __eq__(self, other):
         return str(self) == str(other)
