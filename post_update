@@ -11,4 +11,4 @@ from kano_updater.Update import Update
 update = Update("post")
 
 if update.from_to('Kanux-Beta-1.0', 'Kanux-Beta-1.0.1'):
-    pass
+    install('kano-extras')

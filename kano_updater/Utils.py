@@ -7,11 +7,18 @@
 #
 # Utilities for the updater and the pre and post update scripts
 
+from kano.utils import run_cmd
+
 def install(pkgs):
-    pass
+    cmd = 'apt-get install -o Dpkg::Options::="--force-confdef" ' +
+          '-o Dpkg::Options::="--force-confold" -y --force-yes ' +
+          ' '.join(pkgs)
+    run_cmd(cmd)
+
 
 def remove(pkgs):
-    pass
+    pass #TODO
+
 
 def purge(pkgs):
-    pass
+    pass #TODO
