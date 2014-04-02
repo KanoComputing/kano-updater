@@ -1,5 +1,14 @@
+#!/usr/bin/env python
 # post_update
 #
 # Copyright (C) 2014 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
 #
+
+from kano_updater.Utils import install, remove, purge
+from kano_updater.Update import Update
+
+update = Update("post")
+
+if update.from_to('Kanux-Beta-1.0', 'Kanux-Beta-1.0.1'):
+    install('kano-extras')
