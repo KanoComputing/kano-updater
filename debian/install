@@ -7,5 +7,5 @@ python_modules usr/share/kano-updater
 
 kano_updater usr/lib/python2.7/dist-packages/
 
-icon/Updater usr/share/kano-desktop/extras
-icon/kano-updater.png usr/share/kano-desktop/icons
+icon/Updater usr/share/kano-extras/extras
+icon/kano-updater.png usr/share/kano-extras/icons
