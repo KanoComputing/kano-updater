@@ -162,8 +162,8 @@ if not (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force']):
 
 # no internet warning
 if not is_internet():
-    msg = "No internet connection detected\n"
-    msg += "Please connect to internet using the cable "
+    msg = "No internet connection detected\n\n"
+    msg += "Please connect to internet using the cable\n"
     msg += "or the WiFi utility in Extras"
     if is_gui:
         h.run_cmd('zenity --info --text "{}"'.format(msg))
@@ -264,6 +264,8 @@ else:
     if python_err:
         err_list = '\n'.join(python_err)
         msg += "* python modules with error:\n{}\n".format(err_list)
+    if not msg:
+        msg = "No updates needed this time."
 
     # write error log
     err_log += '\n' + msg + '\n'
