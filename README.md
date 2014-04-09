@@ -1,10 +1,12 @@
-# Kanux-updater
+# Kano-updater
 
-Utility to keep Kanux up to date
+kano-updater is meant to be the easiest way to keep your Kanux system up to date. It not only performs upgrades of your python modules and Debian packages, but cleans the system and expands the SD Card if needed.
 
-## Kanux-updater
+Check all the information on the [Wiki](https://github.com/KanoComputing/kano-updater/wiki)
 
-Updates system packages, expands root partition if needed
+### [Develop](https://github.com/KanoComputing/kano-updater/wiki/Development)
+
+### [Collaborate](https://github.com/KanoComputing/kano-updater/wiki/Collaboration)
 
 ## expand-rootfs
 
