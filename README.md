@@ -4,6 +4,8 @@ kano-updater is meant to be the easiest way to keep your Kanux system up to date
 
 Check all the information on the [Wiki](https://github.com/KanoComputing/kano-updater/wiki)
 
+### [Introduction](https://github.com/KanoComputing/kano-updater/wiki/Introduction)
+
 ### [Develop](https://github.com/KanoComputing/kano-updater/wiki/Development)
 
 ### [Collaborate](https://github.com/KanoComputing/kano-updater/wiki/Collaboration)
