@@ -6,6 +6,7 @@
 import sys
 from kano_updater.OSVersion import OSVersion
 
+
 class Update(object):
     def __init__(self, up_type):
         if len(sys.argv) != 3:
@@ -14,7 +15,7 @@ class Update(object):
             sys.exit(1)
 
         self._type = up_type
-        print 'Runing the {}-update scripts...'.format(up_type)
+        print 'Running the {}-update scripts...'.format(up_type)
 
         self._old = OSVersion.from_version_string(sys.argv[1])
         self._new = OSVersion.from_version_string(sys.argv[2])
@@ -27,7 +28,7 @@ class Update(object):
 
     def from_to(self, from_v, to_v):
         run = self._old == OSVersion.from_version_string(from_v) and \
-              self._new == OSVersion.from_version_string(to_v)
+            self._new == OSVersion.from_version_string(to_v)
         if run:
             print "Doing {}-update from {} to {}".format(self._type,
                                                          from_v, to_v)
