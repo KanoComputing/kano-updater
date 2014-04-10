@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
-# kano-extras Python library
+# osversion.py
 #
 # Copyright (C) 2014 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+#
+
 
 class OSVersion:
     @staticmethod
@@ -47,6 +49,7 @@ class OSVersion:
 
     def __cmp__(self, other):
         return cmp(str(self), str(other))
+
 
 def bump_system_version(ver, version_file_path, issue_file_path):
     with open(version_file_path, "w") as vfile:

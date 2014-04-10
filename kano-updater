@@ -12,7 +12,7 @@ import os
 import sys
 import kano.utils as h
 from kano.network import is_internet
-from kano_updater.OSVersion import OSVersion, bump_system_version
+from kano_updater.osversion import OSVersion, bump_system_version
 
 
 def upgrade_debian():

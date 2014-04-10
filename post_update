@@ -1,12 +1,13 @@
 #!/usr/bin/env python
+
 # post_update
 #
 # Copyright (C) 2014 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
 #
 
-from kano_updater.Utils import install, remove, purge
-from kano_updater.Update import Update
+from kano_updater.utils import install
+from kano_updater.update import Update
 
 update = Update("post")
 

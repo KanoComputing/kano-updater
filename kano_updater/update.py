@@ -1,10 +1,13 @@
+#!/usr/bin/env python
+
+# update.py
 #
 # Copyright (C) 2014 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
 #
 
 import sys
-from kano_updater.OSVersion import OSVersion
+from kano_updater.osversion import OSVersion
 
 
 class Update(object):
