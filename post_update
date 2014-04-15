@@ -13,3 +13,5 @@ update = Update("post")
 
 if update.from_to('Kanux-Beta-1.0', 'Kanux-Beta-1.0.1'):
     install('kano-extras')
+elif update.from_to('Kanux-Beta-1.0.1', 'Kanux-Beta-1.0.2'):
+    install('gnome-paint')
