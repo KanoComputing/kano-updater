@@ -8,7 +8,9 @@ DEBUG = False
 import os
 import sys
 import re
+import time
 from kano.utils import get_dpkg_dict, run_cmd
+from kano_updater.utils import get_update_status, set_update_status
 
 def debug_print(msg):
     sys.stderr.write("DEBUG: " + msg + "\n")
@@ -57,14 +59,20 @@ for pkg_list_filename in kano_pkg_lists:
                 package = None
                 version = None
 
+status = get_update_status()
+status["last_check"] = int(time.time())
+
 # Compare the package list to dpkg -l
-#
-# NOTE: It should be done the other way around (loop over all the packages
-# and check whether there is a newer version for any o
 for pkg, version in installed_pkgs.iteritems():
     if pkg in pkg_list and version < pkg_list[pkg]:
         debug_print("Updates available")
+        status["update_available"] = 1
+        set_update_status(status)
+
         sys.exit(0)
 
 debug_print("No updates detected")
+status["update_available"] = 0
+set_update_status(status)
+
 sys.exit(1)

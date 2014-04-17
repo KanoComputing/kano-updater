@@ -15,8 +15,7 @@ from kano_updater.osversion import OSVersion, bump_system_version
 from kano_updater.utils import get_dpkg_dict
 from kano.utils import zenity_show_progress, run_print_output_error, kill_child_processes, \
     delete_dir, run_cmd, delete_file, read_file_contents_as_lines, is_gui, read_file_contents, \
-    get_date_now
-
+    get_date_now, set_update_status
 
 def upgrade_debian():
     global err_log
@@ -224,6 +223,10 @@ else:
     run_print_output_error(postup_cmd)
 
     bump_system_version(new_version, version_file, issue_file)
+
+    now = int(time.time())
+    status = {"last_update": now, "update_available": 0, "last_check": now}
+    set_update_status(status)
 
     # get app-state after upgrading
     appstate_after, appstate_after_nonclean = get_dpkg_dict()
