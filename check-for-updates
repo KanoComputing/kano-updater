@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 
+# check-for-updates
+#
+# Copyright (C) 2014 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+#
+# Checks for updates of packages that are maintained by Kano
+#
+
 KANO_LISTS = "/etc/apt/sources.list.d/kano.list"
 APT_LISTS_CACHE = "/var/lib/apt/lists/"
 
