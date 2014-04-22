@@ -17,24 +17,33 @@
 #include <ctype.h>
 #include <time.h>
 
-#define ICON_FILE "/usr/share/kano-desktop/images/updater.png"
+#define DEFAULT_ICON_FILE "/usr/share/kano-updater/images/panel-default.png"
+#define NOTIFICATION_ICON_FILE "/usr/share/kano-updater/images/panel-notification.png"
 #define UPDATE_STATUS_FILE "/var/cache/kano-updater/status"
 
-#define WEEK 60*60*24*7
+#define CHECK_FOR_UPDATES_CMD "sudo check-for-updates"
+#define UPDATE_CMD "sudo kano-updater"
 
-static int instance_cnt = 0;
+#define DAY 60*60*24
+
 Panel *panel;
 
 typedef struct {
-	gint my_id;
+	int last_update;
+	int last_check;
+	int update_available;
+
+	GtkWidget *icon;
+
 	guint timer;
 } kano_updater_plugin_t;
 
-static gint show_menu(GtkWidget *, GdkEventButton *);
+static gboolean show_menu(GtkWidget *, GdkEventButton *,
+			  kano_updater_plugin_t *);
 static void selection_done(GtkWidget *);
 static void popup_set_position(GtkWidget *, gint *, gint *, gboolean *,
 			       GtkWidget *);
-static gboolean check_for_update(kano_updater_plugin_t *);
+static gboolean update_status(kano_updater_plugin_t *);
 
 static int plugin_constructor(Plugin *p, char **fp)
 {
@@ -45,17 +54,15 @@ static int plugin_constructor(Plugin *p, char **fp)
 	/* allocate our private structure instance */
 	kano_updater_plugin_t *plugin = g_new0(kano_updater_plugin_t, 1);
 
+	plugin->last_update = 0;
+	plugin->last_check = 0;
+	plugin->update_available = 0;
+
 	/* put it where it belongs */
 	p->priv = plugin;
 
-	/* update the instance count */
-	plugin->my_id = ++instance_cnt;
-
-	/* make a label out of the ID */
-	char id_buf[10] = {'\0'};
-	sprintf(id_buf, "TP-%d", plugin->my_id);
-
-	GtkWidget *icon = gtk_image_new_from_file(ICON_FILE);
+	GtkWidget *icon = gtk_image_new_from_file(DEFAULT_ICON_FILE);
+	plugin->icon = icon;
 
 	/* need to create a widget to show */
 	p->pwid = gtk_event_box_new();
@@ -70,19 +77,30 @@ static int plugin_constructor(Plugin *p, char **fp)
 	gtk_widget_set_has_window(p->pwid, FALSE);
 
 
-	gtk_signal_connect(GTK_OBJECT(p->pwid), "button_press_event",
-			   GTK_SIGNAL_FUNC(show_menu), NULL);
+	gtk_signal_connect(GTK_OBJECT(p->pwid), "button-press-event",
+			   GTK_SIGNAL_FUNC(show_menu), plugin);
 
-	//gtk_widget_set_state(icon, GTK_STATE_SELECTED); // GTK_STATE_NORMAL
 	gtk_widget_set_sensitive(icon, TRUE);
 
-	plugin->timer = g_timeout_add(3000/*00TODO*/, (GSourceFunc) check_for_update,
-				      (gpointer) p);
+	plugin->timer = g_timeout_add(60000, (GSourceFunc) update_status,
+				      (gpointer) plugin);
+
+	update_status(plugin);
 
 	/* show our widget */
 	gtk_widget_show_all(p->pwid);
 
 	return 1;
+}
+
+static void plugin_destructor(Plugin *p)
+{
+	kano_updater_plugin_t *plugin = (kano_updater_plugin_t *)p->priv;
+
+	/* Disconnect the timer. */
+	g_source_remove(plugin->timer);
+
+	g_free(plugin);
 }
 
 static int parse_line(char *line, const char const *key, int *value)
@@ -95,14 +113,39 @@ static int parse_line(char *line, const char const *key, int *value)
 	return -1;
 }
 
-static gboolean check_for_update(kano_updater_plugin_t *plugin)
+static void launch_cmd(const char *cmd)
 {
-	//printf("Checking for update\n");
+	GAppInfo *appinfo = NULL;
+	gboolean ret = FALSE;
+
+	appinfo = g_app_info_create_from_commandline(cmd, NULL,
+				G_APP_INFO_CREATE_NONE, NULL);
+
+	if (appinfo == NULL) {
+		perror("Command lanuch failed.");
+		return;
+	}
+
+	ret = g_app_info_launch(appinfo, NULL, NULL, NULL);
+	if (!ret)
+		perror("Command lanuch failed.");
+}
+
+static gboolean check_for_updates(kano_updater_plugin_t *plugin)
+{
+	launch_cmd(CHECK_FOR_UPDATES_CMD);
+	return TRUE;
+}
+
+static gboolean update_status(kano_updater_plugin_t *plugin)
+{
 	FILE *fp;
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t read;
-	int last_check = 0, last_update = 0, update_available = 0, value = 0;
+	int value = 0;
+
+	int now = time(NULL);
 
 	fp = fopen(UPDATE_STATUS_FILE, "r");
 	if (fp == NULL)
@@ -112,11 +155,11 @@ static gboolean check_for_update(kano_updater_plugin_t *plugin)
 
 	while ((read = getline(&line, &len, fp)) != -1) {
 		if (parse_line(line, "last_update=", &value) == 0)
-			last_update = value;
+			plugin->last_update = value;
 		else if (parse_line(line, "last_check=", &value) == 0)
-			last_check = value;
+			plugin->last_check = value;
 		else if (parse_line(line, "update_available=", &value) == 0)
-			update_available = value;
+			plugin->update_available = value;
 	}
 
 	if (line)
@@ -124,57 +167,75 @@ static gboolean check_for_update(kano_updater_plugin_t *plugin)
 
 	fclose(fp);
 
-	printf("lu%d lc%d ua%d\n", last_update, last_check, update_available);
+	printf("lu%d lc%d ua%d\n", plugin->last_update,
+				   plugin->last_check,
+				   plugin->update_available);
 
-	if (update_available > 0) {
-		/* Change the icon to red, enable the label */
+	if (plugin->update_available > 0) {
+		/* Change the icon to red */
+		gtk_image_set_from_file(GTK_IMAGE(plugin->icon),
+						  NOTIFICATION_ICON_FILE);
 	} else {
-		int now = time(NULL);
-		if ((now - last_check) >= WEEK) {
-			/* fork() && exec() */
-			/* start wait polling */
-			/* block update checks until the process terminates */
-		} else {
-			/* Set icon to white, disable label */
+		/* Change the icon to white */
+		gtk_image_set_from_file(GTK_IMAGE(plugin->icon),
+					DEFAULT_ICON_FILE);
+
+		if ((now - plugin->last_check) >= DAY) {
+			printf("running update check/n");
+			check_for_updates(plugin);
 		}
 	}
 
 	return TRUE;
 }
 
-static gint show_menu(GtkWidget *widget, GdkEventButton *event)
+void update_clicked(GtkWidget *widget, gpointer data)
 {
-	printf("abc\n");
+	launch_cmd(UPDATE_CMD);
+}
 
+void check_for_update_clicked(GtkWidget *widget, kano_updater_plugin_t *plugin)
+{
+	check_for_updates(plugin);
+}
 
-	//G_APP_INFO_CREATE_NONE
-	//G_APP_INFO_CREATE_NEEDS_TERMINAL
-	GAppInfo *appinfo = NULL;
-	gboolean ret = FALSE;
-
-	appinfo = g_app_info_create_from_commandline("sudo kano-updater",
-			NULL, G_APP_INFO_CREATE_NONE, NULL);
-
-	//g_assert(appinfo != NULL); // TODO error handling is not implemented.
-	ret = g_app_info_launch(appinfo, NULL, NULL, NULL);
-	//g_assert(ret == TRUE); // TODO error handling is not implemented.
-
-
-
+static gboolean show_menu(GtkWidget *widget, GdkEventButton *event,
+		      kano_updater_plugin_t *plugin)
+{
 	GtkWidget *menu = gtk_menu_new();
-	GtkWidget *header_item, *update_item;
+	GtkWidget *header_item, *update_item, *check_item,
+		  *no_updates_item;
+
+	if (event->button != 1)
+		return FALSE;
+
+	update_status(plugin);
 
 	/* Create the menu items */
-	header_item = gtk_menu_item_new_with_label("Kano OS Updates");
+	header_item = gtk_menu_item_new_with_label("Kano Updater");
 	gtk_widget_set_sensitive(header_item, FALSE);
-	update_item = gtk_menu_item_new_with_label("Update your system");
-
-	/* Add them to the menu */
 	gtk_menu_append(GTK_MENU(menu), header_item);
-	gtk_menu_append(GTK_MENU(menu), update_item);
-
 	gtk_widget_show(header_item);
-	gtk_widget_show(update_item);
+
+	if (plugin->update_available > 0) {
+		update_item = gtk_menu_item_new_with_label("Update your system");
+		g_signal_connect(update_item, "activate",
+				 G_CALLBACK(update_clicked), NULL);
+		gtk_menu_append(GTK_MENU(menu), update_item);
+		gtk_widget_show(update_item);
+	} else {
+		no_updates_item = gtk_menu_item_new_with_label("No updates found");
+		gtk_widget_set_sensitive(no_updates_item, FALSE);
+		gtk_menu_append(GTK_MENU(menu), no_updates_item);
+		gtk_widget_show(no_updates_item);
+
+		check_item = gtk_menu_item_new_with_label("Check again");
+		g_signal_connect(check_item, "activate",
+				 G_CALLBACK(check_for_update_clicked),
+				 plugin);
+		gtk_menu_append(GTK_MENU(menu), check_item);
+		gtk_widget_show(check_item);
+	}
 
 	g_signal_connect(menu, "selection-done",
 			 G_CALLBACK(selection_done), NULL);
@@ -233,18 +294,6 @@ static void popup_set_position(GtkWidget *menu, gint *px, gint *py,
     *push_in = TRUE;
 }
 
-static void plugin_destructor(Plugin *p)
-{
-	/* TODO Remove this */
-	--instance_cnt;
-
-	/* Disconnect the timer. */
-	g_source_remove(((kano_updater_plugin_t *)p->priv)->timer);
-
-	kano_updater_plugin_t *plugin = (kano_updater_plugin_t *)p->priv;
-	g_free(plugin);
-}
-
 static void plugin_configure(Plugin *p, GtkWindow *parent)
 {
   // doing nothing here, so make sure neither of the parameters
@@ -262,13 +311,13 @@ static void plugin_save_configuration(Plugin *p, FILE *fp)
 }
 
 /* Plugin descriptor. */
-PluginClass kano_updates_plugin_class = {
+PluginClass kano_updater_plugin_class = {
 	// this is a #define taking care of the size/version variables
 	PLUGINCLASS_VERSIONING,
 
 	// type of this plugin
-	type : "kano_updates",
-	name : N_("Kano Updates"),
+	type : "kano_updater",
+	name : N_("Kano Updater"),
 	version: "1.0",
 	description : N_("Keep your Kano OS up-to-date."),
 

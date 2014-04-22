@@ -1,11 +1,16 @@
 kano-updater usr/bin
 expand-rootfs usr/bin
+check-for-updates usr/bin
 
 pre_update usr/share/kano-updater
 post_update usr/share/kano-updater
 python_modules usr/share/kano-updater
 
 kano_updater usr/lib/python2.7/dist-packages/
+
+images/* usr/share/kano-updater/images/
+
+lxpanel-plugin/kano_updater.so usr/lib/arm-linux-gnueabihf/lxpanel/plugins/
 
 icon/Updater usr/share/kano-extras/extras
 icon/kano-updater.png usr/share/kano-extras/icons
