@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+
+# check-for-updates
+#
+# Copyright (C) 2014 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+#
+# Checks for updates of packages that are maintained by Kano
+#
+
+KANO_LISTS = "/etc/apt/sources.list.d/kano.list"
+APT_LISTS_CACHE = "/var/lib/apt/lists/"
+
+DEBUG = False
+
+import os
+import sys
+import re
+import time
+from kano.utils import get_dpkg_dict, run_cmd
+from kano_updater.utils import get_update_status, set_update_status
+
+def debug_print(msg):
+    sys.stderr.write("DEBUG: " + msg + "\n")
+
+# Check whether there"s something running
+#   based on the recent CPU utilisation
+#
+
+# Download recent kano repo Package lists
+cmd = ("sudo apt-get update -o Dir::Etc::sourcelist='{}' " + \
+      "-o Dir::Etc::sourceparts'=-' " + \
+      "-o APT::Get::List-Cleanup='0'").format(KANO_LISTS)
+_, _, rc = run_cmd(cmd)
+if rc != 0:
+    # TODO: Schedule the update for later on
+    sys.exit()
+
+# Get versions of all the packages in the repo
+pkgs_ok, pkgs_err = get_dpkg_dict()
+installed_pkgs = dict(pkgs_ok.items() + pkgs_err.items())
+
+# Parse the list and compare with the dict and
+list_files = os.listdir(APT_LISTS_CACHE)
+kano_pkg_lists = filter(lambda f: re.search(r"kano", f) and \
+                                  re.search(r"Packages$", f), list_files)
+
+# Parse the package list
+pkg_list = {}
+for pkg_list_filename in kano_pkg_lists:
+    with open(APT_LISTS_CACHE + pkg_list_filename, "r") as pkg_list_file:
+        package = None
+        version = None
+        for line in pkg_list_file.readlines():
+            if re.match("Package: ", line):
+                package = line[9:-1]
+            elif re.match("Version: ", line):
+                version = line[9:-1]
+
+                if package is None:
+                    raise Exception("Malformed package lists")
+                else:
+                    if package not in pkg_list or \
+                       (package in pkg_list and version > pkg_list[package]):
+                        pkg_list[package] = version
+
+                package = None
+                version = None
+
+status = get_update_status()
+status["last_check"] = int(time.time())
+
+# Compare the package list to dpkg -l
+for pkg, version in installed_pkgs.iteritems():
+    if pkg in pkg_list and version < pkg_list[pkg]:
+        debug_print("Updates available")
+        status["update_available"] = 1
+        set_update_status(status)
+
+        sys.exit(0)
+
+debug_print("No updates detected")
+status["update_available"] = 0
+set_update_status(status)
+
+sys.exit(1)

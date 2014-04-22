@@ -2,3 +2,7 @@
 
 %:
 	dh $@
+
+override_dh_auto_build:
+	cd lxpanel-plugin && make
+	dh_auto_build
