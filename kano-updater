@@ -19,10 +19,23 @@ from kano.utils import zenity_show_progress, run_print_output_error, kill_child_
     get_date_now
 
 
+def fix_broken(msg):
+    global err_log
+
+    progress_bar = zenity_show_progress(msg)
+    cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
+          '-o Dpkg::Options::="--force-confold" install -f'
+    _, debian_err, _ = run_print_output_error(cmd)
+    err_log += debian_err
+    kill_child_processes(progress_bar)
+
 def upgrade_debian():
     global err_log
     # setting up apt-get for non-interactive mode
     os.environ['DEBIAN_FRONTEND'] = 'noninteractive'
+
+    # Try to fix any broken packages prior to the upgrade
+    fix_broken("Preparing packages to be upgraded")
 
     # apt upgrade
     id = zenity_show_progress("Upgrading packages")
@@ -41,6 +54,9 @@ def upgrade_debian():
     cmd = 'apt-get -y autoclean'
     run_print_output_error(cmd)
     kill_child_processes(id)
+
+    # Try to fix any broken packages after the upgrade
+    fix_broken("Finalising package upgrade")
 
     # parsing debian error log
     if debian_err:
