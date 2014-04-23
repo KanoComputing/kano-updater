@@ -199,7 +199,7 @@ if not is_internet():
 else:
     # kill_apps
     kill_apps_list = ['minecraft-pi', 'make-music', 'make-video',
-                      'make-snake']
+                      'make-snake', 'kano-extras']
     for app in kill_apps_list:
         run_cmd('killall -q {}'.format(app))
 
