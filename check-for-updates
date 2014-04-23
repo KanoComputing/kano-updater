@@ -20,6 +20,7 @@ import time
 from kano.utils import get_dpkg_dict, run_cmd
 from kano_updater.utils import get_update_status, set_update_status
 
+
 def debug_print(msg):
     sys.stderr.write("DEBUG: " + msg + "\n")
 
@@ -28,9 +29,9 @@ def debug_print(msg):
 #
 
 # Download recent kano repo Package lists
-cmd = ("sudo apt-get update -o Dir::Etc::sourcelist='{}' " + \
-      "-o Dir::Etc::sourceparts'=-' " + \
-      "-o APT::Get::List-Cleanup='0'").format(KANO_LISTS)
+cmd = ("sudo apt-get update -o Dir::Etc::sourcelist='{}' " +
+       "-o Dir::Etc::sourceparts'=-' " +
+       "-o APT::Get::List-Cleanup='0'").format(KANO_LISTS)
 _, _, rc = run_cmd(cmd)
 if rc != 0:
     # TODO: Schedule the update for later on
@@ -42,8 +43,7 @@ installed_pkgs = dict(pkgs_ok.items() + pkgs_err.items())
 
 # Parse the list and compare with the dict and
 list_files = os.listdir(APT_LISTS_CACHE)
-kano_pkg_lists = filter(lambda f: re.search(r"kano", f) and \
-                                  re.search(r"Packages$", f), list_files)
+kano_pkg_lists = filter(lambda f: re.search(r"kano", f) and re.search(r"Packages$", f), list_files)
 
 # Parse the package list
 pkg_list = {}
