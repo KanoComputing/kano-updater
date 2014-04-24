@@ -13,7 +13,7 @@ class OSVersion:
         try:
             _os, _codename, _number = vstr.split("-")
         except:
-            msg = "Unknown version string format ({})".format(vstr)
+            msg = "Unknown version string format '{}'".format(vstr)
             raise Exception(msg)
 
         return OSVersion(_os, _codename, _number)

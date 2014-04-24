@@ -11,150 +11,50 @@
 import os
 import sys
 import time
+
+if __name__ == '__main__' and __package__ is None:
+    dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    if dir_path != '/usr':
+        sys.path.insert(0, dir_path)
+
 from kano.network import is_internet
 from kano_updater.osversion import OSVersion, bump_system_version
-from kano_updater.utils import get_dpkg_dict, set_update_status
-from kano.utils import zenity_show_progress, run_print_output_error, kill_child_processes, \
-    delete_dir, run_cmd, delete_file, read_file_contents_as_lines, is_gui, read_file_contents, \
+from kano_updater.stages import upgrade_debian, upgrade_python
+from kano_updater.scenarios import PreUpdate, PostUpdate
+from kano_updater.utils import get_dpkg_dict, set_update_status, fix_broken, \
+    expand_rootfs, get_installed_version
+from kano.utils import zenity_show_progress, run_print_output_error, \
+    kill_child_processes, run_cmd, delete_file, is_gui, read_file_contents, \
     get_date_now
 
-
-def fix_broken(msg):
-    global err_log
-
-    progress_bar = zenity_show_progress(msg)
-    cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
-          '-o Dpkg::Options::="--force-confold" install -f'
-    _, debian_err, _ = run_print_output_error(cmd)
-    err_log += debian_err
-    kill_child_processes(progress_bar)
-
-
-def upgrade_debian():
-    global err_log
-    # setting up apt-get for non-interactive mode
-    os.environ['DEBIAN_FRONTEND'] = 'noninteractive'
-
-    # Try to fix any broken packages prior to the upgrade
-    fix_broken("Preparing packages to be upgraded")
-
-    # apt upgrade
-    id = zenity_show_progress("Upgrading packages")
-    cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
-          '-o Dpkg::Options::="--force-confold" dist-upgrade'
-    _, debian_err, _ = run_print_output_error(cmd)
-    err_log += debian_err
-    kill_child_processes(id)
-
-    # apt autoremove
-    id = zenity_show_progress("Cleaning up packages")
-    cmd = 'apt-get -y autoremove --purge'
-    run_print_output_error(cmd)
-
-    # apt autoclean
-    cmd = 'apt-get -y autoclean'
-    run_print_output_error(cmd)
-    kill_child_processes(id)
-
-    # Try to fix any broken packages after the upgrade
-    fix_broken("Finalising package upgrade")
-
-    # parsing debian error log
-    if debian_err:
-        err_split = debian_err.splitlines()
-        dirs_delete = []
-        err_packages = []
-
-        for l in err_split:
-            if 'dpkg: warning: unable to delete old directory' in l:
-                parts = l.split("'")
-                dirs_delete.append(parts[1].strip())
-
-            if 'dpkg: error processing' in l:
-                parts = l.split('/var/cache/apt/archives/')
-                packagename = parts[1].split()[0].strip()[:-4]
-                err_packages.append(packagename)
-
-        # remove left-over non-empty directories
-        for dir in dirs_delete:
-            delete_dir(dir)
-
-        # return err_packages
-        return err_packages
-
-
-def upgrade_python():
-    id = zenity_show_progress("Upgrading Python modules")
-
-    if 'python-pip' in appstate_before or \
-       'python-setuptools' in appstate_before:
-        # remove old pip and setuptools
-        cmd = 'yes "" | apt-get -y purge python-setuptools ' + \
-              'python-virtualenv python-pip'
-        run_print_output_error(cmd)
-
-    # installing/upgrading pip
-    o, _, _ = run_cmd('pip -V')
-    if 'pip 1.' in o:
-        cmd = 'pip install --upgrade pip'
-        run_print_output_error(cmd)
-    else:
-        cmd = 'wget -q --no-check-certificate ' + \
-              'https://raw.github.com/pypa/pip/master/contrib/get-pip.py ' + \
-              '-O get-pip.py'
-        run_cmd(cmd)
-
-        cmd = 'python get-pip.py'
-        run_print_output_error(cmd)
-
-        delete_file('get-pip.py')
-
-    # parse python modules
-    python_modules = read_file_contents_as_lines(python_modules_file)
-
-    ok_modules = []
-    error_modules = []
-
-    for module in python_modules:
-        o, e, rc = run_cmd('pip install --upgrade {}'.format(module))
-
-        if rc == 0:
-            if 'Successfully installed' in o:
-                ok_modules.append(module)
-        else:
-            error_modules.append(module)
-    kill_child_processes(id)
-
-    return ok_modules, error_modules
-
-
-def expand_rootfs():
-    cmd = '/usr/bin/expand-rootfs'
-    _, _, rc = run_print_output_error(cmd)
-    return rc == 0
-
-
-def get_installed_version(pkg):
-    out, _, _ = run_cmd('dpkg-query -s kano-updater | grep "Version:"')
-    return out.strip()[9:]
+debug = False
 
 issue_file = "/etc/issue"
 version_file = "/etc/kanux_version"
+
+new_version = OSVersion("Kanux", "Beta", "1.0.2")
 if os.path.exists(version_file):
     old_version = OSVersion.from_version_file(version_file)
 else:
-    old_version = OSVersion("Kanux", "init", "0.0")
-new_version = OSVersion("Kanux", "Beta", "1.1")
+    old_version = new_version
 
 err_log_file = '/var/log/kano-updater-log'
 python_modules_file = '/usr/share/kano-updater/python_modules'
-pre_update_file = '/usr/share/kano-updater/pre_update'
-post_update_file = '/usr/share/kano-updater/post_update'
 
 is_gui = is_gui()
-kanux_version = read_file_contents('/etc/kanux_version')
+
+preup = PreUpdate(old_version, new_version)
+postup = PostUpdate(old_version, new_version)
+if not (preup.covers_update() and postup.covers_update()):
+    msg = 'Unfortunately, your version of Kano OS is too old to be updated ' + \
+          'through the updater. You will need to download the image of the ' + \
+          'OS and reflash your SD card.'
+    if is_gui:
+        run_cmd('zenity --info --text "{}"'.format(msg))
+    sys.exit(msg)
+
 err_log = 'build version: {}\nupgrade date: {}\n'.format(
-    kanux_version,
+    str(old_version),
     get_date_now()
 )
 
@@ -169,7 +69,7 @@ if user != 'root':
 # upgrade python command line
 if len(sys.argv) == 2 and sys.argv[1] == 'python_upgrade':
     appstate_before, _ = get_dpkg_dict()
-    upgrade_python()
+    upgrade_python(python_modules_file)
     sys.exit()
 
 # ask confirmation from user
@@ -184,6 +84,9 @@ if not (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force']):
         answer = raw_input().lower()
         if answer != 'y':
             sys.exit()
+
+if len(sys.argv) == 2 and sys.argv[1] in ['-d', '--debug']:
+    debug = True
 
 # no internet warning
 if not is_internet():
@@ -217,29 +120,24 @@ else:
     kill_child_processes(progress_bar)
 
     # re-run the updater in case it was updated
-    if new_updater_version != current_updater_version:
+    if new_updater_version != current_updater_version and not debug:
         os.execvp('kano-updater', ['kano-updater', '-f'])
 
     # get app-state before upgrading
     appstate_before, _ = get_dpkg_dict()
 
     # pre upgrade
-    preup_cmd = "{} '{}' '{}'".format(pre_update_file,
-                                      old_version.to_version_string(),
-                                      new_version.to_version_string())
-    run_print_output_error(preup_cmd)
+    preup.run()
 
     # upgrade python
-    python_ok, python_err = upgrade_python()
+    python_ok, python_err = upgrade_python(python_modules_file, appstate_before)
 
     # upgrade debian
-    debian_err_packages = upgrade_debian()
+    debian_err_packages, log = upgrade_debian()
+    err_log += log
 
     # post upgrade
-    postup_cmd = "{} '{}' '{}'".format(post_update_file,
-                                       old_version.to_version_string(),
-                                       new_version.to_version_string())
-    run_print_output_error(postup_cmd)
+    postup.run()
 
     bump_system_version(new_version, version_file, issue_file)
 
