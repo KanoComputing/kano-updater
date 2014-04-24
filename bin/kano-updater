@@ -29,6 +29,7 @@ def fix_broken(msg):
     err_log += debian_err
     kill_child_processes(progress_bar)
 
+
 def upgrade_debian():
     global err_log
     # setting up apt-get for non-interactive mode

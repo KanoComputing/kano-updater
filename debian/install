@@ -1,6 +1,4 @@
-kano-updater usr/bin
-expand-rootfs usr/bin
-check-for-updates usr/bin
+bin/* usr/bin
 
 pre_update usr/share/kano-updater
 post_update usr/share/kano-updater

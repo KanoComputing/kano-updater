@@ -15,6 +15,7 @@ from kano.utils import run_print_output_error, run_cmd
 UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
 STATUS_FILE = UPDATER_CACHE_DIR + "status"
 
+
 def install(pkgs):
     if isinstance(pkgs, list):
         pkgs = ' '.join(pkgs)

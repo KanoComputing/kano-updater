@@ -17,8 +17,8 @@ import os
 import sys
 import re
 import time
-from kano.utils import get_dpkg_dict, run_cmd
-from kano_updater.utils import get_update_status, set_update_status
+from kano.utils import run_cmd
+from kano_updater.utils import get_dpkg_dict, get_update_status, set_update_status
 
 
 def debug_print(msg):
