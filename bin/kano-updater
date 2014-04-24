@@ -20,31 +20,41 @@ if __name__ == '__main__' and __package__ is None:
 from kano.network import is_internet
 from kano_updater.osversion import OSVersion, bump_system_version
 from kano_updater.stages import upgrade_debian, upgrade_python
+from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.utils import get_dpkg_dict, set_update_status, fix_broken, \
     expand_rootfs, get_installed_version
-from kano.utils import zenity_show_progress, run_print_output_error, kill_child_processes, \
-    run_cmd, delete_file, is_gui, read_file_contents, get_date_now
+from kano.utils import zenity_show_progress, run_print_output_error, \
+    kill_child_processes, run_cmd, delete_file, is_gui, read_file_contents, \
+    get_date_now
 
 debug = False
 
 issue_file = "/etc/issue"
 version_file = "/etc/kanux_version"
 
-new_version = OSVersion("Kanux", "Beta", "1.1")
+new_version = OSVersion("Kanux", "Beta", "1.0.2")
 if os.path.exists(version_file):
     old_version = OSVersion.from_version_file(version_file)
 else:
-    old_version = OSVersion("Kanux", "init", "0.0")
+    old_version = new_version
 
 err_log_file = '/var/log/kano-updater-log'
 python_modules_file = '/usr/share/kano-updater/python_modules'
-pre_update_file = '/usr/share/kano-updater/pre_update'
-post_update_file = '/usr/share/kano-updater/post_update'
 
 is_gui = is_gui()
-kanux_version = read_file_contents('/etc/kanux_version')
+
+preup = PreUpdate(old_version, new_version)
+postup = PostUpdate(old_version, new_version)
+if not (preup.covers_update() and postup.covers_update()):
+    msg = 'Unfortunately, your version of Kano OS is too old to be updated ' + \
+          'through the updater. You will need to download the image of the ' + \
+          'OS and reflash your SD card.'
+    if is_gui:
+        run_cmd('zenity --info --text "{}"'.format(msg))
+    sys.exit(msg)
+
 err_log = 'build version: {}\nupgrade date: {}\n'.format(
-    kanux_version,
+    str(old_version),
     get_date_now()
 )
 
@@ -117,10 +127,7 @@ else:
     appstate_before, _ = get_dpkg_dict()
 
     # pre upgrade
-    preup_cmd = "{} '{}' '{}'".format(pre_update_file,
-                                      old_version.to_version_string(),
-                                      new_version.to_version_string())
-    run_print_output_error(preup_cmd)
+    preup.run()
 
     # upgrade python
     python_ok, python_err = upgrade_python(python_modules_file, appstate_before)
@@ -130,10 +137,7 @@ else:
     err_log += log
 
     # post upgrade
-    postup_cmd = "{} '{}' '{}'".format(post_update_file,
-                                       old_version.to_version_string(),
-                                       new_version.to_version_string())
-    run_print_output_error(postup_cmd)
+    postup.run()
 
     bump_system_version(new_version, version_file, issue_file)
 
