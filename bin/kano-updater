@@ -25,6 +25,7 @@ from kano_updater.utils import get_dpkg_dict, set_update_status, fix_broken, \
 from kano.utils import zenity_show_progress, run_print_output_error, kill_child_processes, \
     run_cmd, delete_file, is_gui, read_file_contents, get_date_now
 
+debug = False
 
 issue_file = "/etc/issue"
 version_file = "/etc/kanux_version"
@@ -74,6 +75,9 @@ if not (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force']):
         if answer != 'y':
             sys.exit()
 
+if len(sys.argv) == 2 and sys.argv[1] in ['-d', '--debug']:
+    debug = True
+
 # no internet warning
 if not is_internet():
     msg = "No internet connection detected\n\n"
@@ -106,7 +110,7 @@ else:
     kill_child_processes(progress_bar)
 
     # re-run the updater in case it was updated
-    if new_updater_version != current_updater_version:
+    if new_updater_version != current_updater_version and not debug:
         os.execvp('kano-updater', ['kano-updater', '-f'])
 
     # get app-state before upgrading
