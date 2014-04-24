@@ -17,6 +17,12 @@ import os
 import sys
 import re
 import time
+
+if __name__ == '__main__' and __package__ is None:
+    dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        if dir_path != '/usr':
+                sys.path.append(dir_path)
+
 from kano.utils import run_cmd
 from kano_updater.utils import get_dpkg_dict, get_update_status, set_update_status
 

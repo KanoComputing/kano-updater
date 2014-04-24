@@ -10,7 +10,8 @@
 
 import os
 import errno
-from kano.utils import run_print_output_error, run_cmd
+from kano.utils import run_print_output_error, run_cmd, run_print_output_error,\
+    zenity_show_progress, kill_child_processes
 
 UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
 STATUS_FILE = UPDATER_CACHE_DIR + "status"
@@ -53,6 +54,26 @@ def get_dpkg_dict():
             apps_other[name] = version
 
     return apps_ok, apps_other
+
+
+def fix_broken(msg):
+    progress_bar = zenity_show_progress(msg)
+    cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
+          '-o Dpkg::Options::="--force-confold" install -f'
+    _, debian_err, _ = run_print_output_error(cmd)
+    kill_child_processes(progress_bar)
+    return debian_err
+
+
+def expand_rootfs():
+    cmd = '/usr/bin/expand-rootfs'
+    _, _, rc = run_print_output_error(cmd)
+    return rc == 0
+
+
+def get_installed_version(pkg):
+    out, _, _ = run_cmd('dpkg-query -s kano-updater | grep "Version:"')
+    return out.strip()[9:]
 
 
 def get_update_status():
