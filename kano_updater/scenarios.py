@@ -45,6 +45,8 @@ class Scenarios(object):
 
             if next_step == None:
                 return False
+            else:
+                current_v = next_step
 
         return True
 
