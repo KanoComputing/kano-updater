@@ -86,4 +86,4 @@ class PostUpdate(Scenarios):
                           self.beta_101_to_beta_102)
 
     def beta_101_to_beta_102(self):
-        install('gnome-paint')
+        install('gnome-paint kano-fonts kano-themes')
