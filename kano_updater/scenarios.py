@@ -72,13 +72,8 @@ class PreUpdate(Scenarios):
     _type = "pre"
 
     def _mapping(self):
-        self.add_scenario("Kanux-Beta-1.0", "Kanux-Beta-1.0.1",
-                          self.beta_10_to_beta_101)
         self.add_scenario("Kanux-Beta-1.0.1", "Kanux-Beta-1.0.2",
                           self.beta_101_to_beta_102)
-
-    def beta_10_to_beta_101(self):
-        pass
 
     def beta_101_to_beta_102(self):
         pass
@@ -87,13 +82,8 @@ class PostUpdate(Scenarios):
     _type = "post"
 
     def _mapping(self):
-        self.add_scenario("Kanux-Beta-1.0", "Kanux-Beta-1.0.1",
-                          self.beta_10_to_beta_101)
         self.add_scenario("Kanux-Beta-1.0.1", "Kanux-Beta-1.0.2",
                           self.beta_101_to_beta_102)
-
-    def beta_10_to_beta_101(self):
-        install('kano-extras')
 
     def beta_101_to_beta_102(self):
         install('gnome-paint')
