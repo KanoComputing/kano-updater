@@ -24,6 +24,8 @@
 #define CHECK_FOR_UPDATES_CMD "sudo check-for-updates"
 #define UPDATE_CMD "sudo kano-updater"
 
+#define PLUGIN_TOOLTIP "Kano Updater"
+
 #define DAY 60*60*24
 
 Panel *panel;
@@ -79,6 +81,12 @@ static int plugin_constructor(Plugin *p, char **fp)
 
 	gtk_signal_connect(GTK_OBJECT(p->pwid), "button-press-event",
 			   GTK_SIGNAL_FUNC(show_menu), plugin);
+
+
+	/* Set a tooltip to the icon to show when the mouse sits over the it */
+	GtkTooltips *tooltips; 
+	tooltips = gtk_tooltips_new(); 
+	gtk_tooltips_set_tip(tooltips, GTK_WIDGET(icon), PLUGIN_TOOLTIP, NULL); 
 
 	gtk_widget_set_sensitive(icon, TRUE);
 
