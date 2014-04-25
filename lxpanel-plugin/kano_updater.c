@@ -167,9 +167,9 @@ static gboolean update_status(kano_updater_plugin_t *plugin)
 
 	fclose(fp);
 
-	printf("lu%d lc%d ua%d\n", plugin->last_update,
+	/* printf("lu%d lc%d ua%d\n", plugin->last_update,
 				   plugin->last_check,
-				   plugin->update_available);
+				   plugin->update_available); */
 
 	if (plugin->update_available > 0) {
 		/* Change the icon to red */
@@ -318,7 +318,7 @@ PluginClass kano_updater_plugin_class = {
 	// type of this plugin
 	type : "kano_updater",
 	name : N_("Kano Updater"),
-	version: "1.0",
+	version: "1.0.2",
 	description : N_("Keep your Kano OS up-to-date."),
 
 	// we can have many running at the same time
