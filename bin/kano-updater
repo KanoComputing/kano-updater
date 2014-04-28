@@ -69,7 +69,7 @@ if user != 'root':
 # upgrade python command line
 if len(sys.argv) == 2 and sys.argv[1] == 'python_upgrade':
     appstate_before, _ = get_dpkg_dict()
-    upgrade_python(python_modules_file)
+    upgrade_python(python_modules_file, appstate_before)
     sys.exit()
 
 # ask confirmation from user
