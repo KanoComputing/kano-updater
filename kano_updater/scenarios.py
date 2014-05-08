@@ -7,6 +7,7 @@
 #
 
 import sys
+import os
 from kano_updater.osversion import OSVersion
 from kano_updater.utils import install
 
