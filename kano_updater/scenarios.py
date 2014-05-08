@@ -6,10 +6,10 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
 #
 
-import sys
-import os
 from kano_updater.osversion import OSVersion
 from kano_updater.utils import install
+from kano.utils import run_cmd
+
 
 class Scenarios(object):
     _type = ""
@@ -44,7 +44,7 @@ class Scenarios(object):
                     next_step = to_v
                     break
 
-            if next_step == None:
+            if next_step is None:
                 return False
             else:
                 current_v = next_step
@@ -68,6 +68,7 @@ class Scenarios(object):
 
             if not step_found:
                 raise Exception("{}-update step missing".format(self._type))
+
 
 class PreUpdate(Scenarios):
     _type = "pre"
@@ -95,16 +96,17 @@ class PreUpdate(Scenarios):
 
     def migrate_repo_url(self):
         change_items = {
-            'apt_file' : '/etc/apt/sources.list.d/kano.list',
-            'old_repo' : 'dev\.kano\.me',
-            'new_repo' : 'repo\.kano\.me'
-            }
+            'apt_file': '/etc/apt/sources.list.d/kano.list',
+            'old_repo': 'dev.kano.me',
+            'new_repo': 'repo.kano.me'
+        }
 
-        sed_cmd  = "sed -i 's/%(old_repo)s/%(new_repo)s/g' %(apt_file)s" % change_items
-        rc = os.system (sed_cmd)
-
-        # TODO: How to raise an error if rc != 0?
+        sed_cmd = "sed -i 's/%(old_repo)s/%(new_repo)s/g' %(apt_file)s" % change_items
+        o, e, rc = run_cmd(sed_cmd)
+        if rc != 0:
+            print 'Error changing repository, error: {}'.format(e)
         return
+
 
 class PostUpdate(Scenarios):
     _type = "post"
