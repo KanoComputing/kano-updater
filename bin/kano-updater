@@ -40,7 +40,7 @@ else:
 err_log_file = '/var/log/kano-updater-log'
 python_modules_file = '/usr/share/kano-updater/python_modules'
 
-require_restart = ['kdesk', 'raspnerrypi-linux', 'raspberrypi-firmware',
+require_restart = ['kdesk', 'raspberrypi-linux', 'raspberrypi-firmware',
                    'kano-updater', 'kano-settings', 'kano-desktop']
 
 is_gui = is_gui()
