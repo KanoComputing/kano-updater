@@ -77,22 +77,14 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.0.1", "Kanux-Beta-1.0.2",
                           self.beta_101_to_beta_102)
 
-        self.add_scenario("Kanux-Beta-1.0.1", "Kanux-Beta-1.0.3",
-                          self.beta_101_to_beta_103)
-
         self.add_scenario("Kanux-Beta-1.0.2", "Kanux-Beta-1.0.3",
                           self.beta_102_to_beta_103)
 
     def beta_101_to_beta_102(self):
         pass
 
-    def beta_101_to_beta_103(self):
-        self.migrate_repo_url()
-        pass
-
     def beta_102_to_beta_103(self):
         self.migrate_repo_url()
-        pass
 
     def migrate_repo_url(self):
         change_items = {
@@ -115,5 +107,11 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.0.1", "Kanux-Beta-1.0.2",
                           self.beta_101_to_beta_102)
 
+        self.add_scenario("Kanux-Beta-1.0.2", "Kanux-Beta-1.0.3",
+                          self.beta_102_to_beta_103)
+
     def beta_101_to_beta_102(self):
         install('gnome-paint kano-fonts kano-themes zd1211-firmware kano-screenshot kano-video')
+
+    def beta_102_to_beta_103(self):
+        pass
