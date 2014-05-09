@@ -22,7 +22,7 @@ from kano_updater.osversion import OSVersion, bump_system_version
 from kano_updater.stages import upgrade_debian, upgrade_python
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.utils import get_dpkg_dict, set_update_status, \
-    expand_rootfs, get_installed_version
+    expand_rootfs, get_installed_version, reboot, reboot_required
 from kano.utils import zenity_show_progress, run_print_output_error, \
     kill_child_processes, run_cmd, delete_file, is_gui, get_date_now
 
@@ -39,6 +39,9 @@ else:
 
 err_log_file = '/var/log/kano-updater-log'
 python_modules_file = '/usr/share/kano-updater/python_modules'
+
+require_restart = ['kdesk', 'raspnerrypi-linux', 'raspberrypi-firmware',
+                   'kano-updater', 'kano-settings', 'kano-desktop']
 
 is_gui = is_gui()
 
@@ -147,6 +150,7 @@ else:
     # get app-state after upgrading
     appstate_after, appstate_after_nonclean = get_dpkg_dict()
 
+    pkgs_changed = []
     msg_upgraded = ''
     msg_added = ''
     msg_removed = ''
@@ -154,6 +158,7 @@ else:
     # compare appstates
     for app, version in appstate_after.iteritems():
         if app in appstate_before and version != appstate_before[app]:
+            pkgs_changed.append(app)
             msg_upgraded += "{}: {} -> {}\n".format(
                 app,
                 appstate_before[app],
@@ -161,10 +166,12 @@ else:
             )
 
         if app not in appstate_before:
+            pkgs_changed.append(app)
             msg_added += "{}: {}\n".format(app, version)
 
     for app, version in appstate_before.iteritems():
         if app not in appstate_after:
+            pkgs_changed.append(app)
             msg_removed += "{}\n".format(app)
 
     msg = ''
@@ -209,13 +216,9 @@ else:
         answer = raw_input()
 
 # expand filesystem
-if expand_rootfs():
-    msg = "Disk partition scheduled for resize.\n"
-    msg += "Rebooting the system, see you in 1 minute!"
-    if is_gui:
-        run_cmd('zenity --info --text "{}"'.format(msg))
-    else:
-        print msg
-        print 'Press any key to continue'
-        answer = raw_input()
-    run_cmd('reboot')
+will_expand = expand_rootfs()
+
+if will_expand or reboot_required(require_restart, pkgs_changed):
+    msg = "Your computer needs to restart, so it can use all the\n"
+    msg += "new features it just downloaded. See you in a minute!"
+    reboot(msg, is_gui)

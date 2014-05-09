@@ -99,3 +99,19 @@ def set_update_status(status):
     with open(STATUS_FILE, "w") as sf:
         for name, value in status.iteritems():
             sf.write("{}={}\n".format(name, value))
+
+def reboot_required(watched, changed):
+    for pkg in changed:
+        if pkg in watched:
+            return True
+
+    return False
+
+def reboot(msg, is_gui=False):
+    if is_gui:
+        run_cmd('zenity --info --text "{}"'.format(msg))
+    else:
+        print msg
+        print 'Press any key to continue'
+        answer = raw_input()
+    run_cmd('reboot')
