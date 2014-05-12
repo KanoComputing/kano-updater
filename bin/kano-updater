@@ -215,6 +215,12 @@ else:
         print 'Press any key to continue'
         answer = raw_input()
 
+    try:
+        from kano.profile.badges import increment_app_state_variable_with_dialog
+        increment_app_state_variable_with_dialog('kano-updater', 'updated', 1)
+    except Exception:
+        pass
+
 # expand filesystem
 will_expand = expand_rootfs()
 
