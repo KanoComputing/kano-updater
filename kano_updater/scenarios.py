@@ -114,4 +114,5 @@ class PostUpdate(Scenarios):
         install('gnome-paint kano-fonts kano-themes zd1211-firmware kano-screenshot kano-video')
 
     def beta_102_to_beta_103(self):
+        install('kano-apps')
         pass
