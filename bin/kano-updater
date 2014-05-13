@@ -141,6 +141,9 @@ else:
     # post upgrade
     postup.run()
 
+    # refresh desktop
+    os.system('kdesk -r')
+
     bump_system_version(new_version, version_file, issue_file)
 
     now = int(time.time())
