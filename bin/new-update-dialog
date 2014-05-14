@@ -1,0 +1,18 @@
+#!/usr/bin/env python
+
+# Copyright (C) 2014 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+#
+# Checks for updates of packages that are maintained by Kano
+#
+
+from kano.utils import run_cmd
+from kano_updater.utils import get_update_status
+
+new_update = False
+try:
+    new_update = get_update_status()['update_available'] == 1
+except Exception:
+    pass
+
+print new_update
