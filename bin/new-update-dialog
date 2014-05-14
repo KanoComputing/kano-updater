@@ -15,4 +15,6 @@ try:
 except Exception:
     pass
 
-print new_update
+if new_update:
+    msg = 'Updates found, please update!'
+    run_cmd('zenity --info --text "{}"'.format(msg))
