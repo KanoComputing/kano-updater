@@ -8,8 +8,8 @@
 
 from kano_updater.osversion import OSVersion
 from kano_updater.utils import install
-from kano.utils import run_cmd
-
+from kano.utils import run_cmd, zenity_show_progress, \
+    run_print_output_error, kill_child_processes
 
 class Scenarios(object):
     _type = ""
@@ -97,6 +97,11 @@ class PreUpdate(Scenarios):
         o, e, rc = run_cmd(sed_cmd)
         if rc != 0:
             print 'Error changing repository, error: {}'.format(e)
+        else:
+            # We need to run update again since we have changed the repo
+            progress_bar = zenity_show_progress("Downloading package lists")
+            run_print_output_error('apt-get -y update')
+            kill_child_processes(progress_bar)
         return
 
 
