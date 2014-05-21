@@ -120,4 +120,3 @@ class PostUpdate(Scenarios):
 
     def beta_102_to_beta_103(self):
         install('kano-apps')
-        pass
