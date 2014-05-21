@@ -81,8 +81,7 @@ class PreUpdate(Scenarios):
                           self.beta_102_to_beta_103)
 
     def beta_101_to_beta_102(self):
-        # We need to remove kano-youtube manually due to a conflict
-        run_print_output_error('apt-get -y purge kano-youtube')
+        pass
         
     def beta_102_to_beta_103(self):
         self.migrate_repo_url()
@@ -117,7 +116,7 @@ class PostUpdate(Scenarios):
                           self.beta_102_to_beta_103)
 
     def beta_101_to_beta_102(self):
-        install('gnome-paint kano-fonts kano-themes zd1211-firmware kano-screenshot kano-video')
+        install('gnome-paint kano-fonts kano-themes zd1211-firmware')
 
     def beta_102_to_beta_103(self):
-        install('kano-apps')
+        install('kano-apps kano-screenshot kano-video')
