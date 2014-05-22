@@ -110,6 +110,7 @@ else:
         run_cmd('killall -q {}'.format(app))
 
     progress_bar = zenity_show_progress("Downloading package lists")
+    run_print_output_error('apt-get -y clean')
     run_print_output_error('apt-get -y update')
     kill_child_processes(progress_bar)
 
