@@ -81,11 +81,12 @@ class PreUpdate(Scenarios):
                           self.beta_102_to_beta_103)
 
     def beta_101_to_beta_102(self):
-        # We need to remove kano-youtube manually due to a conflict
-        run_print_output_error('apt-get -y purge kano-youtube')
+        pass
         
     def beta_102_to_beta_103(self):
         self.migrate_repo_url()
+        # We need to remove kano-youtube manually due to a conflict
+        run_print_output_error('apt-get -y purge kano-youtube')
 
     def migrate_repo_url(self):
         change_items = {
