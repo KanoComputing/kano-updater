@@ -100,6 +100,7 @@ class PreUpdate(Scenarios):
         else:
             # We need to run update again since we have changed the repo
             progress_bar = zenity_show_progress("Downloading package lists")
+            run_print_output_error('apt-get -y clean')
             run_print_output_error('apt-get -y update')
             kill_child_processes(progress_bar)
         return
