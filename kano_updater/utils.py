@@ -115,3 +115,13 @@ def reboot(msg, is_gui=False):
         print 'Press any key to continue'
         answer = raw_input()
     run_cmd('reboot')
+
+def remove_user_files(files):
+    for d in os.listdir("/home/"):
+        if os.path.isdir("/home/{}/".format(d)):
+            for f in files:
+                file_path = "/home/{}/{}".format(d, f)
+                try:
+                    os.unlink(file_path)
+                except:
+                    pass

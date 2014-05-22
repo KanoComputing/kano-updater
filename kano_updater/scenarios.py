@@ -7,7 +7,7 @@
 #
 
 from kano_updater.osversion import OSVersion
-from kano_updater.utils import install
+from kano_updater.utils import install, remove_user_files
 from kano.utils import run_cmd, zenity_show_progress, \
     run_print_output_error, kill_child_processes
 
@@ -82,7 +82,7 @@ class PreUpdate(Scenarios):
 
     def beta_101_to_beta_102(self):
         pass
-        
+
     def beta_102_to_beta_103(self):
         self.migrate_repo_url()
         # We need to remove kano-youtube manually due to a conflict
@@ -123,3 +123,4 @@ class PostUpdate(Scenarios):
 
     def beta_102_to_beta_103(self):
         install('kano-apps kano-screenshot kano-video')
+        remove_user_files(['.kdeskrc'])
