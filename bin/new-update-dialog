@@ -6,7 +6,7 @@
 # Checks for updates of packages that are maintained by Kano
 #
 from kano_updater.utils import get_update_status
-from kano.gtk3.dialog import kano_dialog
+from kano.gtk3 import kano_dialog
 
 new_update = False
 try:

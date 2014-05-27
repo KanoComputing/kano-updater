@@ -12,6 +12,7 @@ import os
 import errno
 from kano.utils import run_print_output_error, run_cmd, run_print_output_error,\
     zenity_show_progress, kill_child_processes
+from kano.gtk3 import kano_dialog
 
 UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
 STATUS_FILE = UPDATER_CACHE_DIR + "status"
@@ -100,6 +101,7 @@ def set_update_status(status):
         for name, value in status.iteritems():
             sf.write("{}={}\n".format(name, value))
 
+
 def reboot_required(watched, changed):
     for pkg in changed:
         if pkg in watched:
@@ -107,14 +109,17 @@ def reboot_required(watched, changed):
 
     return False
 
+
 def reboot(msg, is_gui=False):
     if is_gui:
-        run_cmd('zenity --info --text "{}"'.format(msg))
+        kdialog = kano_dialog.KanoDialog(msg, "")
+        kdialog.run()
     else:
         print msg
         print 'Press any key to continue'
         answer = raw_input()
     run_cmd('reboot')
+
 
 def remove_user_files(files):
     for d in os.listdir("/home/"):
