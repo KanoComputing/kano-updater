@@ -80,6 +80,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.0.2", "Kanux-Beta-1.0.3",
                           self.beta_102_to_beta_103)
 
+        self.add_scenario("Kanux-Beta-1.0.3", "Kanux-Beta-1.0.4",
+                          self.beta_103_to_beta_104)
+
     def beta_101_to_beta_102(self):
         pass
 
@@ -87,6 +90,9 @@ class PreUpdate(Scenarios):
         self.migrate_repo_url()
         # We need to remove kano-youtube manually due to a conflict
         run_print_output_error('apt-get -y purge kano-youtube')
+
+    def beta_103_to_beta_104(self):
+        pass
 
     def migrate_repo_url(self):
         change_items = {
@@ -118,9 +124,15 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.0.2", "Kanux-Beta-1.0.3",
                           self.beta_102_to_beta_103)
 
+        self.add_scenario("Kanux-Beta-1.0.3", "Kanux-Beta-1.0.4",
+                          self.beta_103_to_beta_104)
+
     def beta_101_to_beta_102(self):
         install('gnome-paint kano-fonts kano-themes zd1211-firmware')
 
     def beta_102_to_beta_103(self):
         install('kano-apps kano-screenshot kano-video')
         remove_user_files(['.kdeskrc'])
+
+    def beta_103_to_beta_104(self):
+        pass
