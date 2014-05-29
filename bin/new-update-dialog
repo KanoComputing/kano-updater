@@ -5,9 +5,8 @@
 #
 # Checks for updates of packages that are maintained by Kano
 #
-
-from kano.utils import run_cmd
 from kano_updater.utils import get_update_status
+from kano.gtk3 import kano_dialog
 
 new_update = False
 try:
@@ -17,4 +16,5 @@ except Exception:
 
 if new_update:
     msg = 'Updates found, please update!'
-    run_cmd('zenity --info --text "{}"'.format(msg))
+    kdialog = kano_dialog.KanoDialog(msg, "")
+    kdialog.run()
