@@ -49,13 +49,13 @@ is_gui = is_gui()
 preup = PreUpdate(old_version, new_version)
 postup = PostUpdate(old_version, new_version)
 if not (preup.covers_update() and postup.covers_update()):
-    msg = 'Unfortunately, your version of Kano OS is too old to be updated ' + \
-          'through the updater. You will need to download the image of the ' + \
-          'OS and reflash your SD card.'
+    title = 'Unfortunately, your version of Kano OS is too old to be updated through the updater.'
+    description = 'You will need to download the image of the ' + \
+                  'OS and reflash your SD card.'
     if is_gui:
-        kdialog = kano_dialog.KanoDialog(msg, "")
+        kdialog = kano_dialog.KanoDialog(title, description)
         kdialog.run()
-    sys.exit(msg)
+    sys.exit(title)
 
 err_log = 'build version: {}\nupgrade date: {}\n'.format(
     str(old_version),
@@ -70,7 +70,7 @@ if user != 'root':
     if is_gui:
         kdialog = kano_dialog.KanoDialog(title, description)
         kdialog.run()
-    sys.exit(msg)
+    sys.exit(description)
 
 # upgrade python command line
 if len(sys.argv) == 2 and sys.argv[1] == 'python_upgrade':
@@ -88,7 +88,7 @@ if not (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force']):
         if response != 0:
             sys.exit()
     else:
-        print msg + " [y/n]"
+        print description + " [y/n]"
         answer = raw_input().lower()
         if answer != 'y':
             sys.exit()
