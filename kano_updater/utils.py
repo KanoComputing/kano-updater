@@ -110,12 +110,12 @@ def reboot_required(watched, changed):
     return False
 
 
-def reboot(msg, is_gui=False):
+def reboot(title, description, is_gui=False):
     if is_gui:
-        kdialog = kano_dialog.KanoDialog(msg, "")
+        kdialog = kano_dialog.KanoDialog(title, description)
         kdialog.run()
     else:
-        print msg
+        print title
         print 'Press any key to continue'
         answer = raw_input()
     run_cmd('reboot')

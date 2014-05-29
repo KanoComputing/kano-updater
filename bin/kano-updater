@@ -65,9 +65,10 @@ err_log = 'build version: {}\nupgrade date: {}\n'.format(
 # root check
 user = os.environ['LOGNAME']
 if user != 'root':
-    msg = 'Error: kano-updater must be executed with root privileges'
+    title = 'Error!'
+    description = 'kano-updater must be executed with root privileges'
     if is_gui:
-        kdialog = kano_dialog.KanoDialog(msg, "")
+        kdialog = kano_dialog.KanoDialog(title, description)
         kdialog.run()
     sys.exit(msg)
 
@@ -79,9 +80,10 @@ if len(sys.argv) == 2 and sys.argv[1] == 'python_upgrade':
 
 # ask confirmation from user
 if not (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force']):
-    msg = "Are you sure you want to update Kanux?"
+    title = "Are you sure?"
+    description = "Do you want to update Kanux?"
     if is_gui:
-        kdialog = kano_dialog.KanoDialog(msg, "", {"OK": 0, "CANCEL": -1})
+        kdialog = kano_dialog.KanoDialog(title, description, {"OK": 0, "CANCEL": -1})
         response = kdialog.run()
         if response != 0:
             sys.exit()
@@ -96,14 +98,14 @@ if len(sys.argv) == 2 and sys.argv[1] in ['-d', '--debug']:
 
 # no internet warning
 if not is_internet():
-    msg = "No internet connection detected\n\n"
-    msg += "Please connect to internet using the cable\n"
-    msg += "or the WiFi utility in Extras"
+    title = "No internet connection detected"
+    description = "Please connect to internet using the cable\n"
+    description += "or the WiFi utility in Extras"
     if is_gui:
-        kdialog = kano_dialog.KanoDialog(msg, "")
+        kdialog = kano_dialog.KanoDialog(title, description)
         kdialog.run()
     else:
-        print msg
+        print title
         print 'Press any key to continue'
         answer = raw_input()
 # do upgrade
@@ -235,6 +237,6 @@ else:
 will_expand = expand_rootfs()
 
 if will_expand or reboot_required(require_restart, pkgs_changed):
-    msg = "Your computer needs to restart, so it can use all the\n"
-    msg += "new features it just downloaded. See you in a minute!"
-    reboot(msg, is_gui)
+    title = "Your computer needs to restart"
+    description = "Then it will be able to use all the new features it just downloaded. See you in a minute!"
+    reboot(title, description, is_gui)
