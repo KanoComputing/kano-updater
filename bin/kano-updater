@@ -17,6 +17,7 @@ if __name__ == '__main__' and __package__ is None:
     if dir_path != '/usr':
         sys.path.insert(0, dir_path)
 
+import kano.logger as logger
 from kano.network import is_internet
 from kano_updater.osversion import OSVersion, bump_system_version
 from kano_updater.stages import upgrade_debian, upgrade_python
@@ -37,7 +38,6 @@ if os.path.exists(version_file):
 else:
     old_version = new_version
 
-err_log_file = '/var/log/kano-updater-log'
 python_modules_file = '/usr/share/kano-updater/python_modules'
 
 require_restart = ['kdesk', 'raspberrypi-linux', 'raspberrypi-firmware',
@@ -52,7 +52,8 @@ if is_gui:
 preup = PreUpdate(old_version, new_version)
 postup = PostUpdate(old_version, new_version)
 if not (preup.covers_update() and postup.covers_update()):
-    title = 'Unfortunately, your version of Kano OS is too old to be updated through the updater.'
+    title = 'Unfortunately, your version of Kano OS is too old ' + \
+            'to be updated through the updater.'
     description = 'You will need to download the image of the ' + \
                   'OS and reflash your SD card.'
     if is_gui:
@@ -60,10 +61,8 @@ if not (preup.covers_update() and postup.covers_update()):
         kdialog.run()
     sys.exit(title)
 
-err_log = 'build version: {}\nupgrade date: {}\n'.format(
-    str(old_version),
-    get_date_now()
-)
+logger.write("Upgrading from: {}".format(str(old_version)))
+logger.write("Upgrading to: {}".format(str(new_version)))
 
 # root check
 user = os.environ['LOGNAME']
@@ -73,6 +72,8 @@ if user != 'root':
     if is_gui:
         kdialog = kano_dialog.KanoDialog(title, description)
         kdialog.run()
+
+    logger.write(description, level='error')
     sys.exit(description)
 
 # upgrade python command line
@@ -89,11 +90,13 @@ if not (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force']):
         kdialog = kano_dialog.KanoDialog(title, description, {"OK": 0, "CANCEL": -1})
         response = kdialog.run()
         if response != 0:
+            logger.write("Canceled by the user.", level="info")
             sys.exit()
     else:
         print description + " [y/n]"
         answer = raw_input().lower()
         if answer != 'y':
+            logger.write("Canceled by the user.", level="info")
             sys.exit()
 
 if len(sys.argv) == 2 and sys.argv[1] in ['-d', '--debug']:
@@ -111,6 +114,8 @@ if not is_internet():
         print title
         print 'Press any key to continue'
         answer = raw_input()
+
+    logger.write(title, level="warn")
 # do upgrade
 else:
     # kill_apps
@@ -134,6 +139,7 @@ else:
 
     # re-run the updater in case it was updated
     if new_updater_version != current_updater_version and not debug:
+        logger.write("The updater was reinstalled, launching again.")
         os.execvp('kano-updater', ['kano-updater', '-f'])
 
     # get app-state before upgrading
@@ -146,8 +152,7 @@ else:
     python_ok, python_err = upgrade_python(python_modules_file, appstate_before)
 
     # upgrade debian
-    debian_err_packages, log = upgrade_debian()
-    err_log += log
+    debian_err_packages = upgrade_debian()
 
     # post upgrade
     postup.run()
@@ -155,6 +160,8 @@ else:
     # refresh desktop
     os.system('kdesk -r')
 
+    #TODO: This shouldn't be done, in case there were some major errors
+    # during the update!
     bump_system_version(new_version, version_file, issue_file)
 
     now = int(time.time())
@@ -215,9 +222,8 @@ else:
         msg = "No updates needed this time."
 
     # write error log
-    err_log += '\n' + msg + '\n'
-    with open(err_log_file, 'w') as outfile:
-        outfile.write(err_log)
+    for line in msg.split("\n"):
+        logger.write(line)
 
     if is_gui:
         with open('msg', 'w') as outfile:
@@ -242,4 +248,5 @@ will_expand = expand_rootfs()
 if will_expand or reboot_required(require_restart, pkgs_changed):
     title = "Your computer needs to restart"
     description = "Then it will be able to use all the new features it just downloaded. See you in a minute!"
+    logger.write("Rebooting")
     reboot(title, description, is_gui)

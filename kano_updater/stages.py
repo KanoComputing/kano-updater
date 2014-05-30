@@ -11,39 +11,44 @@
 
 import os
 
+import kano.logger as logger
 from kano.utils import zenity_show_progress, run_print_output_error, \
     kill_child_processes, run_cmd, read_file_contents_as_lines, delete_file, \
     delete_dir
 from kano_updater.utils import fix_broken
 
 def upgrade_debian():
-    error_log = ""
     # setting up apt-get for non-interactive mode
     os.environ['DEBIAN_FRONTEND'] = 'noninteractive'
 
     # Try to fix any broken packages prior to the upgrade
-    error_log += fix_broken("Preparing packages to be upgraded")
+    fix_broken("Preparing packages to be upgraded")
 
     # apt upgrade
     id = zenity_show_progress("Upgrading packages")
     cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" dist-upgrade'
-    _, debian_err, _ = run_print_output_error(cmd)
-    error_log += debian_err
+    _, debian_err, _ = run_cmd(cmd)
+    for line in debian_err.split("\n"):
+        logger.write(line)
     kill_child_processes(id)
 
     # apt autoremove
     id = zenity_show_progress("Cleaning up packages")
     cmd = 'apt-get -y autoremove --purge'
-    run_print_output_error(cmd)
+    _, debian_err, _ = run_cmd(cmd)
+    for line in debian_err.split("\n"):
+        logger.write(line)
 
     # apt autoclean
     cmd = 'apt-get -y autoclean'
-    run_print_output_error(cmd)
+    _, debian_err, _ = run_cmd(cmd)
+    for line in debian_err.split("\n"):
+        logger.write(line)
     kill_child_processes(id)
 
     # Try to fix any broken packages after the upgrade
-    error_log += fix_broken("Finalising package upgrade")
+    fix_broken("Finalising package upgrade")
 
     # parsing debian error log
     if debian_err:
@@ -66,9 +71,9 @@ def upgrade_debian():
             delete_dir(dir)
 
         # return err_packages
-        return err_packages, error_log
+        return err_packages
 
-    return None, error_log
+    return None
 
 def upgrade_python(python_modules_file, appstate_before):
     id = zenity_show_progress("Upgrading Python modules")
