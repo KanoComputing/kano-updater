@@ -12,7 +12,6 @@ import os
 import errno
 from kano.utils import run_print_output_error, run_cmd, run_print_output_error,\
     zenity_show_progress, kill_child_processes
-from kano.gtk3 import kano_dialog
 
 UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
 STATUS_FILE = UPDATER_CACHE_DIR + "status"
@@ -112,6 +111,7 @@ def reboot_required(watched, changed):
 
 def reboot(title, description, is_gui=False):
     if is_gui:
+        from kano.gtk3 import kano_dialog
         kdialog = kano_dialog.KanoDialog(title, description)
         kdialog.run()
     else:

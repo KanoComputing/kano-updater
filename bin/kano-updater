@@ -25,7 +25,6 @@ from kano_updater.utils import get_dpkg_dict, set_update_status, \
     expand_rootfs, get_installed_version, reboot, reboot_required
 from kano.utils import zenity_show_progress, run_print_output_error, \
     kill_child_processes, run_cmd, delete_file, is_gui, get_date_now
-from kano.gtk3 import kano_dialog
 
 debug = False
 
@@ -45,6 +44,10 @@ require_restart = ['kdesk', 'raspberrypi-linux', 'raspberrypi-firmware',
                    'kano-updater', 'kano-settings', 'kano-desktop']
 
 is_gui = is_gui()
+
+# Import gtk3 module only if gui
+if is_gui:
+    from kano.gtk3 import kano_dialog
 
 preup = PreUpdate(old_version, new_version)
 postup = PostUpdate(old_version, new_version)
