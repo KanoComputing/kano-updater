@@ -10,6 +10,7 @@
 
 import os
 import errno
+import kano.logger as logger
 from kano.utils import run_print_output_error, run_cmd, run_print_output_error,\
     zenity_show_progress, kill_child_processes
 
@@ -60,9 +61,11 @@ def fix_broken(msg):
     progress_bar = zenity_show_progress(msg)
     cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" install -f'
-    _, debian_err, _ = run_print_output_error(cmd)
+    _, debian_err, _ = run_cmd(cmd)
     kill_child_processes(progress_bar)
-    return debian_err
+
+    for line in debian_err.split("\n"):
+        logger.write(line)
 
 
 def expand_rootfs():
