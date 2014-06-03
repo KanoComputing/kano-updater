@@ -11,10 +11,10 @@
 
 import os
 
-import kano.logger as logger
+from kano.logging import logger
 from kano.utils import zenity_show_progress, run_print_output_error, \
     kill_child_processes, run_cmd, read_file_contents_as_lines, delete_file, \
-    delete_dir
+    delete_dir, run_cmd_log
 from kano_updater.utils import fix_broken
 
 def upgrade_debian():
@@ -28,23 +28,17 @@ def upgrade_debian():
     id = zenity_show_progress("Upgrading packages")
     cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" dist-upgrade'
-    _, debian_err, _ = run_cmd(cmd)
-    for line in debian_err.split("\n"):
-        logger.write(line)
+    _, debian_err, _ = run_cmd_log(cmd)
     kill_child_processes(id)
 
     # apt autoremove
     id = zenity_show_progress("Cleaning up packages")
     cmd = 'apt-get -y autoremove --purge'
-    _, debian_err, _ = run_cmd(cmd)
-    for line in debian_err.split("\n"):
-        logger.write(line)
+    run_cmd_log(cmd)
 
     # apt autoclean
     cmd = 'apt-get -y autoclean'
-    _, debian_err, _ = run_cmd(cmd)
-    for line in debian_err.split("\n"):
-        logger.write(line)
+    run_cmd_log(cmd)
     kill_child_processes(id)
 
     # Try to fix any broken packages after the upgrade
@@ -83,21 +77,21 @@ def upgrade_python(python_modules_file, appstate_before):
         # remove old pip and setuptools
         cmd = 'yes "" | apt-get -y purge python-setuptools ' + \
               'python-virtualenv python-pip'
-        run_print_output_error(cmd)
+        run_cmd_log(cmd)
 
     # installing/upgrading pip
     o, _, _ = run_cmd('pip -V')
     if 'pip 1.' in o:
         cmd = 'pip install --upgrade pip'
-        run_print_output_error(cmd)
+        run_cmd_log(cmd)
     else:
         cmd = 'wget -q --no-check-certificate ' + \
               'https://raw.github.com/pypa/pip/master/contrib/get-pip.py ' + \
               '-O get-pip.py'
-        run_cmd(cmd)
+        run_cmd_log(cmd)
 
         cmd = 'python get-pip.py'
-        run_print_output_error(cmd)
+        run_cmd_log(cmd)
 
         delete_file('get-pip.py')
 
@@ -108,7 +102,7 @@ def upgrade_python(python_modules_file, appstate_before):
     error_modules = []
 
     for module in python_modules:
-        o, e, rc = run_cmd('pip install --upgrade {}'.format(module))
+        o, e, rc = run_cmd_log('pip install --upgrade {}'.format(module))
 
         if rc == 0:
             if 'Successfully installed' in o:

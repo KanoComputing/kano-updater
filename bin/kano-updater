@@ -17,15 +17,17 @@ if __name__ == '__main__' and __package__ is None:
     if dir_path != '/usr':
         sys.path.insert(0, dir_path)
 
-import kano.logger as logger
+from kano.logging import logger
 from kano.network import is_internet
 from kano_updater.osversion import OSVersion, bump_system_version
 from kano_updater.stages import upgrade_debian, upgrade_python
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.utils import get_dpkg_dict, set_update_status, \
-    expand_rootfs, get_installed_version, reboot, reboot_required
+    expand_rootfs, get_installed_version, reboot, reboot_required, \
+    update_failed
 from kano.utils import zenity_show_progress, run_print_output_error, \
-    kill_child_processes, run_cmd, delete_file, is_gui, get_date_now
+    kill_child_processes, run_cmd, delete_file, is_gui, get_date_now, \
+    run_cmd_log
 
 debug = False
 
@@ -61,20 +63,23 @@ if not (preup.covers_update() and postup.covers_update()):
         kdialog.run()
     sys.exit(title)
 
-logger.write("Upgrading from: {}".format(str(old_version)))
-logger.write("Upgrading to: {}".format(str(new_version)))
+logger.info("Upgrading from: {}".format(str(old_version)))
+logger.info("Upgrading to: {}".format(str(new_version)))
 
 # root check
 user = os.environ['LOGNAME']
 if user != 'root':
     title = 'Error!'
     description = 'kano-updater must be executed with root privileges'
+    logger.error(description)
+
     if is_gui:
         kdialog = kano_dialog.KanoDialog(title, description)
         kdialog.run()
+    else:
+        print description
 
-    logger.write(description, level='error')
-    sys.exit(description)
+    sys.exit(1)
 
 # upgrade python command line
 if len(sys.argv) == 2 and sys.argv[1] == 'python_upgrade':
@@ -90,13 +95,13 @@ if not (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force']):
         kdialog = kano_dialog.KanoDialog(title, description, {"OK": 0, "CANCEL": -1})
         response = kdialog.run()
         if response != 0:
-            logger.write("Canceled by the user.", level="info")
+            logger.info("Canceled by the user.")
             sys.exit()
     else:
         print description + " [y/n]"
         answer = raw_input().lower()
         if answer != 'y':
-            logger.write("Canceled by the user.", level="info")
+            logger.info("Canceled by the user.")
             sys.exit()
 
 if len(sys.argv) == 2 and sys.argv[1] in ['-d', '--debug']:
@@ -115,9 +120,8 @@ if not is_internet():
         print 'Press any key to continue'
         answer = raw_input()
 
-    logger.write(title, level="warn")
-# do upgrade
-else:
+    logger.warn(title)
+else: # do upgrade
     # kill_apps
     kill_apps_list = ['minecraft-pi', 'make-music', 'make-video',
                       'make-snake', 'kano-extras']
@@ -125,21 +129,28 @@ else:
         run_cmd('killall -q {}'.format(app))
 
     progress_bar = zenity_show_progress("Downloading package lists")
-    run_print_output_error('apt-get -y clean')
-    run_print_output_error('apt-get -y update')
+    run_cmd_log('apt-get -y clean')
+    _, _,  rv = run_cmd_log('apt-get -y update')
     kill_child_processes(progress_bar)
+    if rv != 0:
+        update_failed("Could not download the package lists")
 
     # upgrade kano-updater itself
     progress_bar = zenity_show_progress("Updating the updater itself")
     current_updater_version = get_installed_version('kano-updater')
-    run_cmd('apt-get install -o Dpkg::Options::="--force-confdef" ' +
-            '-o Dpkg::Options::="--force-confold" -y --force-yes kano-updater')
-    new_updater_version = get_installed_version('kano-updater')
+
+    cmd = 'apt-get install -o Dpkg::Options::="--force-confdef" ' + \
+          '-o Dpkg::Options::="--force-confold" -y --force-yes kano-updater'
+    _, _, rv = run_cmd_log(cmd)
     kill_child_processes(progress_bar)
 
+    if rv != 0:
+        update_failed("Couldn't update the updater!")
+
+    new_updater_version = get_installed_version('kano-updater')
     # re-run the updater in case it was updated
     if new_updater_version != current_updater_version and not debug:
-        logger.write("The updater was reinstalled, launching again.")
+        logger.info("The updater was reinstalled, launching again.")
         os.execvp('kano-updater', ['kano-updater', '-f'])
 
     # get app-state before upgrading
@@ -160,8 +171,6 @@ else:
     # refresh desktop
     os.system('kdesk -r')
 
-    #TODO: This shouldn't be done, in case there were some major errors
-    # during the update!
     bump_system_version(new_version, version_file, issue_file)
 
     now = int(time.time())
@@ -221,9 +230,7 @@ else:
     if not msg:
         msg = "No updates needed this time."
 
-    # write error log
-    for line in msg.split("\n"):
-        logger.write(line)
+    logger.info(msg)
 
     if is_gui:
         with open('msg', 'w') as outfile:
@@ -244,9 +251,8 @@ else:
 
 # expand filesystem
 will_expand = expand_rootfs()
-
 if will_expand or reboot_required(require_restart, pkgs_changed):
     title = "Your computer needs to restart"
     description = "Then it will be able to use all the new features it just downloaded. See you in a minute!"
-    logger.write("Rebooting")
-    reboot(title, description, is_gui)
+    logger.info("Rebooting")
+    reboot(title, description)
