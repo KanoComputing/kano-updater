@@ -7,6 +7,8 @@
 #
 from kano_updater.utils import get_update_status
 from kano.gtk3 import kano_dialog
+import os
+
 
 new_update = False
 try:
@@ -15,6 +17,10 @@ except Exception:
     pass
 
 if new_update:
-    msg = 'Updates found, please update!'
-    kdialog = kano_dialog.KanoDialog(msg, "")
-    kdialog.run()
+    kdialog = kano_dialog.KanoDialog("Updates available!", "Keep system fresh by updating",
+                                     {"LATER": {"color": "grey", "return_value": 0}, "UPDATE NOW": {"color": "orange", "return_value": 1}})
+    kdialog.set_action_background("grey")
+    response = kdialog.run()
+
+    if response == 1:
+        os.popen("sudo kano-updater -f")

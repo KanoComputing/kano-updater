@@ -83,7 +83,7 @@ if not (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force']):
     title = "Are you sure?"
     description = "Do you want to update Kanux?"
     if is_gui:
-        kdialog = kano_dialog.KanoDialog(title, description, {"OK": 0, "CANCEL": -1})
+        kdialog = kano_dialog.KanoDialog(title, description, {"OK": {"return_value": 0}, "CANCEL": {"return_value": -1}})
         response = kdialog.run()
         if response != 0:
             sys.exit()
