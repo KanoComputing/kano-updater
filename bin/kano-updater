@@ -17,7 +17,7 @@ if __name__ == '__main__' and __package__ is None:
     if dir_path != '/usr':
         sys.path.insert(0, dir_path)
 
-from kano.logging import logger
+from kano.logging import logger, cleanup
 from kano.network import is_internet
 from kano_updater.osversion import OSVersion, bump_system_version
 from kano_updater.stages import upgrade_debian, upgrade_python
@@ -170,6 +170,9 @@ else: # do upgrade
 
     # refresh desktop
     os.system('kdesk -r')
+
+    # clean system logs
+    cleanup()
 
     bump_system_version(new_version, version_file, issue_file)
 
