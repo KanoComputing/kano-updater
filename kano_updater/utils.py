@@ -9,32 +9,59 @@
 #
 
 import os
+import sys
 import errno
+from kano.logging import logger
 from kano.utils import run_print_output_error, run_cmd, run_print_output_error,\
-    zenity_show_progress, kill_child_processes
-from kano.gtk3 import kano_dialog
+    zenity_show_progress, kill_child_processes, run_cmd_log, is_gui
 
 UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
 STATUS_FILE = UPDATER_CACHE_DIR + "status"
 
-
-def install(pkgs):
+def install(pkgs, die_on_err=True):
     if isinstance(pkgs, list):
         pkgs = ' '.join(pkgs)
 
     cmd = 'apt-get install -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" -y --force-yes ' + str(pkgs)
-    print cmd
-    run_print_output_error(cmd)
+    _, _, rv = run_cmd_log(cmd)
 
+    if die_on_err and rv != 0:
+        update_failed("Unable to install '{}'".format(pkgs))
+
+    return rv
 
 def remove(pkgs):
     pass  # TODO
 
+def purge(pkgs, die_on_err=False):
+    if isinstance(pkgs, list):
+        pkgs = ' '.join(pkgs)
 
-def purge(pkgs):
-    pass  # TODO
+    _, _, rv = run_cmd_log('apt-get -y purge ' + str(pkgs))
 
+    if die_on_err and rv != 0:
+        update_failed("Unable to purge '{}'".format(pkgs))
+
+    return rv
+
+def update_failed(err):
+    logger.error("Update failed: {}".format(err))
+
+    msg = "The update couldn't be finished at the moment. " + \
+          "Please try again later.\n\n" + \
+          "If this problem persists, please consider reporting this issue " + \
+          "via the\nFeedback tool. We'll be happy to help!"
+
+    if is_gui():
+        from kano.gtk3 import kano_dialog
+        kdialog = kano_dialog.KanoDialog("Update error", msg)
+        kdialog.run()
+    else:
+        print "Update error: {}".format(msg)
+        answer = raw_input()
+
+    sys.exit(1)
 
 def get_dpkg_dict():
     apps_ok = dict()
@@ -56,26 +83,21 @@ def get_dpkg_dict():
 
     return apps_ok, apps_other
 
-
 def fix_broken(msg):
     progress_bar = zenity_show_progress(msg)
     cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" install -f'
-    _, debian_err, _ = run_print_output_error(cmd)
+    run_cmd_log(cmd)
     kill_child_processes(progress_bar)
-    return debian_err
-
 
 def expand_rootfs():
     cmd = '/usr/bin/expand-rootfs'
     _, _, rc = run_print_output_error(cmd)
     return rc == 0
 
-
 def get_installed_version(pkg):
     out, _, _ = run_cmd('dpkg-query -s kano-updater | grep "Version:"')
     return out.strip()[9:]
-
 
 def get_update_status():
     status = {"last_update": 0, "update_available": 0, "last_check": 0}
@@ -86,7 +108,6 @@ def get_update_status():
                 status[name] = int(value)
 
     return status
-
 
 def set_update_status(status):
     try:
@@ -101,7 +122,6 @@ def set_update_status(status):
         for name, value in status.iteritems():
             sf.write("{}={}\n".format(name, value))
 
-
 def reboot_required(watched, changed):
     for pkg in changed:
         if pkg in watched:
@@ -109,9 +129,9 @@ def reboot_required(watched, changed):
 
     return False
 
-
-def reboot(title, description, is_gui=False):
-    if is_gui:
+def reboot(title, description):
+    if is_gui():
+        from kano.gtk3 import kano_dialog
         kdialog = kano_dialog.KanoDialog(title, description)
         kdialog.run()
     else:
@@ -119,7 +139,6 @@ def reboot(title, description, is_gui=False):
         print 'Press any key to continue'
         answer = raw_input()
     run_cmd('reboot')
-
 
 def remove_user_files(files):
     for d in os.listdir("/home/"):

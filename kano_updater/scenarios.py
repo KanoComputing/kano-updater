@@ -6,10 +6,12 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
 #
 
+from kano.logging import logger
 from kano_updater.osversion import OSVersion
-from kano_updater.utils import install, remove_user_files
+from kano_updater.utils import install, remove_user_files, update_failed, \
+     purge
 from kano.utils import run_cmd, zenity_show_progress, \
-    run_print_output_error, kill_child_processes
+     run_print_output_error, kill_child_processes, run_cmd_log, is_gui
 
 class Scenarios(object):
     _type = ""
@@ -55,19 +57,27 @@ class Scenarios(object):
         self._scenarios[(str(from_v), str(to_v))] = func
 
     def run(self):
-        print 'Running the {}-update scripts...'.format(self._type)
+        log = 'Running the {}-update scripts...'.format(self._type)
+        logger.info(log)
+
         current_v = str(self._old)
         while current_v < str(self._new):
             step_found = False
             for (from_v, to_v), func in self._scenarios.iteritems():
                 if current_v == from_v:
+                    msg = "Running {}-update from {} to {}.".format(
+                        self._type,
+                        from_v,
+                        to_v
+                    )
+                    logger.info(msg)
                     func()
                     current_v = to_v
                     step_found = True
                     break
 
             if not step_found:
-                raise Exception("{}-update step missing".format(self._type))
+                update_failed("{}-update step missing".format(self._type))
 
 
 class PreUpdate(Scenarios):
@@ -87,14 +97,14 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_102_to_beta_103(self):
-        self.migrate_repo_url()
-        # We need to remove kano-youtube manually due to a conflict
-        run_print_output_error('apt-get -y purge kano-youtube')
+        self._migrate_repo_url()
+        purge("kano-youtube")
 
     def beta_103_to_beta_104(self):
         pass
 
-    def migrate_repo_url(self):
+    def _migrate_repo_url(self):
+        # TODO: Create a native python function for this
         change_items = {
             'apt_file': '/etc/apt/sources.list.d/kano.list',
             'old_repo': 'dev.kano.me',
@@ -106,11 +116,8 @@ class PreUpdate(Scenarios):
         if rc != 0:
             print 'Error changing repository, error: {}'.format(e)
         else:
-            # We need to run update again since we have changed the repo
-            progress_bar = zenity_show_progress("Downloading package lists")
-            run_print_output_error('apt-get -y clean')
-            run_print_output_error('apt-get -y update')
-            kill_child_processes(progress_bar)
+            run_cmd_log('apt-get -y clean')
+            run_cmd_log('apt-get -y update')
         return
 
 
