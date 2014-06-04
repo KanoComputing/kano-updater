@@ -25,9 +25,8 @@ from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.utils import get_dpkg_dict, set_update_status, \
     expand_rootfs, get_installed_version, reboot, reboot_required, \
     update_failed
-from kano.utils import zenity_show_progress, run_print_output_error, \
-    kill_child_processes, run_cmd, delete_file, is_gui, get_date_now, \
-    run_cmd_log
+from kano.utils import zenity_show_progress, kill_child_processes, \
+    run_cmd, delete_file, is_gui, run_cmd_log
 
 debug = False
 
@@ -236,6 +235,9 @@ else: # do upgrade
     logger.info(msg)
 
     if is_gui:
+        # Play sound in the background
+        os.system('kano-sound-cli /usr/share/kano-media/sounds/kano_updated.wav &')
+        # Display message
         with open('msg', 'w') as outfile:
             outfile.write(msg)
         kdialog = kano_dialog.KanoDialog("Update result", msg)
