@@ -84,11 +84,9 @@ def get_dpkg_dict():
     return apps_ok, apps_other
 
 def fix_broken(msg):
-    progress_bar = zenity_show_progress(msg)
     cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" install -f'
     run_cmd_log(cmd)
-    kill_child_processes(progress_bar)
 
 def expand_rootfs():
     cmd = '/usr/bin/expand-rootfs'
