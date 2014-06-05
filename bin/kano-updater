@@ -11,6 +11,7 @@
 import os
 import sys
 import time
+import subprocess
 
 if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -25,7 +26,7 @@ from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.utils import get_dpkg_dict, set_update_status, \
     expand_rootfs, get_installed_version, reboot, reboot_required, \
     update_failed
-from kano.utils import zenity_show_progress, kill_child_processes, \
+from kano.utils import kill_child_processes, \
     run_cmd, delete_file, is_gui, run_cmd_log
 
 debug = False
@@ -120,28 +121,38 @@ if not is_internet():
         answer = raw_input()
 
     logger.warn(title)
-else: # do upgrade
+else:  # do upgrade
+    # Remove comunication file
+    if os.path.isfile("/tmp/updater-progress"):
+        os.remove("/tmp/updater-progress")
+
     # kill_apps
     kill_apps_list = ['minecraft-pi', 'make-music', 'make-video',
                       'make-snake', 'kano-extras']
     for app in kill_apps_list:
         run_cmd('killall -q {}'.format(app))
 
-    progress_bar = zenity_show_progress("Downloading package lists")
+    # Start gui
+    process = subprocess.Popen("/usr/bin/kano-updater-gui")
+
     run_cmd_log('apt-get -y clean')
-    _, _,  rv = run_cmd_log('apt-get -y update')
-    kill_child_processes(progress_bar)
+    _, _, rv = run_cmd_log('apt-get -y update')
+    #kill_child_processes(progress_bar)
     if rv != 0:
         update_failed("Could not download the package lists")
 
     # upgrade kano-updater itself
-    progress_bar = zenity_show_progress("Updating the updater itself")
+    tmp_filename = "/tmp/updater-progress"
+    f = open(tmp_filename, "w+")
+    f.write("2")
+    f.close()
+
     current_updater_version = get_installed_version('kano-updater')
 
     cmd = 'apt-get install -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" -y --force-yes kano-updater'
     _, _, rv = run_cmd_log(cmd)
-    kill_child_processes(progress_bar)
+    #kill_child_processes(progress_bar)
 
     if rv != 0:
         update_failed("Couldn't update the updater!")
@@ -159,6 +170,10 @@ else: # do upgrade
     preup.run()
 
     # upgrade python
+    f = open(tmp_filename, "w+")
+    f.write("3")
+    f.close()
+
     python_ok, python_err = upgrade_python(python_modules_file, appstate_before)
 
     # upgrade debian
@@ -171,9 +186,13 @@ else: # do upgrade
     os.system('kdesk -r')
 
     # clean system logs
+
     cleanup()
 
     bump_system_version(new_version, version_file, issue_file)
+
+    # Kill gui when finished
+    process.kill()
 
     now = int(time.time())
     status = {"last_update": now, "update_available": 0, "last_check": now}
