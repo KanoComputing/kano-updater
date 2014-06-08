@@ -249,7 +249,7 @@ else: # do upgrade
         answer = raw_input()
 
     try:
-        from kano.profile.badges import increment_app_state_variable_with_dialog
+        from kano_profile.badges import increment_app_state_variable_with_dialog
         increment_app_state_variable_with_dialog('kano-updater', 'updated', 1)
     except Exception:
         pass
