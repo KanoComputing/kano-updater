@@ -88,7 +88,8 @@ class MainWindow(Gtk.Window):
     def set_stage_state(self, number, state):
         self.stages[number - 1].set_from_file(image_filename + state + "/" + "step-" + str(number) + ".png")
 
-    # number is the current working state, from 1 to 5.
+    # number is the current working state, from 1 to 6.
+    # If number = 6, means all packages are updated
     def set_header(self, number):
         self.header.set_from_file(image_filename + "header/header-" + str(number) + ".png")
 
@@ -111,7 +112,7 @@ class MainWindow(Gtk.Window):
         self.set_stages(current_number)
         self.start_spinner()
 
-    # number is the current working state, from 1 to 5.
+    # number is the current working state, from 1 to 6.
     def set_stages(self, number):
         self.set_header(number)
 
@@ -120,13 +121,15 @@ class MainWindow(Gtk.Window):
             for i in range(1, number):
                 self.set_stage_state(i, "completed")
 
-        self.set_stage_state(number, "working")
+        if number <= self.number_of_stages:
+            self.set_stage_state(number, "working")
 
-        for i in range(number + 1, self.number_of_stages + 1):
-            self.set_stage_state(i, "not_started")
+            for i in range(number + 1, self.number_of_stages + 1):
+                self.set_stage_state(i, "not_started")
 
-        # Move spinner to correct position
-        self.set_spinner_position(number)
+            # Move spinner to correct position
+            self.set_spinner_position(number)
+
         self.show_all()
 
     def close_window(self, widget, event):
