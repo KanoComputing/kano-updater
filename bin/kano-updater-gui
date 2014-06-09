@@ -113,6 +113,7 @@ class MainWindow(Gtk.Window):
         self.start_spinner()
 
     # number is the current working state, from 1 to 6.
+    # TODO: show for stage 6, when all stages are completed
     def set_stages(self, number):
         self.set_header(number)
 
@@ -131,6 +132,11 @@ class MainWindow(Gtk.Window):
             self.set_spinner_position(number)
 
         self.show_all()
+
+        # Needs to be after self.show_all(), else would include this as "else" after above "if"
+        if number > self.number_of_stages:
+            self.spinner.stop()
+            self.spinner.hide()
 
     def close_window(self, widget, event):
         global exit
