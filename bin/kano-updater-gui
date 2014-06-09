@@ -1,0 +1,164 @@
+#!/usr/bin/env python
+
+# kano-updater-gui
+#
+# Copyright (C) 2014 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+#
+# Main window class
+#
+
+from gi.repository import Gtk, Gdk, GObject
+GObject.threads_init()
+import threading
+import os
+import time
+
+image_filename = "/usr/share/kano-updater/images/"
+current_number = 1
+exit = False
+tmp_filename = "/tmp/updater-progress"
+
+
+class WorkerThread(threading.Thread):
+    def __init__(self, callback):
+        threading.Thread.__init__(self)
+        self.callback = callback
+
+    def run(self):
+        self.check_file()
+        # Check the /tmp/ file for a change in the file
+        # The callback runs a GUI task, so wrap it!
+        GObject.idle_add(self.callback)
+
+    def check_file(self):
+        global current_number
+
+        if not os.path.isfile(tmp_filename):
+            f = open(tmp_filename, "w+")
+            f.write("1")
+            f.close()
+        while True:
+            f = open(tmp_filename, "r")
+            number = f.read()
+            f.close()
+            if not number == str(current_number) and number.isdigit():
+                current_number = int(number)
+                return
+            # This is here so on closing window, we can tell this function to exit
+            if exit:
+                os.remove(tmp_filename)
+                return
+            # Seems to speed up the process
+            time.sleep(2)
+
+
+class MainWindow(Gtk.Window):
+    def __init__(self):
+        self.number_of_stages = 5
+
+        Gtk.Window.__init__(self)
+        self.set_resizable(False)
+        self.set_position(Gtk.WindowPosition.CENTER)
+        self.set_decorated(False)
+
+        self.grid = Gtk.Grid()
+
+        self.header = Gtk.Image()
+        self.stages = []
+        self.grid.attach(self.header, 0, 0, 5, 1)
+
+        for i in range(self.number_of_stages):
+            stage = Gtk.Image()
+            self.stages.append(stage)
+            self.grid.attach(stage, i, 1, 1, 1)
+
+        self.spinner = Gtk.Spinner()
+        self.start_spinner()
+
+        self.fixed = Gtk.Fixed()
+        self.add(self.fixed)
+        self.fixed.put(self.grid, 0, 0)
+        self.fixed.put(self.spinner, 0, 0)
+
+        self.set_stages(1)
+        self.show_all()
+
+    # Either not started, started or completed
+    def set_stage_state(self, number, state):
+        self.stages[number - 1].set_from_file(image_filename + state + "/" + "step-" + str(number) + ".png")
+
+    # number is the current working state, from 1 to 6.
+    # If number = 6, means all packages are updated
+    def set_header(self, number):
+        self.header.set_from_file(image_filename + "header/header-" + str(number) + ".png")
+
+    # set spinner position
+    # Move the spinner along by 151px along each stage
+    def set_spinner_position(self, number):
+        distance_between_headers = 150
+        x_from_edge = 68
+        x_coordinate = (number - 1) * distance_between_headers + x_from_edge
+        y_coordinate = 414
+        self.fixed.move(self.spinner, x_coordinate, y_coordinate)
+
+    def start_spinner(self):
+        self.spinner.start()
+        thread = WorkerThread(self.work_finished)
+        thread.start()
+
+    # When work is finished, spinner will stop
+    def work_finished(self):
+        self.set_stages(current_number)
+        self.start_spinner()
+
+    # number is the current working state, from 1 to 6.
+    # TODO: show for stage 6, when all stages are completed
+    def set_stages(self, number):
+        self.set_header(number)
+
+        # Go through images and set them according to whether completed, working or not started
+        if number > 0:
+            for i in range(1, number):
+                self.set_stage_state(i, "completed")
+
+        if number <= self.number_of_stages:
+            self.set_stage_state(number, "working")
+
+            for i in range(number + 1, self.number_of_stages + 1):
+                self.set_stage_state(i, "not_started")
+
+            # Move spinner to correct position
+            self.set_spinner_position(number)
+
+        self.show_all()
+
+        # Needs to be after self.show_all(), else would include this as "else" after above "if"
+        if number > self.number_of_stages:
+            self.spinner.stop()
+            self.spinner.hide()
+
+    def close_window(self, widget, event):
+        global exit
+
+        exit = True
+        self.spinner.stop()
+        Gtk.main_quit()
+
+
+def main():
+
+    css = Gtk.CssProvider()
+    css.load_from_path('/usr/share/kano-updater/images/CSS/updater.css')
+    screen = Gdk.Screen.get_default()
+    styleContext = Gtk.StyleContext()
+    styleContext.add_provider_for_screen(screen, css, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+
+    win = MainWindow()
+    win.connect("delete-event", win.close_window)
+    win.show_all()
+    Gtk.main()
+
+
+if __name__ == "__main__":
+    main()

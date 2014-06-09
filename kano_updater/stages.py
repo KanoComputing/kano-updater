@@ -12,10 +12,11 @@
 import os
 
 from kano.logging import logger
-from kano.utils import zenity_show_progress, run_print_output_error, \
+from kano.utils import run_print_output_error, \
     kill_child_processes, run_cmd, read_file_contents_as_lines, delete_file, \
     delete_dir, run_cmd_log
 from kano_updater.utils import fix_broken
+
 
 def upgrade_debian():
     # setting up apt-get for non-interactive mode
@@ -25,14 +26,21 @@ def upgrade_debian():
     fix_broken("Preparing packages to be upgraded")
 
     # apt upgrade
-    id = zenity_show_progress("Upgrading packages")
+    tmp_filename = "/tmp/updater-progress"
+    f = open(tmp_filename, "w+")
+    f.write("4")
+    f.close()
+
     cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" dist-upgrade'
     _, debian_err, _ = run_cmd_log(cmd)
     kill_child_processes(id)
 
     # apt autoremove
-    id = zenity_show_progress("Cleaning up packages")
+    f = open(tmp_filename, "w+")
+    f.write("5")
+    f.close()
+
     cmd = 'apt-get -y autoremove --purge'
     run_cmd_log(cmd)
 
@@ -69,8 +77,8 @@ def upgrade_debian():
 
     return None
 
+
 def upgrade_python(python_modules_file, appstate_before):
-    id = zenity_show_progress("Upgrading Python modules")
 
     if 'python-pip' in appstate_before or \
        'python-setuptools' in appstate_before:
