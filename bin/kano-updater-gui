@@ -33,15 +33,18 @@ class WorkerThread(threading.Thread):
 
     def check_file(self):
         global current_number
+        number = current_number
 
-        if not os.path.isfile(tmp_filename):
-            f = open(tmp_filename, "w+")
-            f.write("1")
-            f.close()
         while True:
-            f = open(tmp_filename, "r")
-            number = f.read()
-            f.close()
+            try:
+                with open(tmp_filename) as f:
+                    number = f.read()
+                    f.close()
+            except IOError:
+                f = open(tmp_filename, "w+")
+                f.write("1")
+                f.close()
+
             if not number == str(current_number) and number.isdigit():
                 current_number = int(number)
                 return
