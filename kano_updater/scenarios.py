@@ -9,9 +9,9 @@
 from kano.logging import logger
 from kano_updater.osversion import OSVersion
 from kano_updater.utils import install, remove_user_files, update_failed, \
-     purge
-from kano.utils import run_cmd, zenity_show_progress, \
-     run_print_output_error, kill_child_processes, run_cmd_log, is_gui
+    purge
+from kano.utils import run_cmd, run_cmd_log
+
 
 class Scenarios(object):
     _type = ""
