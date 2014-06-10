@@ -12,11 +12,11 @@ import os
 import sys
 import errno
 from kano.logging import logger
-from kano.utils import run_print_output_error, run_cmd, run_print_output_error,\
-    zenity_show_progress, kill_child_processes, run_cmd_log, is_gui
+from kano.utils import run_print_output_error, run_cmd, run_cmd_log, is_gui
 
 UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
 STATUS_FILE = UPDATER_CACHE_DIR + "status"
+
 
 def install(pkgs, die_on_err=True):
     if isinstance(pkgs, list):
@@ -31,8 +31,10 @@ def install(pkgs, die_on_err=True):
 
     return rv
 
+
 def remove(pkgs):
     pass  # TODO
+
 
 def purge(pkgs, die_on_err=False):
     if isinstance(pkgs, list):
@@ -44,6 +46,7 @@ def purge(pkgs, die_on_err=False):
         update_failed("Unable to purge '{}'".format(pkgs))
 
     return rv
+
 
 def update_failed(err):
     logger.error("Update failed: {}".format(err))
@@ -59,9 +62,10 @@ def update_failed(err):
         kdialog.run()
     else:
         print "Update error: {}".format(msg)
-        answer = raw_input()
+        raw_input()
 
     sys.exit(1)
+
 
 def get_dpkg_dict():
     apps_ok = dict()
@@ -83,19 +87,23 @@ def get_dpkg_dict():
 
     return apps_ok, apps_other
 
+
 def fix_broken(msg):
     cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" install -f'
     run_cmd_log(cmd)
+
 
 def expand_rootfs():
     cmd = '/usr/bin/expand-rootfs'
     _, _, rc = run_print_output_error(cmd)
     return rc == 0
 
+
 def get_installed_version(pkg):
     out, _, _ = run_cmd('dpkg-query -s kano-updater | grep "Version:"')
     return out.strip()[9:]
+
 
 def get_update_status():
     status = {"last_update": 0, "update_available": 0, "last_check": 0}
@@ -106,6 +114,7 @@ def get_update_status():
                 status[name] = int(value)
 
     return status
+
 
 def set_update_status(status):
     try:
@@ -120,12 +129,14 @@ def set_update_status(status):
         for name, value in status.iteritems():
             sf.write("{}={}\n".format(name, value))
 
+
 def reboot_required(watched, changed):
     for pkg in changed:
         if pkg in watched:
             return True
 
     return False
+
 
 def reboot(title, description):
     if is_gui():
@@ -135,8 +146,9 @@ def reboot(title, description):
     else:
         print title
         print 'Press any key to continue'
-        answer = raw_input()
+        raw_input()
     run_cmd('reboot')
+
 
 def remove_user_files(files):
     for d in os.listdir("/home/"):
