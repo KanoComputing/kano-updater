@@ -11,8 +11,9 @@
 import os
 import sys
 import errno
+import shutil
 from kano.logging import logger
-from kano.utils import run_print_output_error, run_cmd, run_cmd_log, is_gui
+from kano.utils import run_print_output_error, run_cmd, run_cmd_log, is_gui, chown_path
 
 UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
 STATUS_FILE = UPDATER_CACHE_DIR + "status"
@@ -159,3 +160,76 @@ def remove_user_files(files):
                     os.unlink(file_path)
                 except:
                     pass
+
+
+def update_from_skel():
+    src_dir = '/etc/skel'
+    dst_dir = os.path.expanduser('~')
+
+    dirlinks = []
+    filelinks = []
+    files = []
+
+    for root, dirs, filenames in os.walk(src_dir):
+        for d in dirs:
+            path_full = os.path.join(root, d)
+            if os.path.islink(path_full):
+                dirlinks.append(path_full)
+
+        for f in filenames:
+            path_full = os.path.join(root, f)
+            if os.path.islink(path_full):
+                filelinks.append(path_full)
+            else:
+                files.append(path_full)
+
+    for path_full in dirlinks + filelinks + files:
+        path_rel = os.path.relpath(path_full, src_dir)
+        dir_path_rel = os.path.dirname(path_rel)
+
+        dst_path = os.path.join(dst_dir, path_rel)
+        dir_dst_path = os.path.join(dst_dir, dir_path_rel)
+
+        # print 'path_full', path_full
+        # print 'path_rel', path_rel
+        # print 'dir_path_rel', dir_path_rel
+        # print 'dst_path', dst_path
+        # print 'dir_dst_path', dir_dst_path
+        # print
+
+        if os.path.exists(dst_path):
+            if os.path.islink(dst_path):
+                logger.info('removing link: {}'.format(dst_path))
+                os.unlink(dst_path)
+
+            elif os.path.isdir(dst_path):
+                logger.info('removing dir: {}'.format(dst_path))
+                shutil.rmtree(dst_path)
+
+            elif os.path.isfile(dst_path):
+                logger.info('removing file: {}'.format(dst_path))
+                os.remove(dst_path)
+
+        # make sure that destination directory exists
+        if os.path.exists(dir_dst_path):
+            if not os.path.isdir(dir_dst_path):
+                os.remove(dir_dst_path)
+        else:
+            logger.info('making needed dir: {}'.format(dir_dst_path))
+            os.makedirs(dir_dst_path)
+            chown_path(dir_dst_path)
+
+        # creating links
+        if os.path.islink(path_full):
+            linkto = os.readlink(path_full)
+            msg = 'creating link {} -> {}'.format(dst_path, linkto)
+            logger.info(msg)
+            os.symlink(linkto, dst_path)
+            chown_path(dst_path)
+
+        elif os.path.isfile(path_full):
+            msg = 'copying file {} -> {}'.format(path_full, dst_path)
+            logger.info(msg)
+            shutil.copy(path_full, dst_path)
+            chown_path(dst_path)
+
