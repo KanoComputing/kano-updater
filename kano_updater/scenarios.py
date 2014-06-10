@@ -9,7 +9,7 @@
 from kano.logging import logger
 from kano_updater.osversion import OSVersion
 from kano_updater.utils import install, remove_user_files, update_failed, \
-    purge, update_from_skel
+    purge, update_home_folders_from_skel
 from kano.utils import run_cmd, run_cmd_log
 
 
@@ -142,4 +142,4 @@ class PostUpdate(Scenarios):
         remove_user_files(['.kdeskrc'])
 
     def beta_103_to_beta_104(self):
-        update_from_skel()
+        update_home_folders_from_skel()
