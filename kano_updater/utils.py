@@ -11,12 +11,13 @@
 import os
 import sys
 import errno
+import shutil
 from kano.logging import logger
-from kano.utils import run_print_output_error, run_cmd, run_print_output_error,\
-    zenity_show_progress, kill_child_processes, run_cmd_log, is_gui
+from kano.utils import run_print_output_error, run_cmd, run_cmd_log, is_gui, chown_path
 
 UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
 STATUS_FILE = UPDATER_CACHE_DIR + "status"
+
 
 def install(pkgs, die_on_err=True):
     if isinstance(pkgs, list):
@@ -31,8 +32,10 @@ def install(pkgs, die_on_err=True):
 
     return rv
 
+
 def remove(pkgs):
     pass  # TODO
+
 
 def purge(pkgs, die_on_err=False):
     if isinstance(pkgs, list):
@@ -44,6 +47,7 @@ def purge(pkgs, die_on_err=False):
         update_failed("Unable to purge '{}'".format(pkgs))
 
     return rv
+
 
 def update_failed(err):
     logger.error("Update failed: {}".format(err))
@@ -59,9 +63,10 @@ def update_failed(err):
         kdialog.run()
     else:
         print "Update error: {}".format(msg)
-        answer = raw_input()
+        raw_input()
 
     sys.exit(1)
+
 
 def get_dpkg_dict():
     apps_ok = dict()
@@ -83,19 +88,23 @@ def get_dpkg_dict():
 
     return apps_ok, apps_other
 
+
 def fix_broken(msg):
     cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" install -f'
     run_cmd_log(cmd)
+
 
 def expand_rootfs():
     cmd = '/usr/bin/expand-rootfs'
     _, _, rc = run_print_output_error(cmd)
     return rc == 0
 
+
 def get_installed_version(pkg):
     out, _, _ = run_cmd('dpkg-query -s kano-updater | grep "Version:"')
     return out.strip()[9:]
+
 
 def get_update_status():
     status = {"last_update": 0, "update_available": 0, "last_check": 0}
@@ -106,6 +115,7 @@ def get_update_status():
                 status[name] = int(value)
 
     return status
+
 
 def set_update_status(status):
     try:
@@ -120,12 +130,14 @@ def set_update_status(status):
         for name, value in status.iteritems():
             sf.write("{}={}\n".format(name, value))
 
+
 def reboot_required(watched, changed):
     for pkg in changed:
         if pkg in watched:
             return True
 
     return False
+
 
 def reboot(title, description):
     if is_gui():
@@ -135,8 +147,9 @@ def reboot(title, description):
     else:
         print title
         print 'Press any key to continue'
-        answer = raw_input()
+        raw_input()
     run_cmd('reboot')
+
 
 def remove_user_files(files):
     for d in os.listdir("/home/"):
@@ -147,3 +160,97 @@ def remove_user_files(files):
                     os.unlink(file_path)
                 except:
                     pass
+
+
+def update_home_folders_from_skel():
+    import pwd
+    import grp
+
+    home = '/home'
+    home_folders = os.listdir(home)
+
+    for folder in home_folders:
+        full_path = os.path.join(home, folder)
+        if os.path.isdir(full_path):
+            user_name = folder
+            try:
+                pwd.getpwnam(user_name)
+                grp.getgrnam(user_name)
+                update_folder_from_skel(user_name)
+            except Exception:
+                logger.error('Home folder: {} doesn\'t match user: {}!'.format(full_path, user_name))
+
+
+def update_folder_from_skel(user_name):
+    logger.info('Updating home folder of user: {}'.format(user_name))
+    src_dir = '/etc/skel'
+    dst_dir = os.path.join('/home', user_name)
+
+    dirlinks = []
+    filelinks = []
+    files = []
+
+    for root, dirs, filenames in os.walk(src_dir):
+        for d in dirs:
+            path_full = os.path.join(root, d)
+            if os.path.islink(path_full):
+                dirlinks.append(path_full)
+
+        for f in filenames:
+            path_full = os.path.join(root, f)
+            if os.path.islink(path_full):
+                filelinks.append(path_full)
+            else:
+                files.append(path_full)
+
+    for path_full in dirlinks + filelinks + files:
+        path_rel = os.path.relpath(path_full, src_dir)
+        dir_path_rel = os.path.dirname(path_rel)
+
+        dst_path = os.path.join(dst_dir, path_rel)
+        dir_dst_path = os.path.join(dst_dir, dir_path_rel)
+
+        # print 'path_full', path_full
+        # print 'path_rel', path_rel
+        # print 'dir_path_rel', dir_path_rel
+        # print 'dst_path', dst_path
+        # print 'dir_dst_path', dir_dst_path
+        # print
+
+        if os.path.exists(dst_path):
+            if os.path.islink(dst_path):
+                logger.info('removing link: {}'.format(dst_path))
+                os.unlink(dst_path)
+
+            elif os.path.isdir(dst_path):
+                logger.info('removing dir: {}'.format(dst_path))
+                shutil.rmtree(dst_path)
+
+            elif os.path.isfile(dst_path):
+                logger.info('removing file: {}'.format(dst_path))
+                os.remove(dst_path)
+
+        # make sure that destination directory exists
+        if os.path.exists(dir_dst_path):
+            if not os.path.isdir(dir_dst_path):
+                os.remove(dir_dst_path)
+        else:
+            logger.info('making needed dir: {}'.format(dir_dst_path))
+            os.makedirs(dir_dst_path)
+            chown_path(dir_dst_path, user=user_name, group=user_name)
+
+        # creating links
+        if os.path.islink(path_full):
+            linkto = os.readlink(path_full)
+            msg = 'creating link {} -> {}'.format(dst_path, linkto)
+            logger.info(msg)
+            os.symlink(linkto, dst_path)
+            chown_path(dst_path, user=user_name, group=user_name)
+
+        elif os.path.isfile(path_full):
+            msg = 'copying file {} -> {}'.format(path_full, dst_path)
+            logger.info(msg)
+            shutil.copy(path_full, dst_path)
+            chown_path(dst_path, user=user_name, group=user_name)
+
+
