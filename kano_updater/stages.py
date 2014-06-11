@@ -15,10 +15,12 @@ from kano.logging import logger
 from kano.utils import run_print_output_error, \
     kill_child_processes, run_cmd, read_file_contents_as_lines, delete_file, \
     delete_dir, run_cmd_log
-from kano_updater.utils import fix_broken
+from kano_updater.utils import fix_broken, launch_gui_if_not_running, set_gui_stage
 
 
-def upgrade_debian():
+# Send the gui process as an argument so we can check if it's still running
+# and relaunch if necessary
+def upgrade_debian(gui_process):
     # setting up apt-get for non-interactive mode
     os.environ['DEBIAN_FRONTEND'] = 'noninteractive'
 
@@ -26,10 +28,8 @@ def upgrade_debian():
     fix_broken("Preparing packages to be upgraded")
 
     # apt upgrade
-    tmp_filename = "/tmp/updater-progress"
-    f = open(tmp_filename, "w+")
-    f.write("4")
-    f.close()
+    gui_process = launch_gui_if_not_running(gui_process)
+    set_gui_stage(4)
 
     cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" dist-upgrade'
@@ -37,9 +37,8 @@ def upgrade_debian():
     kill_child_processes(id)
 
     # apt autoremove
-    f = open(tmp_filename, "w+")
-    f.write("5")
-    f.close()
+    gui_process = launch_gui_if_not_running(gui_process)
+    set_gui_stage(5)
 
     cmd = 'apt-get -y autoremove --purge'
     run_cmd_log(cmd)

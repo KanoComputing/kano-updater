@@ -11,6 +11,7 @@
 import os
 import sys
 import errno
+import subprocess
 from kano.logging import logger
 from kano.utils import run_print_output_error, run_cmd, run_print_output_error,\
     zenity_show_progress, kill_child_processes, run_cmd_log, is_gui
@@ -147,3 +148,18 @@ def remove_user_files(files):
                     os.unlink(file_path)
                 except:
                     pass
+
+def launch_gui():
+    process = subprocess.Popen("kano-updater-gui")
+    return process
+
+def launch_gui_if_not_running(process):
+    if process.poll() is not None:
+        return launch_gui()
+    return process
+
+def set_gui_stage(number):
+    tmp_filename = "/tmp/updater-progress"
+    f = open(tmp_filename, "w+")
+    f.write(str(number))
+    f.close()

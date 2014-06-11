@@ -11,7 +11,6 @@
 import os
 import sys
 import time
-import subprocess
 
 if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -25,7 +24,7 @@ from kano_updater.stages import upgrade_debian, upgrade_python
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.utils import get_dpkg_dict, set_update_status, \
     expand_rootfs, get_installed_version, reboot, reboot_required, \
-    update_failed
+    update_failed, launch_gui, launch_gui_if_not_running, set_gui_stage
 from kano.utils import kill_child_processes, \
     run_cmd, delete_file, is_gui, run_cmd_log
 
@@ -133,7 +132,7 @@ else:  # do upgrade
         run_cmd('killall -q {}'.format(app))
 
     # Start gui
-    process = subprocess.Popen("/usr/bin/kano-updater-gui")
+    gui_process = launch_gui()
 
     run_cmd_log('apt-get -y clean')
     _, _, rv = run_cmd_log('apt-get -y update')
@@ -142,10 +141,8 @@ else:  # do upgrade
         update_failed("Could not download the package lists")
 
     # upgrade kano-updater itself
-    tmp_filename = "/tmp/updater-progress"
-    f = open(tmp_filename, "w+")
-    f.write("2")
-    f.close()
+    gui_process = launch_gui_if_not_running(gui_process)
+    set_gui_stage(2)
 
     current_updater_version = get_installed_version('kano-updater')
 
@@ -170,14 +167,13 @@ else:  # do upgrade
     preup.run()
 
     # upgrade python
-    f = open(tmp_filename, "w+")
-    f.write("3")
-    f.close()
+    gui_process = launch_gui_if_not_running(gui_process)
+    set_gui_stage(3)
 
     python_ok, python_err = upgrade_python(python_modules_file, appstate_before)
 
     # upgrade debian
-    debian_err_packages = upgrade_debian()
+    debian_err_packages = upgrade_debian(gui_process)
 
     # post upgrade
     postup.run()
@@ -192,7 +188,7 @@ else:  # do upgrade
     bump_system_version(new_version, version_file, issue_file)
 
     # Kill gui when finished
-    process.kill()
+    gui_process.kill()
 
     now = int(time.time())
     status = {"last_update": now, "update_available": 0, "last_check": now}

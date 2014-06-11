@@ -15,7 +15,7 @@ import os
 import time
 
 image_filename = "/usr/share/kano-updater/images/"
-current_number = 1
+current_number = "1"
 exit = False
 tmp_filename = "/tmp/updater-progress"
 
@@ -43,6 +43,7 @@ class WorkerThread(threading.Thread):
             except IOError:
                 f = open(tmp_filename, "w+")
                 f.write("1")
+                number = "1"
                 f.close()
 
             if not number == str(current_number) and number.isdigit():
