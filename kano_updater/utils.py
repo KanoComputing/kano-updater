@@ -50,15 +50,13 @@ def purge(pkgs, die_on_err=False):
     return rv
 
 
-def update_failed(err, gui_process):
+def update_failed(err):
     logger.error("Update failed: {}".format(err))
 
     msg = "The update couldn't be finished at the moment. " + \
           "Please try again later.\n\n" + \
           "If this problem persists, please consider reporting this issue " + \
           "via the\nFeedback tool. We'll be happy to help!"
-
-    kill_gui(gui_process)
 
     if is_gui():
         from kano.gtk3 import kano_dialog

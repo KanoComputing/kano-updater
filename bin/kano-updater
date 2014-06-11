@@ -140,7 +140,7 @@ else:  # do upgrade
     #kill_child_processes(progress_bar)
     if rv != 0:
         kill_gui(gui_process)
-        update_failed("Could not download the package lists", gui_process)
+        update_failed("Could not download the package lists")
 
     # upgrade kano-updater itself
     gui_process = launch_gui_if_not_running(gui_process)
