@@ -24,7 +24,8 @@ from kano_updater.stages import upgrade_debian, upgrade_python
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.utils import get_dpkg_dict, set_update_status, \
     expand_rootfs, get_installed_version, reboot, reboot_required, \
-    update_failed, launch_gui, launch_gui_if_not_running, set_gui_stage
+    update_failed, launch_gui, launch_gui_if_not_running, set_gui_stage, \
+    kill_gui
 from kano.utils import kill_child_processes, \
     run_cmd, delete_file, is_gui, run_cmd_log
 
@@ -138,7 +139,8 @@ else:  # do upgrade
     _, _, rv = run_cmd_log('apt-get -y update')
     #kill_child_processes(progress_bar)
     if rv != 0:
-        update_failed("Could not download the package lists")
+        kill_gui(gui_process)
+        update_failed("Could not download the package lists", gui_process)
 
     # upgrade kano-updater itself
     gui_process = launch_gui_if_not_running(gui_process)
@@ -152,6 +154,7 @@ else:  # do upgrade
     #kill_child_processes(progress_bar)
 
     if rv != 0:
+        kill_gui(gui_process)
         update_failed("Couldn't update the updater!")
 
     new_updater_version = get_installed_version('kano-updater')
@@ -188,8 +191,7 @@ else:  # do upgrade
     bump_system_version(new_version, version_file, issue_file)
 
     # Kill gui when finished
-    if gui_process.poll() is None:
-        gui_process.kill()
+    kill_gui(gui_process)
 
     now = int(time.time())
     status = {"last_update": now, "update_available": 0, "last_check": now}

@@ -181,6 +181,11 @@ def set_gui_stage(number):
     f.close()
 
 
+def kill_gui(process):
+    if process.poll() is None:
+        process.kill()
+
+
 def update_home_folders_from_skel():
     import pwd
     import grp
