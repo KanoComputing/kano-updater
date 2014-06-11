@@ -162,20 +162,24 @@ def remove_user_files(files):
                 except:
                     pass
 
+
 def launch_gui():
     process = subprocess.Popen("kano-updater-gui")
     return process
+
 
 def launch_gui_if_not_running(process):
     if process.poll() is not None:
         return launch_gui()
     return process
 
+
 def set_gui_stage(number):
     tmp_filename = "/tmp/updater-progress"
     f = open(tmp_filename, "w+")
     f.write(str(number))
     f.close()
+
 
 def update_home_folders_from_skel():
     import pwd

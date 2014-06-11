@@ -188,7 +188,8 @@ else:  # do upgrade
     bump_system_version(new_version, version_file, issue_file)
 
     # Kill gui when finished
-    gui_process.kill()
+    if gui_process.poll() is None:
+        gui_process.kill()
 
     now = int(time.time())
     status = {"last_update": now, "update_available": 0, "last_check": now}
