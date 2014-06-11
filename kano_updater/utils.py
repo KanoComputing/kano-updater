@@ -163,17 +163,28 @@ def remove_user_files(files):
 
 
 def update_home_folders_from_skel():
+    import pwd
+    import grp
+
     home = '/home'
     home_folders = os.listdir(home)
 
     for folder in home_folders:
         full_path = os.path.join(home, folder)
         if os.path.isdir(full_path):
-            update_folder_from_skel(full_path)
+            user_name = folder
+            try:
+                pwd.getpwnam(user_name)
+                grp.getgrnam(user_name)
+                update_folder_from_skel(user_name)
+            except Exception:
+                logger.error('Home folder: {} doesn\'t match user: {}!'.format(full_path, user_name))
 
 
-def update_folder_from_skel(dst_dir):
+def update_folder_from_skel(user_name):
+    logger.info('Updating home folder of user: {}'.format(user_name))
     src_dir = '/etc/skel'
+    dst_dir = os.path.join('/home', user_name)
 
     dirlinks = []
     filelinks = []
@@ -226,7 +237,7 @@ def update_folder_from_skel(dst_dir):
         else:
             logger.info('making needed dir: {}'.format(dir_dst_path))
             os.makedirs(dir_dst_path)
-            chown_path(dir_dst_path)
+            chown_path(dir_dst_path, user=user_name, group=user_name)
 
         # creating links
         if os.path.islink(path_full):
@@ -234,11 +245,12 @@ def update_folder_from_skel(dst_dir):
             msg = 'creating link {} -> {}'.format(dst_path, linkto)
             logger.info(msg)
             os.symlink(linkto, dst_path)
-            chown_path(dst_path)
+            chown_path(dst_path, user=user_name, group=user_name)
 
         elif os.path.isfile(path_full):
             msg = 'copying file {} -> {}'.format(path_full, dst_path)
             logger.info(msg)
             shutil.copy(path_full, dst_path)
-            chown_path(dst_path)
+            chown_path(dst_path, user=user_name, group=user_name)
+
 
