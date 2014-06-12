@@ -26,7 +26,7 @@ from kano.logging import logger
 from kano_updater.utils import get_dpkg_dict, get_update_status, set_update_status
 
 
-# Check whether there"s something running
+# Check whether there is something running
 #   based on the recent CPU utilisation
 #
 
