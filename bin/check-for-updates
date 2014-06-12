@@ -11,8 +11,6 @@
 KANO_LISTS = "/etc/apt/sources.list.d/kano.list"
 APT_LISTS_CACHE = "/var/lib/apt/lists/"
 
-DEBUG = False
-
 import os
 import sys
 import re
