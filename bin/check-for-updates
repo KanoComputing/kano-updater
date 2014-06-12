@@ -26,6 +26,31 @@ from kano.utils import run_cmd, enforce_root
 from kano.logging import logger
 from kano_updater.utils import get_dpkg_dict, get_update_status, set_update_status
 
+
+def display_dialog():
+    logger.debug('Showing update dialog')
+    from kano.gtk3 import kano_dialog
+
+    kdialog = kano_dialog.KanoDialog(
+        "Updates available!",
+        "Keep system fresh by updating",
+        {
+            "LATER": {"color": "grey", "return_value": 0},
+            "UPDATE NOW": {"color": "orange", "return_value": 1}
+        }
+    )
+    kdialog.set_action_background("grey")
+    response = kdialog.run()
+
+    if response == 1:
+        logger.debug('starting updater')
+        os.popen("sudo kano-updater -f")
+    else:
+        logger.debug('skipping update')
+
+    sys.exit()
+
+
 enforce_root('check-for-updates needs root!')
 
 parser = argparse.ArgumentParser()
@@ -34,17 +59,21 @@ parser.add_argument('-t', '--time', help='limit by time (hours)')
 args = parser.parse_args()
 
 if args.time:
-    target_delta = args.time * 60 * 60
+    target_delta = float(args.time) * 60 * 60
 
     time_now = time.time()
-    last_check = get_update_status()["last_check"]
+    status = get_update_status()
+    last_check = status["last_check"]
     delta = time_now - last_check
 
     if delta > target_delta:
         logger.info('Time check passed, doing update check!')
     else:
         logger.info('Not enough time passed for a new update check!')
-        sys.exit()
+        if args.dialog and status["update_available"]:
+            display_dialog()
+        else:
+            sys.exit()
 
 # Check whether there is something running
 #   based on the recent CPU utilisation
@@ -99,7 +128,6 @@ for pkg, version in installed_pkgs.iteritems():
     if pkg in pkg_list and version < pkg_list[pkg]:
         updates_found = True
 
-
 # no updates found, write status and exit
 if not updates_found:
     logger.info("No updates detected")
@@ -107,28 +135,14 @@ if not updates_found:
     set_update_status(status)
     sys.exit()
 
-# saving update_available state
-logger.info("Updates available")
-status["update_available"] = 1
-set_update_status(status)
+# updates found, saving update_available state
+else:
+    logger.info("Updates available")
+    status["update_available"] = 1
+    set_update_status(status)
 
-# displaying dialog if needed
-if args.dialog:
-    from kano.gtk3 import kano_dialog
-
-    kdialog = kano_dialog.KanoDialog(
-        "Updates available!",
-        "Keep system fresh by updating",
-        {
-            "LATER": {"color": "grey", "return_value": 0},
-            "UPDATE NOW": {"color": "orange", "return_value": 1}
-        }
-    )
-    kdialog.set_action_background("grey")
-    response = kdialog.run()
-
-    if response == 1:
-        os.popen("sudo kano-updater -f")
-
+    # displaying dialog if needed
+    if args.dialog:
+        display_dialog()
 
 
