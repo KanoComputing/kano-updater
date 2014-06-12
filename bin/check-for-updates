@@ -79,6 +79,8 @@ if args.time:
 #   based on the recent CPU utilisation
 #
 
+logger.info('Checking for updates')
+
 # Download recent kano repo Package lists
 cmd = ("sudo apt-get update -o Dir::Etc::sourcelist='{}' " +
        "-o Dir::Etc::sourceparts'=-' " +
