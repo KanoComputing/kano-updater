@@ -59,8 +59,8 @@ for pkg_list_filename in kano_pkg_lists:
             elif re.match("Version: ", line):
                 version = line[9:-1]
 
-                if package is None:
-                    raise Exception("Malformed package lists")
+                if not package:
+                    logger.error("Malformed package lists, filename: {}".format(pkg_list_filename))
                 else:
                     if package not in pkg_list or \
                        (package in pkg_list and version > pkg_list[package]):
