@@ -22,11 +22,9 @@ if __name__ == '__main__' and __package__ is None:
             sys.path.append(dir_path)
 
 from kano.utils import run_cmd
+from kano.logging import logger
 from kano_updater.utils import get_dpkg_dict, get_update_status, set_update_status
 
-
-def debug_print(msg):
-    sys.stderr.write("DEBUG: " + msg + "\n")
 
 # Check whether there"s something running
 #   based on the recent CPU utilisation
@@ -77,13 +75,13 @@ status["last_check"] = int(time.time())
 # Compare the package list to dpkg -l
 for pkg, version in installed_pkgs.iteritems():
     if pkg in pkg_list and version < pkg_list[pkg]:
-        debug_print("Updates available")
+        logger.info("Updates available")
         status["update_available"] = 1
         set_update_status(status)
 
         sys.exit(0)
 
-debug_print("No updates detected")
+logger.info("No updates detected")
 status["update_available"] = 0
 set_update_status(status)
 
