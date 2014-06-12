@@ -15,6 +15,7 @@ import os
 import sys
 import re
 import time
+import argparse
 
 if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -25,6 +26,23 @@ from kano.utils import run_cmd
 from kano.logging import logger
 from kano_updater.utils import get_dpkg_dict, get_update_status, set_update_status
 
+parser = argparse.ArgumentParser()
+parser.add_argument('-d', '--dialog', action='store_true', help='display dialog')
+parser.add_argument('-t', '--time', help='limit by time (hours)')
+args = parser.parse_args()
+
+if args.time:
+    target_delta = args.time * 60 * 60
+
+    time_now = time.time()
+    last_check = get_update_status()["last_check"]
+    delta = time_now - last_check
+
+    if delta > target_delta:
+        logger.info('Time check passed, doing update check!')
+    else:
+        logger.info('Not enough time passed for a new update check!')
+        sys.exit()
 
 # Check whether there is something running
 #   based on the recent CPU utilisation
@@ -72,17 +90,43 @@ for pkg_list_filename in kano_pkg_lists:
 status = get_update_status()
 status["last_check"] = int(time.time())
 
+updates_found = False
+
 # Compare the package list to dpkg -l
 for pkg, version in installed_pkgs.iteritems():
     if pkg in pkg_list and version < pkg_list[pkg]:
-        logger.info("Updates available")
-        status["update_available"] = 1
-        set_update_status(status)
+        updates_found = True
 
-        sys.exit(0)
 
-logger.info("No updates detected")
-status["update_available"] = 0
+# no updates found, write status and exit
+if not updates_found:
+    logger.info("No updates detected")
+    status["update_available"] = 0
+    set_update_status(status)
+    sys.exit()
+
+# saving update_available state
+logger.info("Updates available")
+status["update_available"] = 1
 set_update_status(status)
 
-sys.exit(1)
+# displaying dialog if needed
+if args.dialog:
+    from kano.gtk3 import kano_dialog
+
+    kdialog = kano_dialog.KanoDialog(
+        "Updates available!",
+        "Keep system fresh by updating",
+        {
+            "LATER": {"color": "grey", "return_value": 0},
+            "UPDATE NOW": {"color": "orange", "return_value": 1}
+        }
+    )
+    kdialog.set_action_background("grey")
+    response = kdialog.run()
+
+    if response == 1:
+        os.popen("sudo kano-updater -f")
+
+
+
