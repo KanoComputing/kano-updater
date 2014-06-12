@@ -22,9 +22,11 @@ if __name__ == '__main__' and __package__ is None:
     if dir_path != '/usr':
             sys.path.append(dir_path)
 
-from kano.utils import run_cmd
+from kano.utils import run_cmd, enforce_root
 from kano.logging import logger
 from kano_updater.utils import get_dpkg_dict, get_update_status, set_update_status
+
+enforce_root('check-for-updates needs root!')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--dialog', action='store_true', help='display dialog')
