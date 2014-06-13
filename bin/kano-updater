@@ -31,6 +31,8 @@ from kano.utils import kill_child_processes, \
 
 debug = False
 
+logger.force_log_level("info")
+
 issue_file = "/etc/issue"
 version_file = "/etc/kanux_version"
 
