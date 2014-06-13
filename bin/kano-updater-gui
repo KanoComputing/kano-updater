@@ -65,6 +65,8 @@ class MainWindow(Gtk.Window):
         self.set_resizable(False)
         self.set_position(Gtk.WindowPosition.CENTER)
         self.set_decorated(False)
+        # Make sure this window is always above
+        self.set_keep_above(True)
 
         self.grid = Gtk.Grid()
 

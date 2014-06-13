@@ -26,8 +26,7 @@ from kano_updater.utils import get_dpkg_dict, set_update_status, \
     expand_rootfs, get_installed_version, reboot, reboot_required, \
     update_failed, launch_gui, launch_gui_if_not_running, set_gui_stage, \
     kill_gui
-from kano.utils import kill_child_processes, \
-    run_cmd, delete_file, is_gui, run_cmd_log
+from kano.utils import run_cmd, delete_file, is_gui, run_cmd_log
 
 debug = False
 
