@@ -1,4 +1,6 @@
 /*
+ * kano_updater.c
+ *
  * Copyright (C) 2014 Kano Computing Ltd.
  * License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
  *
@@ -22,7 +24,7 @@
 #define UPDATE_STATUS_FILE "/var/cache/kano-updater/status"
 
 #define CHECK_FOR_UPDATES_CMD "sudo check-for-updates"
-#define UPDATE_CMD "sudo kano-updater"
+#define UPDATE_CMD "kdesk-blur 'sudo kano-updater'"
 
 #define PLUGIN_TOOLTIP "Kano Updater"
 
@@ -84,9 +86,9 @@ static int plugin_constructor(Plugin *p, char **fp)
 
 
 	/* Set a tooltip to the icon to show when the mouse sits over the it */
-	GtkTooltips *tooltips; 
-	tooltips = gtk_tooltips_new(); 
-	gtk_tooltips_set_tip(tooltips, GTK_WIDGET(icon), PLUGIN_TOOLTIP, NULL); 
+	GtkTooltips *tooltips;
+	tooltips = gtk_tooltips_new();
+	gtk_tooltips_set_tip(tooltips, GTK_WIDGET(icon), PLUGIN_TOOLTIP, NULL);
 
 	gtk_widget_set_sensitive(icon, TRUE);
 

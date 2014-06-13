@@ -153,13 +153,16 @@ def reboot(title, description):
 
 
 def remove_user_files(files):
+    logger.info('utils / remove_user_files files:{}'.format(files))
     for d in os.listdir("/home/"):
         if os.path.isdir("/home/{}/".format(d)):
             for f in files:
                 file_path = "/home/{}/{}".format(d, f)
                 try:
+                    logger.info('trying to delete file: {}'.format(file_path))
                     os.unlink(file_path)
                 except:
+                    logger.info('could not delete file: {}'.format(file_path))
                     pass
 
 
@@ -276,3 +279,11 @@ def update_folder_from_skel(user_name):
             logger.info(msg)
             shutil.copy(path_full, dst_path)
             chown_path(dst_path, user=user_name, group=user_name)
+
+def rclocal_executable():
+    try:
+        # Restablish execution bit: -rwxr-xr-x
+        os.chmod('/etc/rc.local', 0755)
+        return True
+    except:
+        return False
