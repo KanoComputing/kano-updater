@@ -87,7 +87,7 @@ class MainWindow(Gtk.Window):
         self.add(self.box)
 
     def update(self, event=None):
-        subprocess.Popen("sudo kano-updater -f &")
+        subprocess.Popen(["sudo", "kano-updater", "-f"])
         Gtk.main_quit()
 
 
