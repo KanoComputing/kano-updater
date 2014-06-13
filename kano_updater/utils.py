@@ -279,3 +279,11 @@ def update_folder_from_skel(user_name):
             logger.info(msg)
             shutil.copy(path_full, dst_path)
             chown_path(dst_path, user=user_name, group=user_name)
+
+def rclocal_executable():
+    try:
+        # Restablish execution bit: -rwxr-xr-x
+        os.chmod('/etc/rc.local', 0755)
+        return True
+    except:
+        return False
