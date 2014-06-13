@@ -1,3 +1,9 @@
+kano-updater (1.0.4-1) unstable; urgency=low
+
+  * Bumping updater to 1.0.4
+
+ -- Team Kano <dev@kano.me>  Fri, 13 Jun 2014 14:32:01 +0000
+
 kano-updater (1.0.2-1) unstable; urgency=low
 
   * Bumping updater to 1.0.2
