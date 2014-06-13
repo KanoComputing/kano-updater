@@ -9,7 +9,7 @@
 from kano.logging import logger
 from kano_updater.osversion import OSVersion
 from kano_updater.utils import install, remove_user_files, update_failed, \
-    purge, update_home_folders_from_skel
+    purge, update_home_folders_from_skel, rclocal_executable
 from kano.utils import run_cmd, run_cmd_log
 
 
@@ -143,3 +143,4 @@ class PostUpdate(Scenarios):
 
     def beta_103_to_beta_104(self):
         update_home_folders_from_skel()
+        rclocal_executable()
