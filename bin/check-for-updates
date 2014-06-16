@@ -67,7 +67,7 @@ class MainWindow(Gtk.Window):
         self.set_keep_above(True)
 
         # Header
-        self.heading = Heading("Time to update!", "Take a break!  Updating takes about 10 minutes")
+        self.heading = Heading("Time to update!", "Take a break!  Updating takes about 15 minutes")
         self.heading.description.set_line_wrap(True)
 
         self.button = KanoButton("UPDATE NOW")
@@ -95,7 +95,10 @@ class MainWindow(Gtk.Window):
         self.add(self.box)
 
     def update(self, event=None):
-        subprocess.Popen(["sudo", "kano-updater", "-f"])
+        global run_updater
+        run_updater = True
+
+        self.destroy()
         Gtk.main_quit()
 
 
@@ -107,15 +110,22 @@ def display_gui():
     win.show_all()
     Gtk.main()
 
+    if run_updater:
+        logger.info('running updater')
+        subprocess.call('sudo kano-updater -f', shell=True)
+
 
 def check_for_multiple_instances():
-    cmd = 'sudo pgrep -f "/usr/bin/check-for-updates" -l | grep -v pgrep | wc -l'
+    cmd = 'sudo pgrep -f "python /usr/bin/check-for-updates" -l | grep -v pgrep'
     o, _, _ = run_cmd(cmd)
-    num = int(o)
+    num = len(o.splitlines())
     logger.debug('Total number of check-for-updates processes: {}'.format(num))
     if num > 1:
         logger.info('Exiting check-for-updates as there is an other instance already running!')
+        logger.debug(o)
         sys.exit()
+
+run_updater = False
 
 check_for_multiple_instances()
 
@@ -140,8 +150,7 @@ if args.time:
         logger.info('Not enough time passed for a new update check!')
         if args.dialog and status["update_available"]:
             display_gui()
-        else:
-            sys.exit()
+        sys.exit()
 
 # Check whether there is something running
 #   based on the recent CPU utilisation
@@ -155,7 +164,7 @@ cmd = ("sudo apt-get update -o Dir::Etc::sourcelist='{}' " +
        "-o APT::Get::List-Cleanup='0'").format(KANO_LISTS)
 _, _, rc = run_cmd(cmd)
 if rc != 0:
-    # TODO: Schedule the update for later on
+    logger.debug('apt-get update problems, exiting')
     sys.exit()
 
 # Get versions of all the packages in the repo
