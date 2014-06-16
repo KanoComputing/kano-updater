@@ -35,7 +35,7 @@ logger.force_log_level("info")
 issue_file = "/etc/issue"
 version_file = "/etc/kanux_version"
 
-new_version = OSVersion("Kanux", "Beta", "1.0.4")
+new_version = OSVersion("Kanux", "Beta", "1.1.0")
 if os.path.exists(version_file):
     old_version = OSVersion.from_version_file(version_file)
 else:
