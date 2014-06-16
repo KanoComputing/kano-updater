@@ -91,7 +91,7 @@ class PreUpdate(Scenarios):
                           self.beta_102_to_beta_103)
 
         self.add_scenario("Kanux-Beta-1.0.3", "Kanux-Beta-1.1.0",
-                          self.beta_103_to_beta_104)
+                          self.beta_103_to_beta_110)
 
     def beta_101_to_beta_102(self):
         pass
@@ -100,7 +100,7 @@ class PreUpdate(Scenarios):
         self._migrate_repo_url()
         purge("kano-youtube")
 
-    def beta_103_to_beta_104(self):
+    def beta_103_to_beta_110(self):
         pass
 
     def _migrate_repo_url(self):
@@ -132,7 +132,7 @@ class PostUpdate(Scenarios):
                           self.beta_102_to_beta_103)
 
         self.add_scenario("Kanux-Beta-1.0.3", "Kanux-Beta-1.1.0",
-                          self.beta_103_to_beta_104)
+                          self.beta_103_to_beta_110)
 
     def beta_101_to_beta_102(self):
         install('gnome-paint kano-fonts kano-themes zd1211-firmware')
@@ -141,6 +141,6 @@ class PostUpdate(Scenarios):
         install('kano-apps kano-screenshot kano-video')
         remove_user_files(['.kdeskrc'])
 
-    def beta_103_to_beta_104(self):
+    def beta_103_to_beta_110(self):
         update_home_folders_from_skel()
         rclocal_executable()
