@@ -155,7 +155,7 @@ cmd = ("sudo apt-get update -o Dir::Etc::sourcelist='{}' " +
        "-o APT::Get::List-Cleanup='0'").format(KANO_LISTS)
 _, _, rc = run_cmd(cmd)
 if rc != 0:
-    # TODO: Schedule the update for later on
+    logger.debug('apt-get update problems, exiting')
     sys.exit()
 
 # Get versions of all the packages in the repo
