@@ -52,6 +52,11 @@ is_gui = is_gui()
 if is_gui:
     from kano.gtk3 import kano_dialog
 
+
+# clean system logs
+# TODO: This should be moved to a cron job
+cleanup()
+
 preup = PreUpdate(old_version, new_version)
 postup = PostUpdate(old_version, new_version)
 if not (preup.covers_update() and postup.covers_update()):
@@ -185,10 +190,6 @@ else:  # do upgrade
 
     # refresh desktop
     os.system('kdesk -r')
-
-    # clean system logs
-
-    cleanup()
 
     bump_system_version(new_version, version_file, issue_file)
 
