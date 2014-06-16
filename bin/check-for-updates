@@ -16,6 +16,7 @@ import sys
 import re
 import time
 import argparse
+import subprocess
 
 if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -111,7 +112,7 @@ def display_gui():
 
     if run_updater:
         logger.info('running updater')
-        run_cmd("sudo kano-updater -f")
+        subprocess.call('sudo kano-updater -f', shell=True)
 
 
 def check_for_multiple_instances():
