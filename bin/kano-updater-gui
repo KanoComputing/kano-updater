@@ -158,7 +158,12 @@ def main():
     css.load_from_path('/usr/share/kano-updater/images/CSS/updater.css')
     screen = Gdk.Screen.get_default()
     styleContext = Gtk.StyleContext()
+    
+    common = Gtk.CssProvider()
+    common.load_from_path('/usr/share/kano/media/CSS/common.css')
+    
     styleContext.add_provider_for_screen(screen, css, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+    styleContext.add_provider_for_screen(screen, common, Gtk.STYLE_PROVIDER_PRIORITY_USER)
 
     win = MainWindow()
     win.connect("delete-event", win.close_window)
