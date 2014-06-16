@@ -263,6 +263,8 @@ else:  # do upgrade
         with open('msg', 'w') as outfile:
             outfile.write(msg)
 
+        # TODO - migrate this styling outside of this file.  Is a common piece of repeated code, and cannot be moved
+        # into kano_dialog as is styling applied to the screen instead of the individual widget (and needs to be that way).
         screen = Gdk.Screen.get_default()
         styleContext = Gtk.StyleContext()
         common = Gtk.CssProvider()
