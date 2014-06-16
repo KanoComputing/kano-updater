@@ -94,7 +94,10 @@ class MainWindow(Gtk.Window):
         self.add(self.box)
 
     def update(self, event=None):
-        run_cmd("sudo kano-updater -f")
+        global run_updater
+        run_updater = True
+
+        self.destroy()
         Gtk.main_quit()
 
 
@@ -106,6 +109,10 @@ def display_gui():
     win.show_all()
     Gtk.main()
 
+    if run_updater:
+        logger.info('running updater')
+        run_cmd("sudo kano-updater -f")
+
 
 def check_for_multiple_instances():
     cmd = 'sudo pgrep -f "python /usr/bin/check-for-updates" -l | grep -v pgrep'
@@ -116,6 +123,8 @@ def check_for_multiple_instances():
         logger.info('Exiting check-for-updates as there is an other instance already running!')
         logger.debug(o)
         sys.exit()
+
+run_updater = False
 
 check_for_multiple_instances()
 
