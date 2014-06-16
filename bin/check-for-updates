@@ -67,7 +67,7 @@ class MainWindow(Gtk.Window):
         self.set_keep_above(True)
 
         # Header
-        self.heading = Heading("Time to update!", "Take a break!  Updating takes about 10 minutes")
+        self.heading = Heading("Time to update!", "Take a break!  Updating takes about 15 minutes")
         self.heading.description.set_line_wrap(True)
 
         self.button = KanoButton("UPDATE NOW")
