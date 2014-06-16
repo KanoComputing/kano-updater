@@ -27,6 +27,7 @@ from kano_updater.utils import get_dpkg_dict, set_update_status, \
     update_failed, launch_gui, launch_gui_if_not_running, set_gui_stage, \
     kill_gui
 from kano.utils import run_cmd, delete_file, is_gui, run_cmd_log
+from gi.repository import Gtk, Gdk
 
 debug = False
 
@@ -261,6 +262,16 @@ else:  # do upgrade
         # Display message
         with open('msg', 'w') as outfile:
             outfile.write(msg)
+
+        screen = Gdk.Screen.get_default()
+        styleContext = Gtk.StyleContext()
+        common = Gtk.CssProvider()
+        common.load_from_path('/usr/share/kano/media/CSS/common.css')
+        colours = Gtk.CssProvider()
+        colours.load_from_path('/usr/share/kano/media/CSS/colours.css')
+        styleContext.add_provider_for_screen(screen, common, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+        styleContext.add_provider_for_screen(screen, colours, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+
         kdialog = kano_dialog.KanoDialog("Update result", "", scrolled_text=msg)
         kdialog.run()
         delete_file('msg')
