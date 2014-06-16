@@ -16,7 +16,6 @@ import sys
 import re
 import time
 import argparse
-import subprocess
 
 if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -95,7 +94,7 @@ class MainWindow(Gtk.Window):
         self.add(self.box)
 
     def update(self, event=None):
-        subprocess.Popen(["sudo", "kano-updater", "-f"])
+        run_cmd("sudo kano-updater -f")
         Gtk.main_quit()
 
 
