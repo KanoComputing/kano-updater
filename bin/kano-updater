@@ -35,7 +35,7 @@ logger.force_log_level("info")
 issue_file = "/etc/issue"
 version_file = "/etc/kanux_version"
 
-new_version = OSVersion("Kanux", "Beta", "1.0.4")
+new_version = OSVersion("Kanux", "Beta", "1.1.0")
 if os.path.exists(version_file):
     old_version = OSVersion.from_version_file(version_file)
 else:
@@ -51,6 +51,11 @@ is_gui = is_gui()
 # Import gtk3 module only if gui
 if is_gui:
     from kano.gtk3 import kano_dialog
+
+
+# clean system logs
+# TODO: This should be moved to a cron job
+cleanup()
 
 preup = PreUpdate(old_version, new_version)
 postup = PostUpdate(old_version, new_version)
@@ -162,6 +167,7 @@ else:  # do upgrade
     # re-run the updater in case it was updated
     if new_updater_version != current_updater_version and not debug:
         logger.info("The updater was reinstalled, launching again.")
+        kill_gui(gui_process)
         os.execvp('kano-updater', ['kano-updater', '-f'])
 
     # get app-state before upgrading
@@ -184,10 +190,6 @@ else:  # do upgrade
 
     # refresh desktop
     os.system('kdesk -r')
-
-    # clean system logs
-
-    cleanup()
 
     bump_system_version(new_version, version_file, issue_file)
 
