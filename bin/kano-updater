@@ -259,7 +259,7 @@ else:  # do upgrade
         # Display message
         with open('msg', 'w') as outfile:
             outfile.write(msg)
-        kdialog = kano_dialog.KanoDialog("Update result", msg)
+        kdialog = kano_dialog.KanoDialog("Update result", "", scrolled_text=msg)
         kdialog.run()
         delete_file('msg')
     else:
