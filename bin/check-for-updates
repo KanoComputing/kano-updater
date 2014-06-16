@@ -112,11 +112,11 @@ def display_gui():
 
     if run_updater:
         logger.info('running updater')
-        subprocess.call('sudo kano-updater -f', shell=True)
+        subprocess.call(['/usr/bin/kano-updater', '-f'])
 
 
 def check_for_multiple_instances():
-    cmd = 'sudo pgrep -f "python /usr/bin/check-for-updates" -l | grep -v pgrep'
+    cmd = 'pgrep -f "python /usr/bin/check-for-updates" -l | grep -v pgrep'
     o, _, _ = run_cmd(cmd)
     num = len(o.splitlines())
     logger.debug('Total number of check-for-updates processes: {}'.format(num))
@@ -159,7 +159,7 @@ if args.time:
 logger.info('Checking for updates')
 
 # Download recent kano repo Package lists
-cmd = ("sudo apt-get update -o Dir::Etc::sourcelist='{}' " +
+cmd = ("apt-get update -o Dir::Etc::sourcelist='{}' " +
        "-o Dir::Etc::sourceparts'=-' " +
        "-o APT::Get::List-Cleanup='0'").format(KANO_LISTS)
 _, _, rc = run_cmd(cmd)
