@@ -140,8 +140,7 @@ if args.time:
         logger.info('Not enough time passed for a new update check!')
         if args.dialog and status["update_available"]:
             display_gui()
-        else:
-            sys.exit()
+        sys.exit()
 
 # Check whether there is something running
 #   based on the recent CPU utilisation
