@@ -139,8 +139,8 @@ class PostUpdate(Scenarios):
 
     def beta_102_to_beta_103(self):
         install('kano-apps kano-screenshot kano-video')
-        remove_user_files(['.kdeskrc'])
 
     def beta_103_to_beta_110(self):
         update_home_folders_from_skel()
         rclocal_executable()
+        remove_user_files(['.kdeskrc'])
