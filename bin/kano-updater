@@ -29,9 +29,39 @@ from kano_updater.utils import get_dpkg_dict, set_update_status, \
 from kano.utils import run_cmd, delete_file, is_gui, run_cmd_log
 from gi.repository import Gtk, Gdk
 
-debug = False
 
+def check_for_multiple_instances():
+    cmd = 'pgrep -f "python /usr/bin/kano-updater" -l | grep -v pgrep'
+    o, _, _ = run_cmd(cmd)
+    num = len(o.splitlines())
+    logger.debug('Total number of kano-updater processes: {}'.format(num))
+    if num > 1:
+        logger.info('Exiting kano-updater as there is an other instance already running!')
+        logger.debug(o)
+        sys.exit()
+
+
+def root_check():
+    user = os.environ['LOGNAME']
+    if user != 'root':
+        title = 'Error!'
+        description = 'kano-updater must be executed with root privileges'
+        logger.error(description)
+
+        if is_gui:
+            kdialog = kano_dialog.KanoDialog(title, description)
+            kdialog.run()
+        else:
+            print description
+
+        sys.exit(1)
+
+
+debug = False
 logger.force_log_level("info")
+
+check_for_multiple_instances()
+root_check()
 
 issue_file = "/etc/issue"
 version_file = "/etc/kanux_version"
@@ -73,20 +103,6 @@ if not (preup.covers_update() and postup.covers_update()):
 logger.info("Upgrading from: {}".format(str(old_version)))
 logger.info("Upgrading to: {}".format(str(new_version)))
 
-# root check
-user = os.environ['LOGNAME']
-if user != 'root':
-    title = 'Error!'
-    description = 'kano-updater must be executed with root privileges'
-    logger.error(description)
-
-    if is_gui:
-        kdialog = kano_dialog.KanoDialog(title, description)
-        kdialog.run()
-    else:
-        print description
-
-    sys.exit(1)
 
 # upgrade python command line
 if len(sys.argv) == 2 and sys.argv[1] == 'python_upgrade':
