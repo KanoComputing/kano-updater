@@ -147,7 +147,7 @@ else:  # do upgrade
 
     # kill_apps
     kill_apps_list = ['minecraft-pi', 'make-music', 'make-video',
-                      'make-snake', 'kano-extras']
+                      'make-snake', 'kano-apps']
     for app in kill_apps_list:
         run_cmd('killall -q {}'.format(app))
 
