@@ -56,6 +56,10 @@ def root_check():
 
         sys.exit(1)
 
+# Import gtk3 module only if gui
+is_gui = is_gui()
+if is_gui:
+    from kano.gtk3 import kano_dialog
 
 debug = False
 logger.force_log_level("info")
@@ -76,13 +80,6 @@ python_modules_file = '/usr/share/kano-updater/python_modules'
 
 require_restart = ['kdesk', 'raspberrypi-linux', 'raspberrypi-firmware',
                    'kano-updater', 'kano-settings', 'kano-desktop']
-
-is_gui = is_gui()
-
-# Import gtk3 module only if gui
-if is_gui:
-    from kano.gtk3 import kano_dialog
-
 
 # clean system logs
 # TODO: This should be moved to a cron job
