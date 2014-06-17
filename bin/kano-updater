@@ -130,7 +130,7 @@ if len(sys.argv) == 2 and sys.argv[1] in ['-d', '--debug']:
 if not is_internet():
     title = "No internet connection detected"
     description = "Please connect to internet using the cable\n"
-    description += "or the WiFi utility in Extras"
+    description += "or the WiFi utility in Apps"
     if is_gui:
         kdialog = kano_dialog.KanoDialog(title, description)
         kdialog.run()
