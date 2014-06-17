@@ -6,6 +6,8 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
 #
 
+import os
+
 from kano.logging import logger
 from kano_updater.osversion import OSVersion
 from kano_updater.utils import install, remove_user_files, update_failed, \
@@ -99,6 +101,7 @@ class PreUpdate(Scenarios):
     def beta_102_to_beta_103(self):
         self._migrate_repo_url()
         purge("kano-youtube")
+        os.remove('/etc/skel/.kdeskrc')
 
     def beta_103_to_beta_110(self):
         pass
