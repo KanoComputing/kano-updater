@@ -147,3 +147,4 @@ class PostUpdate(Scenarios):
         update_home_folders_from_skel()
         rclocal_executable()
         remove_user_files(['.kdeskrc'])
+        install('kano-widgets')
