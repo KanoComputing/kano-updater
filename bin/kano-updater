@@ -270,7 +270,9 @@ else:  # do upgrade
 
     if is_gui:
         # Play sound in the background
-        os.system('kano-sound-cli /usr/share/kano-media/sounds/kano_updated.wav &')
+        from kano.utils import play_sound
+        play_sound('/usr/share/kano-media/sounds/kano_updated.wav', background=True)
+
         # Display message
         with open('msg', 'w') as outfile:
             outfile.write(msg)
