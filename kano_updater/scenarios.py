@@ -93,6 +93,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.0.3", "Kanux-Beta-1.1.0",
                           self.beta_103_to_beta_110)
 
+        self.add_scenario("Kanux-Beta-1.1.0", "Kanux-Beta-1.1.1",
+                          self.beta_110_to_beta_111)
+
     def beta_101_to_beta_102(self):
         pass
 
@@ -102,6 +105,9 @@ class PreUpdate(Scenarios):
         delete_file('/etc/skel/.kdeskrc')
 
     def beta_103_to_beta_110(self):
+        pass
+
+    def beta_110_to_beta_111(self):
         pass
 
     def _migrate_repo_url(self):
@@ -135,6 +141,9 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.0.3", "Kanux-Beta-1.1.0",
                           self.beta_103_to_beta_110)
 
+        self.add_scenario("Kanux-Beta-1.1.0", "Kanux-Beta-1.1.1",
+                          self.beta_110_to_beta_111)
+
     def beta_101_to_beta_102(self):
         install('gnome-paint kano-fonts kano-themes zd1211-firmware')
 
@@ -146,3 +155,6 @@ class PostUpdate(Scenarios):
         rclocal_executable()
         remove_user_files(['.kdeskrc'])
         install('kano-widgets')
+
+    def beta_110_to_beta_111(self):
+        install('kano-sound-files')
