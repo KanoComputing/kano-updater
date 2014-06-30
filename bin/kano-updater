@@ -168,7 +168,7 @@ else:  # do upgrade
     current_updater_version = get_installed_version('kano-updater')
 
     cmd = 'apt-get install -o Dpkg::Options::="--force-confdef" ' + \
-          '-o Dpkg::Options::="--force-confold" -y --force-yes kano-updater'
+          '-o Dpkg::Options::="--force-confold" -y --force-yes kano-toolset kano-updater'
     _, _, rv = run_cmd_log(cmd)
     #kill_child_processes(progress_bar)
 
