@@ -9,7 +9,7 @@
 from kano.logging import logger
 from kano_updater.osversion import OSVersion
 from kano_updater.utils import install, remove_user_files, update_failed, \
-    purge, update_home_folders_from_skel, rclocal_executable
+    purge, rclocal_executable
 from kano.utils import run_cmd, run_cmd_log, delete_file
 
 
@@ -151,7 +151,6 @@ class PostUpdate(Scenarios):
         install('kano-apps kano-screenshot kano-video')
 
     def beta_103_to_beta_110(self):
-        update_home_folders_from_skel()
         rclocal_executable()
         remove_user_files(['.kdeskrc'])
         install('kano-widgets')

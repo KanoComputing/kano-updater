@@ -25,7 +25,7 @@ from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.utils import get_dpkg_dict, set_update_status, \
     expand_rootfs, get_installed_version, reboot, reboot_required, \
     update_failed, launch_gui, launch_gui_if_not_running, set_gui_stage, \
-    kill_gui
+    kill_gui, update_home_folders_from_skel
 from kano.utils import run_cmd, delete_file, is_gui, run_cmd_log
 
 
@@ -200,6 +200,9 @@ else:  # do upgrade
 
     # post upgrade
     postup.run()
+
+    # housekeeping
+    update_home_folders_from_skel()
 
     # refresh desktop
     os.system('kdesk -r')
