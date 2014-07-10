@@ -2,3 +2,4 @@ requests
 tzupdate
 pam
 python-slugify
+decorator
