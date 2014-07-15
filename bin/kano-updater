@@ -25,7 +25,7 @@ from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.utils import get_dpkg_dict, set_update_status, \
     expand_rootfs, get_installed_version, reboot, reboot_required, \
     update_failed, launch_gui, launch_gui_if_not_running, set_gui_stage, \
-    kill_gui
+    kill_gui, update_home_folders_from_skel
 from kano.utils import run_cmd, delete_file, is_gui, run_cmd_log
 
 
@@ -69,7 +69,7 @@ root_check()
 issue_file = "/etc/issue"
 version_file = "/etc/kanux_version"
 
-new_version = OSVersion("Kanux", "Beta", "1.1.0")
+new_version = OSVersion("Kanux", "Beta", "1.1.1")
 if os.path.exists(version_file):
     old_version = OSVersion.from_version_file(version_file)
 else:
@@ -168,7 +168,7 @@ else:  # do upgrade
     current_updater_version = get_installed_version('kano-updater')
 
     cmd = 'apt-get install -o Dpkg::Options::="--force-confdef" ' + \
-          '-o Dpkg::Options::="--force-confold" -y --force-yes kano-updater'
+          '-o Dpkg::Options::="--force-confold" -y --force-yes kano-toolset kano-updater'
     _, _, rv = run_cmd_log(cmd)
     #kill_child_processes(progress_bar)
 
@@ -200,6 +200,9 @@ else:  # do upgrade
 
     # post upgrade
     postup.run()
+
+    # housekeeping
+    update_home_folders_from_skel()
 
     # refresh desktop
     os.system('kdesk -r')
@@ -270,7 +273,9 @@ else:  # do upgrade
 
     if is_gui:
         # Play sound in the background
-        os.system('kano-sound-cli /usr/share/kano-media/sounds/kano_updated.wav &')
+        from kano.utils import play_sound
+        play_sound('/usr/share/kano-media/sounds/kano_updated.wav', background=True)
+
         # Display message
         with open('msg', 'w') as outfile:
             outfile.write(msg)
