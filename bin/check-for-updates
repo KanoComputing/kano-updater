@@ -57,9 +57,9 @@ class MainWindow(Gtk.Window):
         self.heading.description.set_line_wrap(True)
 
         self.button = KanoButton("UPDATE NOW")
-        self.button.connect("clicked", self.update)
+        self.button.connect("button_release_event", self.update)
         self.later = OrangeButton("Later")
-        self.later.connect("clicked", Gtk.main_quit)
+        self.later.connect("button_release_event", Gtk.main_quit)
         self.button_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=15)
         self.button_box.pack_start(self.button, False, False, 0)
         self.button_box.pack_start(self.later, False, False, 0)
@@ -80,12 +80,13 @@ class MainWindow(Gtk.Window):
 
         self.add(self.box)
 
-    def update(self, event=None):
+    def update(self, widget, event):
         global run_updater
-        run_updater = True
 
-        self.destroy()
-        Gtk.main_quit()
+        if not hasattr(event, 'keyval') or event.keyval == 65293:
+            run_updater = True
+            self.destroy()
+            Gtk.main_quit()
 
 
 def display_gui():
