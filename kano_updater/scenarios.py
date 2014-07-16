@@ -9,8 +9,8 @@
 from kano.logging import logger
 from kano_updater.osversion import OSVersion
 from kano_updater.utils import install, remove_user_files, update_failed, \
-    purge, update_home_folders_from_skel, rclocal_executable
-from kano.utils import run_cmd, run_cmd_log
+    purge, rclocal_executable
+from kano.utils import run_cmd, run_cmd_log, delete_file
 
 
 class Scenarios(object):
@@ -93,14 +93,21 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.0.3", "Kanux-Beta-1.1.0",
                           self.beta_103_to_beta_110)
 
+        self.add_scenario("Kanux-Beta-1.1.0", "Kanux-Beta-1.1.1",
+                          self.beta_110_to_beta_111)
+
     def beta_101_to_beta_102(self):
         pass
 
     def beta_102_to_beta_103(self):
         self._migrate_repo_url()
         purge("kano-youtube")
+        delete_file('/etc/skel/.kdeskrc')
 
     def beta_103_to_beta_110(self):
+        pass
+
+    def beta_110_to_beta_111(self):
         pass
 
     def _migrate_repo_url(self):
@@ -134,13 +141,19 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.0.3", "Kanux-Beta-1.1.0",
                           self.beta_103_to_beta_110)
 
+        self.add_scenario("Kanux-Beta-1.1.0", "Kanux-Beta-1.1.1",
+                          self.beta_110_to_beta_111)
+
     def beta_101_to_beta_102(self):
         install('gnome-paint kano-fonts kano-themes zd1211-firmware')
 
     def beta_102_to_beta_103(self):
         install('kano-apps kano-screenshot kano-video')
-        remove_user_files(['.kdeskrc'])
 
     def beta_103_to_beta_110(self):
-        update_home_folders_from_skel()
         rclocal_executable()
+        remove_user_files(['.kdeskrc'])
+        install('kano-widgets')
+
+    def beta_110_to_beta_111(self):
+        install('kano-sound-files')

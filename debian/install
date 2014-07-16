@@ -8,5 +8,5 @@ images/* usr/share/kano-updater/images/
 
 lxpanel-plugin/kano_updater.so usr/lib/arm-linux-gnueabihf/lxpanel/plugins/
 
-icon/updater.desktop usr/share/kano-apps/extras
-icon/kano-updater.png usr/share/kano-apps/icons
+icon/updater.app usr/share/kano-applications/
+icon/kano-updater.png usr/share/icons/Kano/66x66/apps/

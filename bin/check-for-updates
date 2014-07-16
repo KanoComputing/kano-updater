@@ -37,7 +37,7 @@ update_image = "/usr/share/kano-updater/images/update-screen.png"
 
 class MainWindow(Gtk.Window):
     def __init__(self):
-        Gtk.Window.__init__(self, title='Kano-New-Update')
+        Gtk.Window.__init__(self, title='New Update')
 
         apply_styles()
 
