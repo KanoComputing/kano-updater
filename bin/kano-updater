@@ -6,7 +6,12 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
 #
 # Updates system packages, Python modules and expands root partition if needed
-#
+# Usage:
+# sudo kano-updater > shows confirmation and reboot dialogue
+# sudo kano-updater -f > shows reboot dialogue
+# sudo kano-updater -n > no dialogues
+# sudo kano-updater -d > debug mode
+# sudo kano-updater python_upgrade > upgrade python command line
 
 import os
 import sys
@@ -99,15 +104,20 @@ if not (preup.covers_update() and postup.covers_update()):
 logger.info("Upgrading from: {}".format(str(old_version)))
 logger.info("Upgrading to: {}".format(str(new_version)))
 
+# Read flags
+upgradePython = (len(sys.argv) == 2 and sys.argv[1] == 'python_upgrade')
+forceUpdate = (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force'])
+showDialogue = not (len(sys.argv) == 2 and sys.argv[1] in ['-n', '--noDialogue'])
+debug = (len(sys.argv) == 2 and sys.argv[1] in ['-d', '--debug'])
 
 # upgrade python command line
-if len(sys.argv) == 2 and sys.argv[1] == 'python_upgrade':
+if upgradePython:
     appstate_before, _ = get_dpkg_dict()
     upgrade_python(python_modules_file, appstate_before)
     sys.exit()
 
 # ask confirmation from user
-if not (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force']):
+if not forceUpdate and showDialogue:
     title = "Are you sure?"
     description = "Do you want to update Kanux?"
     if is_gui:
@@ -122,9 +132,6 @@ if not (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force']):
         if answer != 'y':
             logger.info("Canceled by the user.")
             sys.exit()
-
-if len(sys.argv) == 2 and sys.argv[1] in ['-d', '--debug']:
-    debug = True
 
 # no internet warning
 if not is_internet():
@@ -296,7 +303,7 @@ else:  # do upgrade
 
 # expand filesystem
 will_expand = expand_rootfs()
-if will_expand or reboot_required(require_restart, pkgs_changed):
+if showDialogue and (will_expand or reboot_required(require_restart, pkgs_changed)):
     title = "Your computer needs to restart"
     description = "Then it will be able to use all the new features it just downloaded. See you in a minute!"
     logger.info("Rebooting")
