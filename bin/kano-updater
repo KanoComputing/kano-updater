@@ -153,8 +153,7 @@ else:  # do upgrade
         os.remove("/tmp/updater-progress")
 
     # kill_apps
-    kill_apps_list = ['minecraft-pi', 'make-music', 'make-video',
-                      'make-snake', 'kano-apps']
+    kill_apps_list = ['minecraft-pi', 'make-music', 'make-video', 'make-snake', 'kano-apps']
     for app in kill_apps_list:
         run_cmd('killall -q {}'.format(app))
 
@@ -177,7 +176,6 @@ else:  # do upgrade
     cmd = 'apt-get install -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" -y --force-yes kano-toolset kano-updater'
     _, _, rv = run_cmd_log(cmd)
-    #kill_child_processes(progress_bar)
 
     if rv != 0:
         kill_gui(gui_process)
@@ -284,12 +282,14 @@ else:  # do upgrade
         play_sound('/usr/share/kano-media/sounds/kano_updated.wav', background=True)
 
         # Display message
-        with open('msg', 'w') as outfile:
-            outfile.write(msg)
+        if showDialogue:
+            filename = 'msg'
+            with open(filename, 'w') as outfile:
+                outfile.write(msg)
 
-        kdialog = kano_dialog.KanoDialog("Update result", "", scrolled_text=msg, global_style=True)
-        kdialog.run()
-        delete_file('msg')
+            kdialog = kano_dialog.KanoDialog("Update result", "", scrolled_text=msg, global_style=True)
+            kdialog.run()
+            delete_file()
     else:
         print msg
         print 'Press any key to continue'
