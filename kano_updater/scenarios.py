@@ -10,7 +10,7 @@ from kano.logging import logger
 from kano_updater.osversion import OSVersion
 from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable
-from kano.utils import run_cmd, run_cmd_log, delete_file
+from kano.utils import run_cmd, run_cmd_log, delete_file, get_user_unsudoed
 
 
 class Scenarios(object):
@@ -156,4 +156,11 @@ class PostUpdate(Scenarios):
         install('kano-widgets')
 
     def beta_110_to_beta_111(self):
-        install('kano-sound-files')
+        install('kano-sound-files kano-init-flow')
+        # Create first boot file so we don't annoy existent users
+        username = get_user_unsudoed()
+        first_boot = '/home/%s/.kano-settings/first_boot' % username
+        try:
+            open(first_boot, 'w').close()
+        except:
+            pass
