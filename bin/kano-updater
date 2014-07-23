@@ -289,7 +289,7 @@ else:  # do upgrade
 
             kdialog = kano_dialog.KanoDialog("Update result", "", scrolled_text=msg, global_style=True)
             kdialog.run()
-            delete_file()
+            delete_file(filename)
     else:
         print msg
         print 'Press any key to continue'
