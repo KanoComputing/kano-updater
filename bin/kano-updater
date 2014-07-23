@@ -190,7 +190,7 @@ else:  # do upgrade
         if not showDialogue:
             flag = '-n'
 
-        logging.flush()
+        logger.flush()
         os.execvp('kano-updater', ['kano-updater', flag])
 
     # get app-state before upgrading
