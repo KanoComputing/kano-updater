@@ -186,7 +186,10 @@ else:  # do upgrade
     if new_updater_version != current_updater_version and not debug:
         logger.info("The updater was reinstalled, launching again.")
         kill_gui(gui_process)
-        os.execvp('kano-updater', ['kano-updater', '-f'])
+        flag = '-f'
+        if not showDialogue:
+            flag = '-n'
+        os.execvp('kano-updater', ['kano-updater', flag])
 
     # get app-state before upgrading
     appstate_before, _ = get_dpkg_dict()
