@@ -96,6 +96,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.1.0", "Kanux-Beta-1.1.1",
                           self.beta_110_to_beta_111)
 
+        self.add_scenario("Kanux-Beta-1.1.1", "Kanux-Beta-1.2.0",
+                          self.beta_111_to_beta_120)
+
     def beta_101_to_beta_102(self):
         pass
 
@@ -108,6 +111,9 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_110_to_beta_111(self):
+        pass
+
+    def beta_111_to_beta_120(self):
         pass
 
     def _migrate_repo_url(self):
@@ -144,6 +150,9 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.1.0", "Kanux-Beta-1.1.1",
                           self.beta_110_to_beta_111)
 
+        self.add_scenario("Kanux-Beta-1.1.1", "Kanux-Beta-1.2.0",
+                          self.beta_111_to_beta_120)
+
     def beta_101_to_beta_102(self):
         install('gnome-paint kano-fonts kano-themes zd1211-firmware')
 
@@ -164,3 +173,6 @@ class PostUpdate(Scenarios):
             open(first_boot, 'w').close()
         except:
             pass
+
+    def beta_111_to_beta_120(self):
+        pass
