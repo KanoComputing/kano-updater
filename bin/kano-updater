@@ -309,7 +309,7 @@ else:  # do upgrade
 # expand filesystem
 will_expand = expand_rootfs()
 if showDialogue and (will_expand or reboot_required(require_restart, pkgs_changed)):
-    title = "Your computer needs to restart"
-    description = "Then it will be able to use all the new features it just downloaded. See you in a minute!"
+    title = "Update successful!"
+    description = "Now we just need to do a quick reboot. See you in a minute!"
     logger.info("Rebooting")
     reboot(title, description)
