@@ -23,7 +23,7 @@ if __name__ == '__main__' and __package__ is None:
     if dir_path != '/usr':
             sys.path.append(dir_path)
 
-from kano.utils import run_cmd, enforce_root
+from kano.utils import run_cmd, enforce_root, is_running
 from kano.logging import logger
 from kano_updater.utils import get_dpkg_dict, get_update_status, set_update_status
 
@@ -103,13 +103,8 @@ def display_gui():
 
 
 def check_for_multiple_instances():
-    cmd = 'pgrep -f "python /usr/bin/check-for-updates" -l | grep -v pgrep'
-    o, _, _ = run_cmd(cmd)
-    num = len(o.splitlines())
-    logger.debug('Total number of check-for-updates processes: {}'.format(num))
-    if num > 1:
+    if is_running("python /usr/bin/check-for-updates") or is_running("python /usr/bin/kano-updater"):
         logger.info('Exiting check-for-updates as there is an other instance already running!')
-        logger.debug(o)
         sys.exit()
 
 run_updater = False
