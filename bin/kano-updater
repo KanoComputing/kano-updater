@@ -35,7 +35,6 @@ from kano.utils import run_cmd, delete_file, is_gui, run_cmd_log
 from kano.gtk3 import kano_dialog
 
 logger.force_log_level("info")
-
 check_for_multiple_instances()
 root_check()
 

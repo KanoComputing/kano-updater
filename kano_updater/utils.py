@@ -14,7 +14,8 @@ import errno
 import subprocess
 import shutil
 from kano.logging import logger
-from kano.utils import run_print_output_error, run_cmd, run_cmd_log, chown_path, is_internet
+from kano.utils import run_print_output_error, run_cmd, run_cmd_log, chown_path, is_gui
+from kano.network import is_internet
 from kano.gtk3 import kano_dialog
 
 UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
@@ -298,10 +299,10 @@ def root_check():
         description = 'kano-updater must be executed with root privileges'
         logger.error(description)
 
-        kdialog = kano_dialog.KanoDialog(title, description)
-        kdialog.run()
-
-        sys.exit(1)
+        if is_gui():
+            kdialog = kano_dialog.KanoDialog(title, description)
+            kdialog.run()
+        sys.exit(description)
 
 
 def check_internet():
