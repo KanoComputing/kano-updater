@@ -23,51 +23,19 @@ if __name__ == '__main__' and __package__ is None:
         sys.path.insert(0, dir_path)
 
 from kano.logging import logger, cleanup
-from kano.network import is_internet
 from kano_updater.osversion import OSVersion, bump_system_version
 from kano_updater.stages import upgrade_debian, upgrade_python
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.utils import get_dpkg_dict, set_update_status, \
     expand_rootfs, get_installed_version, reboot, reboot_required, \
     update_failed, launch_gui, launch_gui_if_not_running, set_gui_stage, \
-    kill_gui, update_home_folders_from_skel
+    kill_gui, update_home_folders_from_skel, check_for_multiple_instances, root_check, \
+    check_internet
 from kano.utils import run_cmd, delete_file, is_gui, run_cmd_log
+from kano.network import is_internet
+from kano.gtk3 import kano_dialog
 
-
-def check_for_multiple_instances():
-    cmd = 'pgrep -f "python /usr/bin/kano-updater" -l | grep -v pgrep'
-    o, _, _ = run_cmd(cmd)
-    num = len(o.splitlines())
-    logger.debug('Total number of kano-updater processes: {}'.format(num))
-    if num > 1:
-        logger.error('Exiting kano-updater as there is an other instance already running!')
-        logger.debug(o)
-        sys.exit()
-
-
-def root_check():
-    user = os.environ['LOGNAME']
-    if user != 'root':
-        title = 'Error!'
-        description = 'kano-updater must be executed with root privileges'
-        logger.error(description)
-
-        if is_gui:
-            kdialog = kano_dialog.KanoDialog(title, description)
-            kdialog.run()
-        else:
-            print description
-
-        sys.exit(1)
-
-# Import gtk3 module only if gui
-is_gui = is_gui()
-if is_gui:
-    from kano.gtk3 import kano_dialog
-
-debug = False
 logger.force_log_level("info")
-
 check_for_multiple_instances()
 root_check()
 
@@ -85,25 +53,6 @@ python_modules_file = '/usr/share/kano-updater/python_modules'
 require_restart = ['kdesk', 'raspberrypi-linux', 'raspberrypi-firmware',
                    'kano-updater', 'kano-settings', 'kano-desktop']
 
-# clean system logs
-# TODO: This should be moved to a cron job
-cleanup()
-
-preup = PreUpdate(old_version, new_version)
-postup = PostUpdate(old_version, new_version)
-if not (preup.covers_update() and postup.covers_update()):
-    title = 'Unfortunately, your version of Kano OS is too old ' + \
-            'to be updated through the updater.'
-    description = 'You will need to download the image of the ' + \
-                  'OS and reflash your SD card.'
-    if is_gui:
-        kdialog = kano_dialog.KanoDialog(title, description)
-        kdialog.run()
-    sys.exit(title)
-
-logger.info("Upgrading from: {}".format(str(old_version)))
-logger.info("Upgrading to: {}".format(str(new_version)))
-
 # Read flags
 upgradePython = (len(sys.argv) == 2 and sys.argv[1] == 'python_upgrade')
 forceUpdate = (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force'])
@@ -116,38 +65,40 @@ if upgradePython:
     upgrade_python(python_modules_file, appstate_before)
     sys.exit()
 
+if not is_gui():
+    sys.exit('You need to run kano-updater from a GUI session!')
+
+# clean system logs
+# TODO: This should be moved to a cron job
+cleanup()
+
+preup = PreUpdate(old_version, new_version)
+postup = PostUpdate(old_version, new_version)
+if not (preup.covers_update() and postup.covers_update()):
+    title = 'Unfortunately, your version of Kano OS is too old ' + \
+            'to be updated through the updater.'
+    description = 'You will need to download the image of the ' + \
+                  'OS and reflash your SD card.'
+    kdialog = kano_dialog.KanoDialog(title, description)
+    kdialog.run()
+    sys.exit(title)
+
+logger.info("Upgrading from: {}".format(str(old_version)))
+logger.info("Upgrading to: {}".format(str(new_version)))
+
 # ask confirmation from user
 if not forceUpdate and showDialogue:
     title = "Are you sure?"
     description = "Do you want to update Kanux?"
-    if is_gui:
-        kdialog = kano_dialog.KanoDialog(title, description, {"OK": {"return_value": 0}, "CANCEL": {"return_value": -1}})
-        response = kdialog.run()
-        if response != 0:
-            logger.info("Canceled by the user.")
-            sys.exit()
-    else:
-        print description + " [y/n]"
-        answer = raw_input().lower()
-        if answer != 'y':
-            logger.info("Canceled by the user.")
-            sys.exit()
+    kdialog = kano_dialog.KanoDialog(title, description, {"OK": {"return_value": 0}, "CANCEL": {"return_value": -1}})
+    response = kdialog.run()
+    if response != 0:
+        logger.info("Canceled by the user.")
+        sys.exit()
 
-# no internet warning
-if not is_internet():
-    title = "No internet connection detected"
-    description = "Please connect to internet using the cable\n"
-    description += "or the WiFi utility in Apps"
-    if is_gui:
-        kdialog = kano_dialog.KanoDialog(title, description)
-        kdialog.run()
-    else:
-        print title
-        print 'Press any key to continue'
-        answer = raw_input()
+# main update if there is internet
+if check_internet():
 
-    logger.warn(title)
-else:  # do upgrade
     # Remove comunication file
     if os.path.isfile("/tmp/updater-progress"):
         os.remove("/tmp/updater-progress")
@@ -161,11 +112,8 @@ else:  # do upgrade
     gui_process = launch_gui()
 
     run_cmd_log('apt-get -y clean')
-    _, _, rv = run_cmd_log('apt-get -y update')
-    #kill_child_processes(progress_bar)
-    if rv != 0:
-        kill_gui(gui_process)
-        update_failed("Could not download the package lists")
+    run_cmd_log('apt-get -y update')
+    # update always return 0, even if there are errors
 
     # upgrade kano-updater itself
     gui_process = launch_gui_if_not_running(gui_process)
@@ -203,10 +151,24 @@ else:  # do upgrade
     gui_process = launch_gui_if_not_running(gui_process)
     set_gui_stage(3)
 
+    # if internet connection is lost during update, do not continue
+    if not is_internet():
+        kdialog = kano_dialog.KanoDialog('Error!', 'Internet connection lost!')
+        kdialog.run()
+        logger.error('Internet connection lost before Python upgrades!')
+        sys.exit()
+
     python_ok, python_err = upgrade_python(python_modules_file, appstate_before)
 
     # upgrade debian
     debian_err_packages = upgrade_debian(gui_process)
+
+    # check for download error
+    if debian_err_packages == -1:
+        title = 'Error with downloading packages!'
+        kdialog = kano_dialog.KanoDialog(title, '')
+        kdialog.run()
+        sys.exit(title)
 
     # post upgrade
     postup.run()
@@ -277,24 +239,19 @@ else:  # do upgrade
 
     logger.info(msg)
 
-    if is_gui:
-        # Play sound in the background
-        from kano.utils import play_sound
-        play_sound('/usr/share/kano-media/sounds/kano_updated.wav', background=True)
+    # Play sound in the background
+    from kano.utils import play_sound
+    play_sound('/usr/share/kano-media/sounds/kano_updated.wav', background=True)
 
-        # Display message
-        if showDialogue:
-            filename = 'msg'
-            with open(filename, 'w') as outfile:
-                outfile.write(msg)
+    # Display message
+    if showDialogue:
+        filename = 'msg'
+        with open(filename, 'w') as outfile:
+            outfile.write(msg)
 
-            kdialog = kano_dialog.KanoDialog("Update result", "", scrolled_text=msg, global_style=True)
-            kdialog.run()
-            delete_file(filename)
-    else:
-        print msg
-        print 'Press any key to continue'
-        answer = raw_input()
+        kdialog = kano_dialog.KanoDialog("Update result", "", scrolled_text=msg, global_style=True)
+        kdialog.run()
+        delete_file(filename)
 
     try:
         from kano_profile.badges import increment_app_state_variable_with_dialog
