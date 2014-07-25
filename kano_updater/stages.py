@@ -12,10 +12,8 @@
 
 import os
 
-from kano.logging import logger
-from kano.utils import run_print_output_error, \
-    kill_child_processes, run_cmd, read_file_contents_as_lines, delete_file, \
-    delete_dir, run_cmd_log
+from kano.utils import run_cmd, read_file_contents_as_lines, \
+    delete_file, delete_dir, run_cmd_log
 from kano_updater.utils import fix_broken, launch_gui_if_not_running, set_gui_stage
 
 
@@ -32,10 +30,18 @@ def upgrade_debian(gui_process):
     gui_process = launch_gui_if_not_running(gui_process)
     set_gui_stage(4)
 
+    # try to download all files first, retry in a loop
+    for i in xrange(5):
+        _, _, rc = run_cmd_log('apt-get -y -d dist-upgrade')
+        if rc == 0:
+            break
+        elif i == 4:
+            return -1
+
+    # do the actual update using the downloaded files
     cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" dist-upgrade'
     _, debian_err, _ = run_cmd_log(cmd)
-    kill_child_processes(id)
 
     # apt autoremove
     gui_process = launch_gui_if_not_running(gui_process)
@@ -47,7 +53,6 @@ def upgrade_debian(gui_process):
     # apt autoclean
     cmd = 'apt-get -y autoclean'
     run_cmd_log(cmd)
-    kill_child_processes(id)
 
     # Try to fix any broken packages after the upgrade
     fix_broken("Finalising package upgrade")
@@ -117,6 +122,5 @@ def upgrade_python(python_modules_file, appstate_before):
                 ok_modules.append(module)
         else:
             error_modules.append(module)
-    kill_child_processes(id)
 
     return ok_modules, error_modules

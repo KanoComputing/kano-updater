@@ -60,6 +60,24 @@ def root_check():
 
         sys.exit(1)
 
+
+def check_internet():
+    if is_internet():
+        return True
+
+    title = "No internet connection detected"
+    description = "Please connect to internet using the cable\n"
+    description += "or the WiFi utility in Apps"
+    if is_gui:
+        kdialog = kano_dialog.KanoDialog(title, description)
+        kdialog.run()
+    else:
+        print title
+        print 'Press any key to continue'
+        raw_input()
+    logger.warn(title)
+    return False
+
 # Import gtk3 module only if gui
 is_gui = is_gui()
 if is_gui:
@@ -133,21 +151,10 @@ if not forceUpdate and showDialogue:
             logger.info("Canceled by the user.")
             sys.exit()
 
-# no internet warning
-if not is_internet():
-    title = "No internet connection detected"
-    description = "Please connect to internet using the cable\n"
-    description += "or the WiFi utility in Apps"
-    if is_gui:
-        kdialog = kano_dialog.KanoDialog(title, description)
-        kdialog.run()
-    else:
-        print title
-        print 'Press any key to continue'
-        answer = raw_input()
 
-    logger.warn(title)
-else:  # do upgrade
+# main update if there is internet
+if check_internet():
+
     # Remove comunication file
     if os.path.isfile("/tmp/updater-progress"):
         os.remove("/tmp/updater-progress")
@@ -161,11 +168,8 @@ else:  # do upgrade
     gui_process = launch_gui()
 
     run_cmd_log('apt-get -y clean')
-    _, _, rv = run_cmd_log('apt-get -y update')
-    #kill_child_processes(progress_bar)
-    if rv != 0:
-        kill_gui(gui_process)
-        update_failed("Could not download the package lists")
+    run_cmd_log('apt-get -y update')
+    # update always return 0, even if there are errors
 
     # upgrade kano-updater itself
     gui_process = launch_gui_if_not_running(gui_process)
@@ -203,10 +207,22 @@ else:  # do upgrade
     gui_process = launch_gui_if_not_running(gui_process)
     set_gui_stage(3)
 
+    # if internet connection is lost during update, do not continue
+    if not check_internet():
+        sys.exit()
+
     python_ok, python_err = upgrade_python(python_modules_file, appstate_before)
 
     # upgrade debian
     debian_err_packages = upgrade_debian(gui_process)
+
+    # check for download error
+    if debian_err_packages == -1:
+        title = 'Error with downloading packages!'
+    if is_gui:
+        kdialog = kano_dialog.KanoDialog(title, '')
+        kdialog.run()
+    sys.exit(title)
 
     # post upgrade
     postup.run()
