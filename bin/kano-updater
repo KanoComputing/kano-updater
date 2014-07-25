@@ -254,15 +254,11 @@ if check_internet():
     for app, version in appstate_after.iteritems():
         if app in appstate_before and version != appstate_before[app]:
             pkgs_changed.append(app)
-            msg_upgraded += "{}: {} -> {}\n".format(
-                app,
-                appstate_before[app],
-                version
-            )
+            msg_upgraded += "{}\n".format(app)
 
         if app not in appstate_before:
             pkgs_changed.append(app)
-            msg_added += "{}: {}\n".format(app, version)
+            msg_added += "{}\n".format(app)
 
     for app, version in appstate_before.iteritems():
         if app not in appstate_after:
@@ -325,7 +321,7 @@ if check_internet():
 # expand filesystem
 will_expand = expand_rootfs()
 if showDialogue and (will_expand or reboot_required(require_restart, pkgs_changed)):
-    title = "Your computer needs to restart"
-    description = "Then it will be able to use all the new features it just downloaded. See you in a minute!"
+    title = "Update successful!"
+    description = "Now we just need to do a quick reboot. See you in a minute!"
     logger.info("Rebooting")
     reboot(title, description)
