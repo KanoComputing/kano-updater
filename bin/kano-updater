@@ -238,15 +238,11 @@ else:  # do upgrade
     for app, version in appstate_after.iteritems():
         if app in appstate_before and version != appstate_before[app]:
             pkgs_changed.append(app)
-            msg_upgraded += "{}: {} -> {}\n".format(
-                app,
-                appstate_before[app],
-                version
-            )
+            msg_upgraded += "{}\n".format(app)
 
         if app not in appstate_before:
             pkgs_changed.append(app)
-            msg_added += "{}: {}\n".format(app, version)
+            msg_added += "{}\n".format(app)
 
     for app, version in appstate_before.iteritems():
         if app not in appstate_after:
