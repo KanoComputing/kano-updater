@@ -32,6 +32,7 @@ from kano_updater.utils import get_dpkg_dict, set_update_status, \
     kill_gui, update_home_folders_from_skel, check_for_multiple_instances, root_check, \
     check_internet
 from kano.utils import run_cmd, delete_file, is_gui, run_cmd_log
+from kano.network import is_internet
 from kano.gtk3 import kano_dialog
 
 logger.force_log_level("info")
@@ -151,7 +152,10 @@ if check_internet():
     set_gui_stage(3)
 
     # if internet connection is lost during update, do not continue
-    if not check_internet():
+    if not is_internet():
+        kdialog = kano_dialog.KanoDialog('Error!', 'Internet connection lost!')
+        kdialog.run()
+        logger.error('Internet connection lost before Python upgrades!')
         sys.exit()
 
     python_ok, python_err = upgrade_python(python_modules_file, appstate_before)
