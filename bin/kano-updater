@@ -156,6 +156,7 @@ if check_internet():
         kdialog = kano_dialog.KanoDialog('Error!', 'Internet connection lost!')
         kdialog.run()
         logger.error('Internet connection lost before Python upgrades!')
+        kill_gui(gui_process)
         sys.exit()
 
     python_ok, python_err = upgrade_python(python_modules_file, appstate_before)
@@ -168,6 +169,7 @@ if check_internet():
         title = 'Error with downloading packages!'
         kdialog = kano_dialog.KanoDialog(title, '')
         kdialog.run()
+        kill_gui(gui_process)
         sys.exit(title)
 
     # post upgrade
