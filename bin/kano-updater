@@ -111,6 +111,7 @@ if check_internet():
     # Start gui
     gui_process = launch_gui()
 
+    run_cmd_log('dpkg --configure -a')
     run_cmd_log('apt-get -y clean')
     run_cmd_log('apt-get -y update')
     # update always return 0, even if there are errors
