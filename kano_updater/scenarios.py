@@ -116,6 +116,8 @@ class PreUpdate(Scenarios):
     def beta_111_to_beta_120(self):
         repo_url = "deb http://mirrordirector.raspbian.org/raspbian/ wheezy main contrib non-free rpi"
         write_file_contents('/etc/apt/sources.list', repo_url + '\n')
+        run_cmd_log('apt-get -y clean')
+        run_cmd_log('apt-get -y update')
 
     def _migrate_repo_url(self):
         # TODO: Create a native python function for this
