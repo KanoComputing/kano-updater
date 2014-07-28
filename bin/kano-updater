@@ -53,6 +53,7 @@ python_modules_file = '/usr/share/kano-updater/python_modules'
 require_restart = ['kdesk', 'raspberrypi-linux', 'raspberrypi-firmware',
                    'kano-updater', 'kano-settings', 'kano-desktop']
 
+
 # Read flags
 upgradePython = (len(sys.argv) == 2 and sys.argv[1] == 'python_upgrade')
 forceUpdate = (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force'])
@@ -96,7 +97,10 @@ if not forceUpdate and showDialogue:
         logger.info("Canceled by the user.")
         sys.exit()
 
+
 # main update if there is internet
+pkgs_changed = []
+
 if check_internet():
 
     # Remove comunication file
@@ -194,7 +198,6 @@ if check_internet():
     # get app-state after upgrading
     appstate_after, appstate_after_nonclean = get_dpkg_dict()
 
-    pkgs_changed = []
     msg_upgraded = ''
     msg_added = ''
     msg_removed = ''
