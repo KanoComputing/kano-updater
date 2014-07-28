@@ -9,7 +9,7 @@
 from kano.logging import logger
 from kano_updater.osversion import OSVersion
 from kano_updater.utils import install, remove_user_files, update_failed, \
-    purge, rclocal_executable
+    purge, rclocal_executable, write_file_contents
 from kano.utils import run_cmd, run_cmd_log, delete_file, get_user_unsudoed
 
 
@@ -114,7 +114,8 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_111_to_beta_120(self):
-        pass
+        repo_url = "deb http://mirrordirector.raspbian.org/raspbian/ wheezy main contrib non-free rpi"
+        write_file_contents('/etc/apt/sources.list', repo_url + '\n')
 
     def _migrate_repo_url(self):
         # TODO: Create a native python function for this
