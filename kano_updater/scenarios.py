@@ -176,4 +176,5 @@ class PostUpdate(Scenarios):
             pass
 
     def beta_111_to_beta_120(self):
+        install('gksu')
         pass
