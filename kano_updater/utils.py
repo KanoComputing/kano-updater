@@ -149,12 +149,13 @@ def remove_user_files(files):
         if os.path.isdir("/home/{}/".format(d)):
             for f in files:
                 file_path = "/home/{}/{}".format(d, f)
-                try:
-                    logger.info('trying to delete file: {}'.format(file_path))
-                    os.unlink(file_path)
-                except:
-                    logger.info('could not delete file: {}'.format(file_path))
-                    pass
+                if os.path.exists(file_path):
+                    try:
+                        logger.info('trying to delete file: {}'.format(file_path))
+                        os.unlink(file_path)
+                    except:
+                        logger.info('could not delete file: {}'.format(file_path))
+                        pass
 
 
 def launch_gui():
