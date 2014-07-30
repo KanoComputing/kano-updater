@@ -11,7 +11,6 @@
 # sudo kano-updater -f > shows reboot dialogue
 # sudo kano-updater -n > no dialogues
 # sudo kano-updater -d > debug mode
-# sudo kano-updater python_upgrade > upgrade python command line
 
 import os
 import sys
@@ -48,23 +47,15 @@ if os.path.exists(version_file):
 else:
     old_version = new_version
 
-python_modules_file = '/usr/share/kano-updater/python_modules'
 
 require_restart = ['kdesk', 'raspberrypi-linux', 'raspberrypi-firmware',
                    'kano-updater', 'kano-settings', 'kano-desktop']
 
 
 # Read flags
-upgradePython = (len(sys.argv) == 2 and sys.argv[1] == 'python_upgrade')
 forceUpdate = (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force'])
 showDialogue = not (len(sys.argv) == 2 and sys.argv[1] in ['-n', '--noDialogue'])
 debug = (len(sys.argv) == 2 and sys.argv[1] in ['-d', '--debug'])
-
-# upgrade python command line
-if upgradePython:
-    appstate_before, _ = get_dpkg_dict()
-    upgrade_python(python_modules_file, appstate_before)
-    sys.exit()
 
 if not is_gui():
     sys.exit('You need to run kano-updater from a GUI session!')
@@ -164,7 +155,7 @@ if check_internet():
         kill_gui(gui_process)
         sys.exit()
 
-    python_ok, python_err = upgrade_python(python_modules_file, appstate_before)
+    python_ok, python_err = upgrade_python(appstate_before)
 
     # upgrade debian
     debian_err_packages = upgrade_debian(gui_process)

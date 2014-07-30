@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+# kano-install-python
+#
+# Copyright (C) 2014 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+#
+
+import os
+import sys
+
+if __name__ == '__main__' and __package__ is None:
+    dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    if dir_path != '/usr':
+        sys.path.insert(0, dir_path)
+
+from kano_updater.stages import upgrade_python
+from kano_updater.utils import get_dpkg_dict
+from kano.utils import enforce_root
+
+enforce_root('Error: Need to be root!')
+
+appstate_before, _ = get_dpkg_dict()
+upgrade_python(appstate_before, visible=True)

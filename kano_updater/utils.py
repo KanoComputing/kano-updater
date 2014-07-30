@@ -16,7 +16,7 @@ import shutil
 from kano.logging import logger
 from kano.utils import run_print_output_error, run_cmd, run_cmd_log, chown_path, is_gui
 from kano.network import is_internet
-from kano.gtk3 import kano_dialog
+# WARNING do not import GUI modules here (like KanoDialog)
 
 UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
 STATUS_FILE = UPDATER_CACHE_DIR + "status"
@@ -53,6 +53,8 @@ def purge(pkgs, die_on_err=False):
 
 
 def update_failed(err):
+    from kano.gtk3 import kano_dialog
+
     logger.error("Update failed: {}".format(err))
 
     msg = "The update couldn't be finished at the moment. " + \
@@ -294,6 +296,8 @@ def check_for_multiple_instances():
 
 
 def root_check():
+    from kano.gtk3 import kano_dialog
+
     user = os.environ['LOGNAME']
     if user != 'root':
         title = 'Error!'
@@ -307,6 +311,8 @@ def root_check():
 
 
 def check_internet():
+    from kano.gtk3 import kano_dialog
+
     if is_internet():
         return True
 
