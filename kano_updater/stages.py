@@ -13,13 +13,17 @@
 import os
 
 from kano.utils import run_cmd, read_file_contents_as_lines, \
-    delete_file, delete_dir, run_cmd_log
-from kano_updater.utils import fix_broken, launch_gui_if_not_running, set_gui_stage
+    delete_file, delete_dir, run_cmd_log, run_print_output_error
+
+python_modules_file = '/usr/share/kano-updater/python_modules'
 
 
 # Send the gui process as an argument so we can check if it's still running
 # and relaunch if necessary
+
 def upgrade_debian(gui_process):
+    from kano_updater.utils import fix_broken, launch_gui_if_not_running, set_gui_stage
+
     # setting up apt-get for non-interactive mode
     os.environ['DEBIAN_FRONTEND'] = 'noninteractive'
 
@@ -83,28 +87,39 @@ def upgrade_debian(gui_process):
     return None
 
 
-def upgrade_python(python_modules_file, appstate_before):
+def upgrade_python(appstate_before, visible=False):
+
+    def visible_run(cmd):
+        if visible:
+            return run_print_output_error(cmd)
+        else:
+            return run_cmd_log(cmd)
+
+    if not os.path.exists(python_modules_file):
+        if visible:
+            print 'python module file doesn\'t exists'
+        return [], []
 
     if 'python-pip' in appstate_before or \
        'python-setuptools' in appstate_before:
         # remove old pip and setuptools
         cmd = 'yes "" | apt-get -y purge python-setuptools ' + \
               'python-virtualenv python-pip'
-        run_cmd_log(cmd)
+        visible_run(cmd)
 
     # installing/upgrading pip
     o, _, _ = run_cmd('pip -V')
     if 'pip 1.' in o:
         cmd = 'pip install --upgrade pip'
-        run_cmd_log(cmd)
+        visible_run(cmd)
     else:
         cmd = 'wget -q --no-check-certificate ' + \
               'https://raw.github.com/pypa/pip/master/contrib/get-pip.py ' + \
               '-O get-pip.py'
-        run_cmd_log(cmd)
+        visible_run(cmd)
 
         cmd = 'python get-pip.py'
-        run_cmd_log(cmd)
+        visible_run(cmd)
 
         delete_file('get-pip.py')
 
@@ -115,7 +130,7 @@ def upgrade_python(python_modules_file, appstate_before):
     error_modules = []
 
     for module in python_modules:
-        o, e, rc = run_cmd_log('pip install --upgrade {}'.format(module))
+        o, e, rc = visible_run('pip install --upgrade {}'.format(module))
 
         if rc == 0:
             if 'Successfully installed' in o:
