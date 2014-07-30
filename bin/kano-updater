@@ -60,6 +60,12 @@ debug = (len(sys.argv) == 2 and sys.argv[1] in ['-d', '--debug'])
 if not is_gui():
     sys.exit('You need to run kano-updater from a GUI session!')
 
+
+# Track application usage only after we are ok to proceed (root permissions & gui enabled)
+from kano_profile.tracker import Tracker
+kanotracker = Tracker()
+
+
 # clean system logs
 # TODO: This should be moved to a cron job
 cleanup()
