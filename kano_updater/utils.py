@@ -152,12 +152,11 @@ def remove_user_files(files):
             for f in files:
                 file_path = "/home/{}/{}".format(d, f)
                 if os.path.exists(file_path):
+                    logger.info('trying to delete file: {}'.format(file_path))
                     try:
-                        logger.info('trying to delete file: {}'.format(file_path))
-                        os.unlink(file_path)
+                        os.remove(file_path)
                     except:
                         logger.info('could not delete file: {}'.format(file_path))
-                        pass
 
 
 def launch_gui():
@@ -280,7 +279,7 @@ def rclocal_executable():
         # Restablish execution bit: -rwxr-xr-x
         os.chmod('/etc/rc.local', 0755)
         return True
-    except:
+    except Exception:
         return False
 
 
