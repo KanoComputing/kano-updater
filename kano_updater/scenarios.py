@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 
 # scenarios.py
 #
@@ -114,6 +113,7 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_111_to_beta_120(self):
+        purge("kano-unlocker")
         repo_url = "deb http://mirrordirector.raspbian.org/raspbian/ wheezy main contrib non-free rpi"
         write_file_contents('/etc/apt/sources.list', repo_url + '\n')
         run_cmd_log('apt-get -y clean')
