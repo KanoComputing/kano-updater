@@ -56,9 +56,6 @@ def check_for_multiple_instances():
 
 run_updater = False
 
-###
-display_gui()
-###
 check_for_multiple_instances()
 
 enforce_root('check-for-updates needs root!')
