@@ -28,72 +28,38 @@ from kano.logging import logger
 from kano_updater.utils import get_dpkg_dict, get_update_status, set_update_status
 
 from gi.repository import Gtk
-from kano.gtk3.buttons import KanoButton, OrangeButton
-from kano.gtk3.heading import Heading
-from kano.gtk3.apply_styles import apply_styles
+from kano.gtk3.kano_dialog import KanoDialog
+#from kano.gtk3.buttons import KanoButton, OrangeButton
+#from kano.gtk3.heading import Heading
+#from kano.gtk3.kano_dialog import KanoDialog
+#from kano.gtk3.apply_styles import apply_styles
 
 update_image = "/usr/share/kano-updater/images/update-screen.png"
 
 
-class MainWindow(Gtk.Window):
+class MainWindow(KanoDialog):
     def __init__(self):
-        Gtk.Window.__init__(self, title='New Update')
+        KanoDialog.__init__(self, title_text="Let's update", description_text="Your Kano is about to get better",
+                            button_dict={"UPDATE NOW": {"return_value": 0}},
+                            orange_info={"name": "Later", "return_value": 1})
 
-        apply_styles()
-
-        self.image_width = 590
-        self.image_height = 270
-        self.window_height = 500
-        self.set_size_request(self.image_width, self.window_height)
-        self.set_decorated(False)
-        self.set_resizable(False)
-        self.set_position(Gtk.WindowPosition.CENTER)
-
-        # Make sure this window is always above
-        self.set_keep_above(True)
-
-        # Header
-        self.heading = Heading("Time to update!", "Take a break!  Updating takes about 15 minutes")
-        self.heading.description.set_line_wrap(True)
-
-        self.button = KanoButton("UPDATE NOW")
-        self.button.connect("button_release_event", self.update)
-        self.later = OrangeButton("Later")
-        self.later.connect("button_release_event", Gtk.main_quit)
-        self.button_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=15)
-        self.button_box.pack_start(self.button, False, False, 0)
-        self.button_box.pack_start(self.later, False, False, 0)
-        self.button_alignment = Gtk.Alignment(xalign=0.5, yalign=0.5, xscale=0, yscale=0)
-        self.button_alignment.add(self.button_box)
-
-        self.image = Gtk.Image()
-        self.image.set_from_file(update_image)
-
-        self.background = Gtk.EventBox()
-        self.background.set_size_request(self.image_width, self.image_height)
-        self.background.add(self.image)
-
-        self.box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
-        self.box.pack_start(self.background, False, False, 0)
-        self.box.pack_start(self.heading.container, False, False, 10)
-        self.box.pack_start(self.button_alignment, False, False, 0)
-
-        self.add(self.box)
-
-    def update(self, widget, event):
-        global run_updater
-
-        if not hasattr(event, 'keyval') or event.keyval == 65293:
-            run_updater = True
-            self.destroy()
+        response = self.run()
+        if response == 0:
+            self.update()
+        else:
             Gtk.main_quit()
+
+    def update(self):
+        global run_updater
+        run_updater = True
+        self.destroy()
+        Gtk.main_quit()
 
 
 def display_gui():
     logger.debug('Showing update dialog')
 
     win = MainWindow()
-    win.connect('delete-event', Gtk.main_quit)
     win.show_all()
     Gtk.main()
 
@@ -187,7 +153,9 @@ for pkg_list_filename in kano_pkg_lists:
 status = get_update_status()
 status["last_check"] = int(time.time())
 
-updates_found = False
+#updates_found = False
+updates_found = True
+display_gui()
 
 # Compare the package list to dpkg -l
 for pkg, version in installed_pkgs.iteritems():
