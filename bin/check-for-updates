@@ -26,46 +26,27 @@ if __name__ == '__main__' and __package__ is None:
 from kano.utils import run_cmd, enforce_root, is_running
 from kano.logging import logger
 from kano_updater.utils import get_dpkg_dict, get_update_status, set_update_status
-
-from gi.repository import Gtk
 from kano.gtk3.kano_dialog import KanoDialog
-#from kano.gtk3.buttons import KanoButton, OrangeButton
-#from kano.gtk3.heading import Heading
-#from kano.gtk3.kano_dialog import KanoDialog
-#from kano.gtk3.apply_styles import apply_styles
 
 update_image = "/usr/share/kano-updater/images/update-screen.png"
 
 
-class MainWindow(KanoDialog):
-    def __init__(self):
-        KanoDialog.__init__(self, title_text="Let's update", description_text="Your Kano is about to get better",
-                            button_dict={"UPDATE NOW": {"return_value": 0}},
-                            orange_info={"name": "Later", "return_value": 1})
-
-        response = self.run()
-        if response == 0:
-            self.update()
-        else:
-            Gtk.main_quit()
-
-    def update(self):
-        global run_updater
-        run_updater = True
-        self.destroy()
-        Gtk.main_quit()
-
-
 def display_gui():
+    global run_updater
     logger.debug('Showing update dialog')
 
-    win = MainWindow()
-    win.show_all()
-    Gtk.main()
+    kd = KanoDialog(title_text="Let's update", description_text="Your Kano is about to get better",
+                    button_dict={"UPDATE NOW": {"return_value": 0}},
+                    orange_info={"name": "Later", "return_value": 1})
+    response = kd.run()
+    if response == 0:
+        run_updater = True
+    else:
+        sys.exit(0)
 
     if run_updater:
         logger.info('running updater')
-        subprocess.call(['/usr/bin/kano-updater', '-f'])
+        subprocess.Popen(['/usr/bin/kano-updater', '-f'])
 
 
 def check_for_multiple_instances():
@@ -75,6 +56,9 @@ def check_for_multiple_instances():
 
 run_updater = False
 
+###
+display_gui()
+###
 check_for_multiple_instances()
 
 enforce_root('check-for-updates needs root!')
@@ -148,9 +132,7 @@ for pkg_list_filename in kano_pkg_lists:
 status = get_update_status()
 status["last_check"] = int(time.time())
 
-#updates_found = False
-updates_found = True
-display_gui()
+updates_found = False
 
 # Compare the package list to dpkg -l
 for pkg, version in installed_pkgs.iteritems():
