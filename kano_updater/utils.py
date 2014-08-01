@@ -14,7 +14,9 @@ import errno
 import subprocess
 import shutil
 from kano.logging import logger
-from kano.utils import run_print_output_error, run_cmd, run_cmd_log, is_gui, chown_path
+from kano.utils import run_print_output_error, run_cmd, run_cmd_log, chown_path, is_gui
+from kano.network import is_internet
+# WARNING do not import GUI modules here (like KanoDialog)
 
 UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
 STATUS_FILE = UPDATER_CACHE_DIR + "status"
@@ -51,6 +53,8 @@ def purge(pkgs, die_on_err=False):
 
 
 def update_failed(err):
+    from kano.gtk3 import kano_dialog
+
     logger.error("Update failed: {}".format(err))
 
     msg = "The update couldn't be finished at the moment. " + \
@@ -58,14 +62,8 @@ def update_failed(err):
           "If this problem persists, please consider reporting this issue " + \
           "via the\nFeedback tool. We'll be happy to help!"
 
-    if is_gui():
-        from kano.gtk3 import kano_dialog
-        kdialog = kano_dialog.KanoDialog("Update error", msg)
-        kdialog.run()
-    else:
-        print "Update error: {}".format(msg)
-        raw_input()
-
+    kdialog = kano_dialog.KanoDialog("Update error", msg)
+    kdialog.run()
     sys.exit(1)
 
 
@@ -141,14 +139,9 @@ def reboot_required(watched, changed):
 
 
 def reboot(title, description):
-    if is_gui():
-        from kano.gtk3 import kano_dialog
-        kdialog = kano_dialog.KanoDialog(title, description)
-        kdialog.run()
-    else:
-        print title
-        print 'Press any key to continue'
-        raw_input()
+    from kano.gtk3 import kano_dialog
+    kdialog = kano_dialog.KanoDialog(title, description)
+    kdialog.run()
     run_cmd('reboot')
 
 
@@ -158,12 +151,12 @@ def remove_user_files(files):
         if os.path.isdir("/home/{}/".format(d)):
             for f in files:
                 file_path = "/home/{}/{}".format(d, f)
-                try:
+                if os.path.exists(file_path):
                     logger.info('trying to delete file: {}'.format(file_path))
-                    os.unlink(file_path)
-                except:
-                    logger.info('could not delete file: {}'.format(file_path))
-                    pass
+                    try:
+                        os.remove(file_path)
+                    except:
+                        logger.info('could not delete file: {}'.format(file_path))
 
 
 def launch_gui():
@@ -280,10 +273,52 @@ def update_folder_from_skel(user_name):
             shutil.copy(path_full, dst_path)
             chown_path(dst_path, user=user_name, group=user_name)
 
+
 def rclocal_executable():
     try:
         # Restablish execution bit: -rwxr-xr-x
         os.chmod('/etc/rc.local', 0755)
         return True
-    except:
+    except Exception:
         return False
+
+
+def check_for_multiple_instances():
+    cmd = 'pgrep -f "python /usr/bin/kano-updater" -l | grep -v pgrep'
+    o, _, _ = run_cmd(cmd)
+    num = len(o.splitlines())
+    logger.debug('Total number of kano-updater processes: {}'.format(num))
+    if num > 1:
+        logger.error('Exiting kano-updater as there is an other instance already running!')
+        logger.debug(o)
+        sys.exit()
+
+
+def root_check():
+    from kano.gtk3 import kano_dialog
+
+    user = os.environ['LOGNAME']
+    if user != 'root':
+        title = 'Error!'
+        description = 'kano-updater must be executed with root privileges'
+        logger.error(description)
+
+        if is_gui():
+            kdialog = kano_dialog.KanoDialog(title, description)
+            kdialog.run()
+        sys.exit(description)
+
+
+def check_internet():
+    from kano.gtk3 import kano_dialog
+
+    if is_internet():
+        return True
+
+    title = "No internet connection detected"
+    description = "Please connect to internet using the cable\n"
+    description += "or the WiFi utility in Apps"
+    kdialog = kano_dialog.KanoDialog(title, description)
+    kdialog.run()
+    logger.warn(title)
+    return False

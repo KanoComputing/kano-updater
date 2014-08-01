@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 
 # scenarios.py
 #
@@ -10,7 +9,7 @@ from kano.logging import logger
 from kano_updater.osversion import OSVersion
 from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable
-from kano.utils import run_cmd, run_cmd_log, delete_file
+from kano.utils import run_cmd, run_cmd_log, delete_file, get_user_unsudoed, write_file_contents
 
 
 class Scenarios(object):
@@ -96,6 +95,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.1.0", "Kanux-Beta-1.1.1",
                           self.beta_110_to_beta_111)
 
+        self.add_scenario("Kanux-Beta-1.1.1", "Kanux-Beta-1.2.0",
+                          self.beta_111_to_beta_120)
+
     def beta_101_to_beta_102(self):
         pass
 
@@ -109,6 +111,13 @@ class PreUpdate(Scenarios):
 
     def beta_110_to_beta_111(self):
         pass
+
+    def beta_111_to_beta_120(self):
+        purge("kano-unlocker")
+        repo_url = "deb http://mirrordirector.raspbian.org/raspbian/ wheezy main contrib non-free rpi"
+        write_file_contents('/etc/apt/sources.list', repo_url + '\n')
+        run_cmd_log('apt-get -y clean')
+        run_cmd_log('apt-get -y update')
 
     def _migrate_repo_url(self):
         # TODO: Create a native python function for this
@@ -144,6 +153,9 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.1.0", "Kanux-Beta-1.1.1",
                           self.beta_110_to_beta_111)
 
+        self.add_scenario("Kanux-Beta-1.1.1", "Kanux-Beta-1.2.0",
+                          self.beta_111_to_beta_120)
+
     def beta_101_to_beta_102(self):
         install('gnome-paint kano-fonts kano-themes zd1211-firmware')
 
@@ -156,4 +168,15 @@ class PostUpdate(Scenarios):
         install('kano-widgets')
 
     def beta_110_to_beta_111(self):
-        install('kano-sound-files')
+        install('kano-sound-files kano-init-flow')
+        # Create first boot file so we don't annoy existent users
+        username = get_user_unsudoed()
+        first_boot = '/home/%s/.kano-settings/first_boot' % username
+        try:
+            open(first_boot, 'w').close()
+        except:
+            pass
+
+    def beta_111_to_beta_120(self):
+        install('gksu')
+        pass
