@@ -86,9 +86,14 @@ logger.info("Upgrading to: {}".format(str(new_version)))
 
 # ask confirmation from user
 if not forceUpdate and showDialogue:
-    title = "Are you sure?"
-    description = "Do you want to update Kanux?"
-    kdialog = kano_dialog.KanoDialog(title, description, {"OK": {"return_value": 0}, "CANCEL": {"return_value": -1}})
+    title = "Let\'s update!"
+    description = "Your Kano is about to get better"
+    kdialog = kano_dialog.KanoDialog(
+        title,
+        description,
+        button_dict={"UPDATE NOW": {"return_value": 0}},
+        orange_info={"name": "Later", "return_value": 1}
+    )
     response = kdialog.run()
     if response != 0:
         logger.info("Canceled by the user.")
