@@ -31,7 +31,9 @@ def install(pkgs, die_on_err=True):
     _, _, rv = run_cmd_log(cmd)
 
     if die_on_err and rv != 0:
-        update_failed("Unable to install '{}'".format(pkgs))
+        msg = "Unable to install '{}'".format(pkgs)
+        update_failed(msg)
+        raise Exception(msg)
 
     return rv
 
@@ -47,7 +49,9 @@ def purge(pkgs, die_on_err=False):
     _, _, rv = run_cmd_log('apt-get -y purge ' + str(pkgs))
 
     if die_on_err and rv != 0:
-        update_failed("Unable to purge '{}'".format(pkgs))
+        msg = "Unable to purge '{}'".format(pkgs)
+        update_failed(msg)
+        raise Exception(msg)
 
     return rv
 
@@ -64,7 +68,6 @@ def update_failed(err):
 
     kdialog = kano_dialog.KanoDialog("Update error", msg)
     kdialog.run()
-    sys.exit(1)
 
 
 def get_dpkg_dict():

@@ -129,7 +129,9 @@ if check_internet():
 
     if rv != 0:
         kill_gui(gui_process)
-        update_failed("Couldn't update the updater!")
+        msg = "Couldn't update the updater!"
+        update_failed(msg)
+        sys.exit(msg)
 
     new_updater_version = get_installed_version('kano-updater')
     # re-run the updater in case it was updated
@@ -147,7 +149,11 @@ if check_internet():
     appstate_before, _ = get_dpkg_dict()
 
     # pre upgrade
-    preup.run()
+    try:
+        preup.run()
+    except Exception as e:
+        kill_gui(gui_process)
+        sys.exit(e)
 
     # upgrade python
     gui_process = launch_gui_if_not_running(gui_process)
@@ -175,7 +181,11 @@ if check_internet():
         sys.exit(title)
 
     # post upgrade
-    postup.run()
+    try:
+        postup.run()
+    except Exception as e:
+        kill_gui(gui_process)
+        sys.exit(e)
 
     # housekeeping
     update_home_folders_from_skel()
