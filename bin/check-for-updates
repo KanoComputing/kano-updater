@@ -51,8 +51,9 @@ def display_gui():
 
 def check_for_multiple_instances():
     if is_running("python /usr/bin/check-for-updates") or is_running("python /usr/bin/kano-updater"):
-        logger.info('Exiting check-for-updates as there is an other instance already running!')
-        sys.exit()
+        msg = 'Exiting check-for-updates as there is an other instance already running!'
+        logger.info(msg)
+        sys.exit(msg)
 
 run_updater = False
 
