@@ -76,7 +76,9 @@ class Scenarios(object):
                     break
 
             if not step_found:
-                update_failed("{}-update step missing".format(self._type))
+                msg = "{}-update step missing".format(self._type)
+                update_failed(msg)
+                raise Exception(msg)
 
 
 class PreUpdate(Scenarios):
@@ -178,5 +180,4 @@ class PostUpdate(Scenarios):
             pass
 
     def beta_111_to_beta_120(self):
-        install('gksu')
         pass
