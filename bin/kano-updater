@@ -16,7 +16,7 @@ import os
 import sys
 import time
 
-from gi.repository import Gtk
+from gi.repository import Gtk, Pango
 
 if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -31,7 +31,7 @@ from kano_updater.utils import get_dpkg_dict, set_update_status, \
     expand_rootfs, get_installed_version, reboot, reboot_required, \
     update_failed, launch_gui, launch_gui_if_not_running, set_gui_stage, \
     kill_gui, update_home_folders_from_skel, check_for_multiple_instances, root_check, \
-    check_internet
+    check_internet, add_text_to_end
 from kano.utils import run_cmd, delete_file, is_gui, run_cmd_log
 from kano.network import is_internet
 from kano.gtk3 import kano_dialog
@@ -221,52 +221,82 @@ if check_internet():
     for app, version in appstate_after.iteritems():
         if app in appstate_before and version != appstate_before[app]:
             pkgs_changed.append(app)
-            msg_upgraded += "{}\n".format(app)
+            msg_upgraded += " - {}\n".format(app)
 
         if app not in appstate_before:
             pkgs_changed.append(app)
-            msg_added += "{}\n".format(app)
+            msg_added += " - {}\n".format(app)
 
     for app, version in appstate_before.iteritems():
         if app not in appstate_after:
             pkgs_changed.append(app)
-            msg_removed += "{}\n".format(app)
+            msg_removed += " - {}\n".format(app)
 
     msg = ''
-    msg_markup = ''
+
+    # Create Gtk textiew with markdown
+    text_view = Gtk.TextView()
+    text_view.set_margin_top(20)
+    text_view.set_margin_bottom(20)
+    text_view.set_margin_left(20)
+    text_view.set_margin_right(20)
+    text_buffer = text_view.get_buffer()
+    bold_tag = text_buffer.create_tag("bold", weight=Pango.Weight.BOLD)
 
     if msg_upgraded:
-        msg += "* apps upgraded:\n" + msg_upgraded
-        msg_markup += "<b>Apps upgraded:</b>\n" + msg_upgraded
+        text = "\nApps upgraded:\n"
+        add_text_to_end(text_buffer, text, bold_tag)
+        add_text_to_end(text_buffer, msg_upgraded)
+        msg += text + msg_upgraded
 
     if msg_added:
-        msg += "* apps added:\n" + msg_added
-        msg_markup += "*<b>Apps added:</b>\n" + msg_added
+        text = "\nApps added:\n"
+        add_text_to_end(text_buffer, text, bold_tag)
+        add_text_to_end(text_buffer, msg_added)
+        msg += text + msg_added
 
     if msg_removed:
-        msg += "* apps removed:\n" + msg_removed
-        msg_markup += "<b>Apps removed:</b>\n" + msg_removed
+        text = "\nApps removed:\n"
+        add_text_to_end(text_buffer, text, bold_tag)
+        add_text_to_end(text_buffer, msg_removed)
+        msg += text + msg_removed
 
     if debian_err_packages:
-        msg += "* apps with errors:\n{}\n".format('\n'.join(debian_err_packages))
-        msg_markup += "<b>Apps with errors:</b>\n{}\n".format('\n'.join(debian_err_packages))
+        text = "\nApps with errors:\n"
+        add_text_to_end(text_buffer, text, bold_tag)
+        msg_error = "{}\n".format('\n'.join(debian_err_packages))
+        add_text_to_end(text_buffer, msg_error)
+        msg += text + msg_error
 
     if appstate_after_nonclean:
+        text = "\nApps with non-clean state:\n"
+        add_text_to_end(text_buffer, text, bold_tag)
+
         non_clean_list = '\n'.join(appstate_after_nonclean.iterkeys())
-        msg += "* apps with non-clean state:\n{}\n".format(non_clean_list)
-        msg_markup += "<b>Apps with non-clean state:</b>\n{}\n".format(non_clean_list)
+        msg_non_clean_list = non_clean_list + "\n"
+        add_text_to_end(text_buffer, msg_non_clean_list)
+        msg += text + msg_non_clean_list
 
     if python_ok:
-        msg += "* python modules upgraded:\n{}\n".format('\n'.join(python_ok))
-        msg_markup += "<b>Python modules upgraded:</b>\n{}\n".format('\n'.join(python_ok))
+        text = "\nPython modules upgraded:\n"
+        add_text_to_end(text_buffer, text, bold_tag)
+
+        python_modules = "{}\n".format('\n'.join(python_ok))
+        add_text_to_end(text_buffer, python_modules)
+        msg += text + python_modules
 
     if python_err:
+        text = "\nPython modules with error:\n"
+        add_text_to_end(text_buffer, text, bold_tag)
+
         err_list = '\n'.join(python_err)
-        msg += "* Python modules with error:\n{}\n".format(err_list)
-        msg_markup += "<b>Python modules with error:</b>\n{}\n".format(err_list)
+        msg_python_err = err_list + "\n"
+        add_text_to_end(text_buffer, msg_python_err)
+        msg = text + msg_python_err
+
     if not msg:
         msg = "No updates needed this time."
-        msg_markup = "<b>No updates needed this time.</b>"
+        add_text_to_end(text_buffer, msg, bold_tag)
 
     logger.info(msg)
 
@@ -281,9 +311,7 @@ if check_internet():
             outfile.write(msg)
 
         scrolled_window = ScrolledWindow()
-        label = Gtk.Label()
-        label.set_markup(msg_markup)
-        scrolled_window.add_with_viewport(label)
+        scrolled_window.add_with_viewport(text_view)
         scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         scrolled_window.set_size_request(400, 200)
 

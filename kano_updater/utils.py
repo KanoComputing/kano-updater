@@ -325,3 +325,11 @@ def check_internet():
     kdialog.run()
     logger.warn(title)
     return False
+
+
+def add_text_to_end(text_buffer, text, tag=None):
+    end = text_buffer.get_end_iter()
+    if tag is None:
+        text_buffer.insert(end, text)
+    else:
+        text_buffer.insert_with_tags(end, text, tag)
