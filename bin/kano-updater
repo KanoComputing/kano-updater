@@ -16,6 +16,8 @@ import os
 import sys
 import time
 
+from gi.repository import Gtk
+
 if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     if dir_path != '/usr':
@@ -33,6 +35,7 @@ from kano_updater.utils import get_dpkg_dict, set_update_status, \
 from kano.utils import run_cmd, delete_file, is_gui, run_cmd_log
 from kano.network import is_internet
 from kano.gtk3 import kano_dialog
+from kano.gtk3.scrolled_window import ScrolledWindow
 
 logger.force_log_level("info")
 check_for_multiple_instances()
@@ -220,30 +223,40 @@ if check_internet():
             msg_removed += "{}\n".format(app)
 
     msg = ''
+    msg_markup = ''
+
     if msg_upgraded:
         msg += "* apps upgraded:\n" + msg_upgraded
+        msg_markup += "<b>Apps upgraded:</b>\n" + msg_upgraded
 
     if msg_added:
         msg += "* apps added:\n" + msg_added
+        msg_markup += "*<b>Apps added:</b>\n" + msg_added
 
     if msg_removed:
         msg += "* apps removed:\n" + msg_removed
+        msg_markup += "<b>Apps removed:</b>\n" + msg_removed
 
     if debian_err_packages:
         msg += "* apps with errors:\n{}\n".format('\n'.join(debian_err_packages))
+        msg_markup += "<b>Apps with errors:</b>\n{}\n".format('\n'.join(debian_err_packages))
 
     if appstate_after_nonclean:
         non_clean_list = '\n'.join(appstate_after_nonclean.iterkeys())
         msg += "* apps with non-clean state:\n{}\n".format(non_clean_list)
+        msg_markup += "<b>Apps with non-clean state:</b>\n{}\n".format(non_clean_list)
 
     if python_ok:
         msg += "* python modules upgraded:\n{}\n".format('\n'.join(python_ok))
+        msg_markup += "<b>Python modules upgraded:</b>\n{}\n".format('\n'.join(python_ok))
 
     if python_err:
         err_list = '\n'.join(python_err)
-        msg += "* python modules with error:\n{}\n".format(err_list)
+        msg += "* Python modules with error:\n{}\n".format(err_list)
+        msg_markup += "<b>Python modules with error:</b>\n{}\n".format(err_list)
     if not msg:
         msg = "No updates needed this time."
+        msg_markup = "<b>No updates needed this time.</b>"
 
     logger.info(msg)
 
@@ -257,7 +270,13 @@ if check_internet():
         with open(filename, 'w') as outfile:
             outfile.write(msg)
 
-        kdialog = kano_dialog.KanoDialog("Update result", "", scrolled_text=msg, global_style=True)
+        scrolled_window = ScrolledWindow()
+        label = Gtk.Label()
+        label.set_markup(msg_markup)
+        scrolled_window.add_with_viewport(label)
+        scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+
+        kdialog = kano_dialog.KanoDialog("Update result", "", widget=scrolled_window, global_style=True)
         kdialog.run()
         delete_file(filename)
 
