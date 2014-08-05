@@ -285,6 +285,7 @@ if check_internet():
         label.set_markup(msg_markup)
         scrolled_window.add_with_viewport(label)
         scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scrolled_window.set_size_request(400, 200)
 
         kdialog = kano_dialog.KanoDialog("Update result", "", widget=scrolled_window, global_style=True)
         kdialog.run()
