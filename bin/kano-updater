@@ -81,6 +81,8 @@ if not (preup.covers_update() and postup.covers_update()):
     description = 'You will need to download the image of the ' + \
                   'OS and reflash your SD card.'
     kdialog = kano_dialog.KanoDialog(title, description)
+    kdialog.dialog.set_icon_name("kano-updater")
+    kdialog.dialog.set_title("Kano Updater")
     kdialog.run()
     sys.exit(title)
 
@@ -97,11 +99,16 @@ if not forceUpdate and showDialogue:
         button_dict={"UPDATE NOW": {"return_value": 0}},
         orange_info={"name": "Later", "return_value": 1}
     )
+    kdialog.dialog.set_icon_name("kano-updater")
+    kdialog.dialog.set_title("Kano Updater")
     response = kdialog.run()
     if response != 0:
         logger.info("Canceled by the user.")
         sys.exit()
 
+    del kdialog
+    while Gtk.events_pending():
+        Gtk.main_iteration()
 
 # main update if there is internet
 pkgs_changed = []
@@ -170,6 +177,8 @@ if check_internet():
     # if internet connection is lost during update, do not continue
     if not is_internet():
         kdialog = kano_dialog.KanoDialog('Error!', 'Internet connection lost!')
+        kdialog.dialog.set_icon_name("kano-updater")
+        kdialog.dialog.set_title("Kano Updater")
         kdialog.run()
         logger.error('Internet connection lost before Python upgrades!')
         kill_gui(gui_process)
@@ -184,6 +193,8 @@ if check_internet():
     if debian_err_packages == -1:
         title = 'Error with downloading packages!'
         kdialog = kano_dialog.KanoDialog(title, '')
+        kdialog.dialog.set_icon_name("kano-updater")
+        kdialog.dialog.set_title("Kano Updater")
         kdialog.run()
         kill_gui(gui_process)
         sys.exit(title)
@@ -316,6 +327,8 @@ if check_internet():
         scrolled_window.set_size_request(400, 200)
 
         kdialog = kano_dialog.KanoDialog("Update result", "", widget=scrolled_window, global_style=True)
+        kdialog.dialog.set_icon_name("kano-updater")
+        kdialog.dialog.set_title("Kano Updater")
         kdialog.run()
         delete_file(filename)
 

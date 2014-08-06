@@ -72,6 +72,7 @@ class MainWindow(Gtk.Window):
         self.grid = Gtk.Grid()
 
         self.set_icon_name("kano-updater")
+        self.set_title("Kano Updater")
 
         self.header = Gtk.Image()
         self.stages = []
