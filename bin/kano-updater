@@ -65,9 +65,11 @@ if not is_gui():
 
 
 # Track application usage only after we are ok to proceed (root permissions & gui enabled)
-from kano_profile.tracker import Tracker
-kanotracker = Tracker()
-
+try:
+    from kano_profile.tracker import Tracker
+    kanotracker = Tracker()
+except:
+    pass
 
 # clean system logs
 # TODO: This should be moved to a cron job
