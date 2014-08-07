@@ -180,4 +180,4 @@ class PostUpdate(Scenarios):
             pass
 
     def beta_111_to_beta_120(self):
-        pass
+        run_cmd_log("kano-apps install --no-gui painter epdfview geany codecademy calculator leafpad vnc")
