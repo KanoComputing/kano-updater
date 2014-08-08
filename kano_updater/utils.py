@@ -61,10 +61,9 @@ def update_failed(err):
 
     logger.error("Update failed: {}".format(err))
 
-    msg = "The update couldn't be finished at the moment. " + \
-          "Please try again later.\n\n" + \
-          "If this problem persists, please consider reporting this issue " + \
-          "via the\nFeedback tool. We'll be happy to help!"
+    msg = "We had a problem with the Update. " + \
+          "Make sure you are connected to the Internet, and give it another go.\n\n" + \
+          "If you still have problems, we can help at http://help.kano.me"
 
     kdialog = kano_dialog.KanoDialog("Update error", msg)
     kdialog.run()
