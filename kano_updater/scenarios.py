@@ -100,6 +100,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.1.1", "Kanux-Beta-1.2.0",
                           self.beta_111_to_beta_120)
 
+        self.add_scenario("Kanux-Beta-1.2.0", "Kanux-Beta-1.2.1",
+                          self.beta_120_to_beta_121)
+
     def beta_101_to_beta_102(self):
         pass
 
@@ -120,6 +123,9 @@ class PreUpdate(Scenarios):
         write_file_contents('/etc/apt/sources.list', repo_url + '\n')
         run_cmd_log('apt-get -y clean')
         run_cmd_log('apt-get -y update')
+
+    def beta_120_to_beta_121(self):
+        pass
 
     def _migrate_repo_url(self):
         # TODO: Create a native python function for this
@@ -158,6 +164,9 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.1.1", "Kanux-Beta-1.2.0",
                           self.beta_111_to_beta_120)
 
+        self.add_scenario("Kanux-Beta-1.2.0", "Kanux-Beta-1.2.1",
+                          self.beta_120_to_beta_121)
+
     def beta_101_to_beta_102(self):
         install('gnome-paint kano-fonts kano-themes zd1211-firmware')
 
@@ -181,3 +190,6 @@ class PostUpdate(Scenarios):
 
     def beta_111_to_beta_120(self):
         run_cmd_log("kano-apps install --no-gui painter epdfview geany codecademy calculator leafpad vnc")
+
+    def beta_120_to_beta_121(self):
+        pass
