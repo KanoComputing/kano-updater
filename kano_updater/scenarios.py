@@ -192,4 +192,4 @@ class PostUpdate(Scenarios):
         run_cmd_log("kano-apps install --no-gui painter epdfview geany codecademy calculator leafpad vnc")
 
     def beta_120_to_beta_121(self):
-        pass
+        install('espeak')
