@@ -58,6 +58,7 @@ class MainWindow(Gtk.Window):
 
         self.button = KanoButton("UPDATE NOW")
         self.button.connect("button_release_event", self.update)
+        self.button.connect("key_release_event", self.update)
         self.later = OrangeButton("Later")
         self.later.connect("button_release_event", Gtk.main_quit)
         self.button_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=15)
