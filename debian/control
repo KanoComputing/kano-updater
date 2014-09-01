@@ -4,11 +4,11 @@ Section: admin
 Priority: optional
 Standards-Version: 3.9.2
 Build-Depends: debhelper (>= 9), build-essential, pkg-config, libgtk2.0-dev,
-               libmenu-cache1-dev, lxpanel, libfm-gtk1, libfm-dev, gir1.2-gtk-3.0
+               libmenu-cache1-dev, lxpanel, libfm-gtk1, libfm-dev
 
 Package: kano-updater
 Architecture: any
-Depends: ${misc:Depends}, kano-toolset (>= 1.1-4), python
+Depends: ${misc:Depends}, kano-toolset (>= 1.1-4), python, gir1.2-gtk-3.0
 Suggests: kano-profile
 Description: Tool to update Kanux
  A tool written in Python to upgrade Debian packages, upgrade Python modules and extend filesystem.
