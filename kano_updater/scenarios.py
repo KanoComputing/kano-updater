@@ -178,4 +178,4 @@ class PostUpdate(Scenarios):
         install('espeak')
 
     def beta_121_to_beta_122(self):
-        pass
+        run_cmd_log("kano-apps install --no-gui --icon-only xbmc")
