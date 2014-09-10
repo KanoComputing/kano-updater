@@ -5,6 +5,8 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
 #
 
+import os
+
 from kano.logging import logger
 from kano_updater.osversion import OSVersion
 from kano_updater.utils import install, remove_user_files, update_failed, \
@@ -179,3 +181,8 @@ class PostUpdate(Scenarios):
 
     def beta_121_to_beta_122(self):
         run_cmd_log("kano-apps install --no-gui --icon-only xbmc")
+        
+        if not os.path.exists("/etc/apt/sources.list.d/kano-xbmc.list"):
+            run_cmd_log("apt-key adv --keyserver keyserver.ubuntu.com --recv-key 5243CDED")
+            with open("/etc/apt/sources.list.d/kano-xbmc.list", "w") as f:
+                f.write("deb http://repo.kano.me/xbmc/ wheezy contrib\n")
