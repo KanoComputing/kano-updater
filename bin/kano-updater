@@ -208,7 +208,7 @@ if check_internet():
     result_dialog.dialog.set_title("Kano Updater")
 
     rd_title = "Update successful!"
-    dr_description = "Now we just need to do a quick reboot. See you in a minute!"
+    rd_description = "Now we just need to do a quick reboot. See you in a minute!"
     reboot_dialog = kano_dialog.KanoDialog(rd_title, rd_description)
 
     # upgrade debian
