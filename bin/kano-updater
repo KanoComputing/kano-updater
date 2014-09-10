@@ -247,6 +247,11 @@ if check_internet():
 
     msg = ''
 
+    del Gtk
+    del Gdk
+    del Pango
+    from gi.repository import Gtk, Gdk, Pango
+
     # Create Gtk textiew with markdown
     text_view = Gtk.TextView()
     text_view.set_margin_top(10)
