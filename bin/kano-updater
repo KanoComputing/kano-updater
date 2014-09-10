@@ -248,7 +248,6 @@ if check_internet():
     msg = ''
 
     del Gtk
-    del Gdk
     del Pango
     from gi.repository import Gtk, Gdk, Pango
 
