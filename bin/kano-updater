@@ -188,29 +188,6 @@ if check_internet():
 
     python_ok, python_err = upgrade_python(appstate_before)
 
-
-    # Create Gtk textiew with markdown
-    text_view = Gtk.TextView()
-    text_view.set_margin_top(10)
-    text_view.set_margin_bottom(20)
-    text_view.set_margin_left(20)
-    text_view.set_margin_right(20)
-    text_buffer = text_view.get_buffer()
-    bold_tag = text_buffer.create_tag("bold", weight=Pango.Weight.BOLD)
-
-    scrolled_window = ScrolledWindow()
-    scrolled_window.add_with_viewport(text_view)
-    scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-    scrolled_window.set_size_request(400, 200)
-
-    result_dialog = kano_dialog.KanoDialog("Update result", "", widget=scrolled_window, global_style=True)
-    result_dialog.dialog.set_icon_name("kano-updater")
-    result_dialog.dialog.set_title("Kano Updater")
-
-    rd_title = "Update successful!"
-    rd_description = "Now we just need to do a quick reboot. See you in a minute!"
-    reboot_dialog = kano_dialog.KanoDialog(rd_title, rd_description)
-
     # upgrade debian
     debian_err_packages = upgrade_debian(gui_process)
 
@@ -268,62 +245,39 @@ if check_internet():
             pkgs_changed.append(app)
             msg_removed += " - {}\n".format(app)
 
+    # For the logger
     msg = ''
 
     if msg_upgraded:
-        text = "\nApps upgraded:\n"
-        add_text_to_end(text_buffer, text, bold_tag)
-        add_text_to_end(text_buffer, msg_upgraded)
-        msg += text + msg_upgraded
+        msg += "\nApps upgraded:\n" + msg_upgraded
 
     if msg_added:
-        text = "\nApps added:\n"
-        add_text_to_end(text_buffer, text, bold_tag)
-        add_text_to_end(text_buffer, msg_added)
-        msg += text + msg_added
+        msg += "\nApps added:\n" + msg_added
 
     if msg_removed:
-        text = "\nApps removed:\n"
-        add_text_to_end(text_buffer, text, bold_tag)
-        add_text_to_end(text_buffer, msg_removed)
-        msg += text + msg_removed
+        msg += "\nApps removed:\n" + msg_removed
 
     if debian_err_packages:
-        text = "\nApps with errors:\n"
-        add_text_to_end(text_buffer, text, bold_tag)
         msg_error = "{}\n".format('\n'.join(debian_err_packages))
-        add_text_to_end(text_buffer, msg_error)
-        msg += text + msg_error
+        msg += "\nApps with errors:\n" + msg_error
 
     if appstate_after_nonclean:
-        text = "\nApps with non-clean state:\n"
-        add_text_to_end(text_buffer, text, bold_tag)
-
         non_clean_list = '\n'.join(appstate_after_nonclean.iterkeys())
         msg_non_clean_list = non_clean_list + "\n"
-        add_text_to_end(text_buffer, msg_non_clean_list)
-        msg += text + msg_non_clean_list
+        msg += "\nApps with non-clean state:\n" + msg_non_clean_list
 
     if python_ok:
         text = "\nPython modules upgraded:\n"
-        add_text_to_end(text_buffer, text, bold_tag)
-
         python_modules = "{}\n".format('\n'.join(python_ok))
-        add_text_to_end(text_buffer, python_modules)
-        msg += text + python_modules
+        msg += "\nPython modules upgraded:\n" + python_modules
 
     if python_err:
-        text = "\nPython modules with error:\n"
-        add_text_to_end(text_buffer, text, bold_tag)
-
         err_list = '\n'.join(python_err)
         msg_python_err = err_list + "\n"
-        add_text_to_end(text_buffer, msg_python_err)
-        msg = text + msg_python_err
+        msg = "\nPython modules with error:\n" + msg_python_err
 
     if not msg:
         msg = "No updates needed this time."
-        add_text_to_end(text_buffer, msg, bold_tag)
 
     logger.info(msg)
 
@@ -333,12 +287,16 @@ if check_internet():
 
     # Display message
     if showDialogue:
-        filename = 'msg'
-        with open(filename, 'w') as outfile:
-            outfile.write(msg)
+        # A massive hack to avoid library mixups during large updates
+        run_cmd_log("""
+python <<EOF
+from kano_updater.dialogs import show_results
 
-        result_dialog.run()
-        delete_file(filename)
+show_results('{}', '{}', '{}', {}, {}, {}, {})
+EOF
+""".format(msg_upgraded, msg_added, msg_removed, debian_err_packages,
+           appstate_after_nonclean, python_ok, python_err))
+
 
     try:
         from kano_profile.badges import increment_app_state_variable_with_dialog
@@ -350,5 +308,14 @@ if check_internet():
 will_expand = expand_rootfs()
 if showDialogue and (will_expand or reboot_required(require_restart, pkgs_changed)):
     logger.info("Rebooting")
-    reboot_dialog.run()
+
+    # A massive hack to avoid library mixups during large updates
+    run_cmd_log("""
+python <<EOF
+from kano_updater.dialogs import show_reboot_dialog
+
+show_reboot_dialog()
+EOF
+""")
+
     run_cmd('reboot')
