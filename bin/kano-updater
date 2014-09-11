@@ -288,7 +288,7 @@ if check_internet():
     # Display message
     if showDialogue:
         # A massive hack to avoid library mixups during large updates
-        run_cmd_log("""
+        run_cmd("""
 python <<EOF
 from kano_updater.dialogs import show_results
 
@@ -310,7 +310,7 @@ if showDialogue and (will_expand or reboot_required(require_restart, pkgs_change
     logger.info("Rebooting")
 
     # A massive hack to avoid library mixups during large updates
-    run_cmd_log("""
+    run_cmd("""
 python <<EOF
 from kano_updater.dialogs import show_reboot_dialog
 
