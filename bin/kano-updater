@@ -292,7 +292,7 @@ if check_internet():
 python <<EOF
 from kano_updater.dialogs import show_results
 
-show_results('{}', '{}', '{}', {}, {}, {}, {})
+show_results(\"\"\"{}\"\"\", \"\"\"{}\"\"\", \"\"\"{}\"\"\", {}, {}, {}, {})
 EOF
 """.format(msg_upgraded, msg_added, msg_removed, debian_err_packages,
            appstate_after_nonclean, python_ok, python_err))
