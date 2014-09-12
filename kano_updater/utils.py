@@ -95,14 +95,18 @@ def fix_broken(msg):
     reinstall = []
     for line in o.splitlines():
         pkg_info = line.split()
-        reinstall.append(pkg_info[1])
+        try:
+            reinstall.append(pkg_info[1])
+        except:
+            pass
 
-    if len(reinstall) > 0:
+    if reinstall:
         logger.error("Reinstalling broken packages: {}".format(" ".join(reinstall)))
         cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
-          '-o Dpkg::Options::="--force-confold" reinstall {}'.format(" ".join(reinstall))
+          '-o Dpkg::Options::="--force-confold" install --reinstall {}'.format(" ".join(reinstall))
         run_cmd_log(cmd)
 
+    # Try to fix incorrectly configured packages
     run_cmd_log("dpkg --configure -a")
     cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" install -f'
