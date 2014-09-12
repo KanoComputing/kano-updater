@@ -91,6 +91,7 @@ def get_dpkg_dict():
 
 
 def fix_broken(msg):
+    run_cmd_log("dpkg --configure -a")
     cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" install -f'
     run_cmd_log(cmd)
