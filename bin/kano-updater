@@ -129,19 +129,17 @@ if check_internet():
     # Start gui
     gui_process = launch_gui()
 
-    run_cmd_log('dpkg --configure -a')
-    run_cmd_log('apt-get -y clean')
+    # The updater could get stuck on updating the updater in case
+    # there is a package in an inconsistent state on the system.
+    # We're calling fix_broken() here in an effort to preven that.
     run_cmd_log('apt-get -y update')
-    # update always return 0, even if there are errors
+    fix_broken("")
+    run_cmd_log('apt-get -y clean')
 
     # upgrade kano-updater itself
     gui_process = launch_gui_if_not_running(gui_process)
     set_gui_stage(2)
 
-    # The updater could get stuck on updating the updater in case
-    # there is a package in an inconsistent state on the system.
-    # We're calling fix_broken() here in an effort to preven that.
-    fix_broken("")
 
     current_updater_version = get_installed_version('kano-updater')
 
