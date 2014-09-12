@@ -91,7 +91,7 @@ def get_dpkg_dict():
 
 
 def fix_broken(msg):
-    o, _, _ = run_cmd("dpkg -l | grep '§..R'")
+    o, _, _ = run_cmd("dpkg -l | grep '^..R'")
     reinstall = []
     for line in o.splitlines():
         pkg_info = line.split()
