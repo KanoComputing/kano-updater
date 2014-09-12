@@ -31,7 +31,7 @@ from kano_updater.utils import get_dpkg_dict, set_update_status, \
     expand_rootfs, get_installed_version, reboot, reboot_required, \
     update_failed, launch_gui, launch_gui_if_not_running, set_gui_stage, \
     kill_gui, update_home_folders_from_skel, check_for_multiple_instances, root_check, \
-    check_internet, add_text_to_end
+    check_internet, add_text_to_end, fix_broken
 from kano.utils import run_cmd, delete_file, is_gui, run_cmd_log
 from kano.network import is_internet
 from kano.gtk3 import kano_dialog
@@ -129,14 +129,17 @@ if check_internet():
     # Start gui
     gui_process = launch_gui()
 
-    run_cmd_log('dpkg --configure -a')
-    run_cmd_log('apt-get -y clean')
+    # The updater could get stuck on updating the updater in case
+    # there is a package in an inconsistent state on the system.
+    # We're calling fix_broken() here in an effort to preven that.
     run_cmd_log('apt-get -y update')
-    # update always return 0, even if there are errors
+    fix_broken("")
+    run_cmd_log('apt-get -y clean')
 
     # upgrade kano-updater itself
     gui_process = launch_gui_if_not_running(gui_process)
     set_gui_stage(2)
+
 
     current_updater_version = get_installed_version('kano-updater')
 
