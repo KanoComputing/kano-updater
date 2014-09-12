@@ -91,6 +91,9 @@ def get_dpkg_dict():
 
 
 def fix_broken(msg):
+    # Try to fix incorrectly configured packages
+    run_cmd_log("dpkg --configure -a")
+
     o, _, _ = run_cmd("dpkg -l | grep '^..R'")
     reinstall = []
     for line in o.splitlines():
@@ -106,8 +109,6 @@ def fix_broken(msg):
           '-o Dpkg::Options::="--force-confold" install --reinstall {}'.format(" ".join(reinstall))
         run_cmd_log(cmd)
 
-    # Try to fix incorrectly configured packages
-    run_cmd_log("dpkg --configure -a")
     cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" install -f'
     run_cmd_log(cmd)
