@@ -102,6 +102,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.2.1", "Kanux-Beta-1.2.2",
                           self.beta_121_to_beta_122)
 
+        self.add_scenario("Kanux-Beta-1.2.2", "Kanux-Beta-1.2.3",
+                          self.beta_122_to_beta_123)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -119,6 +122,9 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_121_to_beta_122(self):
+        pass
+
+    def beta_122_to_beta_123(self):
         pass
 
     def _migrate_repo_url(self):
@@ -158,6 +164,9 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.2.1", "Kanux-Beta-1.2.2",
                           self.beta_121_to_beta_122)
 
+        self.add_scenario("Kanux-Beta-1.2.2", "Kanux-Beta-1.2.3",
+                          self.beta_122_to_beta_123)
+
     def beta_103_to_beta_110(self):
         rclocal_executable()
         remove_user_files(['.kdeskrc'])
@@ -181,8 +190,11 @@ class PostUpdate(Scenarios):
 
     def beta_121_to_beta_122(self):
         run_cmd_log("kano-apps install --no-gui --icon-only xbmc")
-        
+
         if not os.path.exists("/etc/apt/sources.list.d/kano-xbmc.list"):
             run_cmd_log("apt-key adv --keyserver keyserver.ubuntu.com --recv-key 5243CDED")
             with open("/etc/apt/sources.list.d/kano-xbmc.list", "w") as f:
                 f.write("deb http://repo.kano.me/xbmc/ wheezy contrib\n")
+
+    def beta_122_to_beta_123(self):
+        pass
