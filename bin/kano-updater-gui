@@ -13,7 +13,7 @@ GObject.threads_init()
 import threading
 import os
 import time
-from kano.gtk3.apply_styles import apply_styles
+from kano.gtk3.apply_styles import apply_styles_to_screen
 
 image_filename = "/usr/share/kano-updater/images/"
 current_number = "1"
@@ -163,7 +163,7 @@ def main():
     screen = Gdk.Screen.get_default()
     styleContext = Gtk.StyleContext()
 
-    apply_styles()
+    apply_styles_to_screen()
     styleContext.add_provider_for_screen(screen, css, Gtk.STYLE_PROVIDER_PRIORITY_USER)
 
     win = MainWindow()
