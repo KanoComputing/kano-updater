@@ -16,7 +16,7 @@ import os
 import sys
 import time
 
-from gi.repository import Gtk, Pango
+from gi.repository import Gtk
 
 if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -28,14 +28,13 @@ from kano_updater.osversion import OSVersion, bump_system_version
 from kano_updater.stages import upgrade_debian, upgrade_python
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.utils import get_dpkg_dict, set_update_status, \
-    expand_rootfs, get_installed_version, reboot, reboot_required, \
+    expand_rootfs, get_installed_version, reboot_required, \
     update_failed, launch_gui, launch_gui_if_not_running, set_gui_stage, \
     kill_gui, update_home_folders_from_skel, check_for_multiple_instances, root_check, \
-    check_internet, add_text_to_end, fix_broken
-from kano.utils import run_cmd, delete_file, is_gui, run_cmd_log
+    check_internet, fix_broken
+from kano.utils import run_cmd, is_gui, run_cmd_log
 from kano.network import is_internet
 from kano.gtk3 import kano_dialog
-from kano.gtk3.scrolled_window import ScrolledWindow
 
 logger.force_log_level("info")
 check_for_multiple_instances()
@@ -66,7 +65,7 @@ if not is_gui():
 
 # Track application usage only after we are ok to proceed (root permissions & gui enabled)
 try:
-    from kano_profile.tracker import Tracker
+    from kano_profile.tracker import Tracker, save_kano_version
     kanotracker = Tracker()
 except:
     pass
@@ -139,7 +138,6 @@ if check_internet():
     # upgrade kano-updater itself
     gui_process = launch_gui_if_not_running(gui_process)
     set_gui_stage(2)
-
 
     current_updater_version = get_installed_version('kano-updater')
 
@@ -226,6 +224,12 @@ if check_internet():
     status = {"last_update": now, "update_available": 0, "last_check": now}
     set_update_status(status)
 
+    # update the version in the tracker
+    try:
+        save_kano_version()
+    except Exception:
+        pass
+
     # get app-state after upgrading
     appstate_after, appstate_after_nonclean = get_dpkg_dict()
 
@@ -299,7 +303,6 @@ show_results(\"\"\"{}\"\"\", \"\"\"{}\"\"\", \"\"\"{}\"\"\", {}, {}, {}, {})
 EOF
 """.format(msg_upgraded, msg_added, msg_removed, debian_err_packages,
            appstate_after_nonclean, python_ok, python_err))
-
 
     try:
         from kano_profile.badges import increment_app_state_variable_with_dialog
