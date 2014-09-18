@@ -66,7 +66,7 @@ if not is_gui():
 
 # Track application usage only after we are ok to proceed (root permissions & gui enabled)
 try:
-    from kano_profile.tracker import Tracker
+    from kano_profile.tracker import Tracker, save_kano_version
     kanotracker = Tracker()
 except:
     pass
@@ -225,6 +225,12 @@ if check_internet():
     now = int(time.time())
     status = {"last_update": now, "update_available": 0, "last_check": now}
     set_update_status(status)
+
+    # update the version in the tracker
+    try:
+        save_kano_version()
+    except Exception:
+        pass
 
     # get app-state after upgrading
     appstate_after, appstate_after_nonclean = get_dpkg_dict()
