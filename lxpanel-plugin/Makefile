@@ -3,7 +3,7 @@
 
 CC=gcc
 CFLAGS=`pkg-config --cflags lxpanel gtk+-2.0` -I/usr/include/libfm
-LIBS=`pkg-config --libs lxpanel gtk+-2.0` -lfm-gtk -lkdesk-hourglass
+LIBS=`pkg-config --libs lxpanel gtk+-2.0` -lfm-gtk
 SRC=kano_updater.c
 BIN=kano_updater.so
 INSTALL_PATH=/usr/lib/arm-linux-gnueabihf/lxpanel/plugins/
