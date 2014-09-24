@@ -5,11 +5,13 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
 #
 
+import os
+
 from kano.logging import logger
 from kano_updater.osversion import OSVersion
 from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable
-from kano.utils import run_cmd, run_cmd_log, delete_file, get_user_unsudoed, write_file_contents
+from kano.utils import run_cmd, run_cmd_log, get_user_unsudoed, write_file_contents
 
 
 class Scenarios(object):
@@ -85,12 +87,6 @@ class PreUpdate(Scenarios):
     _type = "pre"
 
     def _mapping(self):
-        self.add_scenario("Kanux-Beta-1.0.1", "Kanux-Beta-1.0.2",
-                          self.beta_101_to_beta_102)
-
-        self.add_scenario("Kanux-Beta-1.0.2", "Kanux-Beta-1.0.3",
-                          self.beta_102_to_beta_103)
-
         self.add_scenario("Kanux-Beta-1.0.3", "Kanux-Beta-1.1.0",
                           self.beta_103_to_beta_110)
 
@@ -103,13 +99,11 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.2.0", "Kanux-Beta-1.2.1",
                           self.beta_120_to_beta_121)
 
-    def beta_101_to_beta_102(self):
-        pass
+        self.add_scenario("Kanux-Beta-1.2.1", "Kanux-Beta-1.2.2",
+                          self.beta_121_to_beta_122)
 
-    def beta_102_to_beta_103(self):
-        self._migrate_repo_url()
-        purge("kano-youtube")
-        delete_file('/etc/skel/.kdeskrc')
+        self.add_scenario("Kanux-Beta-1.2.2", "Kanux-Beta-1.2.3",
+                          self.beta_122_to_beta_123)
 
     def beta_103_to_beta_110(self):
         pass
@@ -125,6 +119,12 @@ class PreUpdate(Scenarios):
         run_cmd_log('apt-get -y update')
 
     def beta_120_to_beta_121(self):
+        pass
+
+    def beta_121_to_beta_122(self):
+        pass
+
+    def beta_122_to_beta_123(self):
         pass
 
     def _migrate_repo_url(self):
@@ -149,12 +149,6 @@ class PostUpdate(Scenarios):
     _type = "post"
 
     def _mapping(self):
-        self.add_scenario("Kanux-Beta-1.0.1", "Kanux-Beta-1.0.2",
-                          self.beta_101_to_beta_102)
-
-        self.add_scenario("Kanux-Beta-1.0.2", "Kanux-Beta-1.0.3",
-                          self.beta_102_to_beta_103)
-
         self.add_scenario("Kanux-Beta-1.0.3", "Kanux-Beta-1.1.0",
                           self.beta_103_to_beta_110)
 
@@ -167,11 +161,11 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.2.0", "Kanux-Beta-1.2.1",
                           self.beta_120_to_beta_121)
 
-    def beta_101_to_beta_102(self):
-        install('gnome-paint kano-fonts kano-themes zd1211-firmware')
+        self.add_scenario("Kanux-Beta-1.2.1", "Kanux-Beta-1.2.2",
+                          self.beta_121_to_beta_122)
 
-    def beta_102_to_beta_103(self):
-        install('kano-apps kano-screenshot kano-video')
+        self.add_scenario("Kanux-Beta-1.2.2", "Kanux-Beta-1.2.3",
+                          self.beta_122_to_beta_123)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -193,3 +187,14 @@ class PostUpdate(Scenarios):
 
     def beta_120_to_beta_121(self):
         install('espeak')
+
+    def beta_121_to_beta_122(self):
+        run_cmd_log("kano-apps install --no-gui --icon-only xbmc")
+
+        if not os.path.exists("/etc/apt/sources.list.d/kano-xbmc.list"):
+            run_cmd_log("apt-key adv --keyserver keyserver.ubuntu.com --recv-key 5243CDED")
+            with open("/etc/apt/sources.list.d/kano-xbmc.list", "w") as f:
+                f.write("deb http://repo.kano.me/xbmc/ wheezy contrib\n")
+
+    def beta_122_to_beta_123(self):
+        pass
