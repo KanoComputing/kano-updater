@@ -10,7 +10,7 @@ import os
 from kano.logging import logger
 from kano_updater.osversion import OSVersion
 from kano_updater.utils import install, remove_user_files, update_failed, \
-    purge, rclocal_executable
+    purge, rclocal_executable, migrate_repository
 from kano.utils import run_cmd, run_cmd_log, get_user_unsudoed, write_file_contents
 
 
@@ -125,23 +125,16 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_122_to_beta_123(self):
-        pass
+        # Migrate users from the official RaspberryPI repo to Kano mirrored site
+        migrate_repository ('/etc/apt/sources.list.d/raspi.list',
+                            'archive.raspberrypi.org/debian',
+                            'repo.kano.me/raspberrypi')
+        return
 
     def _migrate_repo_url(self):
-        # TODO: Create a native python function for this
-        change_items = {
-            'apt_file': '/etc/apt/sources.list.d/kano.list',
-            'old_repo': 'dev.kano.me',
-            'new_repo': 'repo.kano.me'
-        }
-
-        sed_cmd = "sed -i 's/%(old_repo)s/%(new_repo)s/g' %(apt_file)s" % change_items
-        o, e, rc = run_cmd(sed_cmd)
-        if rc != 0:
-            print 'Error changing repository, error: {}'.format(e)
-        else:
-            run_cmd_log('apt-get -y clean')
-            run_cmd_log('apt-get -y update')
+        migrate_repository ('/etc/apt/sources.list.d/kano.list',
+                            'dev.kano.me',
+                            'repo.kano.me')
         return
 
 
