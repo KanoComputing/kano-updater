@@ -23,8 +23,9 @@
 #define NOTIFICATION_ICON_FILE "/usr/share/kano-updater/images/panel-notification.png"
 #define UPDATE_STATUS_FILE "/var/cache/kano-updater/status"
 
-#define CHECK_FOR_UPDATES_CMD "sudo check-for-updates"
-#define UPDATE_CMD "kdesk-blur 'sudo kano-updater'"
+#define CHECK_FOR_UPDATES_CMD "sudo /usr/bin/check-for-updates"
+#define UPDATE_CMD "kdesk-blur 'sudo /usr/bin/kano-updater'"
+#define SOUND_CMD "/usr/bin/aplay /usr/share/kano-media/sounds/kano_open_app.wav"
 
 #define PLUGIN_TOOLTIP "Kano Updater"
 
@@ -201,7 +202,10 @@ static gboolean update_status(kano_updater_plugin_t *plugin)
 
 void update_clicked(GtkWidget *widget, gpointer data)
 {
+    /* Launch updater */
 	launch_cmd(UPDATE_CMD);
+    /* Play sound */
+    launch_cmd(SOUND_CMD);
 }
 
 void check_for_update_clicked(GtkWidget *widget, kano_updater_plugin_t *plugin)
