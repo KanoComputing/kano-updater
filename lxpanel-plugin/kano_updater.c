@@ -19,6 +19,8 @@
 #include <ctype.h>
 #include <time.h>
 
+#include <kdesk-hourglass.h>
+
 #define DEFAULT_ICON_FILE "/usr/share/kano-updater/images/panel-default.png"
 #define NOTIFICATION_ICON_FILE "/usr/share/kano-updater/images/panel-notification.png"
 #define UPDATE_STATUS_FILE "/var/cache/kano-updater/status"
@@ -205,6 +207,8 @@ void update_clicked(GtkWidget *widget, gpointer data)
     /* Launch updater */
 	launch_cmd(UPDATE_CMD);
     /* Play sound */
+        
+    kdesk_hourglass_start("kano-updater");
     launch_cmd(SOUND_CMD);
 }
 
