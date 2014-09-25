@@ -126,7 +126,7 @@ static int parse_line(char *line, const char const *key, int *value)
 	return -1;
 }
 
-static void launch_cmd(const char *cmd)
+static void launch_cmd(const char *cmd, const char *appname)
 {
 	GAppInfo *appinfo = NULL;
 	gboolean ret = FALSE;
@@ -134,20 +134,31 @@ static void launch_cmd(const char *cmd)
 	appinfo = g_app_info_create_from_commandline(cmd, NULL,
 				G_APP_INFO_CREATE_NONE, NULL);
 
-	if (appinfo == NULL) {
-		perror("Command lanuch failed.");
-		return;
-	}
+        if (appname) {
+            kdesk_hourglass_start((char *) appname);
+        }
 
+        if (appinfo == NULL) {
+            perror("Command lanuch failed.");
+            if (appname) {
+                kdesk_hourglass_end();
+            }
+            return;
+	}
+        
 	ret = g_app_info_launch(appinfo, NULL, NULL, NULL);
-	if (!ret)
-		perror("Command lanuch failed.");
+	if (!ret) {
+            perror("Command lanuch failed.");
+            if (appname) {
+                kdesk_hourglass_end();
+            }
+        }
 }
 
 static gboolean check_for_updates(kano_updater_plugin_t *plugin)
 {
-	launch_cmd(CHECK_FOR_UPDATES_CMD);
-	return TRUE;
+    launch_cmd(CHECK_FOR_UPDATES_CMD, NULL);
+    return TRUE;
 }
 
 static gboolean update_status(kano_updater_plugin_t *plugin)
@@ -205,11 +216,10 @@ static gboolean update_status(kano_updater_plugin_t *plugin)
 void update_clicked(GtkWidget *widget, gpointer data)
 {
     /* Launch updater */
-	launch_cmd(UPDATE_CMD);
+    launch_cmd(UPDATE_CMD, "kano-updater");
+
     /* Play sound */
-        
-    kdesk_hourglass_start("kano-updater");
-    launch_cmd(SOUND_CMD);
+    launch_cmd(SOUND_CMD, NULL);
 }
 
 void check_for_update_clicked(GtkWidget *widget, kano_updater_plugin_t *plugin)
