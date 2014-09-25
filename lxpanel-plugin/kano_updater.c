@@ -145,10 +145,14 @@ static void launch_cmd(const char *cmd, const char *appname)
             }
             return;
 	}
-
+        
 	ret = g_app_info_launch(appinfo, NULL, NULL, NULL);
-	if (!ret)
-		perror("Command lanuch failed.");
+	if (!ret) {
+            perror("Command lanuch failed.");
+            if (appname) {
+                kdesk_hourglass_end();
+            }
+        }
 }
 
 static gboolean check_for_updates(kano_updater_plugin_t *plugin)
