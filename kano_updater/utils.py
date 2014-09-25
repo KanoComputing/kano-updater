@@ -350,3 +350,21 @@ def add_text_to_end(text_buffer, text, tag=None):
         text_buffer.insert(end, text)
     else:
         text_buffer.insert_with_tags(end, text, tag)
+
+
+def migrate_repository(apt_file, old_repo, new_repo):
+
+    change_items = {
+        'apt_file': apt_file,
+        'old_repo': old_repo,
+        'new_repo': new_repo
+        }
+    
+    sed_cmd = "sed -i 's/%(old_repo)s/%(new_repo)s/g' %(apt_file)s" % change_items
+    o, e, rc = run_cmd(sed_cmd)
+    if rc != 0:
+        print 'Error changing repository, error: {}'.format(e)
+    else:
+        run_cmd_log('apt-get -y clean')
+        run_cmd_log('apt-get -y update')
+    return
