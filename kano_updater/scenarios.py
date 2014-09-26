@@ -126,16 +126,14 @@ class PreUpdate(Scenarios):
 
     def beta_122_to_beta_123(self):
         # Migrate users from the official RaspberryPI repo to Kano mirrored site
-        migrate_repository ('/etc/apt/sources.list.d/raspi.list',
-                            'archive.raspberrypi.org/debian',
-                            'repo.kano.me/raspberrypi')
-        return
+        migrate_repository('/etc/apt/sources.list.d/raspi.list',
+                           'archive.raspberrypi.org/debian',
+                           'repo.kano.me/raspberrypi')
 
     def _migrate_repo_url(self):
-        migrate_repository ('/etc/apt/sources.list.d/kano.list',
-                            'dev.kano.me',
-                            'repo.kano.me')
-        return
+        migrate_repository('/etc/apt/sources.list.d/kano.list',
+                           'dev.kano.me',
+                           'repo.kano.me')
 
 
 class PostUpdate(Scenarios):
