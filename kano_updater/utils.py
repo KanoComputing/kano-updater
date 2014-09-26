@@ -9,6 +9,7 @@
 #
 
 import os
+import re
 import sys
 import errno
 import subprocess
@@ -352,19 +353,45 @@ def add_text_to_end(text_buffer, text, tag=None):
         text_buffer.insert_with_tags(end, text, tag)
 
 
-def migrate_repository(apt_file, old_repo, new_repo):
+# TODO: This could be useful in kano.utils
+def sed(pattern, replacement, file_path, use_regexp=True):
+    """ Search and replace a pattern in a file.
 
-    change_items = {
-        'apt_file': apt_file,
-        'old_repo': old_repo,
-        'new_repo': new_repo
-        }
-    
-    sed_cmd = "sed -i 's/%(old_repo)s/%(new_repo)s/g' %(apt_file)s" % change_items
-    o, e, rc = run_cmd(sed_cmd)
-    if rc != 0:
-        print 'Error changing repository, error: {}'.format(e)
-    else:
-        run_cmd_log('apt-get -y clean')
-        run_cmd_log('apt-get -y update')
-    return
+    The search happens line-by-line, multiline patterns won't work
+
+    :param pattern: a regular expression to search for
+    :param replacement: the replacement string
+    :param file_path: location of the file to process
+    :returns: number of lines changed
+    :raises IOError: File doesn't exist
+    """
+
+    changed = 0
+
+    with open(file_path, "r") as file_handle:
+        lines = file_handle.readlines()
+
+    with open(file_path, "w") as file_handle:
+        for line in lines:
+            if use_regexp:
+                modified_line = re.sub(pattern, replacement, line)
+            else:
+                modified_line = line.replace(pattern, replacement)
+
+            file_handle.write(modified_line)
+
+            if line != modified_line:
+                changed += 1
+
+    return changed
+
+
+def migrate_repository(apt_file, old_repo, new_repo):
+    try:
+        sed(old_repo, new_repo, apt_file, use_regexp=False)
+    except IOError as exc:
+        logger.warn('Changing repository URL failed ({})'.format(exc))
+        return
+
+    run_cmd_log('apt-get -y clean')
+    run_cmd_log('apt-get -y update')
