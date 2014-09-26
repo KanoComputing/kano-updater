@@ -368,17 +368,17 @@ def sed(pattern, replacement, file_path, use_regexp=True):
 
     changed = 0
 
-    with open(file_path, "r") as sources:
-        lines = sources.readlines()
+    with open(file_path, "r") as file_handle:
+        lines = file_handle.readlines()
 
-    with open(file_path, "w") as sources:
+    with open(file_path, "w") as file_handle:
         for line in lines:
             if use_regexp:
                 modified_line = re.sub(pattern, replacement, line)
             else:
                 modified_line = line.replace(pattern, replacement)
 
-            sources.write(modified_line)
+            file_handle.write(modified_line)
 
             if line != modified_line:
                 changed += 1
