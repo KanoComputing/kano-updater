@@ -390,7 +390,7 @@ def migrate_repository(apt_file, old_repo, new_repo):
     try:
         sed(old_repo, new_repo, apt_file, use_regexp=False)
     except IOError as exc:
-        logger.warn('Error changing repository, error: {}'.format(exc))
+        logger.warn('Changing repository URL failed ({})'.format(exc))
         return
 
     run_cmd_log('apt-get -y clean')
