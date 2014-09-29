@@ -11,7 +11,7 @@ from kano.logging import logger
 from kano_updater.osversion import OSVersion
 from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable, migrate_repository
-from kano.utils import run_cmd, run_cmd_log, get_user_unsudoed, write_file_contents
+from kano.utils import run_cmd_log, get_user_unsudoed, write_file_contents
 
 
 class Scenarios(object):
@@ -96,6 +96,7 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.1.1", "Kanux-Beta-1.2.0",
                           self.beta_111_to_beta_120)
 
+        # v1.2.1 is the first image sent to China (+18K units)
         self.add_scenario("Kanux-Beta-1.2.0", "Kanux-Beta-1.2.1",
                           self.beta_120_to_beta_121)
 
@@ -104,6 +105,9 @@ class PreUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-1.2.2", "Kanux-Beta-1.2.3",
                           self.beta_122_to_beta_123)
+
+        self.add_scenario("Kanux-Beta-1.2.3", "Kanux-Beta-1.2.4",
+                          self.beta_123_to_beta_124)
 
     def beta_103_to_beta_110(self):
         pass
@@ -130,6 +134,10 @@ class PreUpdate(Scenarios):
                            'archive.raspberrypi.org/debian',
                            'repo.kano.me/raspberrypi')
 
+    def beta_123_to_beta_124(self):
+        pass
+
+    # Not used at the moment: dev.kano.me > repo.kano.me
     def _migrate_repo_url(self):
         migrate_repository('/etc/apt/sources.list.d/kano.list',
                            'dev.kano.me',
@@ -157,6 +165,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-1.2.2", "Kanux-Beta-1.2.3",
                           self.beta_122_to_beta_123)
+
+        self.add_scenario("Kanux-Beta-1.2.3", "Kanux-Beta-1.2.4",
+                          self.beta_123_to_beta_124)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -188,4 +199,7 @@ class PostUpdate(Scenarios):
                 f.write("deb http://repo.kano.me/xbmc/ wheezy contrib\n")
 
     def beta_122_to_beta_123(self):
+        pass
+
+    def beta_123_to_beta_124(self):
         pass
