@@ -202,4 +202,10 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_123_to_beta_124(self):
-        pass
+        # Rename Snake custom theme
+        username = get_user_unsudoed()
+        path = '/home/%s/Snake-content/' % username
+        old_name = 'custom_theme'
+        if os.path.exists(path + old_name):
+            new_name = 'custom-theme.xml'
+            os.rename(path + old_name, path + new_name)
