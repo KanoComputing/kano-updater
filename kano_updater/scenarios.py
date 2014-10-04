@@ -208,4 +208,7 @@ class PostUpdate(Scenarios):
         old_name = 'custom_theme'
         if os.path.exists(path + old_name):
             new_name = 'custom-theme.xml'
-            os.rename(path + old_name, path + new_name)
+            try:
+                os.rename(path + old_name, path + new_name)
+            except:
+                pass
