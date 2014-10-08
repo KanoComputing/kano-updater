@@ -109,6 +109,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.2.3", "Kanux-Beta-1.2.4",
                           self.beta_123_to_beta_124)
 
+        self.add_scenario("Kanux-Beta-1.2.4", "Kanux-Beta-1.2.5",
+                          self.beta_124_to_beta_125)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -135,6 +138,9 @@ class PreUpdate(Scenarios):
                            'repo.kano.me/raspberrypi')
 
     def beta_123_to_beta_124(self):
+        pass
+
+    def beta_124_to_beta_125(self):
         pass
 
     # Not used at the moment: dev.kano.me > repo.kano.me
@@ -168,6 +174,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-1.2.3", "Kanux-Beta-1.2.4",
                           self.beta_123_to_beta_124)
+
+        self.add_scenario("Kanux-Beta-1.2.4", "Kanux-Beta-1.2.5",
+                          self.beta_124_to_beta_125)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -212,3 +221,6 @@ class PostUpdate(Scenarios):
                 os.rename(path + old_name, path + new_name)
             except:
                 pass
+
+    def beta_124_to_beta_125(self):
+        pass
