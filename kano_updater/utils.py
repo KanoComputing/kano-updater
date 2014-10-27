@@ -9,13 +9,13 @@
 #
 
 import os
-import re
 import sys
 import errno
 import subprocess
 import shutil
 from kano.logging import logger
-from kano.utils import run_print_output_error, run_cmd, run_cmd_log, chown_path, is_gui
+from kano.utils import run_print_output_error, run_cmd, run_cmd_log, \
+    chown_path, is_gui, sed
 from kano.network import is_internet
 # WARNING do not import GUI modules here (like KanoDialog)
 
@@ -351,39 +351,6 @@ def add_text_to_end(text_buffer, text, tag=None):
         text_buffer.insert(end, text)
     else:
         text_buffer.insert_with_tags(end, text, tag)
-
-
-# TODO: This could be useful in kano.utils
-def sed(pattern, replacement, file_path, use_regexp=True):
-    """ Search and replace a pattern in a file.
-
-    The search happens line-by-line, multiline patterns won't work
-
-    :param pattern: a regular expression to search for
-    :param replacement: the replacement string
-    :param file_path: location of the file to process
-    :returns: number of lines changed
-    :raises IOError: File doesn't exist
-    """
-
-    changed = 0
-
-    with open(file_path, "r") as file_handle:
-        lines = file_handle.readlines()
-
-    with open(file_path, "w") as file_handle:
-        for line in lines:
-            if use_regexp:
-                modified_line = re.sub(pattern, replacement, line)
-            else:
-                modified_line = line.replace(pattern, replacement)
-
-            file_handle.write(modified_line)
-
-            if line != modified_line:
-                changed += 1
-
-    return changed
 
 
 def migrate_repository(apt_file, old_repo, new_repo):
