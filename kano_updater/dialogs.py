@@ -25,12 +25,14 @@ def show_results(msg_upgraded, msg_added, msg_removed, debian_err_packages,
     bold_tag = text_buffer.create_tag("bold", weight=Pango.Weight.BOLD)
 
     scrolled_window = ScrolledWindow()
+    scrolled_window.apply_styling_to_widget()
     scrolled_window.add_with_viewport(text_view)
     scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
     scrolled_window.set_size_request(400, 200)
 
     result_dialog = kano_dialog.KanoDialog("Update result", "",
-                        widget=scrolled_window, global_style=True)
+                                           widget=scrolled_window,
+                                           global_style=True)
     result_dialog.dialog.set_icon_name("kano-updater")
     result_dialog.dialog.set_title("Kano Updater")
 
@@ -85,6 +87,7 @@ def show_results(msg_upgraded, msg_added, msg_removed, debian_err_packages,
     result_dialog.run()
     while Gtk.events_pending():
         Gtk.main_iteration()
+
 
 def show_reboot_dialog():
     rd_title = "Update successful!"
