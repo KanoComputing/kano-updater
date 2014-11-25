@@ -230,6 +230,13 @@ if check_internet():
     except Exception:
         pass
 
+    # Check whether there are any updatable apps
+    # This is not essential, so we ignore any errors
+    try:
+        run_cmd("sudo kano-apps check-for-updates")
+    except:
+        pass
+
     # get app-state after upgrading
     appstate_after, appstate_after_nonclean = get_dpkg_dict()
 
