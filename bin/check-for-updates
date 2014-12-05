@@ -48,6 +48,8 @@ class MainWindow(Gtk.Window):
         self.set_decorated(False)
         self.set_resizable(False)
         self.set_position(Gtk.WindowPosition.CENTER)
+        
+        self.set_icon_name("kano-updater")
 
         # Make sure this window is always above
         self.set_keep_above(True)
