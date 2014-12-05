@@ -331,18 +331,12 @@ def root_check():
 
 
 def check_internet():
-    from kano.gtk3 import kano_dialog
-
     if is_internet():
         return True
 
-    title = "No internet connection detected"
-    description = "Please connect to internet using the cable\n"
-    description += "or the WiFi utility in Apps"
-    kdialog = kano_dialog.KanoDialog(title, description)
-    kdialog.run()
-    logger.warn(title)
-    return False
+    logger.warn("No internet connection detected")
+    os.system("kano-settings 12")
+    return is_internet()
 
 
 def add_text_to_end(text_buffer, text, tag=None):
