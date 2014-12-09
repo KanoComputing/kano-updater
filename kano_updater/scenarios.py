@@ -235,4 +235,4 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_125_to_beta_131(self):
-        pass
+        install('kano-draw linux-story')
