@@ -2,11 +2,11 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2 
 
 CC=gcc
-CFLAGS=`pkg-config --cflags lxpanel gtk+-2.0` -I/usr/include/libfm
-LIBS=`pkg-config --libs lxpanel gtk+-2.0` -lfm-gtk -lkdesk-hourglass
+CFLAGS=`pkg-config --cflags lxpanel gtk+-2.0`
+LIBS=`pkg-config --libs lxpanel gtk+-2.0` -lkdesk-hourglass
 SRC=kano_updater.c
 BIN=kano_updater.so
-INSTALL_PATH=/usr/lib/arm-linux-gnueabihf/lxpanel/plugins/
+INSTALL_PATH=/usr/lib/`dpkg-architecture -qDEB_HOST_MULTIARCH`/lxpanel/plugins/
 
 build: $(BIN)
 
