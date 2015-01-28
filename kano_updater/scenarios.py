@@ -118,6 +118,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.3.1", "Kanux-Beta-1.3.2",
                           self.beta_131_to_beta_132)
 
+        self.add_scenario("Kanux-Beta-1.3.2", "Kanux-Beta-1.3.3",
+                          self.beta_132_to_beta_133)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -153,6 +156,9 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_131_to_beta_132(self):
+        pass
+
+    def beta_132_to_beta_133(self):
         pass
 
     # Not used at the moment: dev.kano.me > repo.kano.me
@@ -195,6 +201,10 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-1.3.1", "Kanux-Beta-1.3.2",
                           self.beta_131_to_beta_132)
+
+        self.add_scenario("Kanux-Beta-1.3.2", "Kanux-Beta-1.3.3",
+                          self.beta_132_to_beta_133)
+
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -245,6 +255,9 @@ class PostUpdate(Scenarios):
 
     def beta_125_to_beta_131(self):
         install('kano-draw')
-        
+
     def beta_131_to_beta_132(self):
         install('xf86-video-fbturbo-improved')
+
+    def beta_132_to_beta_133(self):
+        pass
