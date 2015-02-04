@@ -159,7 +159,9 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_132_to_beta_133(self):
-        pass
+        # Downgrade the improved FBTurbo X11 driver to the official stable version
+        run_cmd_log('apt-get -y remove xf86-video-fbturbo-improved')
+        run_cmd_log('apt-get -y install xserver-xorg-video-fbturbo')
 
     # Not used at the moment: dev.kano.me > repo.kano.me
     def _migrate_repo_url(self):
@@ -260,7 +262,4 @@ class PostUpdate(Scenarios):
         install('xf86-video-fbturbo-improved')
 
     def beta_132_to_beta_133(self):
-        # Downgrade the improved FBTurbo X11 driver to the official stable version
-        run_cmd_log('apt-get -y remove xf86-video-fbturbo-improved')
-        run_cmd_log('apt-get -y install xserver-xorg-video-fbturbo')
         pass
