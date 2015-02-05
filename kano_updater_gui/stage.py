@@ -11,7 +11,7 @@
 from gi.repository import Gtk
 
 from kano_updater_gui.paths import IMAGE_PATH
-from kano_updater_gui.text_en import STATUS_TITLES, NUMBER_OF_STAGES
+from kano_updater_gui.text import STATUS_TITLES, NUMBER_OF_STAGES
 
 BOX_ARRANGEMENTS = {
     'left': {

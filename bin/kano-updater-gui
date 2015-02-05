@@ -22,7 +22,7 @@ if __name__ == '__main__' and __package__ is None:
         sys.path.insert(1, dir_path)
 
 from kano_updater_gui.paths import IMAGE_PATH, CSS_PATH
-from kano_updater_gui.text_en import NUMBER_OF_STAGES
+from kano_updater_gui.text import NUMBER_OF_STAGES
 from kano_updater_gui.header import Header
 from kano_updater_gui.stage import stage
 
