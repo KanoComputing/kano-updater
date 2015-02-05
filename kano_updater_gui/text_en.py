@@ -16,6 +16,8 @@ STATUS_TITLES = [
     u"5. Finishing\nup\N{HORIZONTAL ELLIPSIS}"
 ]
 
+NUMBER_OF_STAGES = len(STATUS_TITLES)
+
 STAGE_TITLES = [
     u"Downloading\N{HORIZONTAL ELLIPSIS}",
     u"Updating the updater\N{HORIZONTAL ELLIPSIS}",

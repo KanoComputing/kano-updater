@@ -11,9 +11,32 @@
 from gi.repository import Gtk
 
 from kano_updater_gui.paths import IMAGE_PATH
-from kano_updater_gui.text_en import STATUS_TITLES
+from kano_updater_gui.text_en import STATUS_TITLES, NUMBER_OF_STAGES
+
+BOX_ARRANGEMENTS = {
+    'left': {
+        'width': 75,
+        'align': Gtk.Align.END,
+    },
+    'centre': {
+        'width': 150,
+        'align': Gtk.Align.CENTER,
+    },
+    'right': {
+        'width': 75,
+        'align': Gtk.Align.START,
+    }
+}
 
 def stage(number):
+    # Left, right or centre box arrangement?
+    if number == 0:
+        arrangement = BOX_ARRANGEMENTS['left']
+    elif number + 1 == NUMBER_OF_STAGES:
+        arrangement = BOX_ARRANGEMENTS['right']
+    else:
+        arrangement = BOX_ARRANGEMENTS['centre']
+
     box = Gtk.EventBox(
         width_request = 150,
         height_request = 110,
@@ -44,21 +67,9 @@ def stage(number):
         height_request = 60
     )
     progress = Gtk.EventBox(
-        width_request = [
-             75,
-            150,
-            150,
-            150,
-             75
-        ][number],
+        width_request = arrangement['width'],
         height_request = 6,
-        halign = [
-            Gtk.Align.END,
-            Gtk.Align.CENTER,
-            Gtk.Align.CENTER,
-            Gtk.Align.CENTER,
-            Gtk.Align.START
-        ][number],
+        halign = arrangement['align'],
         valign = Gtk.Align.CENTER
     )
     progress.get_style_context().add_class("progress")
