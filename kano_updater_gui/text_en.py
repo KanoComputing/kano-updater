@@ -35,7 +35,7 @@ STAGE_BODIES = [
     u"we're downloading new games, apps and projects, and "
     u"streamlining the computer's memory. This should take "
     u"about 15 minutes. In the meantime, why not take a "
-    u"phone picture of your Kano? Sent it to us at "
+    u"phone picture of your Kano? Send it to us at "
     u"<b>hello@kano.me</b> and we'll share it with the "
     u"world. You can also search for the white rabbit on "
     u"<b>http://world.kano.me</b>",
