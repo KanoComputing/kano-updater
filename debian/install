@@ -3,8 +3,7 @@ bin/* usr/bin
 python_modules usr/share/kano-updater
 
 kano_updater usr/lib/python2.7/dist-packages/
-
-images/* usr/share/kano-updater/images/
+kano_updater_gui usr/lib/python2.7/dist-packages/
 
 lxpanel-plugin/kano_updater.so usr/lib/arm-linux-gnueabihf/lxpanel/plugins/
 
