@@ -2,3 +2,69 @@
 GtkGrid GtkImage {
     padding: 0;
 }
+
+.headline {
+    font: Bariol Bold 22;
+    color: white;
+}
+
+.poster {
+    font: Bariol 16;
+    color: white;
+}
+
+.social {
+    font: Bariol Bold 16;
+    color: white;
+}
+
+.psa {
+    font: Bariol Bold 14;
+    color: lightgray;
+}
+
+.header1 {
+    background: #62b123;
+}
+
+.header2 {
+    background: #dd7676;
+}
+
+.header3 {
+    background: #838383;
+}
+
+.header4 {
+    background: #de73b4;
+}
+
+.header5 {
+    background: #6194b8;
+}
+
+.header6 {
+    background: #67a635;
+}
+
+.progress {
+    background: white;
+}
+
+.waiting {
+    background: #e2e2e2;
+    color: darkgray;
+    font: Bariol Bold 10;
+}
+
+.working {
+    background: #b9b9b9;
+    color: white;
+    font: Bariol Bold 10;
+}
+
+.completed {
+    background: #7cc640;
+    color: white;
+    font: Bariol Bold 10;
+}
