@@ -30,8 +30,8 @@ from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.utils import get_dpkg_dict, set_update_status, \
     expand_rootfs, get_installed_version, reboot_required, \
     update_failed, launch_gui, launch_gui_if_not_running, set_gui_stage, \
-    kill_gui, update_home_folders_from_skel, check_for_multiple_instances, root_check, \
-    check_internet, fix_broken
+    kill_gui, update_home_folders_from_skel, check_for_multiple_instances, \
+    root_check, check_internet, fix_broken
 from kano.utils import run_cmd, is_gui, run_cmd_log
 from kano.network import is_internet
 from kano.gtk3 import kano_dialog
@@ -56,17 +56,24 @@ require_restart = ['kdesk', 'raspberrypi-linux', 'raspberrypi-firmware',
 
 # Read flags
 forceUpdate = (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force'])
-showDialogue = not (len(sys.argv) == 2 and sys.argv[1] in ['-n', '--noDialogue'])
+showDialogue = not (len(sys.argv) == 2 and
+                    sys.argv[1] in ['-n', '--noDialogue'])
 debug = (len(sys.argv) == 2 and sys.argv[1] in ['-d', '--debug'])
 
 if not is_gui():
     sys.exit('You need to run kano-updater from a GUI session!')
 
 
-# Track application usage only after we are ok to proceed (root permissions & gui enabled)
+# Track application usage only after we are ok to proceed
+# (root permissions & gui enabled)
 try:
-    from kano_profile.tracker import Tracker, save_kano_version
+    from kano_profile.tracker import Tracker, track_data
     kanotracker = Tracker()
+
+    track_data("update-started", {
+        "from": str(old_version),
+        "to": str(new_version)
+    })
 except:
     pass
 
@@ -121,7 +128,8 @@ if check_internet():
         os.remove("/tmp/updater-progress")
 
     # kill_apps
-    kill_apps_list = ['minecraft-pi', 'make-music', 'make-video', 'make-snake', 'kano-apps']
+    kill_apps_list = ['minecraft-pi', 'make-music', 'make-video',
+                      'make-snake', 'kano-apps']
     for app in kill_apps_list:
         run_cmd('killall -q {}'.format(app))
 
@@ -142,7 +150,8 @@ if check_internet():
     current_updater_version = get_installed_version('kano-updater')
 
     cmd = 'apt-get install -o Dpkg::Options::="--force-confdef" ' + \
-          '-o Dpkg::Options::="--force-confold" -y --force-yes kano-toolset kano-updater'
+          '-o Dpkg::Options::="--force-confold" -y --force-yes ' + \
+          'kano-toolset kano-updater'
     _, _, rv = run_cmd_log(cmd)
 
     if rv != 0:
@@ -224,12 +233,6 @@ if check_internet():
     status = {"last_update": now, "update_available": 0, "last_check": now}
     set_update_status(status)
 
-    # update the version in the tracker
-    try:
-        save_kano_version()
-    except Exception:
-        pass
-
     # Check whether there are any updatable apps
     # This is not essential, so we ignore any errors
     try:
@@ -297,7 +300,8 @@ if check_internet():
 
     # Play sound in the background
     from kano.utils import play_sound
-    play_sound('/usr/share/kano-media/sounds/kano_updated.wav', background=True)
+    play_sound('/usr/share/kano-media/sounds/kano_updated.wav',
+               background=True)
 
     # Display message
     if showDialogue:
@@ -312,14 +316,22 @@ EOF
            appstate_after_nonclean, python_ok, python_err))
 
     try:
-        from kano_profile.badges import increment_app_state_variable_with_dialog
+        from kano_profile.badges import \
+            increment_app_state_variable_with_dialog
         increment_app_state_variable_with_dialog('kano-updater', 'updated', 1)
     except Exception:
         pass
 
+    try:
+        from kano_profile.tracker import track_data
+        track_data("updated-to", str(new_version))
+    except:
+        pass
+
 # expand filesystem
 will_expand = expand_rootfs()
-if showDialogue and (will_expand or reboot_required(require_restart, pkgs_changed)):
+if showDialogue and \
+   (will_expand or reboot_required(require_restart, pkgs_changed)):
     logger.info("Rebooting")
 
     # A massive hack to avoid library mixups during large updates
