@@ -259,7 +259,7 @@ class PostUpdate(Scenarios):
         install('kano-draw')
 
     def beta_131_to_beta_132(self):
-        install('xf86-video-fbturbo-improved')
+        pass
 
     def beta_132_to_beta_133(self):
         pass
