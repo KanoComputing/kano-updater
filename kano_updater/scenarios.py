@@ -262,4 +262,4 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_132_to_beta_133(self):
-        pass
+        install('linux-story')
