@@ -70,7 +70,7 @@ def update_failed(err):
     kdialog.run()
 
 
-def get_dpkg_dict():
+def get_dpkg_dict(include_unpacked=False):
     apps_ok = dict()
     apps_other = dict()
 
@@ -83,7 +83,7 @@ def get_dpkg_dict():
         name = parts[1]
         version = parts[2]
 
-        if state == 'ii':
+        if state == 'ii' or (include_unpacked and state == 'iU'):
             apps_ok[name] = version
         else:
             apps_other[name] = version
