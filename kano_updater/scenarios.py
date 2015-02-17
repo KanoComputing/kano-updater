@@ -262,4 +262,4 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_132_to_beta_133(self):
-        install('linux-story')
+        run_cmd_log('kano-apps install --no-gui terminal-quest')
