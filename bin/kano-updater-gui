@@ -2,7 +2,7 @@
 
 # kano-updater-gui
 #
-# Copyright (C) 2014 Kano Computing Ltd.
+# Copyright (C) 2014-2015 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
 #
 # Main window class
@@ -16,17 +16,16 @@ import time
 import sys
 from kano.gtk3.apply_styles import apply_styling_to_screen
 
-number_of_stages = 5
-
 if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     if dir_path != '/usr':
         sys.path.insert(1, dir_path)
 
-if dir_path == "/usr":
-    image_path = "/usr/share/kano-updater/images"
-else:
-    image_path = "{}/images".format(dir_path)
+from kano_updater_gui.paths import IMAGE_PATH, CSS_PATH
+from kano_updater_gui.text import NUMBER_OF_STAGES
+from kano_updater_gui.header import Header
+from kano_updater_gui.stage import stage
+
 
 tmp_filename = "/tmp/updater-progress"
 
@@ -54,19 +53,17 @@ class WorkerThread(threading.Thread):
             try:
                 with open(tmp_filename) as f:
                     number = f.read()
-                    f.close()
             except IOError:
-                f = open(tmp_filename, "w+")
-                number = "1"
-                f.write(number)
-                f.close()
+                with open(tmp_filename, "w+") as f:
+                    number = "1"
+                    f.write(number)
 
             if not number == str(current_number + 1) and number.isdigit():
                 current_number = int(number) - 1
                 if current_number < 0:
                     current_number = 0
-                elif current_number > number_of_stages:
-                    current_number = number_of_stages
+                elif current_number > NUMBER_OF_STAGES:
+                    current_number = NUMBER_OF_STAGES
                 return
             # This is here so on closing window, we can tell this function to exit
             if exit:
@@ -77,11 +74,11 @@ class WorkerThread(threading.Thread):
 
 
 class MainWindow(Gtk.Window):
-    CSS_PATH = "{}/CSS/updater.css".format(image_path)
-    
+    CSS_FILE = os.path.join(CSS_PATH, "updater.css")
+
     def __init__(self):
         # Apply styling to window
-        apply_styling_to_screen(self.CSS_PATH)
+        apply_styling_to_screen(self.CSS_FILE)
 
         Gtk.Window.__init__(self)
         self.set_resizable(False)
@@ -100,293 +97,40 @@ class MainWindow(Gtk.Window):
         self.stage_labels = []
         self.stage_checkmarks = []
         self.stage_spinners = []
-        
+
         self.headerstack = Gtk.Stack(
             transition_type = Gtk.StackTransitionType.SLIDE_LEFT_RIGHT,
             transition_duration = 500
         )
-        grid.attach(self.headerstack, 0, 0, number_of_stages, 1)
-        
-        for i in range(number_of_stages + 1):
-            header = self.__header(i)
+        grid.attach(self.headerstack, 0, 0, NUMBER_OF_STAGES, 1)
+
+        for i in range(NUMBER_OF_STAGES + 1):
+            header = Header(i)
             self.headerstack.add(header)
             self.headers.append(header)
-        
-        for i in range(number_of_stages):
-            (box, label, checkmark, spinner) = self.__stage(i)
+
+        for i in range(NUMBER_OF_STAGES):
+            (box, label, checkmark, spinner) = stage(i)
             grid.attach(box, i, 1, 1, 1)
             self.stage_boxes.append(box)
             self.stage_labels.append(label)
             self.stage_checkmarks.append(checkmark)
             self.stage_spinners.append(spinner)
-        
+
         self.add(grid)
-        
+
         self.show_all()
         self.set_stages(current_number)
-        
+
         self.start_spinner()
-    
-    def __header(self, number):
-        box = Gtk.EventBox(
-            width_request = number_of_stages * 150,
-            height_request = 340
-        )
-        box.get_style_context().add_class("header{:d}".format(number+1))
-        
-        grid = Gtk.Grid(
-            orientation = Gtk.Orientation.VERTICAL,
-            halign=Gtk.Align.CENTER
-        )
-        
-        headline = Gtk.Label(
-            [
-                u"Downloading\N{HORIZONTAL ELLIPSIS}",
-                u"Updating the updater\N{HORIZONTAL ELLIPSIS}",
-                u"Upgrading Python\N{HORIZONTAL ELLIPSIS}",
-                u"Upgrading your Operating System\N{HORIZONTAL ELLIPSIS}",
-                u"Finishing up\N{HORIZONTAL ELLIPSIS}",
-                u"System updated!".upper()
-            ][number],
-            halign = Gtk.Align.CENTER,
-            valign = Gtk.Align.START,
-            margin_top = 25,
-            margin_left = 50,
-            margin_right = 50
-        )
-        headline.get_style_context().add_class("headline")
-        grid.add(headline)
 
-        poster_grid = Gtk.Grid(
-            orientation = Gtk.Orientation.VERTICAL,
-            halign = Gtk.Align.CENTER,
-            valign = Gtk.Align.CENTER,
-            vexpand = True,
-            margin_top = 10,
-            margin_bottom = 10,
-            margin_left = 50,
-            margin_right = 50
-        )
-        
-        poster_label = Gtk.Label(
-            justify = Gtk.Justification.CENTER,
-            halign = Gtk.Align.CENTER,
-            valign = Gtk.Align.END,
-            margin_bottom = 5
-        )
-        poster_label.set_markup(
-            [
-                u"In 1978, the fastest computer in the world was the "
-                u"Cray 1 \N{EM DASH} it cost $7 million and weighed as "
-                u"much as an average elephant! Your Kano is about 4 "
-                u"times faster than the Cray 1. To keep it up to speed, "
-                u"we're downloading new games, apps and projects, and "
-                u"streamlining the computer's memory. This should take "
-                u"about 15 minutes. In the meantime, why not take a "
-                u"phone picture of your Kano? Sent it to us at "
-                u"<b>hello@kano.me</b> and we'll share it with the "
-                u"world. You can also search for the white rabbit on "
-                u"<b>http://world.kano.me</b>",
-    
-                u"Computers can learn new ideas quickly. Right now, "
-                u"we're updating the Updater tool. Once this step is "
-                u"finished, the Updater will relaunch. How do computers "
-                u"think? They are made of electrical switches, "
-                u"connected together in clever ways. If a switch is on, "
-                u"that means \"yes\" or \"1\"; if it's off, that means "
-                u"\"no\" or \"0\". These little yes-no switches become "
-                u"a binary code \N{EM DASH} for words, sounds, rules, "
-                u"and more. Your computer has over 10 million tiny "
-                u"switches, called transistors, in its brain. In your "
-                u"brain, these switches are cells called neurons. "
-                u"They're talking to each other right now.",
-    
-                u"Python is one of the world's most popular programming "
-                u"languages. A programming language takes words that "
-                u"humans can understand, and translates them into "
-                u"instructions that the computer's switches can "
-                u"understand. A good \"make a sandwich\" program would "
-                u"go through all the steps necessary to get the "
-                u"sandwich made, from \"grab bread\" to \"pick up "
-                u"knife\" to \"put it on a plate.\" The computer "
-                u"follows a program in Python the way a cook follows a "
-                u"recipe in English. Python code can build volcanos in "
-                u"Minecraft, grab \"Gangnam Style\" from YouTube, and "
-                u"move millions of dollars in the New York Stock "
-                u"Exchange.",
-    
-                u"Kano OS is an operating system, which means it "
-                u"connects all the programs together. This OS is based "
-                u"on Linux, whose code is open \N{EM DASH} that means "
-                u"that it's free for anyone to download, change or even "
-                u"sell. Its code is written by hobbyists and makers "
-                u"worldwide, not just professionals. Kano uses Debian, "
-                u"a fun and powerful \"distribution\" of Linux which "
-                u"the International Space Station also uses to run its "
-                u"robotic systems \N{EM DASH} to keep the astronauts "
-                u"from losing their lunch!",
-    
-                u"We're almost done! With your Kano computer, you'll "
-                u"make awesome games, code your own music, stream "
-                u"videos around your house, tell stories, and much "
-                u"more. Your computer is open, and its powers are at "
-                u"your command. If you want to get new cool projects "
-                u"from us each week, join the community at",
-                
-                u"Your Kano will now reboot!\n"
-                u"\n"
-                u"See you in a while\N{HORIZONTAL ELLIPSIS}"
-            ][number]
-        )
-        poster_label.set_line_wrap(True)
-        poster_label.get_style_context().add_class("poster")
-        poster_grid.add(poster_label)
-
-        grid.add(poster_grid)
-        
-        if number == 4:
-            soc_media_grid = Gtk.Grid(
-                orientation = Gtk.Orientation.HORIZONTAL,
-                halign = Gtk.Align.CENTER,
-                valign = Gtk.Align.END,
-                column_spacing = 10,
-                margin_top = 5
-            )
-            
-            facebook_icon = Gtk.Image()
-            facebook_icon.set_from_file("{}/facebook.png".format(image_path))
-            soc_media_grid.add(facebook_icon)
-
-            facebook_label = Gtk.Label(
-                "KanoComputing",
-                margin_right = 20
-            )
-            facebook_label.get_style_context().add_class("social")
-            soc_media_grid.add(facebook_label)
-            
-            twitter_icon = Gtk.Image()
-            twitter_icon.set_from_file("{}/twitter.png".format(image_path))
-            soc_media_grid.add(twitter_icon)
-
-            twitter_label = Gtk.Label("@TeamKano")
-            twitter_label.get_style_context().add_class("social")
-            soc_media_grid.add(twitter_label)
-
-            poster_grid.add(soc_media_grid)
-        
-        psa_grid = Gtk.Grid(
-            orientation = Gtk.Orientation.HORIZONTAL,
-            halign = Gtk.Align.CENTER,
-            valign = Gtk.Align.END,
-            column_spacing = 10,
-            margin_left = 50,
-            margin_right = 50,
-            margin_bottom = 25
-        )
-
-        if number < 5:
-            psa_bang = Gtk.Image()
-            psa_bang.set_from_file("{}/bang.png".format(image_path))
-            psa_grid.add(psa_bang)
-
-        psa_label = Gtk.Label(
-            (u"Do not disconnect your Kano"
-            if number < 5 else
-            u"Please stand by").upper()
-        )
-        psa_label.get_style_context().add_class("psa")
-        psa_grid.add(psa_label)
-
-        grid.add(psa_grid)
-
-        box.add(grid)
-            
-        return box
-    
-    def __stage(self, number):
-        box = Gtk.EventBox(
-            width_request = 150,
-            height_request = 110,
-            expand = False
-        )
-        box.get_style_context().add_class("waiting")
-
-        grid = Gtk.Grid(
-            orientation = Gtk.Orientation.VERTICAL,
-            expand = True
-        )
-        
-        label = Gtk.Label(
-            [
-                u"1. Downloading\N{HORIZONTAL ELLIPSIS}",
-                u"2. Updating\nthe updater\N{HORIZONTAL ELLIPSIS}",
-                u"3. Upgrading\nPython\N{HORIZONTAL ELLIPSIS}",
-                u"4. Upgrading\nyour system\N{HORIZONTAL ELLIPSIS}",
-                u"5. Finishing\nup\N{HORIZONTAL ELLIPSIS}"
-            ][number].upper(),
-            justify = Gtk.Justification.CENTER,
-            halign = Gtk.Align.FILL,
-            valign = Gtk.Align.CENTER,
-            vexpand = True,
-            height_request = 50
-        )
-        label.get_style_context().add_class("waiting")
-        grid.add(label)
-        
-        overlay = Gtk.Overlay()
-        
-        progressbox = Gtk.EventBox(
-            width_request = 150,
-            height_request = 60
-        )
-        progress = Gtk.EventBox(
-            width_request = [
-                 75,
-                150,
-                150,
-                150,
-                 75
-            ][number],
-            height_request = 6,
-            halign = [
-                Gtk.Align.END,
-                Gtk.Align.CENTER,
-                Gtk.Align.CENTER,
-                Gtk.Align.CENTER,
-                Gtk.Align.START
-            ][number],
-            valign = Gtk.Align.CENTER
-        )
-        progress.get_style_context().add_class("progress")
-        progressbox.add(progress)
-
-        overlay.add(progressbox)
-        
-        checkmark = Gtk.Image(
-            halign = Gtk.Align.FILL,
-            valign = Gtk.Align.FILL
-        )
-        checkmark.set_from_file("{}/waiting.png".format(image_path))
-        overlay.add_overlay(checkmark)
-
-        spinner = Gtk.Spinner(
-            halign = Gtk.Align.CENTER,
-            valign = Gtk.Align.CENTER
-        )
-        spinner.hide()
-        overlay.add_overlay(spinner)
-
-        grid.add(overlay)
-        box.add(grid)
-        
-        return (box, label, checkmark, spinner)
-        
     def set_stage_state(self, number, state):
         for s in ["waiting", "working", "completed"]:
             if s == state:
                 self.stage_boxes[number].get_style_context().add_class(s)
                 self.stage_labels[number].get_style_context().add_class(s)
-                self.stage_checkmarks[number].set_from_file("{}/{}.png".format(image_path, s))
+                self.stage_checkmarks[number].set_from_file(
+                    os.path.join(IMAGE_PATH, "{}.png".format(s)))
             else:
                 self.stage_boxes[number].get_style_context().remove_class(s)
                 self.stage_labels[number].get_style_context().remove_class(s)
@@ -410,7 +154,7 @@ class MainWindow(Gtk.Window):
     def set_stages(self, number):
         self.headerstack.set_visible_child(self.headers[number])
 
-        for i in range(number_of_stages):
+        for i in range(NUMBER_OF_STAGES):
             if i < number:
                 self.set_stage_state(i, "completed")
             elif i == number:
