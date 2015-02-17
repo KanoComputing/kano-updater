@@ -42,6 +42,8 @@ def upgrade_debian(gui_process):
         elif i == 4:
             return -1
 
+    set_gui_stage(5)
+
     # do the actual update using the downloaded files
     cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" dist-upgrade'
@@ -49,7 +51,7 @@ def upgrade_debian(gui_process):
 
     # apt autoremove
     gui_process = launch_gui_if_not_running(gui_process)
-    set_gui_stage(5)
+    set_gui_stage(6)
 
     cmd = 'apt-get -y autoremove --purge'
     run_cmd_log(cmd)

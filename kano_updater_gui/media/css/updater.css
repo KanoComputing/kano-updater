@@ -36,14 +36,18 @@ GtkGrid GtkImage {
 }
 
 .header4 {
-    background: #de73b4;
+    background: #62b123;
 }
 
 .header5 {
-    background: #6194b8;
+    background: #de73b4;
 }
 
 .header6 {
+    background: #6194b8;
+}
+
+.header7 {
     background: #67a635;
 }
 

@@ -12,8 +12,9 @@ STATUS_TITLES = [
     u"1. Downloading\N{HORIZONTAL ELLIPSIS}",
     u"2. Updating\nthe updater\N{HORIZONTAL ELLIPSIS}",
     u"3. Upgrading\nPython\N{HORIZONTAL ELLIPSIS}",
-    u"4. Upgrading\nyour system\N{HORIZONTAL ELLIPSIS}",
-    u"5. Finishing\nup\N{HORIZONTAL ELLIPSIS}"
+    u"4. Optimizing\nyour Kano\N{HORIZONTAL ELLIPSIS}",
+    u"5. Upgrading\nyour system\N{HORIZONTAL ELLIPSIS}",
+    u"6. Finishing\nup\N{HORIZONTAL ELLIPSIS}"
 ]
 
 NUMBER_OF_STAGES = len(STATUS_TITLES)
@@ -22,6 +23,7 @@ STAGE_TITLES = [
     u"Downloading\N{HORIZONTAL ELLIPSIS}",
     u"Updating the updater\N{HORIZONTAL ELLIPSIS}",
     u"Upgrading Python\N{HORIZONTAL ELLIPSIS}",
+    u"Optimizing your Kano\N{HORIZONTAL ELLIPSIS}",
     u"Upgrading your Operating System\N{HORIZONTAL ELLIPSIS}",
     u"Finishing up\N{HORIZONTAL ELLIPSIS}",
     u"System updated!"
@@ -66,6 +68,18 @@ STAGE_BODIES = [
     u"Minecraft, grab \"Gangnam Style\" from YouTube, and "
     u"move millions of dollars in the New York Stock "
     u"Exchange.",
+
+    u"The name \"Kano\" comes from Kan\u014d Jigor\u014d. He "
+    u"was a Japanese schoolteacher, inventor of the art of judo. "
+    u"His motto: Maximum efficiency, minimum effort. In "
+    u"Greek, Kano means \"I make\". (Kano is also the largest "
+    u"city in Northern Nigeria.) What makes Kano different to "
+    u"other computers? All of the ideas in its brain are open "
+    u"for you to see. Just visit <b>github.com/KanoComputing</b> "
+    u"to see the code. Kano can also change forms... You can "
+    u"turn it into a robot, server, radio, and more. Visit "
+    u"<b>world.kano.me/projects</b> for powerup ideas. Want a look "
+    u"inside Kano HQ? Hang with our wizards at <b>blog.kano.me</b>",
 
     u"Kano OS is an operating system, which means it "
     u"connects all the programs together. This OS is based "
