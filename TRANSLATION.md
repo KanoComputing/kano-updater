@@ -29,7 +29,7 @@ In this example, we're going to add a French translation:
     cd ..
     LC_ALL=fr_FR.utf8 ./bin/kano-updater-gui
     
-    # test with 1 through 6 for the 6 stages of kano-updater-gui
+    # test with 1 through 7 for the 7 stages of kano-updater-gui
     echo -n 1 > /tmp/updater-progress
 
 ## How to make sure your code is i18n-aware

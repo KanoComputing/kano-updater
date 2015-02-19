@@ -156,7 +156,7 @@ class MainWindow(Gtk.Window):
         self.set_stages(current_number)
         self.start_spinner()
 
-    # number is the current working state (1-6) minus one (0-5)!
+    # number is the current working state (1-7) minus one (0-6)!
     def set_stages(self, number):
         self.headerstack.set_visible_child(self.headers[number])
 

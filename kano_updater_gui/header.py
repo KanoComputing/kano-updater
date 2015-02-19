@@ -107,14 +107,14 @@ class Header(Gtk.EventBox):
             margin_bottom = 25
         )
 
-        if number < 5:
+        if number < NUMBER_OF_STAGES:
             psa_bang = Gtk.Image()
             psa_bang.set_from_file("{}/bang.png".format(IMAGE_PATH))
             psa_grid.add(psa_bang)
 
         psa_label = Gtk.Label(
             (_(u"Do not disconnect your Kano")
-            if number < 5 else
+            if number < NUMBER_OF_STAGES else
             _(u"Please stand by")).upper()
         )
         psa_label.get_style_context().add_class("psa")
