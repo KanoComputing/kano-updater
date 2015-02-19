@@ -13,17 +13,23 @@ from gi.repository import Gtk
 from kano_updater_gui.paths import IMAGE_PATH
 from kano_updater_gui.text import STATUS_TITLES, NUMBER_OF_STAGES
 
+STAGE_WIDTH = 150
+STAGE_HEIGHT = 110
+
+LABEL_HEIGHT = 50
+PROGRESS_HEIGHT = STAGE_HEIGHT - LABEL_HEIGHT
+
 BOX_ARRANGEMENTS = {
     'left': {
-        'width': 75,
+        'width': STAGE_WIDTH / 2,
         'align': Gtk.Align.END,
     },
     'centre': {
-        'width': 150,
+        'width': STAGE_WIDTH,
         'align': Gtk.Align.CENTER,
     },
     'right': {
-        'width': 75,
+        'width': STAGE_WIDTH / 2,
         'align': Gtk.Align.START,
     }
 }
@@ -38,8 +44,8 @@ def stage(number):
         arrangement = BOX_ARRANGEMENTS['centre']
 
     box = Gtk.EventBox(
-        width_request = 150,
-        height_request = 110,
+        width_request = STAGE_WIDTH,
+        height_request = STAGE_HEIGHT,
         expand = False
     )
     box.get_style_context().add_class("waiting")
@@ -55,7 +61,7 @@ def stage(number):
         halign = Gtk.Align.FILL,
         valign = Gtk.Align.CENTER,
         vexpand = True,
-        height_request = 50
+        height_request = LABEL_HEIGHT
     )
     label.get_style_context().add_class("waiting")
     grid.add(label)
@@ -63,8 +69,8 @@ def stage(number):
     overlay = Gtk.Overlay()
 
     progressbox = Gtk.EventBox(
-        width_request = 150,
-        height_request = 60
+        width_request = STAGE_WIDTH,
+        height_request = PROGRESS_HEIGHT
     )
     progress = Gtk.EventBox(
         width_request = arrangement['width'],
