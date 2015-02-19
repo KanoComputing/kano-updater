@@ -14,12 +14,18 @@ import threading
 import os
 import time
 import sys
+import gettext
 from kano.gtk3.apply_styles import apply_styling_to_screen
 
 if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     if dir_path != '/usr':
         sys.path.insert(1, dir_path)
+        locale_path = os.path.join(dir_path, 'locale')
+    else:
+        locale_path = None
+
+gettext.install('kano-updater', locale_path, unicode=1)
 
 from kano_updater_gui.paths import IMAGE_PATH, CSS_PATH
 from kano_updater_gui.text import NUMBER_OF_STAGES
@@ -88,7 +94,7 @@ class MainWindow(Gtk.Window):
         self.set_keep_above(True)
 
         self.set_icon_name("kano-updater")
-        self.set_title("Updater")
+        self.set_title(_("Updater"))
 
         grid = Gtk.Grid()
 

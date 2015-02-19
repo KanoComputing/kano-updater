@@ -113,9 +113,9 @@ class Header(Gtk.EventBox):
             psa_grid.add(psa_bang)
 
         psa_label = Gtk.Label(
-            (u"Do not disconnect your Kano"
+            (_(u"Do not disconnect your Kano")
             if number < 5 else
-            u"Please stand by").upper()
+            _(u"Please stand by")).upper()
         )
         psa_label.get_style_context().add_class("psa")
         psa_grid.add(psa_label)

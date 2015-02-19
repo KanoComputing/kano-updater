@@ -10,3 +10,5 @@ lxpanel-plugin/*.png usr/share/kano-updater/images/
 
 icon/updater.app usr/share/applications/
 icon/kano-updater.png usr/share/icons/Kano/66x66/apps/
+
+locale/* /usr/share/locale

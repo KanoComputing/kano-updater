@@ -8,7 +8,8 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
-#include <glib/gi18n.h>
+#define GETTEXT_PACKAGE "kano-updater"
+#include <glib/gi18n-lib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gio/gio.h>
 
@@ -29,7 +30,7 @@
 #define UPDATE_CMD "kdesk-blur 'sudo /usr/bin/kano-updater'"
 #define SOUND_CMD "/usr/bin/aplay /usr/share/kano-media/sounds/kano_open_app.wav"
 
-#define PLUGIN_TOOLTIP "Kano Updater"
+#define PLUGIN_TOOLTIP _("Kano Updater")
 
 #define DAY 60*60*24
 
@@ -239,24 +240,24 @@ static gboolean show_menu(GtkWidget *widget, GdkEventButton *event,
 	update_status(plugin);
 
 	/* Create the menu items */
-	header_item = gtk_menu_item_new_with_label("Kano Updater");
+	header_item = gtk_menu_item_new_with_label(_("Kano Updater"));
 	gtk_widget_set_sensitive(header_item, FALSE);
 	gtk_menu_append(GTK_MENU(menu), header_item);
 	gtk_widget_show(header_item);
 
 	if (plugin->update_available > 0) {
-		update_item = gtk_menu_item_new_with_label("Update your system");
+		update_item = gtk_menu_item_new_with_label(_("Update your system"));
 		g_signal_connect(update_item, "activate",
 				 G_CALLBACK(update_clicked), NULL);
 		gtk_menu_append(GTK_MENU(menu), update_item);
 		gtk_widget_show(update_item);
 	} else {
-		no_updates_item = gtk_menu_item_new_with_label("No updates found");
+		no_updates_item = gtk_menu_item_new_with_label(_("No updates found"));
 		gtk_widget_set_sensitive(no_updates_item, FALSE);
 		gtk_menu_append(GTK_MENU(menu), no_updates_item);
 		gtk_widget_show(no_updates_item);
 
-		check_item = gtk_menu_item_new_with_label("Check again");
+		check_item = gtk_menu_item_new_with_label(_("Check again"));
 		g_signal_connect(check_item, "activate",
 				 G_CALLBACK(check_for_update_clicked),
 				 plugin);
