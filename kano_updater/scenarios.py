@@ -121,6 +121,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.3.2", "Kanux-Beta-1.3.3",
                           self.beta_132_to_beta_133)
 
+        self.add_scenario("Kanux-Beta-1.3.3", "Kanux-Beta-1.3.4",
+                          self.beta_133_to_beta_134)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -162,6 +165,9 @@ class PreUpdate(Scenarios):
         # Downgrade the improved FBTurbo X11 driver to the official stable version
         run_cmd_log('apt-get -y remove xf86-video-fbturbo-improved')
         run_cmd_log('apt-get -y install xserver-xorg-video-fbturbo')
+
+    def beta_133_to_beta_134(self):
+        pass
 
     # Not used at the moment: dev.kano.me > repo.kano.me
     def _migrate_repo_url(self):
@@ -207,6 +213,8 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.3.2", "Kanux-Beta-1.3.3",
                           self.beta_132_to_beta_133)
 
+        self.add_scenario("Kanux-Beta-1.3.3", "Kanux-Beta-1.3.4",
+                          self.beta_133_to_beta_134)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -263,3 +271,6 @@ class PostUpdate(Scenarios):
 
     def beta_132_to_beta_133(self):
         run_cmd_log('kano-apps install --no-gui terminal-quest')
+
+    def beta_133_to_beta_134(self):
+        pass
