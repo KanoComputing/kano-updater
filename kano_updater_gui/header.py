@@ -12,15 +12,18 @@ from gi.repository import Gtk
 
 from kano_updater_gui.paths import IMAGE_PATH
 from kano_updater_gui.text import NUMBER_OF_STAGES, STAGE_TITLES, STAGE_BODIES
+from kano_updater_gui.stage import STAGE_WIDTH
 
+HEADER_WIDTH = STAGE_WIDTH * NUMBER_OF_STAGES
+HEADER_HEIGHT = 340
 
 class Header(Gtk.EventBox):
 
     def __init__(self, number):
         Gtk.EventBox.__init__(
             self,
-            width_request = NUMBER_OF_STAGES * 150,
-            height_request = 340
+            width_request = HEADER_WIDTH,
+            height_request = HEADER_HEIGHT
         )
         self.get_style_context().add_class("header{:d}".format(number + 1))
 
