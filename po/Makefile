@@ -3,15 +3,17 @@ APPNAME=kano-updater
 MSGLANGS=$(notdir $(wildcard *po))
 MSGOBJS=$(addprefix ../locale/,$(MSGLANGS:.po=/LC_MESSAGES/$(APPNAME).mo))
 
-.PHONY: clean messages
+.PHONY: clean_locales messages
 
 build: $(MSGOBJS)
 
 update: $(MSGLANGS)
 
-clean:
-	rm -f messages.pot
+clean_locales:
 	rm -rf ../locale
+
+clean: clean_locales
+	rm -f messages.pot
 
 define run-xgettext
 xgettext -f PYPOTFILES -L Python --force-po -o messages.pot
@@ -28,6 +30,6 @@ messages.pot:
 	msgmerge -N -U $*.po messages.pot
 	touch $*.po
 
-../locale/%/LC_MESSAGES/$(APPNAME).mo: %.po
+../locale/%/LC_MESSAGES/$(APPNAME).mo: clean_locales
 	mkdir -p $(dir $@)
 	msgfmt -c -o $@ $*.po
