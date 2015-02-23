@@ -62,11 +62,11 @@ def update_failed(err):
 
     logger.error("Update failed: {}".format(err))
 
-    msg = "We had a problem with the Update. " + \
-          "Make sure you are connected to the Internet, and give it another go.\n\n" + \
-          "If you still have problems, we can help at http://help.kano.me"
+    msg = _("We had a problem with the Update. "
+          "Make sure you are connected to the Internet, and give it another go.\n\n"
+          "If you still have problems, we can help at http://help.kano.me")
 
-    kdialog = kano_dialog.KanoDialog("Update error", msg)
+    kdialog = kano_dialog.KanoDialog(_("Update error"), msg)
     kdialog.run()
 
 
@@ -320,12 +320,14 @@ def root_check():
 
     user = os.environ['LOGNAME']
     if user != 'root':
-        title = 'Error!'
         description = 'kano-updater must be executed with root privileges'
         logger.error(description)
 
         if is_gui():
-            kdialog = kano_dialog.KanoDialog(title, description)
+            kdialog = kano_dialog.KanoDialog(
+                _('Error!'),
+                _('kano-updater must be executed with root privileges')
+            )
             kdialog.run()
         sys.exit(description)
 

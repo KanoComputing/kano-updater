@@ -1,4 +1,7 @@
+../bin/check-for-updates
+../bin/kano-updater
 ../bin/kano-updater-gui
+../kano_updater/utils.py
 ../kano_updater_gui/text.py
 ../kano_updater_gui/header.py
 ../kano_updater_gui/stage.py
