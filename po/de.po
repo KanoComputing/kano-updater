@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-19 14:28+0100\n"
+"POT-Creation-Date: 2015-02-23 14:02+0100\n"
 "PO-Revision-Date: 2015-02-13 17:16+0100\n"
 "Last-Translator:  <kontakt@hanno.de>\n"
 "Language-Team: German <kontakt@hanno.de>\n"
@@ -18,9 +18,93 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: ../bin/check-for-updates:46
+msgid "New Update"
+msgstr "Neues Update"
+
+#: ../bin/check-for-updates:64
+msgid "Time to update!"
+msgstr "Zeit für ein Update!"
+
+#: ../bin/check-for-updates:64
+msgid "Take a break! Updating takes about 15 minutes"
+msgstr "Mach mal Pause! Das Update dauert etwa 15 Minuten"
+
+#: ../bin/check-for-updates:67 ../bin/kano-updater:111
+msgid "Update now"
+msgstr "Jetzt updaten"
+
+#: ../bin/check-for-updates:69 ../bin/kano-updater:112
+msgid "Later"
+msgstr "Später"
+
+#: ../bin/kano-updater:70
+msgid "You need to run kano-updater from a GUI session!"
+msgstr "Du musst kano-updater aus der GUI heraus starten!"
+
+#: ../bin/kano-updater:93
+msgid ""
+"Unfortunately, your version of Kano OS is too old to be updated through the "
+"updater."
+msgstr ""
+"Leider ist Dein Kano OS zu alt, um es mit dem Updater auf den neuesten Stand "
+"zu bringen."
+
+#: ../bin/kano-updater:95
+msgid "You will need to download the image of the OS and reflash your SD card."
+msgstr ""
+"Bitte lade das neueste Image von Kano OS herunter und installiere es mit "
+"einer SD-Karte."
+
+#: ../bin/kano-updater:99 ../bin/kano-updater:115 ../bin/kano-updater:197
+#: ../bin/kano-updater:212 ../lxpanel-plugin/kano_updater.c:33
+#: ../lxpanel-plugin/kano_updater.c:243 ../lxpanel-plugin/kano_updater.c:338
+msgid "Kano Updater"
+msgstr "Kano Updater"
+
+#: ../bin/kano-updater:109
+msgid "Let's update!"
+msgstr "Ein Update!"
+
+#: ../bin/kano-updater:110
+msgid "Your Kano is about to get better"
+msgstr "Dein Kano wird jetzt verbessert"
+
+#: ../bin/kano-updater:195 ../kano_updater/utils.py:328
+msgid "Error!"
+msgstr "Fehler!"
+
+#: ../bin/kano-updater:195
+msgid "Internet connection lost!"
+msgstr "Keine Internet-Verbindung!"
+
+#: ../bin/kano-updater:210
+msgid "Error with downloading packages!"
+msgstr "Konnte Pakete nicht herunterladen!"
+
 #: ../bin/kano-updater-gui:97
 msgid "Updater"
 msgstr "Updater"
+
+#: ../kano_updater/utils.py:65
+msgid ""
+"We had a problem with the Update. Make sure you are connected to the "
+"Internet, and give it another go.\n"
+"\n"
+"If you still have problems, we can help at http://help.kano.me"
+msgstr ""
+"Beim Update gab es ein Problem. Bitte prüfe die Internet-Verbindung und "
+"versuche es noch einmal.\n"
+"\n"
+"Falls Du nicht weiterkommst, können wir Dir bei http://help.kano.me helfen."
+
+#: ../kano_updater/utils.py:69
+msgid "Update error"
+msgstr "Update-Fehler"
+
+#: ../kano_updater/utils.py:329
+msgid "kano-updater must be executed with root privileges"
+msgstr "kano-updater benötigt Root-Rechte"
 
 #: ../kano_updater_gui/text.py:12
 msgid "1. Downloading…"
@@ -171,12 +255,12 @@ msgstr ""
 "der Erfinder der Kampfkunst Judo. Sein Prinzip: Maximale Wirkung bei einem "
 "Minimum an Aufwand. Das griechische Verb Kano heißt \"ich mache\". (Und Kano "
 "heißt auch die größte Stadt im Norden Nigerias.) Was unterscheidet Deinen "
-"Kano von anderen Computern? Du kannst Dir alles ansehen, was in seinem Gehirn "
-"passiert. Auf <b>github.com/KanoComputing</b> findest Du den Code. Dein Kano "
-"kann seine Form verändern… Du kannst aus ihm einen Roboter, einen Server, "
-"ein Radio und vieles mehr machen. Einige Ideen dafür findest Du auf <b>world."
-"kano.me/projects</b>. Und auf <b>blog.kano.me</b> lernst Du die Leute hinter "
-"Kano kennen."
+"Kano von anderen Computern? Du kannst Dir alles ansehen, was in seinem "
+"Gehirn passiert. Auf <b>github.com/KanoComputing</b> findest Du den Code. "
+"Dein Kano kann seine Form verändern… Du kannst aus ihm einen Roboter, einen "
+"Server, ein Radio und vieles mehr machen. Einige Ideen dafür findest Du auf "
+"<b>world.kano.me/projects</b>. Und auf <b>blog.kano.me</b> lernst Du die "
+"Leute hinter Kano kennen."
 
 #: ../kano_updater_gui/text.py:84
 msgid ""
@@ -227,11 +311,6 @@ msgstr "Schalte Deinen Kano nicht ab"
 #: ../kano_updater_gui/header.py:115
 msgid "Please stand by"
 msgstr "Bitte warten"
-
-#: ../lxpanel-plugin/kano_updater.c:33 ../lxpanel-plugin/kano_updater.c:243
-#: ../lxpanel-plugin/kano_updater.c:338
-msgid "Kano Updater"
-msgstr "Kano Updater"
 
 #: ../lxpanel-plugin/kano_updater.c:249
 msgid "Update your system"
