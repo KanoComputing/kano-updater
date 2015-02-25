@@ -20,35 +20,62 @@ GtkGrid GtkImage {
 
 .psa {
     font: Bariol Bold 14;
-    color: lightgray;
 }
 
 .header1 {
     background: #62b123;
 }
 
+.header1 .psa {
+    color: #b0d891;
+}
+
 .header2 {
     background: #dd7676;
+}
+
+.header2 .psa {
+    color: #eebaba;
 }
 
 .header3 {
     background: #838383;
 }
 
+.header3 .psa {
+    color: #c1c1c1;
+}
+
 .header4 {
     background: #62b123;
+}
+
+.header4 .psa {
+    color: #b0d891;
 }
 
 .header5 {
     background: #de73b4;
 }
 
+.header5 .psa {
+    color: #eeb9d9;
+}
+
 .header6 {
     background: #6194b8;
 }
 
+.header6 .psa {
+    color: #b0c9db;
+}
+
 .header7 {
     background: #67a635;
+}
+
+.header7 .psa {
+    color: #b3d29a;
 }
 
 .progress {
