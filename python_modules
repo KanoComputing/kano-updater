@@ -1,4 +1,4 @@
-requests==2.5.1
+requests
 tzupdate
 pam
 python-slugify
