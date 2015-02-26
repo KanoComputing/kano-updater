@@ -1,12 +1,12 @@
-# German translations for PACKAGE package
-# German messages for PACKAGE.
-# Copyright (C) 2015 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# German translations for kano-updater package
+# German messages for kano-updater.
+# Copyright (C) 2015 Kano Computing Ltd.
+# This file is distributed under the same license as the kano-updater package.
 #  <kontakt@hanno.de>, 2015.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: kano-updater\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-23 14:02+0100\n"
 "PO-Revision-Date: 2015-02-13 17:16+0100\n"
