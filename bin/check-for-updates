@@ -17,11 +17,17 @@ import re
 import time
 import argparse
 import subprocess
+import gettext
 
 if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     if dir_path != '/usr':
-            sys.path.append(dir_path)
+        sys.path.append(dir_path)
+        locale_path = os.path.join(dir_path, 'locale')
+    else:
+        locale_path = None
+
+gettext.install('kano-updater', locale_path, unicode=1)
 
 from kano.utils import run_cmd, enforce_root, is_running
 from kano.logging import logger
@@ -37,7 +43,7 @@ update_image = "/usr/lib/python2.7/dist-packages/kano_updater_gui/media/images/u
 
 class MainWindow(Gtk.Window):
     def __init__(self):
-        Gtk.Window.__init__(self, title='New Update')
+        Gtk.Window.__init__(self, title=_('New Update'))
 
         apply_common_to_screen()
 
@@ -55,14 +61,13 @@ class MainWindow(Gtk.Window):
         self.set_keep_above(True)
 
         # Header
-        self.heading = Heading("Time to update!", "Take a break!  Updating takes about 15 minutes")
+        self.heading = Heading(_("Time to update!"), _("Take a break! Updating takes about 15 minutes"))
         self.heading.description.set_line_wrap(True)
 
-        self.button = KanoButton("UPDATE NOW")
-        self.button.connect("button_release_event", self.update)
-        self.button.connect("key_release_event", self.update)
-        self.later = OrangeButton("Later")
-        self.later.connect("button_release_event", Gtk.main_quit)
+        self.button = KanoButton(_("Update now").upper())
+        self.button.connect("clicked", self.update)
+        self.later = OrangeButton(_("Later"))
+        self.later.connect("clicked", Gtk.main_quit)
         self.button_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=15)
         self.button_box.pack_start(self.button, False, False, 0)
         self.button_box.pack_start(self.later, False, False, 0)

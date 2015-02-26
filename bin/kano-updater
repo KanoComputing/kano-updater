@@ -15,6 +15,7 @@
 import os
 import sys
 import time
+import gettext
 
 from gi.repository import Gtk
 
@@ -22,6 +23,11 @@ if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     if dir_path != '/usr':
         sys.path.insert(0, dir_path)
+        locale_path = os.path.join(dir_path, 'locale')
+    else:
+        locale_path = None
+
+gettext.install('kano-updater', locale_path, unicode=1)
 
 from kano.logging import logger, cleanup
 from kano_updater.osversion import OSVersion, bump_system_version
@@ -61,7 +67,7 @@ showDialogue = not (len(sys.argv) == 2 and
 debug = (len(sys.argv) == 2 and sys.argv[1] in ['-d', '--debug'])
 
 if not is_gui():
-    sys.exit('You need to run kano-updater from a GUI session!')
+    sys.exit(_('You need to run kano-updater from a GUI session!'))
 
 
 # Track application usage only after we are ok to proceed
@@ -84,13 +90,13 @@ cleanup()
 preup = PreUpdate(old_version, new_version)
 postup = PostUpdate(old_version, new_version)
 if not (preup.covers_update() and postup.covers_update()):
-    title = 'Unfortunately, your version of Kano OS is too old ' + \
-            'to be updated through the updater.'
-    description = 'You will need to download the image of the ' + \
-                  'OS and reflash your SD card.'
+    title = _('Unfortunately, your version of Kano OS is too old '
+            'to be updated through the updater.')
+    description = _('You will need to download the image of the '
+                  'OS and reflash your SD card.')
     kdialog = kano_dialog.KanoDialog(title, description)
     kdialog.dialog.set_icon_name("kano-updater")
-    kdialog.dialog.set_title("Kano Updater")
+    kdialog.dialog.set_title(_("Kano Updater"))
     kdialog.run()
     sys.exit(title)
 
@@ -99,16 +105,14 @@ logger.info("Upgrading to: {}".format(str(new_version)))
 
 # ask confirmation from user
 if not forceUpdate and showDialogue:
-    title = "Let\'s update!"
-    description = "Your Kano is about to get better"
     kdialog = kano_dialog.KanoDialog(
-        title,
-        description,
-        button_dict={"UPDATE NOW": {"return_value": 0}},
-        orange_info={"name": "Later", "return_value": 1}
+        _("Let\'s update!"),
+        _("Your Kano is about to get better"),
+        button_dict={_("Update now").upper(): {"return_value": 0}},
+        orange_info={"name": _("Later"), "return_value": 1}
     )
     kdialog.dialog.set_icon_name("kano-updater")
-    kdialog.dialog.set_title("Kano Updater")
+    kdialog.dialog.set_title(_("Kano Updater"))
     response = kdialog.run()
     if response != 0:
         logger.info("Canceled by the user.")
@@ -188,9 +192,9 @@ if check_internet():
 
     # if internet connection is lost during update, do not continue
     if not is_internet():
-        kdialog = kano_dialog.KanoDialog('Error!', 'Internet connection lost!')
+        kdialog = kano_dialog.KanoDialog(_('Error!'), _('Internet connection lost!'))
         kdialog.dialog.set_icon_name("kano-updater")
-        kdialog.dialog.set_title("Kano Updater")
+        kdialog.dialog.set_title(_("Kano Updater"))
         kill_gui(gui_process)
         kdialog.run()
         logger.error('Internet connection lost before Python upgrades!')
@@ -203,10 +207,9 @@ if check_internet():
 
     # check for download error
     if debian_err_packages == -1:
-        title = 'Error with downloading packages!'
-        kdialog = kano_dialog.KanoDialog(title, '')
+        kdialog = kano_dialog.KanoDialog(_('Error with downloading packages!'), '')
         kdialog.dialog.set_icon_name("kano-updater")
-        kdialog.dialog.set_title("Kano Updater")
+        kdialog.dialog.set_title(_("Kano Updater"))
         kill_gui(gui_process)
         kdialog.run()
         sys.exit(title)
