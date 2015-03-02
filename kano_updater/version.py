@@ -1,8 +1,11 @@
-# __init__.py
+#
+# The version of the updater
 #
 # Copyright (C) 2014 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
-__author__ = 'Kano Computing Ltd.'
-__email__ = 'dev@kano.me'
+
+# TODO: Move the OSVersion class here
+
+version = "1.3.4"  # FIXME
