@@ -16,13 +16,18 @@ class UpdaterStatusError(Exception):
 
 
 class UpdaterStatus(object):
+    NO_UPDATES = 'no-updates'
+    UPDATES_AVAILABLE = 'updates-available'
+    DOWNLOADING_UPDATES = 'downloading-updates'
+    UPDATES_DOWNLOADED = 'updates-downloaded'
+
     _status_file = '/var/cache/kano-updater/status.json'
 
     _valid_states = [
-        'no-updates',
-        'updates-available',
-        'downloading-updates',
-        'updates-downloaded'
+        NO_UPDATES,
+        UPDATES_AVAILABLE,
+        DOWNLOADING_UPDATES,
+        UPDATES_DOWNLOADED
     ]
 
     def __init__(self):

@@ -20,16 +20,19 @@ class DownloadError(Exception):
 
 def download(progress=None):
     if not is_internet():
-        raise DownloadError("Must have internet to download the updates")
+        raise DownloadError(_("Must have internet to download the updates"))
 
     status = UpdaterStatus()
 
     if status.state == 'downloading-update':
         # TODO: check whether the process is still going
-        raise DownloadError("The download is already running")
+        raise DownloadError(_("The download is already running"))
 
     if status.state == 'updates-downloaded':
         return
+
+    status.state = 'downloading-updates'
+    status.save()
 
     _cache_pip_packages()
     _cache_deb_packages()

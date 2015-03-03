@@ -25,10 +25,6 @@ import os
 import sys
 import gettext
 import docopt
-import urllib2
-import tempfile
-import imp
-import shutil
 
 if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -40,11 +36,13 @@ if __name__ == '__main__' and __package__ is None:
 
 from kano.utils import enforce_root, delete_file
 
-from kano_updater.version import version as updater_version
+# FIXME Move into separate module
+gettext.install('kano-updater', locale_path, unicode=1)
+
+from kano_updater.version import TARGET_VERSION
 from kano_updater.commands.download import download
 from kano_updater.commands.install import install, install_pip_packages
-
-gettext.install('kano-updater', locale_path, unicode=1)
+from kano_updater.commands.check import check_for_updates
 
 PIP_URL = 'https://raw.github.com/pypa/pip/master/contrib/get-pip.py'
 
@@ -53,6 +51,11 @@ def install_pip():
         import pip
         pip.main('install --upgrade pip'.split())
     except ImportError:
+        import urllib2
+        import tempfile
+        import imp
+        import shutil
+
         # pip doesn't seem to be installed, install it
         download = urllib2.urlopen(PIP_URL)
         installer_file = tempfile.NamedTemporaryFile(delete=False)
@@ -66,8 +69,19 @@ def install_pip():
         delete_file(installer_file.name)
 
 
+def is_already_running():
+    # TODO
+    return False
+
+
 def main():
-    args = docopt.docopt(__doc__, version=updater_version)
+    args = docopt.docopt(__doc__, version=str(TARGET_VERSION))
+
+    if is_already_running():
+        # TODO Report from status file
+        msg = _('An instance of Kano Updater is already running')
+        sys.stderr.write("{}: {}\n".format(_('ERROR'), msg))
+        sys.exit(1)
 
     msg = _('Administrator priviledges are required to perform this operation')
     enforce_root("{}: {}".format(_('ERROR'), msg))

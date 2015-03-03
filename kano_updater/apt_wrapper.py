@@ -16,8 +16,9 @@ class AptWrapper(object):
         self._fetch_progress = apt.progress.text.AcquireProgress()
         self._install_progress = apt.progress.base.InstallProgress()
 
-    def update(self):
-        self._cache.update(fetch_progress=self._progress)
+    def update(self, sources_list=None):
+        self._cache.update(fetch_progress=self._fetch_progress,
+                           sources_list=sources_list)
 
     def install(self, packages):
         if type(packages) is not list:
@@ -33,13 +34,31 @@ class AptWrapper(object):
         if type(packages) is not list:
             packages = [packages]
 
-        for pkg in self._cache:
-            if pkg.shortname in packages:
-                pkg.mark_delete(purge=True)
+        for pkg_name in packages:
+            if pkg_name in self._cache:
+                pkg = self._cache[pkg_name]
+                pkg.mark_delete(purge=purge)
 
         self._cache.commit(self._fetch_progress, self._install_progress)
 
-    def upgrade(self):
+    def upgrade(self, packages):
+        if type(packages) is not list:
+            packages = [packages]
+
+        for pkg_name in packages:
+            if pkg_name in self._cache:
+                pkg = self._cache[pkg_name]
+
+                if pkg.is_upgradable:
+                    pkg.mark_upgrade()
+
+        self._cache.commit(self._fetch_progress, self._install_progress)
+
+    def get_package(self, package_name):
+        if package_name in self._cache:
+            return self._cache[package_name]
+
+    def upgrade_all(self):
         self._mark_all_for_update()
         self._cache.commit(self._fetch_progress, self._install_progress)
 
@@ -51,6 +70,13 @@ class AptWrapper(object):
         for pkg in self._cache:
             if pkg.is_upgradable:
                 pkg.mark_upgrade()
+
+    def is_update_avaliable(self):
+        for pkg in self._cache:
+            if pkg.is_upgradable:
+                return True
+
+        return False
 
 
 apt_handle = AptWrapper()

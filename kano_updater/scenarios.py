@@ -12,23 +12,19 @@ from kano_updater.osversion import OSVersion
 from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable, migrate_repository
 from kano.utils import run_cmd_log, get_user_unsudoed, write_file_contents
+from kano_updater.version import TARGET_VERSION
 
 
 class Scenarios(object):
     _type = ""
 
-    def __init__(self, old, new):
+    def __init__(self, old):
         self._scenarios = {}
 
         if isinstance(old, OSVersion):
             self._old = old
         else:
             self._old = OSVersion.from_version_string(old)
-
-        if isinstance(new, OSVersion):
-            self._new = new
-        else:
-            self._new = OSVersion.from_version_string(new)
 
         self._mapping()
 
@@ -37,7 +33,7 @@ class Scenarios(object):
 
     def covers_update(self):
         min_v = str(self._old)
-        max_v = str(self._new)
+        max_v = str(TARGET_VERSION)
 
         current_v = min_v
         while current_v < max_v:
@@ -62,7 +58,7 @@ class Scenarios(object):
         logger.info(log)
 
         current_v = str(self._old)
-        while current_v < str(self._new):
+        while current_v < str(TARGET_VERSION):
             step_found = False
             for (from_v, to_v), func in self._scenarios.iteritems():
                 if current_v == from_v:
