@@ -1,7 +1,7 @@
 #
 # Managing downloads of apt and pip packages for the upgrade
 #
-# Copyright (C) 2014 Kano Computing Ltd.
+# Copyright (C) 2015 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
@@ -34,11 +34,16 @@ def download(progress=None):
     status.state = 'downloading-updates'
     status.save()
 
+    progress.update(15, "Downloading python packages")
+
     _cache_pip_packages()
-    _cache_deb_packages()
+    progress.update(50, "Downloading Debian packages")
+    _cache_deb_packages(progress)
 
     status.state = 'updates-downloaded'
     status.save()
+
+    progress.update(100, "Update ready")
 
 
 def _cache_pip_packages():

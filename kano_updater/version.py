@@ -1,11 +1,11 @@
 #
 # The version of the updater
 #
-# Copyright (C) 2014 Kano Computing Ltd.
+# Copyright (C) 2015 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
-from kano_updater.version import SYSTEM_ISSUE_FILE, SYSTEM_VERSION_FILE
+from kano_updater.paths import SYSTEM_ISSUE_FILE, SYSTEM_VERSION_FILE
 
 
 class OSVersion(object):

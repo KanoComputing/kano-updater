@@ -13,6 +13,9 @@ import sys
 import errno
 import subprocess
 import shutil
+import pwd
+import grp
+
 from kano.logging import logger
 from kano.utils import run_print_output_error, run_cmd, run_cmd_log, \
     chown_path, is_gui, sed
@@ -204,9 +207,6 @@ def kill_gui(process):
 
 
 def update_home_folders_from_skel():
-    import pwd
-    import grp
-
     home = '/home'
     home_folders = os.listdir(home)
 
@@ -218,8 +218,12 @@ def update_home_folders_from_skel():
                 pwd.getpwnam(user_name)
                 grp.getgrnam(user_name)
                 update_folder_from_skel(user_name)
-            except Exception:
-                logger.error('Home folder: {} doesn\'t match user: {}!'.format(full_path, user_name))
+            except:
+                msg = 'Home folder: {} doesn\'t match user: {}!'.format(
+                    full_path,
+                    user_name
+                )
+                logger.error(msg)
 
 
 def update_folder_from_skel(user_name):

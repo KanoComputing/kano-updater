@@ -1,7 +1,7 @@
 #
 # Setting/getting the status of the updater
 #
-# Copyright (C) 2014 Kano Computing Ltd.
+# Copyright (C) 2015 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
@@ -10,6 +10,7 @@ import json
 
 from kano.utils import ensure_dir
 
+from kano_updater.paths import STATUS_FILE_PATH
 
 class UpdaterStatusError(Exception):
     pass
@@ -21,7 +22,7 @@ class UpdaterStatus(object):
     DOWNLOADING_UPDATES = 'downloading-updates'
     UPDATES_DOWNLOADED = 'updates-downloaded'
 
-    _status_file = '/var/cache/kano-updater/status.json'
+    _status_file = STATUS_FILE_PATH
 
     _valid_states = [
         NO_UPDATES,
@@ -31,13 +32,15 @@ class UpdaterStatus(object):
     ]
 
     def __init__(self):
-        self._state = None
-        self._last_check = None
-        self._last_update = None
+        self._state = self.NO_UPDATES
+        self._last_check = 0
+        self._last_update = 0
 
         ensure_dir(os.path.dirname(self._status_file))
-
-        self.load()
+        if not os.path.exists(self._status_file):
+            self.save()
+        else:
+            self.load()
 
     def load(self):
         with open(self._status_file, 'r') as status_file:
