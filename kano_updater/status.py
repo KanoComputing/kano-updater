@@ -12,6 +12,7 @@ from kano.utils import ensure_dir
 
 from kano_updater.paths import STATUS_FILE_PATH
 
+
 class UpdaterStatusError(Exception):
     pass
 

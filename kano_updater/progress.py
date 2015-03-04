@@ -9,6 +9,43 @@
 class ProgressError(Exception):
     pass
 
+
+class Phase(object):
+    def __init__(self, name, label, percent_length):
+        self._name = name
+        self._label = label
+        self._percent_length = percent_length
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def label(self):
+        return self._label
+
+    @property
+    def percent_length(self):
+        return self._percent_length
+
+    def start(self, step_count=0):
+        self._current_step = 0
+        self._steps = step_count
+
+    def next_step(self):
+        return self.set_step(self._current_step + 1)
+
+    def set_step(self, step):
+        if step < self._steps:
+            self._current_step = step
+
+            progress = float(self._current_step) / self._steps
+            return int(self._percent_length * progress)
+        else:
+            self._current_step = self._steps
+            return self._percent_length
+
+
 class Progress(object):
     """
         The base class for progress reporting of both downloads and
@@ -33,35 +70,36 @@ class Progress(object):
         """
 
         # look up the phase
-        phase = self._get_phase_by_name()
+        phase = self._get_phase_by_name(phase_name)
         if not phase:
-            raise Exceptiaon(_('Not a valid phase'))
+            raise ProgressError(_('Not a valid phase name'))
 
-        self._current_phase_name = phase_name
+        phase.start(step_count)
         self._current_phase = phase
-        self._steps_left = self._steps = step_count
 
         percent = self._get_phase_percentage(phase_name)
 
         # Trigger a progress change
-        self._change(percent, "{}: {}".format(phase['label'], msg))
+        self._change(percent, "{}".format(phase.label))
 
     def next_step(self, msg):
-        if self._steps_left > 0:
-            self._steps_left -= 1
+        step_percent = self._current_phase.next_step()
 
-        # Trigger a progress change
-        percent = self._get_phase_percentage(phase_name)
-        steps_ratio = 1 - float(self._steps_left ) /self._steps
-        percent += int(self._phase['length'] * steps_ratio)
+        phase_percent = self._get_phase_percentage(self._current_phase.name)
+        self._change(phase_percent + step_percent, msg)
 
-        self._change(percent, msg)
+    def set_step(self, step, msg):
+        step_percent = self._current_phase.set_step(step)
 
-    def failed(self, msg):
+        phase_percent = self._get_phase_percentage(self._current_phase.name)
+        self._change(phase_percent + step_percent, msg)
+
+
+    def fail(self, msg):
         self._change(-1, "ERROR: {}".format(msg))
 
-    def finished(self, msg):
-        self._change(100, "Finished: {}".format(msg))
+    def finish(self, msg):
+        self._change(100, "{}".format(msg))
 
     def _change(self, percent, msg):
         """
@@ -82,51 +120,59 @@ class Progress(object):
 
     def _get_phase_by_name(self, name):
         for phase in self._phases:
-            if phase['name'] == name:
+            if phase.name == name:
                 return phase
 
     def _get_phase_percentage(self, name):
         phase = self._get_phase_by_name(name)
         index = self._phases.index(phase)
 
-        return sum([p['length'] for p in self._phases[0:index]])
+        return sum([p.percent_length for p in self._phases[0:index]])
+
+
+class DummyProgress(Progress):
+    def start_phase(self, phase_name, step_count=0):
+        pass
+
+    def next_step(self, msg):
+        pass
+
+    def fail(self, msg):
+        pass
+
+    def finish(self, msg):
+        pass
 
 
 class DownloadProgress(Progress):
     def __init__(self):
         self._phases = [
-            {
-                'name': 'downloading-pip-pkgs',
-                'label': 'Downloading python packages',
-                'length': 10
-            },
-            {
-                'name': 'apt-cache-init',
-                'label': 'Initialising apt cache',
-                'length': 20
-            },
-            {
-                'name': 'updating-apt-sources',
-                'label': 'Updating apt sources',
-                'length': 10
-            },
-            {
-                'name': 'downloading-apt-packages',
-                'label': 'Downloading apt packages',
-                'length': 60
-            },
+            Phase(
+                'downloading-pip-pkgs',
+                'Downloading Python packages',
+                10
+            ),
+            Phase(
+                'updating-apt-sources',
+                'Updating apt sources',
+                30
+            ),
+            Phase(
+                'apt-cache-init',
+                'Initialising apt cache',
+                10
+            ),
+            Phase(
+                'downloading-apt-packages',
+                'Downloading apt packages',
+                50
+            ),
         ]
 
 
 class InstallProgress(Progress):
     def __init__(self):
         self._phases = [
-            {
-                'name': 'downloading-pip-pkgs',
-                'label': 'Downloading python packages',
-                'length': 10
-            },
-            # TODO: fill in!
         ]
     # updating itself
     #  - apt updating packages here too
@@ -143,7 +189,8 @@ class InstallProgress(Progress):
 
 
 class CLIDownloadProgress(DownloadProgress):
-    pass
+    def _change(self, percent, msg):
+        print "{}%: {}".format(percent, msg)
 
 
 class CLIInstallProgress(InstallProgress):

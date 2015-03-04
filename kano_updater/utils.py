@@ -26,6 +26,21 @@ UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
 STATUS_FILE = UPDATER_CACHE_DIR + "status"
 
 
+# TODO: Might be useful in kano.utils
+def supress_output(function, *args, **kwargs):
+    with open('/dev/null', 'w') as f:
+        orig_stdout = sys.stdout
+        orig_stderr = sys.stderr
+        sys.stderr = sys.stdout = f
+
+        try:
+            function(*args, **kwargs)
+        finally:
+            sys.stdout = orig_stdout
+            sys.stderr = orig_stderr
+
+# --------------------------------------
+
 def install(pkgs, die_on_err=True):
     if isinstance(pkgs, list):
         pkgs = ' '.join(pkgs)

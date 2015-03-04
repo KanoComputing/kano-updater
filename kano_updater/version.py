@@ -61,5 +61,3 @@ def bump_system_version():
 
     with open(SYSTEM_ISSUE_FILE, 'w') as ifile:
         ifile.write(TARGET_VERSION.to_issue() + "\n")
-
-

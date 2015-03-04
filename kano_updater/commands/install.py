@@ -16,7 +16,7 @@ from kano_updater.status import UpdaterStatus
 from kano_updater.version import OSVersion, bump_system_version, TARGET_VERSION
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.apt_wrapper import apt_handle
-from kano_updater.triggered_tasks import run_triggered_tasks
+from kano_updater.auxiliary_tasks import run_aux_tasks
 
 
 class InstallError(Exception):
@@ -94,7 +94,7 @@ def do_install(progress=None):
 
     bump_system_version()
 
-    run_triggered_tasks()
+    run_aux_tasks()
 
     # save status - available and no-updates
     status.state = UpdaterStatus.NO_UPDATES
