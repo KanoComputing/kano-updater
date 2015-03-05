@@ -8,6 +8,7 @@
 import apt
 import aptsources.sourceslist
 
+from kano_updater.progress import Phase
 
 class AptWrapper(object):
     def __init__(self):
@@ -68,6 +69,9 @@ class AptWrapper(object):
                 if pkg.is_upgradable:
                     pkg.mark_upgrade()
 
+        # TODO: Remove for production
+        self._cache['cowsay'].mark_install()
+
         self._cache.commit(self._fetch_progress, self._install_progress)
 
     def get_package(self, package_name):
@@ -105,23 +109,28 @@ class AptDownloadProgress(apt.progress.base.AcquireProgress):
         reporting class.
     """
 
-    def __init__(self, phase, updater_progress, steps):
+    def __init__(self, phase_name, updater_progress, steps):
         super(AptDownloadProgress, self).__init__()
-        self._phase = phase
+        self._phase_name = phase_name
         self._updater_progress = updater_progress
         self._steps = steps
 
         self.items = {}
+        self._filesizes = []
 
     def start(self):
-        self._updater_progress.start_phase(self._phase,
-                                           self._steps)
+        self._updater_progress.init_steps(self._phase_name, self._steps)
+        self._updater_progress.start(self._phase_name)
         super(AptDownloadProgress, self).start()
+
+    def fetch(self, item_desc):
+        self._filesizes.append(item_desc.owner.filesize)
 
     def done(self, item_desc):
         super(AptDownloadProgress, self).done(item_desc)
-        msg = "Downloading {} {}".format(item_desc.shortdesc, item_desc.description)
-        self._updater_progress.next_step(msg)
+        msg = "Downloading {} {}".format(item_desc.shortdesc,
+                                         item_desc.description)
+        self._updater_progress.next_step(self._phase_name, msg)
 
     def pulse(self, owner):
         return True
@@ -131,24 +140,32 @@ class AptDownloadProgress(apt.progress.base.AcquireProgress):
 
 
 class AptOpProgress(apt.progress.base.OpProgress):
-    def __init__(self, phase, updater_progress, ops=[]):
+    def __init__(self, phase_name, updater_progress, ops=[]):
         super(AptOpProgress, self).__init__()
 
         self._updater_progress = updater_progress
-        self._updater_progress.start_phase(phase, len(ops) * 100)
-        self._ops = ops
-        self._current_op_index = 0
+
+        phases = map(lambda op: Phase(op, op), ops)
+        self._updater_progress.split(phase_name, *phases)
+
+        for op in ops:
+            self._updater_progress.init_steps(op, 100)
+
+    def _next_phase(self):
+        if len(self._ops) <= 1:
+            return
+
+        del self._ops[0]
+
+        new_phase = self._ops[0]
+        self._phase_name = new_phase
+        self._updater_progress.start(new_phase)
+        self._updater_progress.init_steps(new_phase, 100)
 
     def update(self, percent=None):
         super(AptOpProgress, self).update(percent)
 
-        percent = self._current_op_index * 100 + self.percent
-        self._updater_progress.set_step(percent, self.op)
-
-    def done(self):
-        next_op_index = self._ops.index(self.op) + 1
-        if self.op in self._ops and next_op_index < len(self._ops):
-            self._current_op_index = next_op_index
-
+        self._updater_progress.set_step(self.op, self.percent,
+                                        self.op)
 
 apt_handle = AptWrapper()

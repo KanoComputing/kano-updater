@@ -12,7 +12,7 @@ from kano.network import is_internet
 from kano_updater.paths import PIP_PACKAGES_LIST
 from kano_updater.status import UpdaterStatus
 from kano_updater.apt_wrapper import apt_handle
-from kano_updater.progress import DummyProgress
+from kano_updater.progress import DummyProgress, Phase
 from kano_updater.utils import supress_output
 
 
@@ -42,6 +42,30 @@ def do_download(progress, status):
     status.state = UpdaterStatus.DOWNLOADING_UPDATES
     status.save()
 
+    progress.split(
+        'root',
+        Phase(
+            'downloading-pip-pkgs',
+            'Downloading Python packages',
+            10
+        ),
+        Phase(
+            'updating-apt-sources',
+            'Updating apt sources',
+            30
+        ),
+        Phase(
+            'apt-cache-init',
+            'Initialising apt cache',
+            10
+        ),
+        Phase(
+            'downloading-apt-packages',
+            'Downloading apt packages',
+            50
+        )
+    )
+
     _cache_pip_packages(progress)
     _cache_deb_packages(progress)
 
@@ -57,7 +81,7 @@ def _cache_pip_packages(progress):
         internal pacakge cache.
     """
 
-    progress.start_phase('downloading-pip-pkgs')
+    progress.start('downloading-pip-pkgs')
 
     # TODO: This could be done in a thread in a way that we could read and
     #       parse the progress in real-time.

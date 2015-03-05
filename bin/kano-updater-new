@@ -44,7 +44,7 @@ from kano_updater.version import TARGET_VERSION
 from kano_updater.commands.download import download
 from kano_updater.commands.install import install, install_pip_packages
 from kano_updater.commands.check import check_for_updates
-from kano_updater.progress import CLIInstallProgress, CLIDownloadProgress
+from kano_updater.progress import CLIProgress
 from kano_updater.status import UpdaterStatus
 
 PIP_URL = 'https://raw.github.com/pypa/pip/master/contrib/get-pip.py'
@@ -91,10 +91,10 @@ def main():
     enforce_root("{}: {}".format(_('ERROR'), msg))
 
     if args['download']:
-        progress = CLIDownloadProgress()
+        progress = CLIProgress()
         download(progress)
     elif args['install']:
-        progress = CLIInstallProgress()
+        progress = CLIProgress()
         install(progress)
     elif args['check']:
         check_for_updates()

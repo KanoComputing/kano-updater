@@ -11,39 +11,36 @@ class ProgressError(Exception):
 
 
 class Phase(object):
-    def __init__(self, name, label, percent_length):
-        self._name = name
-        self._label = label
-        self._percent_length = percent_length
+    def __init__(self, name, label, weight=1):
+        self.name = name
+        self.label = label
+        self.weight = weight
+
+        self.start = 0
+        self.length = 100
+        self.parents = []
+
+        self.step_count = 1
+        self._step = 0
+
+    def get_phase_percent(self):
+        factor = float(self.step) / self.step_count
+        return int(factor * 100)
+
+    def get_global_percent(self):
+        factor = float(self.step) / self.step_count
+        return int(self.start + factor * self.length)
 
     @property
-    def name(self):
-        return self._name
+    def step(self):
+        return self._step
 
-    @property
-    def label(self):
-        return self._label
-
-    @property
-    def percent_length(self):
-        return self._percent_length
-
-    def start(self, step_count=0):
-        self._current_step = 0
-        self._steps = step_count
-
-    def next_step(self):
-        return self.set_step(self._current_step + 1)
-
-    def set_step(self, step):
-        if step < self._steps:
-            self._current_step = step
-
-            progress = float(self._current_step) / self._steps
-            return int(self._percent_length * progress)
+    @step.setter
+    def step(self, step):
+        if step < self.step_count:
+            self._step = step
         else:
-            self._current_step = self._steps
-            return self._percent_length
+            self._step = self.step_count
 
 
 class Progress(object):
@@ -55,51 +52,95 @@ class Progress(object):
     """
 
     def __init__(self):
-        self._phases = []
+        root_phase = Phase('root', 'The root phase', 1)
 
-    def start_phase(self, phase_name, step_count=0):
+        self._phases = [root_phase]
+        self._current_phase_idx = 0
+
+    def start(self, phase_name):
         """
             Starts a certain phase of the progress.
 
-            :param phase: A string that identifies the current phase.
-            :type phase: str
+            This doesn't need to be called for steps.
 
-            :param step_count: How many steps there are in this phase (zero
-                               for no substeps)
-            :type step_count: int
+            :param phase_name: A string that identifies the current phase.
+            :type phase_name: str
         """
-
-        # look up the phase
         phase = self._get_phase_by_name(phase_name)
-        if not phase:
-            raise ProgressError(_('Not a valid phase name'))
 
-        phase.start(step_count)
-        self._current_phase = phase
+        self._current_phase_idx = self._phases.index(phase)
 
-        percent = self._get_phase_percentage(phase_name)
+        # Calculate current progres and emitt an event
+        self._call_change(phase)
 
-        # Trigger a progress change
-        self._change(percent, "{}".format(phase.label))
+    def split(self, phase_name, *subphases):
+        phase = self._get_phase_by_name(phase_name)
 
-    def next_step(self, msg):
-        step_percent = self._current_phase.next_step()
+        start = phase.start
+        weight_sum = sum([p.weight for p in subphases])
+        for subphase in subphases:
+            if self._get_phase_by_name(subphase.name, False):
+                msg = "Phase '{}' already exists".format(phase_name)
+                raise ValueError(msg)
 
-        phase_percent = self._get_phase_percentage(self._current_phase.name)
-        self._change(phase_percent + step_percent, msg)
+            weight_factor = float(subphase.weight) / weight_sum
 
-    def set_step(self, step, msg):
-        step_percent = self._current_phase.set_step(step)
+            subphase.length = weight_factor * phase.length
 
-        phase_percent = self._get_phase_percentage(self._current_phase.name)
-        self._change(phase_percent + step_percent, msg)
+            subphase.start = start
+            start += subphase.length
 
+            subphase.parents = [phase.name] + phase.parents
+
+        # Implant the subphases into the phase list in place of the parent
+        idx = self._phases.index(phase)
+        self._phases = self._phases[0:idx] + list(subphases) + \
+            self._phases[idx + 1:]
+
+    def init_steps(self, phase_name, step_count):
+        phase = self._get_phase_by_name(phase_name)
+        phase.step_count = step_count
+        phase.step = 0
+
+    def set_step(self, phase_name, step, msg):
+        phase = self._get_phase_by_name(phase_name)
+        phase.step = step
+
+        self._call_change(phase, msg=msg)
+
+    def next_step(self, phase_name, msg):
+        phase = self._get_phase_by_name(phase_name)
+        self.set_step(phase_name, phase.step + 1, msg)
+
+    def _get_phase_by_name(self, name, do_raise=True):
+        for phase in self._phases:
+            if phase.name == name:
+                return phase
+
+        if do_raise:
+            raise ValueError("Phase '{}' doesn't exist".format(name))
 
     def fail(self, msg):
-        self._change(-1, "ERROR: {}".format(msg))
+        phase = self._phases[self._current_phase_idx]
+        self._call_change(phase, -1, -1, "ERROR: {}".format(msg))
 
     def finish(self, msg):
-        self._change(100, "{}".format(msg))
+        phase = self._phases[self._current_phase_idx]
+        self._call_change(phase, 100, 100, msg)
+
+    def _call_change(self, phase, global_percent=None,
+                     phase_percent=None, msg=None):
+        if not global_percent:
+            global_percent = phase.get_global_percent()
+
+        if not phase_percent:
+            phase_percent = phase.get_phase_percent()
+
+        if not msg:
+            msg = phase.label
+
+        self._change(global_percent, msg)
+        self._change_per_phase(phase_percent, phase, msg)
 
     def _change(self, percent, msg):
         """
@@ -118,23 +159,24 @@ class Progress(object):
 
         pass
 
-    def _get_phase_by_name(self, name):
-        for phase in self._phases:
-            if phase.name == name:
-                return phase
-
-    def _get_phase_percentage(self, name):
-        phase = self._get_phase_by_name(name)
-        index = self._phases.index(phase)
-
-        return sum([p.percent_length for p in self._phases[0:index]])
+    def _change_per_phase(self, phase_percent, phase, msg):
+        pass
 
 
 class DummyProgress(Progress):
-    def start_phase(self, phase_name, step_count=0):
+    def start(self, phase_name):
         pass
 
-    def next_step(self, msg):
+    def split(self, phase_name, subphases):
+        pass
+
+    def init_steps(self, phase_name, step_count):
+        pass
+
+    def set_step(self, phase_name, step, msg):
+        pass
+
+    def next_step(self, phase_name, msg):
         pass
 
     def fail(self, msg):
@@ -146,7 +188,8 @@ class DummyProgress(Progress):
 
 class DownloadProgress(Progress):
     def __init__(self):
-        self._phases = [
+        self._phase = Phase('main', 'Main', 100)
+        self._phase.start([
             Phase(
                 'downloading-pip-pkgs',
                 'Downloading Python packages',
@@ -167,7 +210,7 @@ class DownloadProgress(Progress):
                 'Downloading apt packages',
                 50
             ),
-        ]
+        ])
 
 
 class InstallProgress(Progress):
@@ -188,10 +231,10 @@ class InstallProgress(Progress):
     # finishing up
 
 
-class CLIDownloadProgress(DownloadProgress):
+class CLIProgress(Progress):
     def _change(self, percent, msg):
-        print "{}%: {}".format(percent, msg)
+        #print "{}%: {}".format(percent, msg)
+        pass
 
-
-class CLIInstallProgress(InstallProgress):
-    pass
+    def _change_per_phase(self, percent, phase, msg):
+        print "[{}] {}%: {}".format(phase.label, percent, msg)
