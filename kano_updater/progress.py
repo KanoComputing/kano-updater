@@ -167,7 +167,7 @@ class DummyProgress(Progress):
     def start(self, phase_name):
         pass
 
-    def split(self, phase_name, subphases):
+    def split(self, phase_name, *subphases):
         pass
 
     def init_steps(self, phase_name, step_count):
@@ -184,51 +184,6 @@ class DummyProgress(Progress):
 
     def finish(self, msg):
         pass
-
-
-class DownloadProgress(Progress):
-    def __init__(self):
-        self._phase = Phase('main', 'Main', 100)
-        self._phase.start([
-            Phase(
-                'downloading-pip-pkgs',
-                'Downloading Python packages',
-                10
-            ),
-            Phase(
-                'updating-apt-sources',
-                'Updating apt sources',
-                30
-            ),
-            Phase(
-                'apt-cache-init',
-                'Initialising apt cache',
-                10
-            ),
-            Phase(
-                'downloading-apt-packages',
-                'Downloading apt packages',
-                50
-            ),
-        ])
-
-
-class InstallProgress(Progress):
-    def __init__(self):
-        self._phases = [
-        ]
-    # updating itself
-    #  - apt updating packages here too
-    # relaunching
-    # runing the preupdate scripts - per script
-    # pip:
-    #  - just going
-    # apt:
-    #  - unpacking per package
-    #  - installing per package
-    #  - configuring per package
-    # some dodgy business just before the end that always takes the longest
-    # finishing up
 
 
 class CLIProgress(Progress):

@@ -22,6 +22,7 @@ class UpdaterStatus(object):
     UPDATES_AVAILABLE = 'updates-available'
     DOWNLOADING_UPDATES = 'downloading-updates'
     UPDATES_DOWNLOADED = 'updates-downloaded'
+    INSTALLING_UPDATES = 'installing-updates'
 
     _status_file = STATUS_FILE_PATH
 
@@ -29,7 +30,8 @@ class UpdaterStatus(object):
         NO_UPDATES,
         UPDATES_AVAILABLE,
         DOWNLOADING_UPDATES,
-        UPDATES_DOWNLOADED
+        UPDATES_DOWNLOADED,
+        INSTALLING_UPDATES
     ]
 
     def __init__(self):

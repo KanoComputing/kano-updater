@@ -58,9 +58,10 @@ class AptWrapper(object):
 
         self._cache.commit(self._fetch_progress, self._install_progress)
 
-    def upgrade(self, packages):
+    def upgrade(self, packages, progress):
         if type(packages) is not list:
             packages = [packages]
+
 
         for pkg_name in packages:
             if pkg_name in self._cache:
@@ -71,6 +72,8 @@ class AptWrapper(object):
 
         # TODO: Remove for production
         self._cache['cowsay'].mark_install()
+
+        progress.split(
 
         self._cache.commit(self._fetch_progress, self._install_progress)
 
