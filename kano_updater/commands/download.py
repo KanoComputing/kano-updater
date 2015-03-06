@@ -43,27 +43,22 @@ def do_download(progress, status):
     status.save()
 
     progress.split(
-        'root',
         Phase(
             'downloading-pip-pkgs',
             'Downloading Python packages',
             10
         ),
         Phase(
-            'updating-apt-sources',
+            'updating-sources',
             'Updating apt sources',
-            30
-        ),
-        Phase(
-            'apt-cache-init',
-            'Initialising apt cache',
-            10
+            40
         ),
         Phase(
             'downloading-apt-packages',
             'Downloading apt packages',
             50
-        )
+        ),
+        phase_name='root'
     )
 
     _cache_pip_packages(progress)
@@ -94,5 +89,8 @@ def _cache_pip_packages(progress):
 
 
 def _cache_deb_packages(progress):
+    progress.start('updating-sources')
     apt_handle.update(progress=progress)
+
+    progress.start('downloading-apt-packages')
     apt_handle.cache_updates(progress)

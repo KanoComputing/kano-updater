@@ -54,7 +54,6 @@ def do_install(progress, status):
     status.save()
 
     progress.split(
-        'root',
         Phase(
             'init',
             _('Starting Update'),
@@ -90,7 +89,8 @@ def do_install(progress, status):
             'aux-tasks',
             'Performing auxiliary tasks',
             10
-        )
+        ),
+        phase_name='root'
     )
 
     progress.start('init')
@@ -119,7 +119,6 @@ def do_install(progress, status):
 
 
     progress.start('updating-itself')  #  - apt updating packages here too
-    logger.debug(_('Updating itself'))
     apt_handle.upgrade('kano-updater', progress)
 
     # relaunch the process
@@ -136,12 +135,7 @@ def do_install(progress, status):
         logger.error(_('The pre-update scenarios failed.'))
         sys.exit(e)
 
-    progress.start('updating-pip-packages')  #  - just going
-    install_pip_packages()
-    progress.start('updating-deb-packages')
-        #  - unpacking per package
-        #  - installing per package
-        #  - configuring per package
+    install_pip_packages(progress)
     install_deb_packages(progress)
 
     progress.start('postupdate')  # - per script
@@ -163,8 +157,10 @@ def do_install(progress, status):
 
 
 def install_deb_packages(progress):
+    progress.start('updating-deb-packages')
     apt_handle.upgrade_all(progress)
 
 
-def install_pip_packages():
+def install_pip_packages(progress):
+    progress.start('updating-pip-packages')
     supress_output(pip.main, ['install', '--upgrade', '-r', PIP_PACKAGES_LIST])

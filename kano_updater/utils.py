@@ -41,6 +41,7 @@ def supress_output(function, *args, **kwargs):
 
 # --------------------------------------
 
+
 def install(pkgs, die_on_err=True):
     if isinstance(pkgs, list):
         pkgs = ' '.join(pkgs)

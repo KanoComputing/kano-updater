@@ -73,14 +73,20 @@ class Progress(object):
         # Calculate current progres and emitt an event
         self._call_change(phase)
 
-    def split(self, phase_name, *subphases):
-        phase = self._get_phase_by_name(phase_name)
+    def get_current_phase(self):
+        return self._phases[self._current_phase_idx]
+
+    def split(self, *subphases, **kwargs):
+        if 'phase_name' not in kwargs:
+            phase = self.get_current_phase()
+        else:
+            phase = self._get_phase_by_name(kwargs['phase_name'])
 
         start = phase.start
         weight_sum = sum([p.weight for p in subphases])
         for subphase in subphases:
             if self._get_phase_by_name(subphase.name, False):
-                msg = "Phase '{}' already exists".format(phase_name)
+                msg = "Phase '{}' already exists".format(phase.name)
                 raise ValueError(msg)
 
             weight_factor = float(subphase.weight) / weight_sum
