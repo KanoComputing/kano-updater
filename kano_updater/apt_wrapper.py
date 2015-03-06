@@ -100,6 +100,7 @@ class AptWrapper(object):
         progress.start(download)
         self.cache_updates(progress)
 
+        progress.start(install)
         inst_progress = AptInstallProgress(progress)
         self._cache.commit(install_progress=inst_progress)
 
@@ -121,6 +122,7 @@ class AptWrapper(object):
         progress.start(download)
         self.cache_updates(progress)
 
+        progress.start(install)
         inst_progress = AptInstallProgress(progress)
         self._cache.commit(install_progress=inst_progress)
 
