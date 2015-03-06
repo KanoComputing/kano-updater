@@ -5,6 +5,8 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
+import os
+import sys
 import apt
 import aptsources.sourceslist
 
@@ -12,11 +14,13 @@ from kano_updater.progress import Phase
 
 class AptWrapper(object):
     def __init__(self):
+        apt.apt_pkg.init()
+
         self._cache = apt.cache.Cache()
 
         # FIXME the progress parameter is not used
         self._fetch_progress = apt.progress.text.AcquireProgress()
-        self._install_progress = apt.progress.base.InstallProgress()
+        #self._install_progress = AptInstallProgress(None)
 
     def update(self, sources_list=None, progress=None):
         src_list = aptsources.sourceslist.SourcesList()
@@ -37,7 +41,7 @@ class AptWrapper(object):
         op_progress = AptOpProgress('apt-cache-init', progress, ops)
         self._cache.open(op_progress)
 
-    def install(self, packages):
+    def install(self, packages, progress=None):
         if type(packages) is not list:
             packages = [packages]
 
@@ -45,9 +49,10 @@ class AptWrapper(object):
             if pkg.shortname in packages:
                 pkg.mark_install(purge=True)
 
-        self._cache.commit(self._fetch_progress, self._install_progress)
+        inst_progress = AptInstallProgress(progress)
+        self._cache.commit(self._fetch_progress, inst_progress)
 
-    def remove(self, packages, purge=False):
+    def remove(self, packages, purge=False, progress=None):
         if type(packages) is not list:
             packages = [packages]
 
@@ -56,12 +61,12 @@ class AptWrapper(object):
                 pkg = self._cache[pkg_name]
                 pkg.mark_delete(purge=purge)
 
-        self._cache.commit(self._fetch_progress, self._install_progress)
+        inst_progress = AptInstallProgress(progress)
+        self._cache.commit(self._fetch_progress, inst_progress)
 
-    def upgrade(self, packages, progress):
+    def upgrade(self, packages, progress=None):
         if type(packages) is not list:
             packages = [packages]
-
 
         for pkg_name in packages:
             if pkg_name in self._cache:
@@ -72,18 +77,24 @@ class AptWrapper(object):
 
         # TODO: Remove for production
         self._cache['cowsay'].mark_install()
+        self._cache['xcowsay'].mark_install()
 
-        progress.split(
+        #progress.split(
+        #    Phase()
+        #)
 
-        self._cache.commit(self._fetch_progress, self._install_progress)
+        inst_progress = AptInstallProgress(progress, 'updating-itself')
+        self._cache.commit(self._fetch_progress, inst_progress)
 
     def get_package(self, package_name):
         if package_name in self._cache:
             return self._cache[package_name]
 
-    def upgrade_all(self):
+    def upgrade_all(self, progress=None):
+        inst_progress = AptInstallProgress(progress, 'updating-deb-packages')
+
         self._mark_all_for_update()
-        self._cache.commit(self._fetch_progress, self._install_progress)
+        self._cache.commit(self._fetch_progress, inst_progress)
 
     def cache_updates(self, progress):
         self._mark_all_for_update()
@@ -135,11 +146,17 @@ class AptDownloadProgress(apt.progress.base.AcquireProgress):
                                          item_desc.description)
         self._updater_progress.next_step(self._phase_name, msg)
 
-    def pulse(self, owner):
-        return True
+    def fail(self, item_desc):
+        self._updater_progress.fail(item_desc.shortdesc)
 
-    def stop(self):
-        super(AptDownloadProgress, self).stop()
+    # TODO: Remove
+    #def pulse(self, owner):
+    #    return True
+
+    #def stop(self):
+    #    super(AptDownloadProgress, self).stop()
+
+
 
 
 class AptOpProgress(apt.progress.base.OpProgress):
@@ -170,5 +187,50 @@ class AptOpProgress(apt.progress.base.OpProgress):
 
         self._updater_progress.set_step(self.op, self.percent,
                                         self.op)
+
+
+class AptInstallProgress(apt.progress.base.InstallProgress):
+    def __init__(self, updater_progress, phase_name):
+        super(AptInstallProgress, self).__init__()
+
+        self._phase_name = phase_name
+
+        self._updater_progress = updater_progress
+        updater_progress.init_steps(phase_name, 100)
+
+    def conffile(self, current, new):
+        print 'conffile', current, new
+
+    def error(self, pkg, errormsg):
+        self._updater_progress.fail(self._phase_name,
+                                    "{}: {}".format(pkg, errormsg))
+
+    def processing(self, pkg, stage):
+        print 'processing', pkg, stage
+
+    def dpkg_status_change(self, pkg, status):
+        print 'dpkg_status_change', pkg, status
+
+    def status_change(self, pkg, percent, status):
+        self._updater_progress.set_step(self._phase_name, percent, status)
+
+    #def start_update(self):
+    #    print 'start_update'
+
+    #def finish_update(self):
+    #    #print 'finish_update'
+
+    def fork(self):
+        """Fork."""
+
+        pid = os.fork()
+        if not pid:
+            # Silence the crap dpkg prints on stdout without being asked for it
+            null = os.open(os.devnull, os.O_RDWR)
+            os.dup2(null, sys.stdin.fileno())
+            os.dup2(null, sys.stdout.fileno())
+            os.dup2(null, sys.stderr.fileno())
+
+        return pid
 
 apt_handle = AptWrapper()
