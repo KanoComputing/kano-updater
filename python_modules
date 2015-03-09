@@ -5,3 +5,4 @@ python-slugify
 decorator
 youtube_dl
 docopt==0.6.1
+beautifulsoup4
