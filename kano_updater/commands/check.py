@@ -11,14 +11,20 @@ from kano.logging import logger
 
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.status import UpdaterStatus
+from kano_updater.progress import DummyProgress
 
 KANO_SOURCES_LIST = '/etc/apt/sources.list.d/kano.list'
 
-def check_for_updates(min_time_between_checks=None):
-    status = UpdaterStatus()
 
-    if status.state != 'no-updates':
-        return
+def check_for_updates(min_time_between_checks=0, progress=None):
+    status = UpdaterStatus.get_instance()
+
+    if not progress:
+        progress = DummyProgress()
+
+    if status.state != UpdaterStatus.NO_UPDATES:
+        progress.abort(_('No need to check for updates'))
+        return True
 
     if min_time_between_checks:
         target_delta = float(min_time_between_checks) * 60 * 60
@@ -29,15 +35,24 @@ def check_for_updates(min_time_between_checks=None):
         if delta > target_delta:
             logger.info(_('Time check passed, doing update check!'))
         else:
-            logger.info(_('Not enough time passed for a new update check!'))
-            return
+            msg = _('Not enough time passed for a new update check!')
+            logger.info(msg)
+            progress.abort(msg)
+            return False
 
-    apt_handle.update(sources_list=KANO_SOURCES_LIST)
-    status.last_check = int(time.time())
-
-    if apt_handle.is_update_avaliable():
-        status.state = 'updates-available'
+    if _do_check(progress):
+        status.state = UpdaterStatus.UPDATES_AVAILABLE
+        rv = True
     else:
-        status.state = 'no-updates'
+        status.state = UpdaterStatus.NO_UPDATES
+        rv = False
 
+    status.last_check = int(time.time())
     status.save()
+
+    return rv
+
+
+def _do_check(progress):
+    apt_handle.update(progress, sources_list=KANO_SOURCES_LIST)
+    return apt_handle.is_update_avaliable()

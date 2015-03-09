@@ -9,12 +9,26 @@
 from kano_updater.utils import update_home_folders_from_skel
 from kano.utils import run_cmd_log
 
+from kano_updater.progress import Phase
 
-def run_aux_tasks():
+
+def run_aux_tasks(progress):
+    progress.split(
+        Phase('updating-home-folders',
+              _('Updating home folders from template')),
+        Phase('refreshing-kdesk',
+              _('Refreshing the desktop')),
+        Phase('expanding-rootfs',
+              _('Expanding filesystem partitions'))
+    )
+
+    progress.start('updating-home-folders')
     # TODO: We might want to keep this in install()
     update_home_folders_from_skel()
 
+    progress.start('refreshing-kdesk')
     _refresh_kdesk()
+    progress.start('expanding-rootfs')
     _expand_rootfs()
 
 

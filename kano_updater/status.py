@@ -34,7 +34,21 @@ class UpdaterStatus(object):
         INSTALLING_UPDATES
     ]
 
+    _singleton_instance = None
+
+    @staticmethod
+    def get_instance():
+        if not UpdaterStatus._singleton_instance:
+            UpdaterStatus()
+
+        return UpdaterStatus._singleton_instance
+
     def __init__(self):
+        if not UpdaterStatus._singleton_instance:
+            raise Exception("This class is a singleton!")
+        else:
+            UpdaterStatus._singleton_instance = self
+
         self._state = self.NO_UPDATES
         self._last_check = 0
         self._last_update = 0

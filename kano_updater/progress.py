@@ -85,7 +85,10 @@ class Progress(object):
         start = phase.start
         weight_sum = sum([p.weight for p in subphases])
         for subphase in subphases:
-            if self._get_phase_by_name(subphase.name, False):
+            # FIXME: Prevent splitting into identical phases
+            if subphase.name != phase.name \
+               and self._get_phase_by_name(subphase.name, False):
+
                 msg = "Phase '{}' already exists".format(phase.name)
                 raise ValueError(msg)
 
@@ -133,6 +136,13 @@ class Progress(object):
     def finish(self, msg):
         phase = self._phases[self._current_phase_idx]
         self._call_change(phase, 100, 100, msg)
+
+    def abort(self, msg):
+        """
+            Akin a an exception
+        """
+        phase = self._phases[self._current_phase_idx]
+        self._call_change(phase, 0, 0, msg)
 
     def _call_change(self, phase, global_percent=None,
                      phase_percent=None, msg=None):

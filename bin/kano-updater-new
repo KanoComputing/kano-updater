@@ -94,23 +94,25 @@ def main():
     msg = _('Administrator priviledges are required to perform this operation')
     enforce_root("{}: {}".format(_('ERROR'), msg))
 
-    if args['download']:
-        progress = CLIProgress()
-        download(progress)
-    elif args['install']:
-        progress = CLIProgress()
-        install(progress)
-    elif args['check']:
-        check_for_updates()
-    elif args['install-pip']:
+    if args['install-pip']:
         # This subcommand is intended to be run from peldins to actually
         # install the pip packages on to the image in the first place.
         install_pip()
         install_pip_packages()
     elif args['reset']:
-        status = UpdaterStatus()
+        status = UpdaterStatus.get_instance()
         status.state = args['<state>']
         status.save()
+    else:
+        progress = CLIProgress()
+
+        if args['download']:
+            download(progress)
+        elif args['install']:
+            install(progress)
+        elif args['check']:
+            check_for_updates(progress=progress)
+
     return 0
 
 

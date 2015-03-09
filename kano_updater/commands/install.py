@@ -20,6 +20,7 @@ from kano_updater.apt_wrapper import apt_handle
 from kano_updater.auxiliary_tasks import run_aux_tasks
 from kano_updater.progress import DummyProgress, Phase
 from kano_updater.utils import supress_output
+from kano_updater.commands.download import download
 
 
 class InstallError(Exception):
@@ -27,25 +28,34 @@ class InstallError(Exception):
 
 
 def install(progress=None):
-    status = UpdaterStatus()
+    status = UpdaterStatus.get_instance()
     logger.debug("Installing update (updater state = {})".format(status.state))
-
-    # make sure the update has been downloaded
-    if not status.state == UpdaterStatus.UPDATES_DOWNLOADED:
-        if status.state == UpdaterStatus.NO_UPDATES:
-            # check for updates?
-            pass
-        elif status.state == UpdaterStatus.UPDATES_AVAILABLE:
-            # download updates?
-            pass
-        elif status.state == UpdaterStatus.DOWNLOADING_UPDATES:
-            # notify user and exit
-            pass
-        elif status.state == UpdaterStatus.INSTALLING_UPDATES:
-            raise InstallError(_('The install is already running'))
 
     if not progress:
         progress = DummyProgress()
+
+    if status.state == UpdaterStatus.INSTALLING_UPDATES:
+        progress.abort(_('The install is already running'))
+        return False
+    elif status.state != UpdaterStatus.UPDATES_DOWNLOADED:
+        progress.split(
+            Phase(
+                'download',
+                _('Downloading updates'),
+                30
+            ),
+            Phase(
+                'install',
+                _('Installing updates'),
+                70
+            ),
+        )
+
+        progress.start('download')
+        if not download(progress):
+            return False
+
+        progress.start('install')
 
     do_install(progress, status)
 
@@ -90,11 +100,11 @@ def do_install(progress, status):
             'aux-tasks',
             'Performing auxiliary tasks',
             10
-        ),
-        phase_name='root'
+        )
     )
 
     progress.start('init')
+    apt_handle.fix_broken(progress)
 
     # determine the versions (from and to)
     system_version = OSVersion.from_version_file(SYSTEM_VERSION_FILE)
@@ -149,7 +159,7 @@ def do_install(progress, status):
     bump_system_version()
 
     progress.start('aux-tasks')
-    run_aux_tasks()
+    run_aux_tasks(progress)
 
     # save status - available and no-updates
     status.state = UpdaterStatus.NO_UPDATES

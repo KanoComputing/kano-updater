@@ -14,6 +14,7 @@ from kano_updater.status import UpdaterStatus
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.progress import DummyProgress, Phase
 from kano_updater.utils import supress_output
+from kano_updater.commands.check import check_for_updates
 
 
 class DownloadError(Exception):
@@ -21,27 +22,60 @@ class DownloadError(Exception):
 
 
 def download(progress=None):
-    status = UpdaterStatus()
-
-    if status.state == UpdaterStatus.UPDATES_DOWNLOADED:
-        raise DownloadError(_('Updates have been downloaded already'))
-
-    if not is_internet():
-        raise DownloadError(_('Must have internet to download the updates'))
-
-    if status.state == UpdaterStatus.DOWNLOADING_UPDATES:
-        raise DownloadError(_('The download is already running'))
+    status = UpdaterStatus.get_instance()
 
     if not progress:
         progress = DummyProgress()
 
-    do_download(progress, status)
+    if status.state == UpdaterStatus.NO_UPDATES:
+        progress.split(
+            Phase(
+                'checking',
+                _('Checking for updates'),
+                10
+            ),
+            Phase(
+                'downloading',
+                _('Downloading updates'),
+                90
+            )
+        )
+        progress.start('checking')
+        check_for_updates(progress=progress)
+        if status.state == UpdaterStatus.NO_UPDATES:
+            progress.finish(_('No updates to download'))
+            return False
 
+        progress.start('downloading')
 
-def do_download(progress, status):
+    elif status.state == UpdaterStatus.UPDATES_DOWNLOADED:
+        progress.abort(_('Updates have been downloaded already'))
+        return True
+
+    elif status.state == UpdaterStatus.DOWNLOADING_UPDATES:
+        progress.abort(_('The download is already running'))
+        return False
+
+    elif status.state == UpdaterStatus.INSTALLING_UPDATES:
+        progress.abort(_('Updates are already being installed'))
+        return False
+
+    if not is_internet():
+        progress.fail(_('Must have internet to download the updates'))
+        return False
+
     status.state = UpdaterStatus.DOWNLOADING_UPDATES
     status.save()
 
+    success = do_download(progress, status)
+
+    status.state = UpdaterStatus.UPDATES_DOWNLOADED
+    status.save()
+
+    return success
+
+
+def do_download(progress, status):
     progress.split(
         Phase(
             'downloading-pip-pkgs',
@@ -57,17 +91,15 @@ def do_download(progress, status):
             'downloading-apt-packages',
             'Downloading apt packages',
             50
-        ),
-        phase_name='root'
+        )
     )
 
     _cache_pip_packages(progress)
     _cache_deb_packages(progress)
 
-    status.state = UpdaterStatus.UPDATES_DOWNLOADED
-    status.save()
-
     progress.finish('Done downloading')
+    # TODO: Figure out if it has actually worked
+    return True
 
 
 def _cache_pip_packages(progress):

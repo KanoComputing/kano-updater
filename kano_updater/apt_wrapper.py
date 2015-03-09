@@ -7,6 +7,10 @@
 
 import apt
 import aptsources.sourceslist
+import apt_pkg
+
+from kano.logging import logger
+from kano.utils import run_cmd_log
 
 from kano_updater.apt_progress_wrapper import AptDownloadProgress, \
     AptOpProgress, AptInstallProgress
@@ -18,7 +22,7 @@ class AptWrapper(object):
         apt.apt_pkg.init()
         self._cache = apt.cache.Cache()
 
-    def update(self, sources_list=None, progress=None):
+    def update(self, progress, sources_list=None):
         src_list = aptsources.sourceslist.SourcesList()
 
         src_count = 0
@@ -27,8 +31,8 @@ class AptWrapper(object):
                 src_count += len(src.comps) + 1
 
         progress.split(
-            Phase('updating-apt-sources', 'Updating apt sources'),
-            Phase('apt-cache-init', 'Initialising apt cache')
+            Phase('updating-apt-sources', _('Updating apt sources')),
+            Phase('apt-cache-init', _('Initialising apt cache'))
         )
 
         progress.start('updating-apt-sources')
@@ -37,8 +41,8 @@ class AptWrapper(object):
                            sources_list=sources_list)
 
         progress.start('apt-cache-init')
-        ops = ['Reading package lists', 'Building dependency tree',
-               'Reading state information', 'Building data structures']
+        ops = [_('Reading package lists'), _('Building dependency tree'),
+               _('Reading state information'), _('Building data structures')]
         op_progress = AptOpProgress(progress, ops)
         self._cache.open(op_progress)
 
@@ -145,5 +149,35 @@ class AptWrapper(object):
 
         return False
 
+    def fix_broken(self, progress):
+        progress.split(
+            Phase('dkpg-clean',
+                  _('Cleaning dpkg journal')),
+            Phase('fix-broken',
+                  _('Fixing broken packages'))
+        )
+        if self._cache.dpkg_journal_dirty:
+            progress.start('dpkg-clean')
+            logger.info('Cleaning dpkg journal')
+            run_cmd_log("dpkg --configure -a")
+
+        # Naughty but don't want to re-initialise
+        try:
+            self._cache._depcache.fix_broken()
+        except SystemError as e:
+            logger.error(e)
+
+        for pkg in self._cache:
+            # Naughty (again) but want to keep the higher level structure
+            if pkg._pkg.inst_state in [apt_pkg.INSTSTATE_HOLD,
+                                       apt_pkg.INSTSTATE_HOLD_REINSTREQ]:
+                pkg.mark_install()
+                logger.warn("{} ({}) is in REQREINST state".format(
+                    pkg.shortname, pkg.versions))
+
+        if self._cache.install_count:
+            progress.start('fix-broken')
+            inst_progress = AptInstallProgress(progress)
+            self._cache.commit(install_progress=inst_progress)
 
 apt_handle = AptWrapper()
