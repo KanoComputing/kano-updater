@@ -13,7 +13,8 @@ from kano.logging import logger
 
 from kano_updater.paths import PIP_PACKAGES_LIST, SYSTEM_VERSION_FILE
 from kano_updater.status import UpdaterStatus
-from kano_updater.version import OSVersion, bump_system_version, TARGET_VERSION
+from kano_updater.os_version import OSVersion, bump_system_version, \
+    TARGET_VERSION
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.auxiliary_tasks import run_aux_tasks

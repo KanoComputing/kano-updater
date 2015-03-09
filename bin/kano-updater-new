@@ -36,11 +36,12 @@ if __name__ == '__main__' and __package__ is None:
         locale_path = None
 
 from kano.utils import enforce_root, delete_file
+from kano.logging import logger
 
 # FIXME Move into separate module
 gettext.install('kano-updater', locale_path, unicode=1)
 
-from kano_updater.version import TARGET_VERSION
+from kano_updater.os_version import TARGET_VERSION
 from kano_updater.commands.download import download
 from kano_updater.commands.install import install, install_pip_packages
 from kano_updater.commands.check import check_for_updates
@@ -80,6 +81,9 @@ def is_already_running():
 
 def main():
     args = docopt.docopt(__doc__, version=str(TARGET_VERSION))
+
+    # We always want to keep the logs from updates
+    logger.force_log_level("info")
 
     if is_already_running():
         # TODO Report from status file

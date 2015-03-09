@@ -8,11 +8,10 @@
 import os
 
 from kano.logging import logger
-from kano_updater.version import OSVersion
+from kano_updater.os_version import OSVersion, TARGET_VERSION
 from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable, migrate_repository
 from kano.utils import run_cmd_log, get_user_unsudoed, write_file_contents
-from kano_updater.version import TARGET_VERSION
 
 
 class Scenarios(object):

@@ -28,7 +28,7 @@ STATUS_FILE = UPDATER_CACHE_DIR + "status"
 
 # TODO: Might be useful in kano.utils
 def supress_output(function, *args, **kwargs):
-    with open('/dev/null', 'w') as f:
+    with open(os.devnull, 'w') as f:
         orig_stdout = sys.stdout
         orig_stderr = sys.stderr
         sys.stderr = sys.stdout = f
