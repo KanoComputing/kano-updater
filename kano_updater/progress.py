@@ -10,6 +10,10 @@ class ProgressError(Exception):
     pass
 
 
+class Relaunch(Exception):
+    pass
+
+
 class Phase(object):
     def __init__(self, name, label, weight=1, is_main=False):
         self.name = name
@@ -150,6 +154,9 @@ class Progress(object):
     def finish(self, msg):
         self._done(msg)
 
+    def relaunch(self):
+        self._relaunch()
+
     def abort(self, msg):
         """
             Akin a an exception
@@ -181,6 +188,13 @@ class Progress(object):
     def _done(self, msg):
         raise NotImplemented('The _done callback must be implemented')
 
+    def _relaunch(self):
+        """
+            This one is implemented here, because we need to relaunch
+            even if we don't care about the progress.
+        """
+        raise Relaunch()
+
 
 class DummyProgress(Progress):
     def start(self, phase_name):
@@ -207,6 +221,9 @@ class DummyProgress(Progress):
     def finish(self, msg):
         pass
 
+    # TODO: Not disabling this method, we need to relaunch in any case
+    #def relaunch(self):
+    #    pass
 
 class CLIProgress(Progress):
     def _change(self, phase, msg):
@@ -220,3 +237,6 @@ class CLIProgress(Progress):
 
     def _done(self, msg):
         print msg
+
+    def _relaunch(self):
+        raise Relaunch()

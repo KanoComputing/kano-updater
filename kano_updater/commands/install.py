@@ -18,7 +18,7 @@ from kano_updater.os_version import OSVersion, bump_system_version, \
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.auxiliary_tasks import run_aux_tasks
-from kano_updater.progress import DummyProgress, Phase
+from kano_updater.progress import DummyProgress, Phase, Relaunch
 from kano_updater.utils import supress_output
 from kano_updater.commands.download import download
 
@@ -146,7 +146,7 @@ def do_install(progress, status):
     if old_updater.installed.version != new_updater.installed.version:
         # Need to relaunch updater
         logger.debug(_('The updater has been updated, relaunching.'))
-        pass
+        progress.relaunch()
 
     progress.start('preupdate')  # - per script
     try:

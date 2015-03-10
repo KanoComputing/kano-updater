@@ -15,6 +15,7 @@ Usage:
   kano-updater install [--gui]
   kano-updater install-pip
   kano-updater reset <state>
+  kano-updater [-f] [-n]
 
 Options:
   -h, --help       Show this message.
@@ -46,7 +47,7 @@ from kano_updater.os_version import TARGET_VERSION
 from kano_updater.commands.download import download
 from kano_updater.commands.install import install, install_pip_packages
 from kano_updater.commands.check import check_for_updates
-from kano_updater.progress import CLIProgress
+from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
 from kano_updater.utils import supress_output
 
@@ -80,6 +81,21 @@ def is_already_running():
     # TODO
     return False
 
+def run_install(gui=False):
+    if gui:
+        from kano_updater.ui.main import launch_gui
+        try:
+            launch_gui()
+        except Relaunch:
+            logger.flush()
+            os.execvp('kano-updater',
+                      ['kano-updater', 'install', '--gui'])
+    else:
+        try:
+            install(progress)
+        except Relaunch:
+            logger.flush()
+            os.execvp('kano-updater', ['kano-updater', 'install'])
 
 def main():
     args = docopt.docopt(__doc__, version=str(TARGET_VERSION))
@@ -111,13 +127,13 @@ def main():
         if args['download']:
             download(progress)
         elif args['install']:
-            if args['--gui']:
-                from kano_updater.ui.main import launch_gui
-                launch_gui()
-            else:
-                install(progress)
+            run_install(args['--gui'])
         elif args['check']:
             check_for_updates(progress=progress)
+        else:
+            # lunch the gui if no arguments were given for
+            # backwards compatiblity
+            run_install(True)
 
     return 0
 

@@ -9,8 +9,7 @@
 
 from gi.repository import GLib
 
-from kano_updater.progress import Progress
-
+from kano_updater.progress import Progress, Relaunch
 
 class GtkProgress(Progress):
 
@@ -31,3 +30,9 @@ class GtkProgress(Progress):
     def _done(self, msg):
         GLib.idle_add(self._window.update_progress, 100,
                       "Complete!", msg)
+
+    def _relaunch(self):
+        GLib.idle_add(self._do_relaunch)
+
+    def _do_relaunch(self):
+        raise Relaunch()
