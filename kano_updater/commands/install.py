@@ -146,7 +146,10 @@ def do_install(progress, status):
         logger.error(_('The pre-update scenarios failed.'))
         sys.exit(e)
 
+    progress.start('updating-pip-packages')
     install_pip_packages(progress)
+
+    progress.start('updating-deb-packages')
     install_deb_packages(progress)
 
     progress.start('postupdate')  # - per script
@@ -168,10 +171,8 @@ def do_install(progress, status):
 
 
 def install_deb_packages(progress):
-    progress.start('updating-deb-packages')
     apt_handle.upgrade_all(progress)
 
 
 def install_pip_packages(progress):
-    progress.start('updating-pip-packages')
     supress_output(pip.main, ['install', '--upgrade', '-r', PIP_PACKAGES_LIST])

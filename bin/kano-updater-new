@@ -47,6 +47,7 @@ from kano_updater.commands.install import install, install_pip_packages
 from kano_updater.commands.check import check_for_updates
 from kano_updater.progress import CLIProgress
 from kano_updater.status import UpdaterStatus
+from kano_updater.utils import supress_output
 
 PIP_URL = 'https://raw.github.com/pypa/pip/master/contrib/get-pip.py'
 
@@ -97,8 +98,8 @@ def main():
     if args['install-pip']:
         # This subcommand is intended to be run from peldins to actually
         # install the pip packages on to the image in the first place.
-        install_pip()
-        install_pip_packages()
+        supress_output(install_pip)
+        install_pip_packages(progress=CLIProgress())
     elif args['reset']:
         status = UpdaterStatus.get_instance()
         status.state = args['<state>']
