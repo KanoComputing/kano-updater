@@ -107,7 +107,7 @@ def display_gui():
 
     if run_updater:
         logger.info('running updater')
-        subprocess.call(['/usr/bin/kano-updater', '-f'])
+        subprocess.call(['/usr/bin/kano-updater', 'install', '--gui'])
 
 
 def check_for_multiple_instances():

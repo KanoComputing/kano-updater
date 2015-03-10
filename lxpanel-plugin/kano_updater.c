@@ -27,7 +27,7 @@
 #define UPDATE_STATUS_FILE "/var/cache/kano-updater/status"
 
 #define CHECK_FOR_UPDATES_CMD "sudo /usr/bin/check-for-updates"
-#define UPDATE_CMD "kdesk-blur 'sudo /usr/bin/kano-updater'"
+#define UPDATE_CMD "sudo /usr/bin/kano-updater install --gui"
 #define SOUND_CMD "/usr/bin/aplay /usr/share/kano-media/sounds/kano_open_app.wav"
 
 #define PLUGIN_TOOLTIP _("Kano Updater")

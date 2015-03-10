@@ -1,13 +1,17 @@
-#!/usr/bin/env python
-
-# osversion.py
 #
-# Copyright (C) 2014 Kano Computing Ltd.
-# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+# Contains the OSVersion object for versioning the OS
+#
+# Copyright (C) 2015 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
+from kano.logging import logger
 
-class OSVersion:
+from kano_updater.paths import SYSTEM_ISSUE_FILE, SYSTEM_VERSION_FILE
+from kano_updater.version import VERSION
+
+
+class OSVersion(object):
     @staticmethod
     def from_version_string(vstr):
         try:
@@ -51,9 +55,15 @@ class OSVersion:
         return cmp(str(self), str(other))
 
 
-def bump_system_version(ver, version_file_path, issue_file_path):
-    with open(version_file_path, "w") as vfile:
-        vfile.write(ver.to_version_string() + "\n")
+TARGET_VERSION = OSVersion.from_version_string(VERSION)
 
-    with open(issue_file_path, "w") as ifile:
-        ifile.write(ver.to_issue() + "\n")
+
+def bump_system_version():
+    with open(SYSTEM_VERSION_FILE, 'w') as vfile:
+        vfile.write(TARGET_VERSION.to_version_string() + "\n")
+
+    with open(SYSTEM_ISSUE_FILE, 'w') as ifile:
+        ifile.write(TARGET_VERSION.to_issue() + "\n")
+
+    logger.info("Changed the version of the OS to {}".format(
+        TARGET_VERSION.to_version_string()))
