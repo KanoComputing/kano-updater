@@ -10,5 +10,5 @@
 
   "packages": [],
   "dependencies": ["kano-updater"],
-  "launch_command": "/bin/bash -c \"kdesk-blur 'sudo /usr/bin/kano-updater'\""
+  "launch_command": "kano-updater install --gui"
 }

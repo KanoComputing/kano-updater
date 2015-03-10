@@ -66,6 +66,8 @@ class InstallWindow(Gtk.Window):
     def _start_install(self):
         progress = GtkProgress(self)
         install_thread = Thread(target=install, args=(progress,))
+        # FIXME: What to do when the gui is killed and the thread is still running?
+        install_thread.daemon = True
         install_thread.start()
 
     def close_window(self, widget=None, event=None):

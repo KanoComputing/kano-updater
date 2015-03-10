@@ -19,7 +19,14 @@ from kano_updater.progress import Phase
 
 class AptWrapper(object):
     def __init__(self):
-        apt.apt_pkg.init()
+        apt.apt_pkg.init_config()
+
+        # We disable downloading translations, because we don't have them
+        # in our repos and it always fails.
+        apt.apt_pkg.config['Acquire::Languages'] = 'none'
+
+        apt.apt_pkg.init_system()
+
         self._cache = apt.cache.Cache()
 
     def update(self, progress, sources_list=None):

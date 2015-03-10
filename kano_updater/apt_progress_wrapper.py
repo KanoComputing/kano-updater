@@ -41,7 +41,7 @@ class AptDownloadProgress(apt.progress.base.AcquireProgress):
         self._updater_progress.next_step(self._phase_name, msg)
 
     def fail(self, item_desc):
-        self._updater_progress.fail(item_desc.shortdesc)
+        self._updater_progress.fail(item_desc.description)
 
     # TODO: Remove
     #def pulse(self, owner):

@@ -19,6 +19,12 @@ KANO_SOURCES_LIST = '/etc/apt/sources.list.d/kano.list'
 def check_for_updates(min_time_between_checks=0, progress=None):
     status = UpdaterStatus.get_instance()
 
+    # FIXME: FOR DEBUGGING ONLY
+    status.state = UpdaterStatus.UPDATES_AVAILABLE
+    status.last_check = int(time.time())
+    status.save()
+    return True
+
     if not progress:
         progress = DummyProgress()
 

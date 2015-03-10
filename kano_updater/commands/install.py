@@ -42,12 +42,14 @@ def install(progress=None):
             Phase(
                 'download',
                 _('Downloading updates'),
-                30
+                40,
+                is_main=True
             ),
             Phase(
                 'install',
                 _('Installing updates'),
-                70
+                60,
+                is_main=True
             ),
         )
 
@@ -68,38 +70,45 @@ def do_install(progress, status):
         Phase(
             'init',
             _('Starting Update'),
-            10
+            10,
+            is_main=True
         ),
         Phase(
             'updating-itself',
             _('Updating Itself'),
-            10
+            10,
+            is_main=True
         ),
         # Implement relaunch signal
         Phase(
             'preupdate',
             _('Running The Preupdate Scripts'),
-            10
+            10,
+            is_main=True
         ),
         Phase(
             'updating-pip-packages',
             _('Updating Pip Packages'),
-            15
+            15,
+            is_main=True
         ),
         Phase(
             'updating-deb-packages',
             _('Updating Deb Packages'),
-            15
+            15,
+            is_main=True
         ),
         Phase(
             'postupdate',
             _('Running The Postupdate Scripts'),
-            10
+            10,
+            is_main=True
         ),
         Phase(
             'aux-tasks',
             'Performing auxiliary tasks',
-            10
+            10,
+            is_main=True
         )
     )
 
@@ -168,6 +177,8 @@ def do_install(progress, status):
     status.state = UpdaterStatus.NO_UPDATES
     status.last_update = int(time.time())
     status.save()
+
+    progress.finish('Update completed')
 
 
 def install_deb_packages(progress):

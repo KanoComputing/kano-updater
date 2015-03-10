@@ -32,12 +32,14 @@ def download(progress=None):
             Phase(
                 'checking',
                 _('Checking for updates'),
-                10
+                10,
+                is_main=True
             ),
             Phase(
                 'downloading',
                 _('Downloading updates'),
-                90
+                90,
+                is_main=True
             )
         )
         progress.start('checking')
@@ -80,17 +82,20 @@ def do_download(progress, status):
         Phase(
             'downloading-pip-pkgs',
             'Downloading Python packages',
-            10
+            10,
+            is_main=True
         ),
         Phase(
             'updating-sources',
             'Updating apt sources',
-            40
+            40,
+            is_main=True
         ),
         Phase(
             'downloading-apt-packages',
             'Downloading apt packages',
-            50
+            50,
+            is_main=True
         )
     )
 

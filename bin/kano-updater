@@ -1,23 +1,32 @@
 #!/usr/bin/env python
-
+#
 # kano-updater
 #
-# Copyright (C) 2014 Kano Computing Ltd.
-# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+# Copyright (C) 2015 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
-# Updates system packages, Python modules and expands root partition if needed
-# Usage:
-# sudo kano-updater > shows confirmation and reboot dialogue
-# sudo kano-updater -f > shows reboot dialogue
-# sudo kano-updater -n > no dialogues
-# sudo kano-updater -d > debug mode
+
+"""
+kano-updater will help you keep your Kano OS up-to-date.
+
+Usage:
+  kano-updater check
+  kano-updater download
+  kano-updater install [--gui]
+  kano-updater install-pip
+  kano-updater reset <state>
+
+Options:
+  -h, --help       Show this message.
+  -v, --version    Print the version of the updater.
+  -g, --gui        Run the install procedure with a GUI.
+"""
+
 
 import os
 import sys
-import time
 import gettext
-
-from gi.repository import Gtk
+import docopt
 
 if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -27,323 +36,91 @@ if __name__ == '__main__' and __package__ is None:
     else:
         locale_path = None
 
+from kano.utils import enforce_root, delete_file
+from kano.logging import logger
+
+# FIXME Move into separate module
 gettext.install('kano-updater', locale_path, unicode=1)
 
-from kano.logging import logger, cleanup
-from kano_updater.osversion import OSVersion, bump_system_version
-from kano_updater.stages import upgrade_debian, upgrade_python
-from kano_updater.scenarios import PreUpdate, PostUpdate
-from kano_updater.utils import get_dpkg_dict, set_update_status, \
-    expand_rootfs, get_installed_version, reboot_required, \
-    update_failed, launch_gui, launch_gui_if_not_running, set_gui_stage, \
-    kill_gui, update_home_folders_from_skel, check_for_multiple_instances, \
-    root_check, check_internet, fix_broken
-from kano.utils import run_cmd, is_gui, run_cmd_log
-from kano.network import is_internet
-from kano.gtk3 import kano_dialog
+from kano_updater.os_version import TARGET_VERSION
+from kano_updater.commands.download import download
+from kano_updater.commands.install import install, install_pip_packages
+from kano_updater.commands.check import check_for_updates
+from kano_updater.progress import CLIProgress
+from kano_updater.status import UpdaterStatus
+from kano_updater.utils import supress_output
 
-logger.force_log_level("info")
-check_for_multiple_instances()
-root_check()
+PIP_URL = 'https://raw.github.com/pypa/pip/master/contrib/get-pip.py'
 
-issue_file = "/etc/issue"
-version_file = "/etc/kanux_version"
-
-new_version = OSVersion("Kanux", "Beta", "1.3.4")
-if os.path.exists(version_file):
-    old_version = OSVersion.from_version_file(version_file)
-else:
-    old_version = new_version
-
-
-require_restart = ['kdesk', 'raspberrypi-linux', 'raspberrypi-firmware',
-                   'kano-updater', 'kano-settings', 'kano-desktop']
-
-
-# Read flags
-forceUpdate = (len(sys.argv) == 2 and sys.argv[1] in ['-f', '--force'])
-showDialogue = not (len(sys.argv) == 2 and
-                    sys.argv[1] in ['-n', '--noDialogue'])
-debug = (len(sys.argv) == 2 and sys.argv[1] in ['-d', '--debug'])
-
-if not is_gui():
-    sys.exit(_('You need to run kano-updater from a GUI session!'))
-
-
-# Track application usage only after we are ok to proceed
-# (root permissions & gui enabled)
-try:
-    from kano_profile.tracker import Tracker, track_data
-    kanotracker = Tracker()
-
-    track_data("update-started", {
-        "from": str(old_version),
-        "to": str(new_version)
-    })
-except:
-    pass
-
-# clean system logs
-# TODO: This should be moved to a cron job
-cleanup()
-
-preup = PreUpdate(old_version, new_version)
-postup = PostUpdate(old_version, new_version)
-if not (preup.covers_update() and postup.covers_update()):
-    title = _('Unfortunately, your version of Kano OS is too old '
-            'to be updated through the updater.')
-    description = _('You will need to download the image of the '
-                  'OS and reflash your SD card.')
-    kdialog = kano_dialog.KanoDialog(title, description)
-    kdialog.dialog.set_icon_name("kano-updater")
-    kdialog.dialog.set_title(_("Kano Updater"))
-    kdialog.run()
-    sys.exit(title)
-
-logger.info("Upgrading from: {}".format(str(old_version)))
-logger.info("Upgrading to: {}".format(str(new_version)))
-
-# ask confirmation from user
-if not forceUpdate and showDialogue:
-    kdialog = kano_dialog.KanoDialog(
-        _("Let\'s update!"),
-        _("Your Kano is about to get better"),
-        button_dict={_("Update now").upper(): {"return_value": 0}},
-        orange_info={"name": _("Later"), "return_value": 1}
-    )
-    kdialog.dialog.set_icon_name("kano-updater")
-    kdialog.dialog.set_title(_("Kano Updater"))
-    response = kdialog.run()
-    if response != 0:
-        logger.info("Canceled by the user.")
-        sys.exit()
-
-    del kdialog
-    while Gtk.events_pending():
-        Gtk.main_iteration()
-
-# main update if there is internet
-pkgs_changed = []
-
-if check_internet():
-
-    # Remove comunication file
-    if os.path.isfile("/tmp/updater-progress"):
-        os.remove("/tmp/updater-progress")
-
-    # kill_apps
-    kill_apps_list = ['minecraft-pi', 'make-music', 'make-video',
-                      'make-snake', 'kano-apps']
-    for app in kill_apps_list:
-        run_cmd('killall -q {}'.format(app))
-
-    # Start gui
-    gui_process = launch_gui()
-
-    # The updater could get stuck on updating the updater in case
-    # there is a package in an inconsistent state on the system.
-    # We're calling fix_broken() here in an effort to preven that.
-    run_cmd_log('apt-get -y update')
-    fix_broken("")
-    run_cmd_log('apt-get -y clean')
-
-    # upgrade kano-updater itself
-    gui_process = launch_gui_if_not_running(gui_process)
-    set_gui_stage(2)
-
-    current_updater_version = get_installed_version('kano-updater')
-
-    cmd = 'apt-get install -o Dpkg::Options::="--force-confdef" ' + \
-          '-o Dpkg::Options::="--force-confold" -y --force-yes ' + \
-          'kano-toolset kano-updater'
-    _, _, rv = run_cmd_log(cmd)
-
-    if rv != 0:
-        kill_gui(gui_process)
-        msg = "Couldn't update the updater!"
-        update_failed(msg)
-        sys.exit(msg)
-
-    new_updater_version = get_installed_version('kano-updater')
-    # re-run the updater in case it was updated
-    if new_updater_version != current_updater_version and not debug:
-        logger.info("The updater was reinstalled, launching again.")
-        kill_gui(gui_process)
-        flag = '-f'
-        if not showDialogue:
-            flag = '-n'
-
-        logger.flush()
-        os.execvp('kano-updater', ['kano-updater', flag])
-
-    # get app-state before upgrading
-    appstate_before, _ = get_dpkg_dict()
-
-    # pre upgrade
+# TODO Move this somewhere else
+def install_pip():
     try:
-        preup.run()
-    except Exception as e:
-        kill_gui(gui_process)
-        sys.exit(e)
+        import pip
+        pip.main('install --upgrade pip'.split())
+    except ImportError:
+        import urllib2
+        import tempfile
+        import imp
+        import shutil
 
-    # upgrade python
-    gui_process = launch_gui_if_not_running(gui_process)
-    set_gui_stage(3)
+        # pip doesn't seem to be installed, install it
+        download = urllib2.urlopen(PIP_URL)
+        installer_file = tempfile.NamedTemporaryFile(delete=False)
+        shutil.copyfileobj(download, installer_file)
+        download.close()
+        installer_file.close()
 
-    # if internet connection is lost during update, do not continue
-    if not is_internet():
-        kdialog = kano_dialog.KanoDialog(_('Error!'), _('Internet connection lost!'))
-        kdialog.dialog.set_icon_name("kano-updater")
-        kdialog.dialog.set_title(_("Kano Updater"))
-        kill_gui(gui_process)
-        kdialog.run()
-        logger.error('Internet connection lost before Python upgrades!')
-        sys.exit()
+        pip_installer = imp.load_source("pip_installer", installer_file.name)
+        sys.argv = []
+        pip_installer.main()
+        delete_file(installer_file.name)
 
-    python_ok, python_err = upgrade_python(appstate_before)
 
-    # upgrade debian
-    debian_err_packages = upgrade_debian(gui_process)
+def is_already_running():
+    # TODO
+    return False
 
-    # check for download error
-    if debian_err_packages == -1:
-        kdialog = kano_dialog.KanoDialog(_('Error with downloading packages!'), '')
-        kdialog.dialog.set_icon_name("kano-updater")
-        kdialog.dialog.set_title(_("Kano Updater"))
-        kill_gui(gui_process)
-        kdialog.run()
-        sys.exit(title)
 
-    # post upgrade
-    try:
-        postup.run()
-    except Exception as e:
-        kill_gui(gui_process)
-        sys.exit(e)
+def main():
+    args = docopt.docopt(__doc__, version=str(TARGET_VERSION))
 
-    # housekeeping
-    update_home_folders_from_skel()
+    # We always want to keep the logs from updates
+    logger.force_log_level("info")
 
-    # refresh desktop
-    os.system('kdesk -r')
+    if is_already_running():
+        # TODO Report from status file
+        msg = _('An instance of Kano Updater is already running')
+        sys.stderr.write("{}: {}\n".format(_('ERROR'), msg))
+        sys.exit(1)
 
-    bump_system_version(new_version, version_file, issue_file)
+    msg = _('Administrator priviledges are required to perform this operation')
+    enforce_root("{}: {}".format(_('ERROR'), msg))
 
-    # Kill gui when finished
-    kill_gui(gui_process)
+    if args['install-pip']:
+        # This subcommand is intended to be run from peldins to actually
+        # install the pip packages on to the image in the first place.
+        supress_output(install_pip)
+        install_pip_packages(progress=CLIProgress())
+    elif args['reset']:
+        status = UpdaterStatus.get_instance()
+        status.state = args['<state>']
+        status.save()
+    else:
+        progress = CLIProgress()
 
-    now = int(time.time())
-    status = {"last_update": now, "update_available": 0, "last_check": now}
-    set_update_status(status)
+        if args['download']:
+            download(progress)
+        elif args['install']:
+            if args['--gui']:
+                from kano_updater.ui.main import launch_gui
+                launch_gui()
+            else:
+                install(progress)
+        elif args['check']:
+            check_for_updates(progress=progress)
 
-    # Check whether there are any updatable apps
-    # This is not essential, so we ignore any errors
-    try:
-        run_cmd("sudo kano-apps check-for-updates")
-    except:
-        pass
+    return 0
 
-    # get app-state after upgrading
-    appstate_after, appstate_after_nonclean = get_dpkg_dict()
 
-    msg_upgraded = ''
-    msg_added = ''
-    msg_removed = ''
-
-    # compare appstates
-    for app, version in appstate_after.iteritems():
-        if app in appstate_before and version != appstate_before[app]:
-            pkgs_changed.append(app)
-            msg_upgraded += " - {}\n".format(app)
-
-        if app not in appstate_before:
-            pkgs_changed.append(app)
-            msg_added += " - {}\n".format(app)
-
-    for app, version in appstate_before.iteritems():
-        if app not in appstate_after:
-            pkgs_changed.append(app)
-            msg_removed += " - {}\n".format(app)
-
-    # For the logger
-    msg = ''
-
-    if msg_upgraded:
-        msg += "\nApps upgraded:\n" + msg_upgraded
-
-    if msg_added:
-        msg += "\nApps added:\n" + msg_added
-
-    if msg_removed:
-        msg += "\nApps removed:\n" + msg_removed
-
-    if debian_err_packages:
-        msg_error = "{}\n".format('\n'.join(debian_err_packages))
-        msg += "\nApps with errors:\n" + msg_error
-
-    if appstate_after_nonclean:
-        non_clean_list = '\n'.join(appstate_after_nonclean.iterkeys())
-        msg_non_clean_list = non_clean_list + "\n"
-        msg += "\nApps with non-clean state:\n" + msg_non_clean_list
-
-    if python_ok:
-        text = "\nPython modules upgraded:\n"
-        python_modules = "{}\n".format('\n'.join(python_ok))
-        msg += "\nPython modules upgraded:\n" + python_modules
-
-    if python_err:
-        err_list = '\n'.join(python_err)
-        msg_python_err = err_list + "\n"
-        msg = "\nPython modules with error:\n" + msg_python_err
-
-    if not msg:
-        msg = "No updates needed this time."
-
-    logger.info(msg)
-
-    # Play sound in the background
-    from kano.utils import play_sound
-    play_sound('/usr/share/kano-media/sounds/kano_updated.wav',
-               background=True)
-
-    # Display message
-    if showDialogue:
-        # A massive hack to avoid library mixups during large updates
-        run_cmd("""
-python <<EOF
-from kano_updater.dialogs import show_results
-
-show_results(\"\"\"{}\"\"\", \"\"\"{}\"\"\", \"\"\"{}\"\"\", {}, {}, {}, {})
-EOF
-""".format(msg_upgraded, msg_added, msg_removed, debian_err_packages,
-           appstate_after_nonclean, python_ok, python_err))
-
-    try:
-        from kano_profile.badges import \
-            increment_app_state_variable_with_dialog
-        increment_app_state_variable_with_dialog('kano-updater', 'updated', 1)
-    except Exception:
-        pass
-
-    try:
-        from kano_profile.tracker import track_data
-        track_data("updated-to", str(new_version))
-    except:
-        pass
-
-# expand filesystem
-will_expand = expand_rootfs()
-if showDialogue and \
-   (will_expand or reboot_required(require_restart, pkgs_changed)):
-    logger.info("Rebooting")
-
-    # A massive hack to avoid library mixups during large updates
-    run_cmd("""
-python <<EOF
-from kano_updater.dialogs import show_reboot_dialog
-
-show_reboot_dialog()
-EOF
-""")
-
-    run_cmd('reboot')
+if __name__ == "__main__":
+    sys.exit(main())

@@ -11,7 +11,7 @@ class ProgressError(Exception):
 
 
 class Phase(object):
-    def __init__(self, name, label, weight=1):
+    def __init__(self, name, label, weight=1, is_main=False):
         self.name = name
         self.label = label
         self.weight = weight
@@ -23,11 +23,15 @@ class Phase(object):
         self.step_count = 1
         self._step = 0
 
-    def get_phase_percent(self):
+        self.is_main = is_main
+
+    @property
+    def percent(self):
         factor = float(self.step) / self.step_count
         return int(factor * 100)
 
-    def get_global_percent(self):
+    @property
+    def global_percent(self):
         factor = float(self.step) / self.step_count
         return int(self.start + factor * self.length)
 
@@ -41,6 +45,16 @@ class Phase(object):
             self._step = step
         else:
             self._step = self.step_count
+
+    def get_main_phase(self):
+        if self.is_main:
+            return self
+
+        for phase in self.parents:
+            if phase.is_main:
+                return phase
+
+        return self
 
 
 class Progress(object):
@@ -71,7 +85,7 @@ class Progress(object):
         self._current_phase_idx = self._phases.index(phase)
 
         # Calculate current progres and emitt an event
-        self._call_change(phase)
+        self._change(phase, phase.label)
 
     def get_current_phase(self):
         return self._phases[self._current_phase_idx]
@@ -99,7 +113,7 @@ class Progress(object):
             subphase.start = start
             start += subphase.length
 
-            subphase.parents = [phase.name] + phase.parents
+            subphase.parents = [phase] + phase.parents
 
         # Implant the subphases into the phase list in place of the parent
         idx = self._phases.index(phase)
@@ -115,7 +129,7 @@ class Progress(object):
         phase = self._get_phase_by_name(phase_name)
         phase.step = step
 
-        self._call_change(phase, msg=msg)
+        self._change(phase, msg)
 
     def next_step(self, phase_name, msg):
         phase = self._get_phase_by_name(phase_name)
@@ -131,52 +145,41 @@ class Progress(object):
 
     def fail(self, msg):
         phase = self._phases[self._current_phase_idx]
-        self._call_change(phase, -1, -1, "ERROR: {}".format(msg))
+        self._error(phase, msg)
 
     def finish(self, msg):
-        phase = self._phases[self._current_phase_idx]
-        self._call_change(phase, 100, 100, msg)
+        self._done(msg)
 
     def abort(self, msg):
         """
             Akin a an exception
         """
         phase = self._phases[self._current_phase_idx]
-        self._call_change(phase, 0, 0, msg)
+        self._abort(phase, msg)
 
-    def _call_change(self, phase, global_percent=None,
-                     phase_percent=None, msg=None):
-        if not global_percent:
-            global_percent = phase.get_global_percent()
-
-        if not phase_percent:
-            phase_percent = phase.get_phase_percent()
-
-        if not msg:
-            msg = phase.label
-
-        self._change(global_percent, msg)
-        self._change_per_phase(phase_percent, phase, msg)
-
-    def _change(self, percent, msg):
+    def _change(self, phase, msg):
         """
             The callback that is triggered for each progress change.
 
             IMPORTANT: This needs to be implemented by child.
 
-            :param percent: The status of the progress (special values:
-                            0: starting, -1: error, 100: done). -1 and 100
-                            are triggered just before the worker returns.
-            :type percent: int
+            :param phase: The currently active phase
+            :type percent: Phase
 
             :param msg: Message for the UI.
             :type msg: str
         """
 
-        pass
+        raise NotImplemented('The _change callback must be implemented')
 
-    def _change_per_phase(self, phase_percent, phase, msg):
-        pass
+    def _error(self, phase, msg):
+        raise NotImplemented('The _error callback must be implemented')
+
+    def _abort(self, phase, msg):
+        raise NotImplemented('The _abort callback must be implemented')
+
+    def _done(self, msg):
+        raise NotImplemented('The _done callback must be implemented')
 
 
 class DummyProgress(Progress):
@@ -198,14 +201,22 @@ class DummyProgress(Progress):
     def fail(self, msg):
         pass
 
+    def abort(self, msg):
+        pass
+
     def finish(self, msg):
         pass
 
 
 class CLIProgress(Progress):
-    def _change(self, percent, msg):
-        print "{}%: {}".format(percent, msg)
+    def _change(self, phase, msg):
+        print "{}%: {}".format(phase.global_percent, msg)
 
-    def _change_per_phase(self, percent, phase, msg):
-        pass
-        #print "[{}] {}%: {}".format(phase.label, percent, msg)
+    def _error(self, phase, msg):
+        print "ERROR: {}".format(msg)
+
+    def _abort(self, phase, msg):
+        print "Aborting {}, {}".format(phase.label, msg)
+
+    def _done(self, msg):
+        print msg

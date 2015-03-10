@@ -11,14 +11,23 @@ from gi.repository import GLib
 
 from kano_updater.progress import Progress
 
+
 class GtkProgress(Progress):
 
     def __init__(self, window):
         super(GtkProgress, self).__init__()
         self._window = window
 
-    def _change(self, percent, msg):
-        GLib.idle_add(self._window.update_progress, percent, msg)
+    def _change(self, phase, msg):
+        GLib.idle_add(self._window.update_progress, phase.global_percent,
+                      phase.get_main_phase().label, msg)
 
-    def _change_per_phase(self, percent, phase, msg):
-        pass
+    def _error(self, phase, msg):
+        print "ERROR: {}".format(msg)
+
+    def _abort(self, phase, msg):
+        print "Aborting {}, {}".format(phase.label, msg)
+
+    def _done(self, msg):
+        GLib.idle_add(self._window.update_progress, 100,
+                      "Complete!", msg)
