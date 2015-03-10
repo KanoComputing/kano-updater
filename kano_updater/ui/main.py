@@ -7,9 +7,9 @@
 # Initialisation of the UI
 #
 
-from gi.repository import GObject, GLib, Gdk
+from gi.repository import GObject, GLib, Gdk, Gtk
 
-from kano_updater.ui.main_window import MainWindow
+from kano_updater.ui.install_window import InstallWindow
 
 def launch_gui():
     # GObject.threads_init()
@@ -17,7 +17,7 @@ def launch_gui():
     Gdk.threads_init()
     Gdk.threads_enter()
 
-    win = MainWindow()
+    win = InstallWindow()
     win.show()
     Gtk.main()
 

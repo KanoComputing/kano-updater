@@ -21,10 +21,28 @@ if __name__ == '__main__' and __package__ is None:
 
 gettext.install('kano-updater', locale_path, unicode=1)
 
+from kano.utils import enforce_root
+from kano.logging import logger
 
 from kano_updater.ui.main import launch_gui
 
+def is_already_running():
+    # TODO
+    return False
+
 
 if __name__ == '__main__':
+    # We always want to keep the logs from updates
+    logger.force_log_level('info')
+
+    if is_already_running():
+        # TODO Report from status file
+        msg = _('An instance of Kano Updater is already running')
+        sys.stderr.write("{}: {}\n".format(_('ERROR'), msg))
+        sys.exit(1)
+
+    msg = _('Administrator priviledges are required to perform this operation')
+    enforce_root("{}: {}".format(_('ERROR'), msg))
+
     launch_gui()
     sys.exit(0)

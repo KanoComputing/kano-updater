@@ -30,17 +30,21 @@ class AptWrapper(object):
             if not src.disabled and not src.invalid:
                 src_count += len(src.comps) + 1
 
+        updating_sources = "{}-updating-apt-sources".format(
+            progress.get_current_phase().name)
+        cache_init = "{}-apt-cache-init".format(
+            progress.get_current_phase().name)
         progress.split(
-            Phase('updating-apt-sources', _('Updating apt sources')),
-            Phase('apt-cache-init', _('Initialising apt cache'))
+            Phase(updating_sources, _('Updating apt sources')),
+            Phase(cache_init, _('Initialising apt cache'))
         )
 
-        progress.start('updating-apt-sources')
+        progress.start(updating_sources)
         apt_progress = AptDownloadProgress(progress, src_count)
         self._cache.update(fetch_progress=apt_progress,
                            sources_list=sources_list)
 
-        progress.start('apt-cache-init')
+        progress.start(cache_init)
         ops = [_('Reading package lists'), _('Building dependency tree'),
                _('Reading state information'), _('Building data structures')]
         op_progress = AptOpProgress(progress, ops)

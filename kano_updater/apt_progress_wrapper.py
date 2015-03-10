@@ -58,11 +58,18 @@ class AptOpProgress(apt.progress.base.OpProgress):
         self._updater_progress = updater_progress
         self._phase_name = updater_progress.get_current_phase().name
 
+        ops = [self._get_op_key(op) for op in ops]
+
         phases = map(lambda op: Phase(op, op), ops)
         self._updater_progress.split(*phases)
 
         for op in ops:
             self._updater_progress.init_steps(op, 100)
+
+    def _get_op_key(self, op_name):
+        template = "{prefix}-{{}}".format(prefix=self._phase_name)
+
+        return template.format(op_name).lower().replace(' ', '-')
 
     def _next_phase(self):
         if len(self._ops) <= 1:
@@ -78,8 +85,8 @@ class AptOpProgress(apt.progress.base.OpProgress):
     def update(self, percent=None):
         super(AptOpProgress, self).update(percent)
 
-        self._updater_progress.set_step(self.op, self.percent,
-                                        self.op)
+        self._updater_progress.set_step(self._get_op_key(self.op),
+                                        self.percent, self.op)
 
 
 class AptInstallProgress(apt.progress.base.InstallProgress):

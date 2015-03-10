@@ -44,8 +44,8 @@ class UpdaterStatus(object):
         return UpdaterStatus._singleton_instance
 
     def __init__(self):
-        if not UpdaterStatus._singleton_instance:
-            raise Exception("This class is a singleton!")
+        if UpdaterStatus._singleton_instance:
+            raise Exception('This class is a singleton!')
         else:
             UpdaterStatus._singleton_instance = self
 

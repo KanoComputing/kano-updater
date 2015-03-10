@@ -205,7 +205,6 @@ class DummyProgress(Progress):
 class CLIProgress(Progress):
     def _change(self, percent, msg):
         print "{}%: {}".format(percent, msg)
-        pass
 
     def _change_per_phase(self, percent, phase, msg):
         pass

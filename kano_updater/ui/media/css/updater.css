@@ -1,0 +1,8 @@
+.phase {
+    font: Bariol Bold 22;
+    color: white;
+}
+
+.phase.subphase {
+    font-size: 16;
+}
