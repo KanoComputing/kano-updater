@@ -22,7 +22,8 @@ class GtkProgress(Progress):
                       phase.get_main_phase().label, msg)
 
     def _error(self, phase, msg):
-        print "ERROR: {}".format(msg)
+        err_msg = "Error {} - {}".format(phase.label.lower(), msg)
+        GLib.idle_add(self._window.error, err_msg)
 
     def _abort(self, phase, msg):
         print "Aborting {}, {}".format(phase.label, msg)

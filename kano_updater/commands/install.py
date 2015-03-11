@@ -59,7 +59,17 @@ def install(progress=None):
 
         progress.start('install')
 
-    do_install(progress, status)
+    try:
+        do_install(progress, status)
+    except Exception as err:
+        progress.fail(err.message)
+        logger.error(err.message)
+
+        # TODO: Clean up
+        status.state = UpdaterStatus.NO_UPDATES
+        status.save()
+
+        return False
 
 
 def do_install(progress, status):

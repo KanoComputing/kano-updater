@@ -8,6 +8,7 @@
 import pip
 
 from kano.network import is_internet
+from kano.logging import logger
 
 from kano_updater.paths import PIP_PACKAGES_LIST
 from kano_updater.status import UpdaterStatus
@@ -69,7 +70,17 @@ def download(progress=None):
     status.state = UpdaterStatus.DOWNLOADING_UPDATES
     status.save()
 
-    success = do_download(progress, status)
+    try:
+        success = do_download(progress, status)
+    except Exception as err:
+        progress.fail(err.message)
+        logger.error(err.message)
+
+        # TODO: Clean up
+        status.state = UpdaterStatus.NO_UPDATES
+        status.save()
+
+        return False
 
     status.state = UpdaterStatus.UPDATES_DOWNLOADED
     status.save()
