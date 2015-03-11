@@ -1,0 +1,3 @@
+[submodule "lxpanel-plugin/parson"]
+	path = lxpanel-plugin/parson
+	url = https://github.com/kgabis/parson.git
