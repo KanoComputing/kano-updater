@@ -54,6 +54,26 @@
 #define SET_STATE(plugin_data, s) \
 	g_strlcpy(plugin_data->state, s, MAX_STATE_LENGTH)
 
+#define UPDATES_AVAILABLE_NOTIFICATION \
+	"{" \
+		"\"title\": \"New Update\"," \
+		"\"byline\": \"Click here to update your Kano\"," \
+		"\"image\": \"/usr/share/kano-updater/images/notification-updates-available.png\"," \
+		"\"sound\": null," \
+		"\"type\": \"small\"," \
+		"\"command\": \"sudo kano-updater download\"" \
+	"}"
+
+#define UPDATES_DONLOWADED_NOTIFICATION \
+	"{" \
+		"\"title\": \"New Update\"," \
+		"\"byline\": \"Click here to update your Kano\"," \
+		"\"image\": \"/usr/share/kano-updater/images/notification-updates-downloaded.png\"," \
+		"\"sound\": null," \
+		"\"type\": \"small\"," \
+		"\"command\": \"sudo kano-updater install --gui\"" \
+	"}"
+
 typedef struct {
 	GFile *status_file;
 	GFileMonitor *monitor;
@@ -237,6 +257,7 @@ static gboolean update_status(kano_updater_plugin_t *plugin_data)
 	if (IS_IN_STATE(plugin_data, "updates-available")) {
 		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
 						  UPDATES_AVAILABLE_ICON_FILE);
+		//g_file_set_contents("")
 	} else if (IS_IN_STATE(plugin_data, "downloading-updates")) {
 		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
 						DOWNLOADING_UPDATES_ICON_FILE);
