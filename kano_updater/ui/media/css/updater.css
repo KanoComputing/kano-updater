@@ -1,8 +1,45 @@
-.phase {
-    font: Bariol Bold 22;
+GtkWindow {
+    background: #323232
+}
+
+GtkProgressBar {
+    background: #4e4e4e;
+    color: #ff7625;
+    border-width: 0;
+    padding: 0;
+    border-radius: 4px;
+
+    -GtkProgressBar-min-horizontal-bar-height: 8px;
+}
+
+GtkProgressBar.progressbar {
+    border-radius: 4px;
+    background-image: -gtk-gradient(linear, 0 0, 0 1,
+                                    color-stop(0, #f5902f),
+                                    color-stop(0.5, #ff7625),
+                                    color-stop(1, #f56721));
+}
+
+.heading {
+    font: Bariol Bold 20px;
     color: white;
 }
 
-.phase.subphase {
-    font-size: 16;
+.heading.subheading {
+    font-size: 14px;
+    font-weight: normal;
+    color: #545454
+}
+
+.heading.subheading.small-print {
+    font-size: 10px;
+}
+
+.install .heading.subheading.psa {
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+.restart .heading.subheading.small-print {
+    padding-top: 20px;
 }

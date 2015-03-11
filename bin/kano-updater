@@ -10,7 +10,7 @@
 kano-updater will help you keep your Kano OS up-to-date.
 
 Usage:
-  kano-updater check
+  kano-updater check [--gui]
   kano-updater download
   kano-updater install [--gui]
   kano-updater update-pip
@@ -83,7 +83,7 @@ def is_already_running():
 
 def run_install(gui=False):
     if gui:
-        from kano_updater.ui.main import launch_gui
+        from kano_updater.ui.main import launch_install_gui
         try:
             launch_gui()
         except Relaunch:
@@ -129,7 +129,11 @@ def main():
         elif args['install']:
             run_install(args['--gui'])
         elif args['check']:
-            check_for_updates(progress=progress)
+            if args['--gui']:
+                from kano_updater.ui.main import launch_check_gui
+                launch_check_gui()
+            else:
+                check_for_updates(progress=progress)
         else:
             # lunch the gui if no arguments were given for
             # backwards compatiblity
