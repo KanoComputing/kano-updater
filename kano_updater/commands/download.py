@@ -5,8 +5,6 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
-import pip
-
 from kano.network import is_internet
 
 from kano_updater.paths import PIP_PACKAGES_LIST
@@ -121,6 +119,10 @@ def _cache_pip_packages(progress):
     # The `--no-install` parameter has been deprecated in pip. However, the
     # version of pip in wheezy doesn't yet support the new approach which is
     # supposed to provide the same behaviour.
+    #
+    # pip is imported locally because it takes very long time to do,
+    # for some odd reason
+    import pip
     supress_output(pip.main, ['install', '--upgrade', '--no-install', '-r',
                               PIP_PACKAGES_LIST])
 
