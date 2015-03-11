@@ -8,6 +8,7 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
+
 #define GETTEXT_PACKAGE "kano-updater"
 #include <glib/gi18n-lib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
@@ -22,22 +23,44 @@
 
 #include <kdesk-hourglass.h>
 
-#define DEFAULT_ICON_FILE "/usr/share/kano-updater/images/panel-default.png"
-#define NOTIFICATION_ICON_FILE "/usr/share/kano-updater/images/panel-notification.png"
-#define UPDATE_STATUS_FILE "/var/cache/kano-updater/status"
+#include "parson/parson.h"
 
-#define CHECK_FOR_UPDATES_CMD "sudo /usr/bin/check-for-updates"
-#define UPDATE_CMD "sudo /usr/bin/kano-updater install --gui"
+/* Icon file paths */
+#define NO_UPDATES_ICON_FILE \
+	"/usr/share/kano-updater/images/widget-no-updates.png"
+#define UPDATES_AVAILABLE_ICON_FILE \
+	"/usr/share/kano-updater/images/widget-updates-available.png"
+#define DOWNLOADING_UPDATES_ICON_FILE \
+	"/usr/share/kano-updater/images/widget-downloading-updates.png"
+#define UPDATES_DOWNLOADED_ICON_FILE \
+	"/usr/share/kano-updater/images/widget-updates-downloaded.png"
+
+#define UPDATE_STATUS_FILE "/var/cache/kano-updater/status.json"
+
+#define CHECK_FOR_UPDATES_CMD "sudo /usr/bin/kano-updater check --gui"
+#define DOWNLOAD_CMD "sudo /usr/bin/kano-updater download"
+#define INSTALL_CMD "sudo /usr/bin/kano-updater install --gui"
 #define SOUND_CMD "/usr/bin/aplay /usr/share/kano-media/sounds/kano_open_app.wav"
 
 #define PLUGIN_TOOLTIP _("Kano Updater")
 
-#define DAY 60*60*24
+#define POLL_INTERVAL (10 * 60 * 1000) /* 10 minutes in microseconds*/
+#define CHECK_INTERVAL 60*60*24
+
+#define MAX_STATE_LENGTH 20
+#define IS_IN_STATE(plugin_data, s) \
+	(g_strcmp0(plugin_data->state, s) == 0)
+
+#define SET_STATE(plugin_data, s) \
+	g_strlcpy(plugin_data->state, s, MAX_STATE_LENGTH)
 
 typedef struct {
+	GFile *status_file;
+	GFileMonitor *monitor;
+
+	gchar *state;
 	int last_update;
 	int last_check;
-	int update_available;
 
 	GtkWidget *icon;
 
@@ -50,29 +73,32 @@ static gboolean show_menu(GtkWidget *, GdkEventButton *,
 			  kano_updater_plugin_t *);
 static void selection_done(GtkWidget *);
 static gboolean update_status(kano_updater_plugin_t *);
+static gboolean check_for_updates(kano_updater_plugin_t *);
 
 static void plugin_destructor(gpointer user_data);
 static void menu_pos(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
                      GtkWidget *widget);
 
+void file_monitor_cb(GFileMonitor *monitor, GFile *first, GFile *second,
+		     GFileMonitorEvent event, gpointer user_data);
 
 static GtkWidget *plugin_constructor(LXPanel *panel, config_setting_t *settings)
 {
 	/* allocate our private structure instance */
-	kano_updater_plugin_t *plugin = g_new0(kano_updater_plugin_t, 1);
+	kano_updater_plugin_t *plugin_data = g_new0(kano_updater_plugin_t, 1);
 
-	plugin->panel = panel;
+	plugin_data->panel = panel;
 
-	plugin->last_update = 0;
-	plugin->last_check = 0;
-	plugin->update_available = 0;
+	plugin_data->state = g_new0(gchar, MAX_STATE_LENGTH);
+	plugin_data->last_update = 0;
+	plugin_data->last_check = 0;
 
-	GtkWidget *icon = gtk_image_new_from_file(DEFAULT_ICON_FILE);
-	plugin->icon = icon;
+	GtkWidget *icon = gtk_image_new_from_file(NO_UPDATES_ICON_FILE);
+	plugin_data->icon = icon;
 
 	/* need to create a widget to show */
 	GtkWidget *pwid = gtk_event_box_new();
-	lxpanel_plugin_set_data(pwid, plugin, plugin_destructor);
+	lxpanel_plugin_set_data(pwid, plugin_data, plugin_destructor);
 
 	/* set border width */
 	gtk_container_set_border_width(GTK_CONTAINER(pwid), 0);
@@ -85,7 +111,7 @@ static GtkWidget *plugin_constructor(LXPanel *panel, config_setting_t *settings)
 
 
 	gtk_signal_connect(GTK_OBJECT(pwid), "button-press-event",
-			   GTK_SIGNAL_FUNC(show_menu), plugin);
+			   GTK_SIGNAL_FUNC(show_menu), plugin_data);
 
 
 	/* Set a tooltip to the icon to show when the mouse sits over the it */
@@ -95,35 +121,47 @@ static GtkWidget *plugin_constructor(LXPanel *panel, config_setting_t *settings)
 
 	gtk_widget_set_sensitive(icon, TRUE);
 
-	plugin->timer = g_timeout_add(60000, (GSourceFunc) update_status,
-				      (gpointer) plugin);
+	update_status(plugin_data);
 
-	update_status(plugin);
+	plugin_data->timer = g_timeout_add(POLL_INTERVAL,
+					   (GSourceFunc) check_for_updates,
+					   (gpointer) plugin_data);
 
 	/* show our widget */
 	gtk_widget_show_all(pwid);
+
+	/* Start watching the pipe for input. */
+	plugin_data->status_file = g_file_new_for_path(UPDATE_STATUS_FILE);
+	g_assert(plugin_data->status_file != NULL);
+
+	plugin_data->monitor = g_file_monitor(plugin_data->status_file,
+					      G_FILE_MONITOR_NONE, NULL, NULL);
+	g_assert(plugin_data->monitor != NULL);
+	g_signal_connect(plugin_data->monitor, "changed",
+			 G_CALLBACK(file_monitor_cb), (gpointer) plugin_data);
 
 	return pwid;
 }
 
 static void plugin_destructor(gpointer user_data)
 {
-	kano_updater_plugin_t *plugin = (kano_updater_plugin_t *)user_data;
+	kano_updater_plugin_t *plugin_data = (kano_updater_plugin_t *)user_data;
+
+	g_free(plugin_data->state);
+
+	g_object_unref(plugin_data->monitor);
 
 	/* Disconnect the timer. */
-	g_source_remove(plugin->timer);
+	g_source_remove(plugin_data->timer);
 
-	g_free(plugin);
+	g_free(plugin_data);
 }
 
-static int parse_line(char *line, const char const *key, int *value)
+void file_monitor_cb(GFileMonitor *monitor, GFile *first, GFile *second,
+		     GFileMonitorEvent event, gpointer user_data)
 {
-	if (strncmp(line, key, strlen(key)) == 0) {
-		*value = atoi(line + strlen(key));
-		return 0;
-	}
-
-	return -1;
+	kano_updater_plugin_t *plugin_data = (kano_updater_plugin_t *)user_data;
+	update_status(plugin_data);
 }
 
 static void launch_cmd(const char *cmd, const char *appname)
@@ -155,114 +193,136 @@ static void launch_cmd(const char *cmd, const char *appname)
         }
 }
 
-static gboolean check_for_updates(kano_updater_plugin_t *plugin)
+static gboolean check_for_updates(kano_updater_plugin_t *plugin_data)
 {
-    launch_cmd(CHECK_FOR_UPDATES_CMD, NULL);
+	int now = time(NULL);
+	if ((now - plugin_data->last_check) >= CHECK_INTERVAL) {
+	    launch_cmd(CHECK_FOR_UPDATES_CMD, NULL);
+	}
     return TRUE;
 }
 
-static gboolean update_status(kano_updater_plugin_t *plugin)
+static gboolean read_status(kano_updater_plugin_t *plugin_data)
 {
-	FILE *fp;
-	char *line = NULL;
-	size_t len = 0;
-	ssize_t read;
-	int value = 0;
+	JSON_Value *root_value = NULL;
+	JSON_Object *root = NULL;
 
-	int now = time(NULL);
+	root_value = json_parse_file(UPDATE_STATUS_FILE);
+	if (json_value_get_type(root_value) == JSONObject) {
+		root = json_value_get_object(root_value);
 
-	fp = fopen(UPDATE_STATUS_FILE, "r");
-	if (fp == NULL)
-		/* In case the status file isn't there, we say there
-		   are no updates available. */
+		SET_STATE(plugin_data, json_object_get_string(root, "state"));
+
+		plugin_data->last_check = (int) json_object_get_number(root,
+								 "last_check");
+		plugin_data->last_update = (int) json_object_get_number(root,
+								"last_update");
+
+		json_value_free(root_value);
 		return TRUE;
-
-	while ((read = getline(&line, &len, fp)) != -1) {
-		if (parse_line(line, "last_update=", &value) == 0)
-			plugin->last_update = value;
-		else if (parse_line(line, "last_check=", &value) == 0)
-			plugin->last_check = value;
-		else if (parse_line(line, "update_available=", &value) == 0)
-			plugin->update_available = value;
 	}
 
-	if (line)
-		free(line);
+	json_value_free(root_value);
+	return FALSE;
+}
 
-	fclose(fp);
+static gboolean update_status(kano_updater_plugin_t *plugin_data)
+{
+	read_status(plugin_data);
 
-	/* printf("lu%d lc%d ua%d\n", plugin->last_update,
-				   plugin->last_check,
-				   plugin->update_available); */
+	/* printf("%s lu%d lc%d\n", plugin_data->state,
+				 plugin_data->last_update,
+				 plugin_data->last_check); */
 
-	if (plugin->update_available > 0) {
-		/* Change the icon to red */
-		gtk_image_set_from_file(GTK_IMAGE(plugin->icon),
-						  NOTIFICATION_ICON_FILE);
+	if (IS_IN_STATE(plugin_data, "updates-available")) {
+		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
+						  UPDATES_AVAILABLE_ICON_FILE);
+	} else if (IS_IN_STATE(plugin_data, "downloading-updates")) {
+		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
+						DOWNLOADING_UPDATES_ICON_FILE);
+	} else if (IS_IN_STATE(plugin_data, "updates-downloaded")) {
+		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
+						UPDATES_DOWNLOADED_ICON_FILE);
 	} else {
-		/* Change the icon to white */
-		gtk_image_set_from_file(GTK_IMAGE(plugin->icon),
-					DEFAULT_ICON_FILE);
-
-		if ((now - plugin->last_check) >= DAY) {
-			printf("running update check/n");
-			check_for_updates(plugin);
-		}
+		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
+					NO_UPDATES_ICON_FILE);
 	}
 
 	return TRUE;
 }
 
-void update_clicked(GtkWidget *widget, gpointer data)
+void download_clicked(GtkWidget *widget, gpointer data)
 {
     /* Launch updater */
-    launch_cmd(UPDATE_CMD, "kano-updater");
+    launch_cmd(DOWNLOAD_CMD, "kano-updater");
 
     /* Play sound */
     launch_cmd(SOUND_CMD, NULL);
 }
 
-void check_for_update_clicked(GtkWidget *widget, kano_updater_plugin_t *plugin)
+void install_clicked(GtkWidget *widget, gpointer data)
 {
-	check_for_updates(plugin);
+    /* Launch updater */
+    launch_cmd(INSTALL_CMD, "kano-updater");
+
+    /* Play sound */
+    launch_cmd(SOUND_CMD, NULL);
+}
+
+void check_for_updates_clicked(GtkWidget *widget,
+			       kano_updater_plugin_t *plugin_data)
+{
+	check_for_updates(plugin_data);
+}
+
+static void menu_add_item(GtkWidget *menu, gchar *label, gpointer activate_cb,
+			  gpointer user_data, gboolean active)
+{
+	GtkWidget *item;
+	item = gtk_menu_item_new_with_label(label);
+
+	if (activate_cb)
+		g_signal_connect(item, "activate",
+				 G_CALLBACK(activate_cb), user_data);
+
+	if (!active)
+		gtk_widget_set_sensitive(item, FALSE);
+
+	gtk_menu_append(GTK_MENU(menu), item);
+	gtk_widget_show(item);
 }
 
 static gboolean show_menu(GtkWidget *widget, GdkEventButton *event,
-		      kano_updater_plugin_t *plugin)
+		      kano_updater_plugin_t *plugin_data)
 {
 	GtkWidget *menu = gtk_menu_new();
-	GtkWidget *header_item, *update_item, *check_item,
-		  *no_updates_item;
 
 	if (event->button != 1)
 		return FALSE;
 
-	update_status(plugin);
+	update_status(plugin_data);
 
 	/* Create the menu items */
-	header_item = gtk_menu_item_new_with_label(_("Kano Updater"));
-	gtk_widget_set_sensitive(header_item, FALSE);
-	gtk_menu_append(GTK_MENU(menu), header_item);
-	gtk_widget_show(header_item);
+	menu_add_item(menu, _("Kano Updater"), NULL, NULL, FALSE);
 
-	if (plugin->update_available > 0) {
-		update_item = gtk_menu_item_new_with_label(_("Update your system"));
-		g_signal_connect(update_item, "activate",
-				 G_CALLBACK(update_clicked), NULL);
-		gtk_menu_append(GTK_MENU(menu), update_item);
-		gtk_widget_show(update_item);
+	if (IS_IN_STATE(plugin_data, "updates-available")) {
+		menu_add_item(menu, _("Download updates"),
+				G_CALLBACK(download_clicked), NULL, TRUE);
+	} else if (IS_IN_STATE(plugin_data, "downloading-updates")) {
+		menu_add_item(menu, _("Download in progress ..."),
+			      NULL, NULL, FALSE);
+	} else if (IS_IN_STATE(plugin_data, "updates-downloaded")) {
+		menu_add_item(menu, _("Install updates"),
+				G_CALLBACK(install_clicked), NULL, TRUE);
+	} else if (IS_IN_STATE(plugin_data, "installing-updates")) {
+		menu_add_item(menu, _("Installation in progress ..."),
+			      NULL, NULL, FALSE);
 	} else {
-		no_updates_item = gtk_menu_item_new_with_label(_("No updates found"));
-		gtk_widget_set_sensitive(no_updates_item, FALSE);
-		gtk_menu_append(GTK_MENU(menu), no_updates_item);
-		gtk_widget_show(no_updates_item);
-
-		check_item = gtk_menu_item_new_with_label(_("Check again"));
-		g_signal_connect(check_item, "activate",
-				 G_CALLBACK(check_for_update_clicked),
-				 plugin);
-		gtk_menu_append(GTK_MENU(menu), check_item);
-		gtk_widget_show(check_item);
+		menu_add_item(menu, _("No updates found"),
+			      NULL, NULL, FALSE);
+		menu_add_item(menu, _("Check again"),
+				G_CALLBACK(check_for_updates_clicked),
+				plugin_data, TRUE);
 	}
 
 	g_signal_connect(menu, "selection-done",
@@ -285,7 +345,7 @@ static void menu_pos(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
                      GtkWidget *widget)
 {
     int ox, oy, w, h;
-    kano_updater_plugin_t *plugin = lxpanel_plugin_get_data(widget);
+    kano_updater_plugin_t *plugin_data = lxpanel_plugin_get_data(widget);
     GtkAllocation allocation;
 
     gtk_widget_get_allocation(GTK_WIDGET(widget), &allocation);
@@ -306,7 +366,7 @@ static void menu_pos(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
     w = GTK_WIDGET(menu)->requisition.width;
     h = GTK_WIDGET(menu)->requisition.height;
 #endif
-    if (panel_get_orientation(plugin->panel) == GTK_ORIENTATION_HORIZONTAL) {
+    if (panel_get_orientation(plugin_data->panel) == GTK_ORIENTATION_HORIZONTAL) {
         *x = ox;
         if (*x + w > gdk_screen_width())
             *x = ox + allocation.width - w;
