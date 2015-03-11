@@ -13,7 +13,7 @@ Usage:
   kano-updater check
   kano-updater download
   kano-updater install [--gui]
-  kano-updater install-pip
+  kano-updater update-pip
   kano-updater reset <state>
   kano-updater [-f] [-n]
 
@@ -112,7 +112,7 @@ def main():
     msg = _('Administrator priviledges are required to perform this operation')
     enforce_root("{}: {}".format(_('ERROR'), msg))
 
-    if args['install-pip']:
+    if args['update-pip']:
         # This subcommand is intended to be run from peldins to actually
         # install the pip packages on to the image in the first place.
         supress_output(install_pip)
