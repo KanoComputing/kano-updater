@@ -11,7 +11,7 @@ kano-updater will help you keep your Kano OS up-to-date.
 
 Usage:
   kano-updater check [--gui]
-  kano-updater download
+  kano-updater download [--low-prio]
   kano-updater install [--gui]
   kano-updater update-pip
   kano-updater reset <state>
@@ -21,6 +21,7 @@ Options:
   -h, --help       Show this message.
   -v, --version    Print the version of the updater.
   -g, --gui        Run the install procedure with a GUI.
+  -l, --low-prio   Run the process with low shed and io priority.
 """
 
 
@@ -49,7 +50,7 @@ from kano_updater.commands.install import install, install_pip_packages
 from kano_updater.commands.check import check_for_updates
 from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
-from kano_updater.utils import supress_output
+from kano_updater.utils import supress_output, make_low_prio
 
 PIP_URL = 'https://raw.github.com/pypa/pip/master/contrib/get-pip.py'
 
@@ -125,6 +126,8 @@ def main():
         progress = CLIProgress()
 
         if args['download']:
+            if args['--low-prio']:
+                make_low_prio()
             download(progress)
         elif args['install']:
             run_install(args['--gui'])

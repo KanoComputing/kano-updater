@@ -39,6 +39,14 @@ def supress_output(function, *args, **kwargs):
             sys.stdout = orig_stdout
             sys.stderr = orig_stderr
 
+
+def make_low_prio():
+    # set IO class of this process to Idle
+    run_cmd("ioprio -c 3 -p {}".format(os.getpid()))
+
+    # Set the lowest scheduling priority
+    os.nice(19)
+
 # --------------------------------------
 
 
