@@ -195,7 +195,7 @@ def install_deb_packages(progress):
 
 
 def install_pip_packages(progress):
-    # pip is imported locally because it takes very long do to,
+    # pip is imported locally because it takes very long do to,
     # for some odd reason
     import pip
     supress_output(pip.main, ['install', '--upgrade', '-r', PIP_PACKAGES_LIST])

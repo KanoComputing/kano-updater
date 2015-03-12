@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <time.h>
+#include <pwd.h>
 
 #include <kdesk-hourglass.h>
 
@@ -47,12 +48,16 @@
 #define POLL_INTERVAL (10 * 60 * 1000) /* 10 minutes in microseconds*/
 #define CHECK_INTERVAL 60*60*24
 
+#define FIFO_FILENAME ".kano-notifications.fifo"
+
 #define MAX_STATE_LENGTH 20
 #define IS_IN_STATE(plugin_data, s) \
 	(g_strcmp0(plugin_data->state, s) == 0)
 
-#define SET_STATE(plugin_data, s) \
-	g_strlcpy(plugin_data->state, s, MAX_STATE_LENGTH)
+#define SET_STATE(plugin_data, s) ({ \
+	g_strlcpy(plugin_data->prev_state, plugin_data->state, MAX_STATE_LENGTH); \
+	g_strlcpy(plugin_data->state, s, MAX_STATE_LENGTH); \
+	})
 
 #define UPDATES_AVAILABLE_NOTIFICATION \
 	"{" \
@@ -62,9 +67,9 @@
 		"\"sound\": null," \
 		"\"type\": \"small\"," \
 		"\"command\": \"sudo kano-updater download\"" \
-	"}"
+	"}\n"
 
-#define UPDATES_DONLOWADED_NOTIFICATION \
+#define UPDATES_DOWNLOADED_NOTIFICATION \
 	"{" \
 		"\"title\": \"New Update\"," \
 		"\"byline\": \"Click here to update your Kano\"," \
@@ -72,13 +77,14 @@
 		"\"sound\": null," \
 		"\"type\": \"small\"," \
 		"\"command\": \"sudo kano-updater install --gui\"" \
-	"}"
+	"}\n"
 
 typedef struct {
 	GFile *status_file;
 	GFileMonitor *monitor;
 
 	gchar *state;
+	gchar *prev_state;
 	int last_update;
 	int last_check;
 
@@ -110,6 +116,7 @@ static GtkWidget *plugin_constructor(LXPanel *panel, config_setting_t *settings)
 	plugin_data->panel = panel;
 
 	plugin_data->state = g_new0(gchar, MAX_STATE_LENGTH);
+	plugin_data->prev_state = g_new0(gchar, MAX_STATE_LENGTH);
 	plugin_data->last_update = 0;
 	plugin_data->last_check = 0;
 
@@ -168,6 +175,7 @@ static void plugin_destructor(gpointer user_data)
 	kano_updater_plugin_t *plugin_data = (kano_updater_plugin_t *)user_data;
 
 	g_free(plugin_data->state);
+	g_free(plugin_data->prev_state);
 
 	g_object_unref(plugin_data->monitor);
 
@@ -222,6 +230,42 @@ static gboolean check_for_updates(kano_updater_plugin_t *plugin_data)
     return TRUE;
 }
 
+/*
+ * Resolve the path to the pipe file in the user's $HOME directory.
+ *
+ * WARNING: You're expected to g_free() the string returned.
+ */
+gchar *get_notifications_fifo_filename(void)
+{
+	struct passwd *pw = getpwuid(getuid());
+	const char *homedir = pw->pw_dir;
+
+	/* You are responsible for freeing the returned char buffer */
+	int buff_len=strlen(homedir) + strlen(FIFO_FILENAME) + sizeof(char) * 2;
+	gchar *fifo_filename = g_new0(gchar, buff_len);
+	if (!fifo_filename) {
+		return NULL;
+	}
+	else {
+		g_strlcpy(fifo_filename, homedir, buff_len);
+		g_strlcat(fifo_filename, "/", buff_len);
+		g_strlcat(fifo_filename, FIFO_FILENAME, buff_len);
+		return (fifo_filename);
+	}
+}
+
+static void show_notification(gchar *spec)
+{
+	gchar *notif_pipe = get_notifications_fifo_filename();
+
+	FILE *stream;
+	stream = fopen(notif_pipe, "w");
+	fprintf(stream, spec);
+	fclose(stream);
+
+	g_free(notif_pipe);
+}
+
 static gboolean read_status(kano_updater_plugin_t *plugin_data)
 {
 	JSON_Value *root_value = NULL;
@@ -257,13 +301,18 @@ static gboolean update_status(kano_updater_plugin_t *plugin_data)
 	if (IS_IN_STATE(plugin_data, "updates-available")) {
 		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
 						  UPDATES_AVAILABLE_ICON_FILE);
-		//g_file_set_contents("")
+
+		if (g_strcmp0(plugin_data->prev_state, plugin_data->state) != 0)
+			show_notification(UPDATES_AVAILABLE_NOTIFICATION);
 	} else if (IS_IN_STATE(plugin_data, "downloading-updates")) {
 		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
 						DOWNLOADING_UPDATES_ICON_FILE);
 	} else if (IS_IN_STATE(plugin_data, "updates-downloaded")) {
 		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
 						UPDATES_DOWNLOADED_ICON_FILE);
+
+		if (g_strcmp0(plugin_data->prev_state, plugin_data->state) != 0)
+			show_notification(UPDATES_DOWNLOADED_NOTIFICATION);
 	} else {
 		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
 					NO_UPDATES_ICON_FILE);

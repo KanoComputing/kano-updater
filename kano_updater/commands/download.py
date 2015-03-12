@@ -131,7 +131,7 @@ def _cache_pip_packages(progress):
     # version of pip in wheezy doesn't yet support the new approach which is
     # supposed to provide the same behaviour.
     #
-    # pip is imported locally because it takes very long time to do,
+    # pip is imported locally because it takes very long time to do,
     # for some odd reason
     import pip
     supress_output(pip.main, ['install', '--upgrade', '--no-install', '-r',
