@@ -60,7 +60,7 @@ def main():
 
     install_pip()
     import pip
-    pip.main(['install', '--update', '-r', PIP_PACKAGES_LIST])
+    pip.main(['install', '--upgrade', '-r', PIP_PACKAGES_LIST])
 
     return 0
 
