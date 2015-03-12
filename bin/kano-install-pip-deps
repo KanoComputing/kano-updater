@@ -1,0 +1,70 @@
+#!/usr/bin/env python
+#
+# kano-install-pip-deps
+#
+# Copyright (C) 2015 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
+#
+
+
+import os
+import sys
+
+if __name__ == '__main__' and __package__ is None:
+    dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    if dir_path != '/usr':
+        sys.path.insert(0, dir_path)
+        locale_path = os.path.join(dir_path, 'locale')
+    else:
+        locale_path = None
+
+from kano.utils import enforce_root, delete_file
+from kano.logging import logger
+
+from kano_updater.commands.install import install_pip_packages
+from kano_updater.utils import supress_output
+from kano_updater.progress import CLIProgress
+
+
+PIP_URL = 'https://raw.github.com/pypa/pip/master/contrib/get-pip.py'
+
+
+# TODO Move this somewhere else
+def install_pip():
+    try:
+        import pip
+        pip.main('install --upgrade pip'.split())
+    except ImportError:
+        import urllib2
+        import tempfile
+        import imp
+        import shutil
+
+        # pip doesn't seem to be installed, install it
+        download = urllib2.urlopen(PIP_URL)
+        installer_file = tempfile.NamedTemporaryFile(delete=False)
+        shutil.copyfileobj(download, installer_file)
+        download.close()
+        installer_file.close()
+
+        pip_installer = imp.load_source("pip_installer", installer_file.name)
+        sys.argv = []
+        pip_installer.main()
+        delete_file(installer_file.name)
+
+
+def main():
+    # We always want to keep the logs from updates
+    logger.force_log_level("info")
+
+    msg = 'Administrator priviledges are required to perform this operation'
+    enforce_root("{}: {}".format('ERROR', msg))
+
+    supress_output(install_pip)
+    install_pip_packages(progress=CLIProgress())
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -13,7 +13,6 @@ Usage:
   kano-updater check [--gui]
   kano-updater download [--low-prio]
   kano-updater install [--gui]
-  kano-updater update-pip
   kano-updater reset <state>
   kano-updater [-f] [-n]
 
@@ -52,31 +51,6 @@ from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
 from kano_updater.utils import supress_output, make_low_prio
 
-PIP_URL = 'https://raw.github.com/pypa/pip/master/contrib/get-pip.py'
-
-# TODO Move this somewhere else
-def install_pip():
-    try:
-        import pip
-        pip.main('install --upgrade pip'.split())
-    except ImportError:
-        import urllib2
-        import tempfile
-        import imp
-        import shutil
-
-        # pip doesn't seem to be installed, install it
-        download = urllib2.urlopen(PIP_URL)
-        installer_file = tempfile.NamedTemporaryFile(delete=False)
-        shutil.copyfileobj(download, installer_file)
-        download.close()
-        installer_file.close()
-
-        pip_installer = imp.load_source("pip_installer", installer_file.name)
-        sys.argv = []
-        pip_installer.main()
-        delete_file(installer_file.name)
-
 
 def is_already_running():
     # TODO
@@ -114,12 +88,7 @@ def main():
     msg = _('Administrator priviledges are required to perform this operation')
     enforce_root("{}: {}".format(_('ERROR'), msg))
 
-    if args['update-pip']:
-        # This subcommand is intended to be run from peldins to actually
-        # install the pip packages on to the image in the first place.
-        supress_output(install_pip)
-        install_pip_packages(progress=CLIProgress())
-    elif args['reset']:
+    if args['reset']:
         status = UpdaterStatus.get_instance()
         status.state = args['<state>']
         status.save()
