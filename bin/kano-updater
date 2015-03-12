@@ -93,6 +93,7 @@ def run_install(gui=False):
                       ['kano-updater', 'install', '--gui'])
     else:
         try:
+            progress = CLIProgress()
             install(progress)
         except Relaunch:
             logger.flush()
