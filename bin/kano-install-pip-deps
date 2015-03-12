@@ -18,7 +18,7 @@ if __name__ == '__main__' and __package__ is None:
     else:
         locale_path = None
 
-from kano.utils import enforce_root, delete_file
+from kano.utils import enforce_root, delete_file, run_cmd
 from kano.logging import logger
 
 from kano_updater.paths import PIP_PACKAGES_LIST
@@ -59,8 +59,7 @@ def main():
     enforce_root("{}: {}".format('ERROR', msg))
 
     install_pip()
-    import pip
-    pip.main(['install', '--upgrade', '-r', PIP_PACKAGES_LIST])
+    run_cmd("pip install --upgrade -r {}".format(PIP_PACKAGES_LIST))
 
     return 0
 
