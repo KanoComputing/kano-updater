@@ -31,3 +31,16 @@ def launch_check_gui():
         win = UpdatesAvailableWindow()
         win.show()
         Gtk.main()
+
+def launch_downloaded_gui():
+    from kano_updater.ui.available_window import UpdatesDownloadedWindow
+
+    GLib.threads_init()
+    Gdk.threads_init()
+    Gdk.threads_enter()
+
+    win = UpdatesDownloadedWindow()
+    win.show()
+    Gtk.main()
+
+    Gdk.threads_leave()
