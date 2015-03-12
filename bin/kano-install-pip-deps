@@ -21,9 +21,7 @@ if __name__ == '__main__' and __package__ is None:
 from kano.utils import enforce_root, delete_file
 from kano.logging import logger
 
-from kano_updater.commands.install import install_pip_packages
-from kano_updater.utils import supress_output
-from kano_updater.progress import CLIProgress
+from kano_updater.paths import PIP_PACKAGES_LIST
 
 
 PIP_URL = 'https://raw.github.com/pypa/pip/master/contrib/get-pip.py'
@@ -60,8 +58,9 @@ def main():
     msg = 'Administrator priviledges are required to perform this operation'
     enforce_root("{}: {}".format('ERROR', msg))
 
-    supress_output(install_pip)
-    install_pip_packages(progress=CLIProgress())
+    install_pip()
+    import pip
+    pip.main(['install', '--update', '-r', PIP_PACKAGES_LIST])
 
     return 0
 
