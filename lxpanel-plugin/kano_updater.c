@@ -39,7 +39,7 @@
 #define UPDATE_STATUS_FILE "/var/cache/kano-updater/status.json"
 
 #define CHECK_FOR_UPDATES_CMD "sudo /usr/bin/kano-updater check --gui"
-#define DOWNLOAD_CMD "sudo /usr/bin/kano-updater download"
+#define DOWNLOAD_CMD "sudo /usr/bin/kano-updater download --low-prio"
 #define INSTALL_CMD "sudo /usr/bin/kano-updater install --gui"
 #define SOUND_CMD "/usr/bin/aplay /usr/share/kano-media/sounds/kano_open_app.wav"
 
