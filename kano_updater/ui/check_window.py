@@ -73,5 +73,7 @@ class CheckWindow(Gtk.Window):
 
         self.add(self.box)
 
+        self.show_all()
+
     def update(self, widget, event):
         download()
