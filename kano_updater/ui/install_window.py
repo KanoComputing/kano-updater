@@ -8,6 +8,7 @@
 #
 
 import os
+import time
 from gi.repository import Gtk
 from threading import Thread
 
@@ -45,10 +46,6 @@ class InstallWindow(Gtk.Window):
         # self.connect('delete-event', self.close_window)
 
         self._start_install()
-        """
-        self.update_progress(27, 'Updating the updater',
-                             'Running The Preupdate Scripts...')
-        """
 
     def _start_install(self):
         progress = GtkProgress(self)
@@ -72,6 +69,12 @@ class InstallWindow(Gtk.Window):
 
     def update_progress(self, percent, msg, sub_msg=''):
         self._install_screen.update_progress(percent, msg, sub_msg)
+
+        # FIXME Progress to next with the done
+        if percent == 100 and sub_msg in [_('Update completed'),
+                                          _('No updates to download')]:
+
+            self._done_install()
 
     def error(self, msg):
         error = KanoDialog(

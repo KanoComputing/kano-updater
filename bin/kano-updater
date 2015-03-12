@@ -86,7 +86,7 @@ def run_install(gui=False):
     if gui:
         from kano_updater.ui.main import launch_install_gui
         try:
-            launch_gui()
+            launch_install_gui()
         except Relaunch:
             logger.flush()
             os.execvp('kano-updater',
