@@ -8,6 +8,7 @@
 #
 
 import os
+import time
 from gi.repository import Gtk
 from threading import Thread
 
@@ -72,6 +73,9 @@ class InstallWindow(Gtk.Window):
 
     def update_progress(self, percent, msg, sub_msg=''):
         self._install_screen.update_progress(percent, msg, sub_msg)
+        if percent == 100:
+            time.sleep(1)
+            self._done_install()
 
     def error(self, msg):
         error = KanoDialog(

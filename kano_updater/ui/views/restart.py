@@ -58,5 +58,4 @@ class Restart(Gtk.Alignment):
         Timer(11, self._reboot, ()).start()
 
     def _reboot(self):
-        # TODO Actually reboot
-        Gtk.main_quit()
+        os.system('reboot')
