@@ -10,7 +10,7 @@
 kano-updater will help you keep your Kano OS up-to-date.
 
 Usage:
-  kano-updater check [--gui]
+  kano-updater check [--gui] [--interval <time>]
   kano-updater download [--low-prio]
   kano-updater install [--gui]
   kano-updater reset <state>
@@ -21,6 +21,7 @@ Options:
   -v, --version    Print the version of the updater.
   -g, --gui        Run the install procedure with a GUI.
   -l, --low-prio   Run the process with low shed and io priority.
+  --interval       Minimum time interval between checks (in hours)
 """
 
 
@@ -102,11 +103,14 @@ def main():
         elif args['install']:
             run_install(args['--gui'])
         elif args['check']:
+            time = args['<time>'] if args['--interval'] else 0
+
             if args['--gui']:
                 from kano_updater.ui.main import launch_check_gui
-                launch_check_gui()
+                launch_check_gui(min_time_between_checks=time)
             else:
-                check_for_updates(progress=progress)
+                check_for_updates(min_time_between_checks=time,
+                                  progress=progress)
         else:
             # lunch the gui if no arguments were given for
             # backwards compatiblity

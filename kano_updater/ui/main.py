@@ -24,8 +24,8 @@ def launch_install_gui():
 
     Gdk.threads_leave()
 
-def launch_check_gui():
-    if check_for_updates():
+def launch_check_gui(min_time_between_checks=0):
+    if check_for_updates(min_time_between_checks=min_time_between_checks):
         from kano_updater.ui.available_window import UpdatesAvailableWindow
 
         win = UpdatesAvailableWindow()
