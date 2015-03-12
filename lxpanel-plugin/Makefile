@@ -14,12 +14,12 @@ INSTALL_PATH=/usr/lib/`dpkg-architecture -qDEB_HOST_MULTIARCH`/lxpanel/plugins/
 
 build: $(BIN)
 
-init:
-	cd .. && git submodule init
-	cd .. && git submodule update
+#init:
+#	cd .. && git submodule init
+#	cd .. && git submodule update
 
 install: $(BIN)
 	install -p -m 0644 $(BIN) $(INSTALL_PATH)
 
-$(BIN): init $(SRC)
+$(BIN): $(SRC)
 	$(CC) -Wall $(CFLAGS) -shared -fPIC $(SRC) -o $(BIN) $(LIBS)
