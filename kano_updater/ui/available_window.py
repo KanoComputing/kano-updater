@@ -14,6 +14,7 @@ from kano.gtk3.buttons import KanoButton, OrangeButton
 from kano.gtk3.heading import Heading
 from kano.gtk3.apply_styles import apply_common_to_screen
 
+from kano_updater.utils import make_low_prio
 from kano_updater.ui.paths import CSS_PATH, IMAGE_PATH
 
 UPDATE_IMAGE = os.path.join(IMAGE_PATH, 'update-screen.png')
@@ -105,8 +106,7 @@ class UpdatesAvailableWindow(NotificationWindow):
         while Gtk.events_pending():
             Gtk.main_iteration()
 
-        # Lower priority
-        os.nice(1)
+        make_low_prio()
         download()
 
 
