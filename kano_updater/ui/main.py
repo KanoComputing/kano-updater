@@ -10,6 +10,16 @@
 from gi.repository import GLib, Gdk, Gtk
 
 from kano_updater.commands.check import check_for_updates
+from kano_updater.progress import Relaunch
+
+relaunch_required_flag = False
+
+
+def relaunch_required():
+    global relaunch_required_flag
+
+    relaunch_required_flag = True
+
 
 def launch_install_gui(confirm=True):
     from kano_updater.ui.available_window import UpdatesDownloadedWindow
@@ -24,6 +34,10 @@ def launch_install_gui(confirm=True):
     Gtk.main()
 
     Gdk.threads_leave()
+
+    if relaunch_required_flag:
+        raise Relaunch()
+
 
 def launch_check_gui(min_time_between_checks=0):
     if check_for_updates(min_time_between_checks=min_time_between_checks):

@@ -54,10 +54,10 @@
 #define IS_IN_STATE(plugin_data, s) \
 	(g_strcmp0(plugin_data->state, s) == 0)
 
-#define SET_STATE(plugin_data, s) ({ \
+#define SET_STATE(plugin_data, s) do { \
 	g_strlcpy(plugin_data->prev_state, plugin_data->state, MAX_STATE_LENGTH); \
 	g_strlcpy(plugin_data->state, s, MAX_STATE_LENGTH); \
-	})
+	} while(0)
 
 #define UPDATES_AVAILABLE_NOTIFICATION \
 	"{" \

@@ -7,9 +7,11 @@
 # Thread-safe progress reporting for Gtk
 #
 
-from gi.repository import GLib
+from gi.repository import GLib, Gtk
 
-from kano_updater.progress import Progress, Relaunch
+from kano_updater.progress import Progress
+from kano_updater.ui.main import relaunch_required
+
 
 class GtkProgress(Progress):
 
@@ -36,4 +38,5 @@ class GtkProgress(Progress):
         GLib.idle_add(self._do_relaunch)
 
     def _do_relaunch(self):
-        raise Relaunch()
+        relaunch_required()
+        Gtk.main_quit()
