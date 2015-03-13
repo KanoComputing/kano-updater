@@ -101,10 +101,6 @@ class AptWrapper(object):
                 if pkg.is_upgradable:
                     pkg.mark_upgrade()
 
-        # TODO: Remove for production
-        self._cache['cowsay'].mark_install()
-        self._cache['xcowsay'].mark_install()
-
         phase_name = progress.get_current_phase().name
         download = "{}-downloading".format(phase_name)
         install = "{}-installing".format(phase_name)
