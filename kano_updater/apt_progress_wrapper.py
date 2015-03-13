@@ -102,8 +102,7 @@ class AptInstallProgress(apt.progress.base.InstallProgress):
         print 'conffile', current, new
 
     def error(self, pkg, errormsg):
-        self._updater_progress.fail(self._phase_name,
-                                    "{}: {}".format(pkg, errormsg))
+        self._updater_progress.fail("{}: {}".format(pkg, errormsg))
 
     def processing(self, pkg, stage):
         print 'processing', pkg, stage
