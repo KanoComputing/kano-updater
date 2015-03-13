@@ -64,8 +64,7 @@ def install(progress=None):
         progress.fail(err.message)
         logger.error(err.message)
 
-        # TODO: Clean up
-        status.state = UpdaterStatus.NO_UPDATES
+        status.state = UpdaterStatus.UPDATES_DOWNLOADED
         status.save()
 
         return False
@@ -154,6 +153,10 @@ def do_install(progress, status):
     if old_updater.installed.version != new_updater.installed.version:
         # Need to relaunch updater
         logger.debug(_('The updater has been updated, relaunching.'))
+
+        status.state = UpdaterStatus.UPDATES_DOWNLOADED
+        status.save()
+
         progress.relaunch()
 
     progress.start('preupdate')  # - per script
@@ -161,7 +164,7 @@ def do_install(progress, status):
         preup.run()
     except Exception as e:
         logger.error(_('The pre-update scenarios failed.'))
-        sys.exit(e)
+        raise
 
     progress.start('updating-pip-packages')
     install_pip_packages(progress)
@@ -174,7 +177,7 @@ def do_install(progress, status):
         postup.run()
     except Exception as e:
         logger.error(_('The post-update scenarios failed.'))
-        sys.exit(e)
+        raise
 
     bump_system_version()
 

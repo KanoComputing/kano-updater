@@ -74,8 +74,7 @@ def download(progress=None):
         progress.fail(err.message)
         logger.error(err.message)
 
-        # TODO: Clean up
-        status.state = UpdaterStatus.NO_UPDATES
+        status.state = UpdaterStatus.UPDATES_AVAILABLE
         status.save()
 
         return False
