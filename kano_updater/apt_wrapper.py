@@ -121,7 +121,7 @@ class AptWrapper(object):
             return self._cache[package_name]
 
     def upgrade_all(self, progress=None):
-        self._mark_all_for_update()
+        self._cache.upgrade(dist_upgrade=True)
 
         phase_name = progress.get_current_phase().name
         download = "{}-downloading".format(phase_name)
