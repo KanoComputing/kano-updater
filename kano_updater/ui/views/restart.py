@@ -52,10 +52,19 @@ class Restart(Gtk.Alignment):
         grid.attach(info, 0, 2, 1, 1)
         grid.attach(instructions, 0, 3, 1, 1)
 
+        self.connect('show', self._on_show)
+
+    def _on_show(self, widget=None):
+        self.get_toplevel().connect('key-press-event', self._reboot)
         self._start_timer()
 
-    def _start_timer(self, *args):
-        Timer(11, self._reboot, ()).start()
+    def _start_timer(self):
+        timer = Timer(11, self._reboot, ())
+        timer.daemon = True
+        timer.start()
 
-    def _reboot(self):
+    def _reboot(self, window=None, event=None):
+        if event and event.get_keycode()[1] != 36: # ENTER
+            return
+
         os.system('reboot')
