@@ -12,7 +12,7 @@ kano-updater will help you keep your Kano OS up-to-date.
 Usage:
   kano-updater check [--gui] [--interval <time>]
   kano-updater download [--low-prio]
-  kano-updater install [--gui]
+  kano-updater install [--gui [--no-confirm]]
   kano-updater reset <state>
   kano-updater [-f] [-n]
 
@@ -20,6 +20,7 @@ Options:
   -h, --help       Show this message.
   -v, --version    Print the version of the updater.
   -g, --gui        Run the install procedure with a GUI.
+  --no-confirm     Don't confirm before installing
   -l, --low-prio   Run the process with low shed and io priority.
   --interval       Minimum time interval between checks (in hours)
 """
@@ -66,7 +67,7 @@ def run_install(gui=False, confirm=True):
         except Relaunch:
             logger.flush()
             os.execvp('kano-updater',
-                      ['kano-updater', 'install', '--gui'])
+                      ['kano-updater', 'install', '--gui', '--no-confirm'])
     else:
         try:
             progress = CLIProgress()
@@ -102,7 +103,7 @@ def main():
                 make_low_prio()
             download(progress)
         elif args['install']:
-            run_install(gui=args['--gui'])
+            run_install(gui=args['--gui'], confirm=not args['--no-confirm'])
         elif args['check']:
             time = args['<time>'] if args['--interval'] else 0
 
@@ -113,7 +114,7 @@ def main():
                 check_for_updates(min_time_between_checks=time,
                                   progress=progress)
         else:
-            # lunch the gui if no arguments were given for
+            # Launch the GUI if no arguments were given for
             # backwards compatiblity
             run_install(gui=True, confirm=False)
 
