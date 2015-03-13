@@ -110,7 +110,9 @@ class AptWrapper(object):
         )
 
         progress.start(download)
-        self.cache_updates(progress)
+        apt_progress = AptDownloadProgress(progress,
+                                           self._cache.install_count)
+        self._cache.fetch_archives(apt_progress)
 
         progress.start(install)
         inst_progress = AptInstallProgress(progress)

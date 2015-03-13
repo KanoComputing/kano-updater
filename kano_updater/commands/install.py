@@ -88,7 +88,6 @@ def do_install(progress, status):
             10,
             is_main=True
         ),
-        # Implement relaunch signal
         Phase(
             'preupdate',
             _('Running The Preupdate Scripts'),
