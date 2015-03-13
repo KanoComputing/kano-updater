@@ -29,7 +29,6 @@ Options:
 import os
 import sys
 import gettext
-import docopt
 
 if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -51,7 +50,7 @@ from kano_updater.commands.install import install, install_pip_packages
 from kano_updater.commands.check import check_for_updates
 from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
-from kano_updater.utils import supress_output, make_low_prio
+from kano_updater.utils import supress_output, make_low_prio, install_docopt
 
 
 def is_already_running():
@@ -77,6 +76,14 @@ def run_install(gui=False, confirm=True):
             os.execvp('kano-updater', ['kano-updater', 'install'])
 
 def main():
+    msg = _('Administrator priviledges are required to perform this operation')
+    enforce_root("{}: {}".format(_('ERROR'), msg))
+
+    # docopt weren't installed by default prior Kano OS 1.3.3
+    # It needs to be installed to make sure the updater runs
+    install_docopt()
+    import docopt
+
     args = docopt.docopt(__doc__, version=str(TARGET_VERSION))
 
     # We always want to keep the logs from updates
@@ -87,9 +94,6 @@ def main():
         msg = _('An instance of Kano Updater is already running')
         sys.stderr.write("{}: {}\n".format(_('ERROR'), msg))
         sys.exit(1)
-
-    msg = _('Administrator priviledges are required to perform this operation')
-    enforce_root("{}: {}".format(_('ERROR'), msg))
 
     if args['reset']:
         status = UpdaterStatus.get_instance()

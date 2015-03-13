@@ -49,6 +49,15 @@ def make_low_prio():
     run_cmd("schedtool -D {}".format(pid))
     os.nice(19)
 
+
+def install_docopt():
+    try:
+        import docopt
+    except ImportError:
+        import pip
+        logger.info("docopt not found on the system, installing")
+        supress_output(pip.main, ['install', 'docopt'])
+
 # --------------------------------------
 
 
