@@ -11,14 +11,15 @@ from gi.repository import GLib, Gdk, Gtk
 
 from kano_updater.commands.check import check_for_updates
 
-def launch_install_gui():
+def launch_install_gui(confirm=True):
     from kano_updater.ui.available_window import UpdatesDownloadedWindow
+    from kano_updater.ui.install_window import InstallWindow
 
     GLib.threads_init()
     Gdk.threads_init()
     Gdk.threads_enter()
 
-    win = UpdatesDownloadedWindow()
+    win = UpdatesDownloadedWindow() if confirm else InstallWindow()
     win.show()
     Gtk.main()
 
