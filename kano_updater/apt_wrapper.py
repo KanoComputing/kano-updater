@@ -24,6 +24,7 @@ class AptWrapper(object):
         # We disable downloading translations, because we don't have them
         # in our repos and it always fails.
         apt.apt_pkg.config['Acquire::Languages'] = 'none'
+        apt.apt_pkg.config['DPkg::Options'] = '--force-confdef --force-confold'
 
         apt.apt_pkg.init_system()
 
