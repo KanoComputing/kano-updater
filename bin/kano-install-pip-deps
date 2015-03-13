@@ -58,8 +58,10 @@ def main():
     msg = 'Administrator priviledges are required to perform this operation'
     enforce_root("{}: {}".format('ERROR', msg))
 
-    install_pip()
-    run_cmd("pip install --upgrade -r {}".format(PIP_PACKAGES_LIST))
+    if len(sys.argv) == 2 and sys.argv[1] == "update-pip-packages":
+        run_cmd("pip install --upgrade -r {}".format(PIP_PACKAGES_LIST))
+    else:
+        install_pip()
 
     return 0
 
