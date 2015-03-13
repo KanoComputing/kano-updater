@@ -42,9 +42,11 @@ def supress_output(function, *args, **kwargs):
 
 def make_low_prio():
     # set IO class of this process to Idle
-    run_cmd("ioprio -c 3 -p {}".format(os.getpid()))
+    pid = os.getpid()
+    run_cmd("ioprio -c 3 -p {}".format(pid))
 
     # Set the lowest scheduling priority
+    run_cmd("schedtool -D {}".format(pid))
     os.nice(19)
 
 # --------------------------------------
