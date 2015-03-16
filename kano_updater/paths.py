@@ -7,6 +7,7 @@
 
 
 PIP_PACKAGES_LIST = '/usr/share/kano-updater/python_modules'
+PIP_LOG_FILE = '/var/log/kano-updater-pip.log'
 
 SYSTEM_ISSUE_FILE = '/etc/issue'
 SYSTEM_VERSION_FILE = '/etc/kanux_version'
