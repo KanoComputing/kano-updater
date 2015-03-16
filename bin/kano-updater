@@ -13,7 +13,8 @@ Usage:
   kano-updater check [--gui] [--interval <time>]
   kano-updater download [--low-prio]
   kano-updater install [--gui [--no-confirm]]
-  kano-updater reset <state>
+  kano-updater set-state <state>
+  kano-updater boot-check
   kano-updater [-f] [-n]
 
 Options:
@@ -48,6 +49,7 @@ from kano_updater.os_version import TARGET_VERSION
 from kano_updater.commands.download import download
 from kano_updater.commands.install import install
 from kano_updater.commands.check import check_for_updates
+from kano_updater.commands.boot_check import boot_check
 from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
 from kano_updater.utils import make_low_prio, install_docopt
@@ -95,10 +97,12 @@ def main():
         sys.stderr.write("{}: {}\n".format(_('ERROR'), msg))
         sys.exit(1)
 
-    if args['reset']:
+    if args['set-state']:
         status = UpdaterStatus.get_instance()
         status.state = args['<state>']
         status.save()
+    elif args['boot-check']:
+        boot_check()
     else:
         progress = CLIProgress()
 

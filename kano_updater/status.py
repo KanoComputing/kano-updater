@@ -23,6 +23,7 @@ class UpdaterStatus(object):
     DOWNLOADING_UPDATES = 'downloading-updates'
     UPDATES_DOWNLOADED = 'updates-downloaded'
     INSTALLING_UPDATES = 'installing-updates'
+    UPDATES_INSTALLED = 'updates-installed'
 
     _status_file = STATUS_FILE_PATH
 
@@ -31,7 +32,8 @@ class UpdaterStatus(object):
         UPDATES_AVAILABLE,
         DOWNLOADING_UPDATES,
         UPDATES_DOWNLOADED,
-        INSTALLING_UPDATES
+        INSTALLING_UPDATES,
+        UPDATES_INSTALLED
     ]
 
     _singleton_instance = None

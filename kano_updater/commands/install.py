@@ -5,7 +5,6 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
-import sys
 import time
 
 from kano.logging import logger
@@ -17,7 +16,7 @@ from kano_updater.os_version import OSVersion, bump_system_version, \
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.auxiliary_tasks import run_aux_tasks
-from kano_updater.progress import DummyProgress, Phase, Relaunch
+from kano_updater.progress import DummyProgress, Phase
 from kano_updater.utils import supress_output
 from kano_updater.commands.download import download
 
@@ -170,8 +169,9 @@ def do_install(progress, status):
     try:
         preup.run()
     except Exception as e:
-        logger.error(_('The pre-update scenarios failed.'))
-        progress.abort("The pre-update tasks failed.")
+        logger.error('The pre-update scenarios failed.')
+        logger.error(str(e))
+        progress.abort(_('The pre-update tasks failed.'))
         raise
 
     logger.debug('Updating pip packages')
@@ -186,8 +186,9 @@ def do_install(progress, status):
     try:
         postup.run()
     except Exception as e:
-        logger.error(_('The post-update scenarios failed.'))
-        progress.abort('The post-update tasks failed.')
+        logger.error('The post-update scenarios failed.')
+        logger.error(str(e))
+        progress.abort(_('The post-update tasks failed.'))
         raise
 
     bump_system_version()
@@ -196,8 +197,7 @@ def do_install(progress, status):
     progress.start('aux-tasks')
     run_aux_tasks(progress)
 
-    # reset the updater status
-    status.state = UpdaterStatus.NO_UPDATES
+    status.state = UpdaterStatus.UPDATES_INSTALLED
     status.last_update = int(time.time())
     status.save()
 
