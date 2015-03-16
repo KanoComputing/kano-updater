@@ -39,7 +39,7 @@ def install(progress=None):
         progress.abort(_(msg))
         return False
     elif status.state != UpdaterStatus.UPDATES_DOWNLOADED:
-        logger.debug('Updates weren't downloaded, running download first.')
+        logger.debug('Updates weren\'t downloaded, running download first.')
         progress.split(
             Phase(
                 'download',
