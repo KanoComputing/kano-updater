@@ -5,6 +5,8 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
+from kano.logging import logger
+
 
 class ProgressError(Exception):
     pass
@@ -89,6 +91,8 @@ class Progress(object):
         self._current_phase_idx = self._phases.index(phase)
 
         # Calculate current progres and emitt an event
+        logger.debug("Starting phase '{}' ({})".format(phase.label,
+                                                       phase_name))
         self._change(phase, phase.label)
 
     def get_current_phase(self):
@@ -149,12 +153,15 @@ class Progress(object):
 
     def fail(self, msg):
         phase = self._phases[self._current_phase_idx]
+        logger.debug("Error {}: {}".format(phase.label, msg))
         self._error(phase, msg)
 
     def finish(self, msg):
+        logger.debug("Complete: {}".format(msg))
         self._done(msg)
 
     def relaunch(self):
+        logger.debug('Scheduling relaunch')
         self._relaunch()
 
     def abort(self, msg):
@@ -162,6 +169,7 @@ class Progress(object):
             Akin a an exception
         """
         phase = self._phases[self._current_phase_idx]
+        logger.debug("Aborting {}, {}".format(phase.label, msg))
         self._abort(phase, msg)
 
     def _change(self, phase, msg):

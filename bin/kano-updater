@@ -38,7 +38,7 @@ if __name__ == '__main__' and __package__ is None:
     else:
         locale_path = None
 
-from kano.utils import enforce_root, delete_file
+from kano.utils import enforce_root
 from kano.logging import logger
 
 # FIXME Move into separate module
@@ -46,11 +46,11 @@ gettext.install('kano-updater', locale_path, unicode=1)
 
 from kano_updater.os_version import TARGET_VERSION
 from kano_updater.commands.download import download
-from kano_updater.commands.install import install, install_pip_packages
+from kano_updater.commands.install import install
 from kano_updater.commands.check import check_for_updates
 from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
-from kano_updater.utils import supress_output, make_low_prio, install_docopt
+from kano_updater.utils import make_low_prio, install_docopt
 
 
 def is_already_running():
@@ -79,7 +79,7 @@ def main():
     msg = _('Administrator priviledges are required to perform this operation')
     enforce_root("{}: {}".format(_('ERROR'), msg))
 
-    # docopt weren't installed by default prior Kano OS 1.3.3
+    # docopt wasn't installed by default prior Kano OS 1.3.3
     # It needs to be installed to make sure the updater runs
     install_docopt()
     import docopt
@@ -87,7 +87,7 @@ def main():
     args = docopt.docopt(__doc__, version=str(TARGET_VERSION))
 
     # We always want to keep the logs from updates
-    logger.force_log_level("info")
+    logger.force_log_level('info')
 
     if is_already_running():
         # TODO Report from status file
@@ -125,5 +125,5 @@ def main():
     return 0
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())

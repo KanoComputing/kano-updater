@@ -29,7 +29,9 @@ def check_for_updates(min_time_between_checks=0, progress=None):
         progress = DummyProgress()
 
     if status.state != UpdaterStatus.NO_UPDATES:
-        progress.abort(_('No need to check for updates'))
+        msg = _('No need to check for updates')
+        logger.info(msg)
+        progress.abort(msg)
         return True
 
     if min_time_between_checks:
@@ -48,9 +50,11 @@ def check_for_updates(min_time_between_checks=0, progress=None):
 
     if _do_check(progress):
         status.state = UpdaterStatus.UPDATES_AVAILABLE
+        logger.debug('Updates available')
         rv = True
     else:
         status.state = UpdaterStatus.NO_UPDATES
+        logger.debug('No updates available')
         rv = False
 
     status.last_check = int(time.time())
