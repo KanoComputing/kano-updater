@@ -93,7 +93,7 @@ class InstallWindow(Gtk.Window):
         if percent == 100:
             if sub_msg == _('Update completed'):
                 self._done_install()
-            if sub_msg == _('No updates to download'):
+            elif sub_msg == _('No updates to download'):
                 self._no_updates()
 
     def error(self, msg):
