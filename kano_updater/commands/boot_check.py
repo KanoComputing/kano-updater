@@ -28,10 +28,10 @@ def boot_check():
         # Show a dialog and change the state back to no updates
         status.state = UpdaterStatus.NO_UPDATES
 
-        # TODO: actually show the dialog
-
     if status.state != old_status:
         msg = "The status was changed to: {}".format(status.state)
         logger.debug(msg)
 
     status.save()
+
+    return old_status

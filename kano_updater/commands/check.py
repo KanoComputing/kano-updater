@@ -33,7 +33,11 @@ def check_for_updates(min_time_between_checks=0, progress=None):
         msg = _('No need to check for updates')
         logger.info(msg)
         progress.abort(msg)
-        return True
+
+        # Return True in all cases except when the state is UPDATES_INSTALLED
+        # In that case, we've just updated and don't want to check for updates
+        # again.
+        return status.state != UpdaterStatus.UPDATES_INSTALLED
 
     if min_time_between_checks:
         target_delta = float(min_time_between_checks) * 60 * 60

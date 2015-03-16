@@ -9,8 +9,13 @@
 
 from gi.repository import GLib, Gdk, Gtk
 
+from kano.utils import run_cmd
+
 from kano_updater.commands.check import check_for_updates
+from kano_updater.commands.boot_check import boot_check
 from kano_updater.progress import Relaunch
+from kano_updater.status import UpdaterStatus
+
 
 relaunch_required_flag = False
 
@@ -46,3 +51,16 @@ def launch_check_gui(min_time_between_checks=0):
         win = UpdatesAvailableWindow()
         win.show()
         Gtk.main()
+
+
+def launch_boot_check_gui(check_for_updates=False):
+    if check_for_updates:
+        launch_check_gui(168)
+
+    old_status = boot_check()
+    if old_status == UpdaterStatus.UPDATES_INSTALLED:
+        # TODO: Implement the updater dialog properly
+        title = "Kano OS was updated"
+        text = "The update completed successfully. Enjoy the new version!"
+        run_cmd("kano-dialog title=\"{}\" description=\"{}\"".format(title,
+                                                                     text))
