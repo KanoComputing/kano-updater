@@ -34,9 +34,12 @@ def install(progress=None):
         progress = DummyProgress()
 
     if status.state == UpdaterStatus.INSTALLING_UPDATES:
-        progress.abort(_('The install is already running'))
+        msg = 'The install is already running'
+        logger.warn(msg)
+        progress.abort(_(msg))
         return False
     elif status.state != UpdaterStatus.UPDATES_DOWNLOADED:
+        logger.debug('Updates weren't downloaded, running download first.')
         progress.split(
             Phase(
                 'download',
@@ -54,6 +57,7 @@ def install(progress=None):
 
         progress.start('download')
         if not download(progress):
+            logger.error('Downloading updates failed, cannot update.')
             return False
 
         progress.start('install')
@@ -61,11 +65,13 @@ def install(progress=None):
     try:
         do_install(progress, status)
     except Exception as err:
-        progress.fail(err.message)
-        logger.error(err.message)
-
+        # Reset the state back to the previous one, so the updater
+        # doesn't get stuck in 'installing' forever.
         status.state = UpdaterStatus.UPDATES_DOWNLOADED
         status.save()
+
+        logger.error(err.message)
+        progress.fail(err.message)
 
         return False
 
@@ -126,7 +132,7 @@ def do_install(progress, status):
     system_version = OSVersion.from_version_file(SYSTEM_VERSION_FILE)
 
     msg = "Upgrading from {} to {}".format(system_version, TARGET_VERSION)
-    logger.debug(msg)
+    logger.info(msg)
 
     # set up the scenarios and check whether they cover updating
     # from this version
@@ -139,52 +145,58 @@ def do_install(progress, status):
                         'OS and reflash your SD card.')
 
         msg = "{}: {}".format(title, description)
+        logger.error("Updating from a version that is no longer supported" + \
+                     "()".format(system_version))
         progress.error(msg)
         raise InstallError(msg)
 
     old_updater = apt_handle.get_package('kano-updater')
 
-
-    progress.start('updating-itself')  #  - apt updating packages here too
+    progress.start('updating-itself')
     apt_handle.upgrade('kano-updater', progress)
 
-    # relaunch the process
+    # relaunch if the updater has changed
     new_updater = apt_handle.get_package('kano-updater')
     if old_updater.installed.version != new_updater.installed.version:
-        # Need to relaunch updater
-        logger.debug(_('The updater has been updated, relaunching.'))
-
+        # Remove the installation in progress status so it doesn't
+        # block the start of the new instance.
         status.state = UpdaterStatus.UPDATES_DOWNLOADED
         status.save()
 
+        logger.info(_('The updater has been updated, relaunching.'))
         progress.relaunch()
 
-    progress.start('preupdate')  # - per script
+    progress.start('preupdate')
     try:
         preup.run()
     except Exception as e:
         logger.error(_('The pre-update scenarios failed.'))
+        progress.abort("The pre-update tasks failed.")
         raise
 
+    logger.debug('Updating pip packages')
     progress.start('updating-pip-packages')
     install_pip_packages(progress)
 
+    logger.debug('Updating deb packages')
     progress.start('updating-deb-packages')
     install_deb_packages(progress)
 
-    progress.start('postupdate')  # - per script
+    progress.start('postupdate')
     try:
         postup.run()
     except Exception as e:
         logger.error(_('The post-update scenarios failed.'))
+        progress.abort('The post-update tasks failed.')
         raise
 
     bump_system_version()
 
+    # We don't care too much when these fail
     progress.start('aux-tasks')
     run_aux_tasks(progress)
 
-    # save status - available and no-updates
+    # reset the updater status
     status.state = UpdaterStatus.NO_UPDATES
     status.last_update = int(time.time())
     status.save()
@@ -198,6 +210,6 @@ def install_deb_packages(progress):
 
 def install_pip_packages(progress):
     # pip is imported locally because it takes very long do to,
-    # for some odd reason
+    # for some odd reason.
     import pip
     supress_output(pip.main, ['install', '--upgrade', '-r', PIP_PACKAGES_LIST])
