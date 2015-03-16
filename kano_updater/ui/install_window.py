@@ -12,10 +12,10 @@ import time
 from gi.repository import Gtk
 from threading import Thread
 
-from kano.utils import get_user_unsudoed, run_cmd
 from kano.gtk3.apply_styles import apply_styling_to_screen
 from kano.gtk3.kano_dialog import KanoDialog
 
+from kano_updater.utils import kill_apps
 from kano_updater.ui.paths import CSS_PATH
 from kano_updater.commands.install import install
 from kano_updater.ui.progress import GtkProgress
@@ -42,16 +42,9 @@ class InstallWindow(Gtk.Window):
 
         self._evt = self.connect('key-press-event', self._done_install)
 
-        self.show_all()
+        kill_apps()
 
-        # Kill all other apps
-        # since kano-updater is run as root, need to inform
-        # kanolauncher about user
-        user = get_user_unsudoed()
-        home = os.path.join('/home/', user)
-        variables = 'HOME={} USER={}'.format(home, user)
-        run_cmd('{} /usr/bin/kano-launcher /bin/true kano-kill-apps'.format(
-            variables))
+        self.show_all()
 
         self._start_install()
 
