@@ -65,6 +65,20 @@ class InstallWindow(Gtk.Window):
 
         self.show_all()
 
+    def _no_updates(self):
+        self.destroy()
+        no_updates = KanoDialog(
+            _('No updates available'),
+            _('Your system is already up to date'),
+            {
+                'OK': {
+                    'return_value': True,
+                    'color': 'green'
+                }
+            })
+        no_updates.run()
+        self.close_window()
+
     def close_window(self, widget=None, event=None):
         Gtk.main_quit()
 
@@ -72,10 +86,11 @@ class InstallWindow(Gtk.Window):
         self._install_screen.update_progress(percent, msg, sub_msg)
 
         # FIXME Progress to next with the done
-        if percent == 100 and sub_msg in [_('Update completed'),
-                                          _('No updates to download')]:
-
-            self._done_install()
+        if percent == 100:
+            if sub_msg == _('Update completed'):
+                self._done_install()
+            if sub_msg == _('No updates to download'):
+                self._no_updates()
 
     def error(self, msg):
         error = KanoDialog(
