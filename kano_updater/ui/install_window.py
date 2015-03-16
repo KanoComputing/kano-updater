@@ -50,12 +50,16 @@ class InstallWindow(Gtk.Window):
 
     def _start_install(self):
         progress = GtkProgress(self)
-        install_thread = Thread(target=install, args=(progress,))
-        # FIXME: What to do when the gui is killed and the thread is still running?
-        install_thread.daemon = True
-        install_thread.start()
 
-    def _done_install(self, *args):
+        self._install_thread = Thread(target=install, args=(progress,))
+        # FIXME: What to do when the gui is killed
+        #        and the thread is still running?
+        self._install_thread.daemon = True
+        self._install_thread.start()
+
+    def _done_install(self, *_):
+        self._install_thread.join()
+
         self.disconnect(self._evt)
         for child in self.get_children():
             self.remove(child)
