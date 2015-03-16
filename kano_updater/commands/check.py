@@ -7,6 +7,7 @@
 
 import time
 
+from kano.network import is_internet
 from kano.logging import logger
 
 from kano_updater.apt_wrapper import apt_handle
@@ -47,6 +48,12 @@ def check_for_updates(min_time_between_checks=0, progress=None):
             logger.info(msg)
             progress.abort(msg)
             return False
+
+    if not is_internet():
+        err_msg = _('Must have internet to check for updates')
+        logger.error(err_msg)
+        progress.fail(err_msg)
+        return False
 
     if _do_check(progress):
         status.state = UpdaterStatus.UPDATES_AVAILABLE
