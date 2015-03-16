@@ -6,6 +6,7 @@
 #
 
 import time
+import apt
 
 from kano.network import is_internet
 from kano.logging import logger
@@ -55,14 +56,15 @@ def check_for_updates(min_time_between_checks=0, progress=None):
         progress.fail(err_msg)
         return False
 
-    if _do_check(progress):
-        status.state = UpdaterStatus.UPDATES_AVAILABLE
-        logger.debug('Updates available')
-        rv = True
-    else:
-        status.state = UpdaterStatus.NO_UPDATES
-        logger.debug('No updates available')
-        rv = False
+    with apt.apt_pkg.SystemLock():
+        if _do_check(progress):
+            status.state = UpdaterStatus.UPDATES_AVAILABLE
+            logger.debug('Updates available')
+            rv = True
+        else:
+            status.state = UpdaterStatus.NO_UPDATES
+            logger.debug('No updates available')
+            rv = False
 
     status.last_check = int(time.time())
     status.save()
