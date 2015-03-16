@@ -6,7 +6,6 @@
 #
 
 import time
-import apt
 
 from kano.logging import logger
 
@@ -63,8 +62,7 @@ def install(progress=None):
         progress.start('install')
 
     try:
-        with apt.apt_pkg.SystemLock():
-            do_install(progress, status)
+        do_install(progress, status)
     except Exception as err:
         # Reset the state back to the previous one, so the updater
         # doesn't get stuck in 'installing' forever.

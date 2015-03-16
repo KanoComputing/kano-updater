@@ -5,8 +5,6 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
-import apt
-
 from kano.network import is_internet
 from kano.logging import logger
 
@@ -79,8 +77,7 @@ def download(progress=None):
     status.save()
 
     try:
-        with apt.apt_pkg.SystemLock():
-            success = do_download(progress, status)
+        success = do_download(progress, status)
     except Exception as err:
         progress.fail(err.message)
         logger.error(err.message)
