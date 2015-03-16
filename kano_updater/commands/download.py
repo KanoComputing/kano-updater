@@ -8,7 +8,7 @@
 from kano.network import is_internet
 from kano.logging import logger
 
-from kano_updater.paths import PIP_PACKAGES_LIST
+from kano_updater.paths import PIP_PACKAGES_LIST, PIP_LOG_FILE
 from kano_updater.status import UpdaterStatus
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.progress import DummyProgress, Phase
@@ -142,7 +142,7 @@ def _cache_pip_packages(progress):
     # for some odd reason
     import pip
     supress_output(pip.main, ['install', '--upgrade', '--no-install', '-r',
-                              PIP_PACKAGES_LIST])
+                              PIP_PACKAGES_LIST, '--log', PIP_LOG_FILE])
 
 
 def _cache_deb_packages(progress):

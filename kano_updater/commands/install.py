@@ -9,7 +9,8 @@ import time
 
 from kano.logging import logger
 
-from kano_updater.paths import PIP_PACKAGES_LIST, SYSTEM_VERSION_FILE
+from kano_updater.paths import PIP_PACKAGES_LIST, PIP_LOG_FILE, \
+    SYSTEM_VERSION_FILE
 from kano_updater.status import UpdaterStatus
 from kano_updater.os_version import OSVersion, bump_system_version, \
     TARGET_VERSION
@@ -212,4 +213,5 @@ def install_pip_packages(progress):
     # pip is imported locally because it takes very long do to,
     # for some odd reason.
     import pip
-    supress_output(pip.main, ['install', '--upgrade', '-r', PIP_PACKAGES_LIST])
+    supress_output(pip.main, ['install', '--upgrade', '-r', PIP_PACKAGES_LIST,
+                              '--log', PIP_LOG_FILE])
