@@ -150,14 +150,14 @@ def do_install(progress, status):
         progress.error(msg)
         raise InstallError(msg)
 
-    old_updater = apt_handle.get_package('kano-updater')
+    old_updater = apt_handle.get_package('kano-updater').installed.version
 
     progress.start('updating-itself')
     apt_handle.upgrade('kano-updater', progress)
 
     # relaunch if the updater has changed
     new_updater = apt_handle.get_package('kano-updater')
-    if old_updater.installed.version != new_updater.installed.version:
+    if old_updater != new_updater.installed.version:
         # Remove the installation in progress status so it doesn't
         # block the start of the new instance.
         status.state = UpdaterStatus.UPDATES_DOWNLOADED
