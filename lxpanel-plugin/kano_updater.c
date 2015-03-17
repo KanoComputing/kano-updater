@@ -258,10 +258,21 @@ static void show_notification(gchar *spec)
 {
 	gchar *notif_pipe = get_notifications_fifo_filename();
 
+	int fd;
+
+	fd = open(notif_pipe, O_WRONLY | O_NONBLOCK);
+	if (fd == -1) {
+		/* Couldn't open the notification pipe. */
+		g_free(notif_pipe);
+		return;
+	}
+
 	FILE *stream;
-	stream = fopen(notif_pipe, "w");
-	fprintf(stream, spec);
-	fclose(stream);
+	stream = fopen(fd, "w");
+	if (stream) {
+		fprintf(stream, spec);
+		fclose(stream);
+	}
 
 	g_free(notif_pipe);
 }
