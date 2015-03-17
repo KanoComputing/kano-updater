@@ -13,6 +13,7 @@ from kano.logging import logger
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.status import UpdaterStatus
 from kano_updater.progress import DummyProgress
+from kano_updater.utils import is_server_available
 
 KANO_SOURCES_LIST = '/etc/apt/sources.list.d/kano.list'
 
@@ -55,6 +56,12 @@ def check_for_updates(min_time_between_checks=0, progress=None):
 
     if not is_internet():
         err_msg = _('Must have internet to check for updates')
+        logger.error(err_msg)
+        progress.fail(err_msg)
+        return False
+
+    if not is_server_available():
+        err_msg = _('Could not connect to the download server')
         logger.error(err_msg)
         progress.fail(err_msg)
         return False
