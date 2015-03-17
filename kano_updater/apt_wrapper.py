@@ -73,6 +73,7 @@ class AptWrapper(object):
                                              self._cache.install_count)
         inst_progress = AptInstallProgress(progress)
         self._cache.commit(fetch_progress, inst_progress)
+        self._cache.open()
     """
 
     """
@@ -89,6 +90,7 @@ class AptWrapper(object):
         fetch_progress = AptDownloadProgress(progress)
         inst_progress = AptInstallProgress(progress)
         self._cache.commit(fetch_progress, inst_progress)
+        self._cache.open()
     """
 
     def upgrade(self, packages, progress=None):
@@ -118,6 +120,7 @@ class AptWrapper(object):
         progress.start(install)
         inst_progress = AptInstallProgress(progress)
         self._cache.commit(install_progress=inst_progress)
+        self._cache.open()
 
     def get_package(self, package_name):
         if package_name in self._cache:
@@ -140,6 +143,7 @@ class AptWrapper(object):
         progress.start(install)
         inst_progress = AptInstallProgress(progress)
         self._cache.commit(install_progress=inst_progress)
+        self._cache.open()
 
     def cache_updates(self, progress):
         self._mark_all_for_update()
@@ -190,5 +194,6 @@ class AptWrapper(object):
             progress.start('fix-broken')
             inst_progress = AptInstallProgress(progress)
             self._cache.commit(install_progress=inst_progress)
+            self._cache.open()
 
 apt_handle = AptWrapper()
