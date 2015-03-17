@@ -12,7 +12,7 @@ from kano_updater.paths import PIP_PACKAGES_LIST, PIP_LOG_FILE
 from kano_updater.status import UpdaterStatus
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.progress import DummyProgress, Phase
-from kano_updater.utils import supress_output, is_server_available
+from kano_updater.utils import run_pip_command, is_server_available
 from kano_updater.commands.check import check_for_updates
 
 
@@ -143,18 +143,9 @@ def _cache_pip_packages(progress):
     # The `--no-install` parameter has been deprecated in pip. However, the
     # version of pip in wheezy doesn't yet support the new approach which is
     # supposed to provide the same behaviour.
-    #
-    # pip is imported locally because it takes very long time to do,
-    # for some odd reason
-    import pip
-    try:
-        supress_output(pip.main, ['install', '--upgrade', '--no-install', '-r',
-                                  PIP_PACKAGES_LIST, '--log', PIP_LOG_FILE])
-    except ValueError:
-        # Most likely issue on old versions of Pip:
-        #     I/O operation on closed file
-        #     https://github.com/pypa/pip/issues/219
-        pass
+
+    run_pip_command('install --upgrade --no-install -r {} --log {}'.format(
+        PIP_PACKAGES_LIST, PIP_LOG_FILE))
 
 
 def _cache_deb_packages(progress):

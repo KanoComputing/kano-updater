@@ -27,6 +27,16 @@ STATUS_FILE = UPDATER_CACHE_DIR + "status"
 
 REPO_SERVER = 'repo.kano.me'
 
+def run_pip_command(pip_args):
+    # TODO Incorporate suppress_output when this is working
+
+    # pip is imported locally because it takes very long do to,
+    # for some odd reason.
+    import pip
+
+    pip.main(pip_args.split())
+
+
 def is_server_available():
     install_ping()
     import ping
@@ -42,7 +52,16 @@ def install_ping():
     except ImportError:
         import pip
         logger.info('ping not found on the system, installing')
-        supress_output(pip.main, ['install', 'ping'])
+        run_pip_command('install ping')
+
+
+def install_docopt():
+    try:
+        import docopt
+    except ImportError:
+        import pip
+        logger.info("docopt not found on the system, installing")
+        run_pip_command('install docopt')
 
 
 def kill_apps():
@@ -77,15 +96,6 @@ def make_low_prio():
     # Set the lowest scheduling priority
     run_cmd("schedtool -D {}".format(pid))
     os.nice(19)
-
-
-def install_docopt():
-    try:
-        import docopt
-    except ImportError:
-        import pip
-        logger.info("docopt not found on the system, installing")
-        supress_output(pip.main, ['install', 'docopt'])
 
 # --------------------------------------
 

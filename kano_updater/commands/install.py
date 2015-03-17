@@ -18,7 +18,7 @@ from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.auxiliary_tasks import run_aux_tasks
 from kano_updater.progress import DummyProgress, Phase
-from kano_updater.utils import supress_output
+from kano_updater.utils import run_pip_command
 from kano_updater.commands.download import download
 
 
@@ -210,15 +210,5 @@ def install_deb_packages(progress):
 
 
 def install_pip_packages(progress):
-    # pip is imported locally because it takes very long do to,
-    # for some odd reason.
-    import pip
-    try:
-        supress_output(pip.main, ['install', '--upgrade',
-                                  '-r', PIP_PACKAGES_LIST,
-                                  '--log', PIP_LOG_FILE])
-    except ValueError:
-        # Most likely issue on old versions of Pip:
-        #     I/O operation on closed file
-        #     https://github.com/pypa/pip/issues/219
-        pass
+    run_pip_command('install --upgrade -r {} --log {}'.format(
+        PIP_PACKAGES_LIST, PIP_LOG_FILE))
