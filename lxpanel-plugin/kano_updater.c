@@ -357,7 +357,7 @@ void install_clicked(GtkWidget *widget, gpointer data)
 void check_for_updates_clicked(GtkWidget *widget,
 			       kano_updater_plugin_t *plugin_data)
 {
-	launch_cmd(CHECK_FOR_UPDATES_CMD, NULL);
+	launch_cmd(CHECK_FOR_UPDATES_CMD,  "kano-updater");
 }
 
 static void menu_add_item(GtkWidget *menu, gchar *label, gpointer activate_cb,
