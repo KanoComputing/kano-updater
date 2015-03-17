@@ -61,8 +61,8 @@
 
 #define UPDATES_AVAILABLE_NOTIFICATION \
 	"{" \
-		"\"title\": \"New Update\"," \
-		"\"byline\": \"Click here to update your Kano\"," \
+		"\"title\": \"New Updates Available\"," \
+		"\"byline\": \"Click here to download the them.\"," \
 		"\"image\": \"/usr/share/kano-updater/images/notification-updates-available.png\"," \
 		"\"sound\": null," \
 		"\"type\": \"small\"," \
@@ -71,8 +71,8 @@
 
 #define UPDATES_DOWNLOADED_NOTIFICATION \
 	"{" \
-		"\"title\": \"New Update\"," \
-		"\"byline\": \"Click here to update your Kano\"," \
+		"\"title\": \"Download Complete\"," \
+		"\"byline\": \"Time to power up!\"," \
 		"\"image\": \"/usr/share/kano-updater/images/notification-updates-downloaded.png\"," \
 		"\"sound\": null," \
 		"\"type\": \"small\"," \
