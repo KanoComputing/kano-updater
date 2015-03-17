@@ -10,5 +10,5 @@
 
   "packages": [],
   "dependencies": ["kano-updater"],
-  "launch_command": "kano-updater install --gui"
+  "launch_command": "sudo kano-updater install --gui"
 }
