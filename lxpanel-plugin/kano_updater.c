@@ -22,6 +22,10 @@
 #include <time.h>
 #include <pwd.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include <kdesk-hourglass.h>
 
 #include "parson/parson.h"
@@ -268,7 +272,7 @@ static void show_notification(gchar *spec)
 	}
 
 	FILE *stream;
-	stream = fopen(fd, "w");
+	stream = fdopen(fd, "w");
 	if (stream) {
 		fprintf(stream, spec);
 		fclose(stream);
