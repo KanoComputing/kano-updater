@@ -7,7 +7,7 @@
 # Initialisation of the UI
 #
 
-from gi.repository import GLib, Gdk, Gtk
+from gi.repository import GObject, Gtk
 
 from kano.utils import run_cmd
 
@@ -30,15 +30,11 @@ def launch_install_gui(confirm=True):
     from kano_updater.ui.available_window import UpdatesDownloadedWindow
     from kano_updater.ui.install_window import InstallWindow
 
-    GLib.threads_init()
-    Gdk.threads_init()
-    Gdk.threads_enter()
+    GObject.threads_init()
 
     win = UpdatesDownloadedWindow() if confirm else InstallWindow()
     win.show()
     Gtk.main()
-
-    Gdk.threads_leave()
 
     if relaunch_required_flag:
         raise Relaunch()
