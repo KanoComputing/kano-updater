@@ -25,6 +25,24 @@ from kano.network import is_internet
 UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
 STATUS_FILE = UPDATER_CACHE_DIR + "status"
 
+REPO_SERVER = 'repo.kano.me'
+
+def is_server_available():
+    import ping
+
+    lost_packet_percent = ping.quiet_ping(REPO_SERVER, timeout=0.2, count=1)[0]
+
+    return not lost_packet_percent
+
+
+def install_ping():
+    try:
+        import ping
+    except ImportError:
+        import pip
+        logger.info('ping not found on the system, installing')
+        supress_output(pip.main, ['install', 'ping'])
+
 
 def kill_apps():
     # since kano-updater is run as root, need to inform
@@ -34,6 +52,7 @@ def kill_apps():
     variables = 'HOME={} USER={}'.format(home, user)
     run_cmd('{} /usr/bin/kano-launcher /bin/true kano-kill-apps'.format(
         variables))
+
 
 # TODO: Might be useful in kano.utils
 def supress_output(function, *args, **kwargs):

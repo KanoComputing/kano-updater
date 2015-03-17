@@ -12,7 +12,7 @@ from kano_updater.paths import PIP_PACKAGES_LIST, PIP_LOG_FILE
 from kano_updater.status import UpdaterStatus
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.progress import DummyProgress, Phase
-from kano_updater.utils import supress_output
+from kano_updater.utils import supress_output, is_server_available
 from kano_updater.commands.check import check_for_updates
 
 
@@ -69,6 +69,12 @@ def download(progress=None):
 
     if not is_internet():
         err_msg = _('Must have internet to download the updates')
+        logger.error(err_msg)
+        progress.fail(err_msg)
+        return False
+
+    if not is_server_available():
+        err_msg = _('Could not connect to the download server')
         logger.error(err_msg)
         progress.fail(err_msg)
         return False
