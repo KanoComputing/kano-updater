@@ -147,8 +147,14 @@ def _cache_pip_packages(progress):
     # pip is imported locally because it takes very long time to do,
     # for some odd reason
     import pip
-    supress_output(pip.main, ['install', '--upgrade', '--no-install', '-r',
-                              PIP_PACKAGES_LIST, '--log', PIP_LOG_FILE])
+    try:
+        supress_output(pip.main, ['install', '--upgrade', '--no-install', '-r',
+                                  PIP_PACKAGES_LIST, '--log', PIP_LOG_FILE])
+    except ValueError:
+        # Most likely issue on old versions of Pip:
+        #     I/O operation on closed file
+        #     https://github.com/pypa/pip/issues/219
+        pass
 
 
 def _cache_deb_packages(progress):
