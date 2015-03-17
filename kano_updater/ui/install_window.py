@@ -9,7 +9,7 @@
 
 import os
 import time
-from gi.repository import Gtk
+from gi.repository import Gtk, Gdk
 from threading import Thread
 
 from kano.gtk3.apply_styles import apply_styling_to_screen
@@ -45,6 +45,7 @@ class InstallWindow(Gtk.Window):
         kill_apps()
 
         self.show_all()
+        self._set_wait_cursor()
 
         self._start_install()
 
@@ -71,6 +72,8 @@ class InstallWindow(Gtk.Window):
 
     def _no_updates(self):
         self.destroy()
+        self._set_normal_cursor()
+
         no_updates = KanoDialog(
             _('No updates available'),
             _('Your system is already up to date'),
@@ -81,6 +84,7 @@ class InstallWindow(Gtk.Window):
                 }
             })
         no_updates.run()
+
         self.close_window()
 
     def close_window(self, widget=None, event=None):
@@ -110,3 +114,10 @@ class InstallWindow(Gtk.Window):
         # FIXME: This close doesn't work for some reason
         self.close_window()
 
+    def _set_wait_cursor(self):
+        cursor = Gdk.Cursor.new(Gdk.CursorType.WATCH)
+        self.get_root_window().set_cursor(cursor)
+
+    def _set_normal_cursor(self):
+        cursor = Gdk.Cursor.new(Gdk.CursorType.ARROW)
+        self.get_root_window().set_cursor(cursor)
