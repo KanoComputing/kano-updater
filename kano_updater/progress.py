@@ -98,7 +98,7 @@ class Progress(object):
             phase.get_main_phase().label,
             phase.get_main_phase().name
         )
-        logging.debug(log)
+        logger.debug(log)
         
         # Calculate current progres and emitt an event
         self._change(phase, phase.label)
@@ -154,7 +154,7 @@ class Progress(object):
             phase.get_main_phase().name,
             msg
         )
-        logging.debug(log)
+        logger.debug(log)
         self._change(phase, msg)
 
     def next_step(self, phase_name, msg):
