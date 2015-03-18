@@ -143,7 +143,7 @@ def _cache_pip_packages(progress):
     progress.init_steps(phase_name, len(packages))
 
     for pkg in packages:
-        progress.set_step(phase_name, "Downloading {}".format(pkg))
+        progress.next_step(phase_name, "Downloading {}".format(pkg))
 
         # The `--no-install` parameter has been deprecated in pip. However, the
         # version of pip in wheezy doesn't yet support the new approach which

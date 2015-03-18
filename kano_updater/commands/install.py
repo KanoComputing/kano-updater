@@ -216,7 +216,7 @@ def install_pip_packages(progress):
     progress.init_steps(phase_name, len(packages))
 
     for pkg in packages:
-        progress.set_step(phase_name, "Installing {}".format(pkg))
+        progress.next_step(phase_name, "Installing {}".format(pkg))
 
         success = run_pip_command("install --upgrade {}".format(pkg))
 
