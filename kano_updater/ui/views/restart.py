@@ -7,29 +7,15 @@
 # Restart computer widget
 #
 
-from gi.repository import Gtk, GdkPixbuf
+from gi.repository import Gtk
 import os
 from threading import Timer
 
-from kano_updater.ui.paths import IMAGE_PATH
+from kano_updater.ui.views.countdown import Countdown
 
-
-class Restart(Gtk.Alignment):
-    REBOOT_ANIMATION = os.path.join(IMAGE_PATH, 'circular_progress.gif')
-
+class Restart(Countdown):
     def __init__(self):
-        Gtk.Alignment.__init__(self, xalign=0.5, yalign=0.5, xscale=0, yscale=0)
-
-        grid = Gtk.Grid()
-        grid.set_row_spacing(5)
-        self.add(grid)
-
-        style = self.get_style_context().add_class('restart')
-
-        reboot_animation = GdkPixbuf.PixbufAnimation.new_from_file(
-            self.REBOOT_ANIMATION)
-        reboot_progress = Gtk.Image()
-        reboot_progress.set_from_animation(reboot_animation)
+        Countdown.__init__(self)
 
         complete = Gtk.Label(_('Update complete!'))
         complete.get_style_context().add_class('complete')
@@ -42,10 +28,9 @@ class Restart(Gtk.Alignment):
         instructions = Gtk.Label(_('Press ENTER to restart now'))
         instructions.get_style_context().add_class('restart-now')
 
-        grid.attach(reboot_progress, 0, 0, 1, 1)
-        grid.attach(complete, 0, 1, 1, 1)
-        grid.attach(info, 0, 2, 1, 1)
-        grid.attach(instructions, 0, 3, 1, 1)
+        self._main_grid.attach(complete, 0, 1, 1, 1)
+        self._main_grid.attach(info, 0, 2, 1, 1)
+        self._main_grid.attach(instructions, 0, 3, 1, 1)
 
         self.connect('show', self._on_show)
 

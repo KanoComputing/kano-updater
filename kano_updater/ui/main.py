@@ -60,3 +60,13 @@ def launch_boot_check_gui(check_for_updates=False):
         text = "The update completed successfully. Enjoy the new version!"
         run_cmd("kano-dialog title=\"{}\" description=\"{}\"".format(title,
                                                                      text))
+
+
+def launch_relaunch_countdown_gui():
+    from kano_updater.ui.relaunch_window import RelaunchWindow
+
+    GObject.threads_init()
+
+    win = RelaunchWindow()
+    win.show()
+    Gtk.main()
