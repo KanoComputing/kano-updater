@@ -59,7 +59,6 @@ class InstallWindow(Gtk.Window):
     def _done_install(self, *_):
         self._install_thread.join()
 
-        self.disconnect(self._evt)
         for child in self.get_children():
             self.remove(child)
 
