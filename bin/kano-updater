@@ -12,7 +12,7 @@ kano-updater will help you keep your Kano OS up-to-date.
 Usage:
   kano-updater check [--gui] [--interval <time>]
   kano-updater download [--low-prio]
-  kano-updater install [--gui [--no-confirm]]
+  kano-updater install [--gui [--no-confirm] [--splash-pid <pid>]]
   kano-updater set-state <state>
   kano-updater boot-check [--check-for-updates]
   kano-updater relaunch-countdown
@@ -52,23 +52,26 @@ from kano_updater.commands.install import install
 from kano_updater.commands.check import check_for_updates
 from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
-from kano_updater.utils import make_low_prio, install_docopt
+from kano_updater.utils import make_low_prio, install_docopt, \
+    show_relaunch_countdown
 
 
 def is_already_running():
     # TODO
     return False
 
-def run_install(gui=False, confirm=True):
+def run_install(gui=False, confirm=True, splash_pid=None):
     if gui:
         from kano_updater.ui.main import launch_install_gui
 
         try:
-            launch_install_gui(confirm=confirm)
+            launch_install_gui(confirm=confirm, splash_pid=splash_pid)
         except Relaunch:
             logger.flush()
+            pid = show_relaunch_countdown()
             os.execvp('kano-updater',
-                      ['kano-updater', 'install', '--gui', '--no-confirm'])
+                      ['kano-updater', 'install', '--gui', '--no-confirm',
+                       '--splash-pid', str(pid)])
     else:
         try:
             progress = CLIProgress()
@@ -115,7 +118,12 @@ def main():
                 make_low_prio()
             download(progress)
         elif args['install']:
-            run_install(gui=args['--gui'], confirm=not args['--no-confirm'])
+            splash_pid = None
+            if args['--splash-pid']:
+                splash_pid = int(args['<pid>'])
+
+            run_install(gui=args['--gui'], confirm=not args['--no-confirm'],
+                        splash_pid=splash_pid)
         elif args['check']:
             time = args['<time>'] if args['--interval'] else 0
 

@@ -7,6 +7,9 @@
 # Initialisation of the UI
 #
 
+import os
+import signal
+
 from gi.repository import GObject, Gtk
 
 from kano.utils import run_cmd
@@ -26,7 +29,7 @@ def relaunch_required():
     relaunch_required_flag = True
 
 
-def launch_install_gui(confirm=True):
+def launch_install_gui(confirm=True, splash_pid=None):
     from kano_updater.ui.available_window import UpdatesDownloadedWindow
     from kano_updater.ui.install_window import InstallWindow
 
@@ -34,6 +37,10 @@ def launch_install_gui(confirm=True):
 
     win = UpdatesDownloadedWindow() if confirm else InstallWindow()
     win.show()
+
+    if splash_pid:
+        os.kill(splash_pid, signal.SIGTERM)
+
     Gtk.main()
 
     if relaunch_required_flag:

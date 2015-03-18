@@ -109,6 +109,11 @@ def migrate_repository(apt_file, old_repo, new_repo):
     apt_handle.update(DummyProgress())
 
 
+def show_relaunch_countdown():
+    p = subprocess.Popen("kano-updater relaunch-countdown", shell=True)
+    return p.pid
+
+
 # --------------------------------------
 
 
