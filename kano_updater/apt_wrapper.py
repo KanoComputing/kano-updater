@@ -176,24 +176,13 @@ class AptWrapper(object):
             logger.info('Cleaning dpkg journal')
             run_cmd_log("dpkg --configure -a")
 
+        progress.start('fix-broken')
+
         # Naughty but don't want to re-initialise
         try:
             self._cache._depcache.fix_broken()
         except SystemError as e:
             logger.error(e)
 
-        for pkg in self._cache:
-            # Naughty (again) but want to keep the higher level structure
-            if pkg._pkg.inst_state in [apt_pkg.INSTSTATE_HOLD,
-                                       apt_pkg.INSTSTATE_HOLD_REINSTREQ]:
-                pkg.mark_install()
-                logger.warn("{} ({}) is in REQREINST state".format(
-                    pkg.shortname, pkg.versions))
-
-        if self._cache.install_count:
-            progress.start('fix-broken')
-            inst_progress = AptInstallProgress(progress)
-            self._cache.commit(install_progress=inst_progress)
-            self._cache.open()
 
 apt_handle = AptWrapper()
