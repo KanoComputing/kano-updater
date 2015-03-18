@@ -20,26 +20,22 @@ GtkProgressBar.progressbar {
                                     color-stop(1, #f56721));
 }
 
-.heading {
-    font: Bariol Bold 20px;
+GtkLabel {
+    font-family: Bariol;
+    font-weight: normal;
+    color: #e4e4e4;
+}
+
+.phase {
+    font: Bariol Bold 26px;
     color: white;
 }
 
-.heading.subheading {
+.psa {
+    font-size: 16px;
+}
+
+.subphase,
+.percent {
     font-size: 14px;
-    font-weight: normal;
-    color: #545454
-}
-
-.heading.subheading.small-print {
-    font-size: 10px;
-}
-
-.install .heading.subheading.psa {
-    padding-top: 50px;
-    padding-bottom: 50px;
-}
-
-.restart .heading.subheading.small-print {
-    padding-top: 20px;
 }
