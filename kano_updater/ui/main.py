@@ -42,7 +42,7 @@ def launch_install_gui(confirm=True, splash_pid=None):
     if splash_pid:
         msg = "Terminating the splash screen (pid={})".format(splash_pid)
         logger.debug(msg)
-        os.kill(splash_pid, signal.SIGTERM)
+        os.kill(splash_pid, signal.SIGKILL)
 
     Gtk.main()
 
