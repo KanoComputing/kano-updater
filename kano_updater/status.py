@@ -9,6 +9,7 @@ import os
 import json
 
 from kano.utils import ensure_dir
+from kano.logging import logger
 
 from kano_updater.paths import STATUS_FILE_PATH
 
@@ -63,7 +64,13 @@ class UpdaterStatus(object):
 
     def load(self):
         with open(self._status_file, 'r') as status_file:
-            data = json.load(status_file)
+            try:
+                data = json.load(status_file)
+            except:
+                # Initialise the file again if it is corrupted
+                logger.warn("The status file was corrupted.")
+                self.save()
+                return
 
             self._state = data['state']
             self._last_update = data['last_update']
