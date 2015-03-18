@@ -22,6 +22,8 @@ from kano.utils import run_print_output_error, run_cmd, run_cmd_log, \
 from kano.network import is_internet
 # WARNING do not import GUI modules here (like KanoDialog)
 
+from kano_updater.paths import PIP_LOG_FILE
+
 UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
 STATUS_FILE = UPDATER_CACHE_DIR + "status"
 
@@ -30,11 +32,8 @@ REPO_SERVER = 'repo.kano.me'
 def run_pip_command(pip_args):
     # TODO Incorporate suppress_output when this is working
 
-    # pip is imported locally because it takes very long do to,
-    # for some odd reason.
-    import pip
-
-    pip.main(pip_args.split())
+    _, _, rv = run_cmd_log("pip {} --log {}".format(pip_args, PIP_LOG_FILE))
+    return rv == 0
 
 
 def is_server_available():
@@ -50,7 +49,6 @@ def install_ping():
     try:
         import ping
     except ImportError:
-        import pip
         logger.info('ping not found on the system, installing')
         run_pip_command('install ping')
 
@@ -59,7 +57,6 @@ def install_docopt():
     try:
         import docopt
     except ImportError:
-        import pip
         logger.info("docopt not found on the system, installing")
         run_pip_command('install docopt')
 

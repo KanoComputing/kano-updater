@@ -7,8 +7,9 @@
 
 from kano.network import is_internet
 from kano.logging import logger
+from kano.utils import read_file_contents_as_lines
 
-from kano_updater.paths import PIP_PACKAGES_LIST, PIP_LOG_FILE
+from kano_updater.paths import PIP_PACKAGES_LIST
 from kano_updater.status import UpdaterStatus
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.progress import DummyProgress, Phase
@@ -135,17 +136,25 @@ def _cache_pip_packages(progress):
         internal pacakge cache.
     """
 
-    progress.start('downloading-pip-pkgs')
+    phase_name = 'downloading-pip-pkgs'
+    progress.start(phase_name)
 
-    # TODO: This could be done in a thread in a way that we could read and
-    #       parse the progress in real-time.
+    packages = read_file_contents_as_lines(PIP_PACKAGES_LIST)
+    progress.init_steps(phase_name, len(packages))
 
-    # The `--no-install` parameter has been deprecated in pip. However, the
-    # version of pip in wheezy doesn't yet support the new approach which is
-    # supposed to provide the same behaviour.
+    for pkg in packages:
+        progress.set_step(phase_name, "Downloading {}".format(pkg))
 
-    run_pip_command('install --upgrade --no-install -r {} --log {}'.format(
-        PIP_PACKAGES_LIST, PIP_LOG_FILE))
+        # The `--no-install` parameter has been deprecated in pip. However, the
+        # version of pip in wheezy doesn't yet support the new approach which
+        # is supposed to provide the same behaviour.
+        args = "install --upgrade --no-install {}".format(pkg)
+        success = run_pip_command(args)
+
+        # TODO: abort the install?
+        if not success:
+            msg = "Downloading the '{}' pip package failed.".format(pkg)
+            logger.error(msg)
 
 
 def _cache_deb_packages(progress):

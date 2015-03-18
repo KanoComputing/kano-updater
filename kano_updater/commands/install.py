@@ -8,9 +8,9 @@
 import time
 
 from kano.logging import logger
+from kano.utils import read_file_contents_as_lines
 
-from kano_updater.paths import PIP_PACKAGES_LIST, PIP_LOG_FILE, \
-    SYSTEM_VERSION_FILE
+from kano_updater.paths import PIP_PACKAGES_LIST, SYSTEM_VERSION_FILE
 from kano_updater.status import UpdaterStatus
 from kano_updater.os_version import OSVersion, bump_system_version, \
     TARGET_VERSION
@@ -210,5 +210,17 @@ def install_deb_packages(progress):
 
 
 def install_pip_packages(progress):
-    run_pip_command('install --upgrade -r {} --log {}'.format(
-        PIP_PACKAGES_LIST, PIP_LOG_FILE))
+    phase_name = progress.get_current_phase().name
+
+    packages = read_file_contents_as_lines(PIP_PACKAGES_LIST)
+    progress.init_steps(phase_name, len(packages))
+
+    for pkg in packages:
+        progress.set_step(phase_name, "Installing {}".format(pkg))
+
+        success = run_pip_command("install --upgrade {}".format(pkg))
+
+        # TODO: abort the install?
+        if not success:
+            msg = "Installing the '{}' pip package failed".format(pkg)
+            logger.error(msg)
