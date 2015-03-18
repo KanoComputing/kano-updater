@@ -40,8 +40,6 @@ class InstallWindow(Gtk.Window):
         self._install_screen = Install()
         self.add(self._install_screen)
 
-        self._evt = self.connect('key-press-event', self._done_install)
-
         kill_apps()
 
         self.show_all()

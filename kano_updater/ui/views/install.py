@@ -10,54 +10,87 @@
 from gi.repository import Gtk
 from kano_updater.ui.stage_text import STAGE_TEXT
 
-class Install(Gtk.Alignment):
+class Install(Gtk.Overlay):
 
     def __init__(self):
-        Gtk.Alignment.__init__(self, xalign=0.5, yalign=1.0, xscale=0, yscale=0)
-
-        grid = Gtk.Grid()
-        grid.set_row_spacing(5)
-        self.add(grid)
+        Gtk.Overlay.__init__(self, hexpand=True, vexpand=True)
 
         style = self.get_style_context().add_class('install')
 
-        self._progress_phase = Gtk.Label()
-        self._progress_phase.get_style_context().add_class('heading')
+        progress = self._create_progress_grid()
+        self._psa = self._create_psa()
 
-        self._progress_subphase = Gtk.Label()
-        style = self._progress_subphase.get_style_context()
-        style.add_class('heading')
-        style.add_class('subheading')
+        self.add(progress)
+        self.add_overlay(self._psa)
 
+    def _create_progress_bar(self):
         self._progress_bar = Gtk.ProgressBar(hexpand=False)
         self._progress_bar.set_size_request(375, -1)
         self._progress_bar.set_show_text(False)
-        bar_align = Gtk.Alignment(xalign=0.5, yalign=0.5, xscale=0, yscale=0)
-        bar_align.add(self._progress_bar)
 
+        self._progress_bar.set_halign(Gtk.Align.CENTER)
+        self._progress_bar.set_valign(Gtk.Align.CENTER)
+
+        self._progress_bar.set_margin_top(8)
+        self._progress_bar.set_margin_bottom(8)
+
+        return self._progress_bar
+
+    def _create_phase_label(self):
+        self._progress_phase = Gtk.Label()
+        self._progress_phase.get_style_context().add_class('phase')
+
+        return self._progress_phase
+
+    def _create_subphase_label(self):
+        self._progress_subphase = Gtk.Label()
+        style = self._progress_subphase.get_style_context()
+        style.add_class('subphase')
+
+        return self._progress_subphase
+
+    def _create_phase_percent(self):
         self._percent_display = Gtk.Label()
         style = self._percent_display.get_style_context()
-        style.add_class('heading')
-        style.add_class('subheading')
-        style.add_class('small-print')
+        style.add_class('percent')
 
-        self._psa = Gtk.Label()
-        self._psa.set_size_request(525, 300)
-        self._psa.set_max_width_chars(50)
-        self._psa.set_line_wrap(True)
-        self._psa.set_justify(Gtk.Justification.CENTER)
-        style = self._psa.get_style_context()
-        style.add_class('heading')
-        style.add_class('subheading')
+        return self._percent_display
+
+    def _create_progress_grid(self):
+        progress_grid = Gtk.Grid()
+        progress_grid.set_row_spacing(5)
+
+        progress_grid.attach(self._create_phase_label(), 0, 0, 1, 1)
+        progress_grid.attach(self._create_subphase_label(), 0, 1, 1, 1)
+        progress_grid.attach(self._create_progress_bar(), 0, 2, 1, 1)
+        progress_grid.attach(self._create_phase_percent(), 0, 3, 1, 1)
+
+        progress_grid.set_halign(Gtk.Align.CENTER)
+        progress_grid.set_valign(Gtk.Align.END)
+
+        progress_grid.get_style_context().add_class('progress')
+        progress_grid.set_margin_bottom(80)
+
+
+        box = Gtk.EventBox(hexpand=True, vexpand=True)
+        box.add(progress_grid)
+
+        return box
+
+    def _create_psa(self):
+        psa = Gtk.Label()
+        psa.set_size_request(825, 300)
+        psa.set_max_width_chars(50)
+        psa.set_line_wrap(True)
+        psa.set_justify(Gtk.Justification.FILL)
+        psa.set_halign(Gtk.Align.CENTER)
+        psa.set_valign(Gtk.Align.CENTER)
+
+        style = psa.get_style_context()
         style.add_class('psa')
-        psa_align = Gtk.Alignment(xalign=0.5, yalign=0.5, xscale=0, yscale=0)
-        psa_align.add(self._psa)
 
-        grid.attach(self._progress_phase, 0, 0, 1, 1)
-        grid.attach(self._progress_subphase, 0, 1, 1, 1)
-        grid.attach(bar_align, 0, 2, 1, 1)
-        grid.attach(self._percent_display, 0, 3, 1, 1)
-        grid.attach(psa_align, 0, 4, 1, 1)
+        return psa
+
 
     def update_progress(self, percent, msg, sub_msg=''):
         self._progress_bar.set_fraction(percent / 100.)
