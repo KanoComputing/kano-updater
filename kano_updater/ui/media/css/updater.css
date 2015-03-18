@@ -26,16 +26,23 @@ GtkLabel {
     color: #e4e4e4;
 }
 
-.phase {
+.phase,
+.complete {
     font: Bariol Bold 26px;
     color: white;
 }
 
-.psa {
+.psa,
+.countdown,
+.restart-now {
     font-size: 16px;
 }
 
 .subphase,
 .percent {
     font-size: 14px;
+}
+
+.restart-now {
+    padding-top: 20px;
 }

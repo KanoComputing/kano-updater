@@ -32,20 +32,15 @@ class Restart(Gtk.Alignment):
         reboot_progress.set_from_animation(reboot_animation)
 
         complete = Gtk.Label(_('Update complete!'))
-        complete.get_style_context().add_class('heading')
+        complete.get_style_context().add_class('complete')
 
         info = Gtk.Label(_('Your KANO is up to date and \n'
                            'will automatically restart in 10 seconds'))
         info.set_justify(Gtk.Justification.CENTER)
-        style = info.get_style_context()
-        style.add_class('heading')
-        style.add_class('subheading')
+        info.get_style_context().add_class('countdown')
 
         instructions = Gtk.Label(_('Press ENTER to restart now'))
-        style = instructions.get_style_context()
-        style.add_class('heading')
-        style.add_class('subheading')
-        style.add_class('small-print')
+        instructions.get_style_context().add_class('restart-now')
 
         grid.attach(reboot_progress, 0, 0, 1, 1)
         grid.attach(complete, 0, 1, 1, 1)
