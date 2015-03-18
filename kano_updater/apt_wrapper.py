@@ -74,6 +74,7 @@ class AptWrapper(object):
         inst_progress = AptInstallProgress(progress)
         self._cache.commit(fetch_progress, inst_progress)
         self._cache.open()
+        self._cache.clear()
     """
 
     """
@@ -91,6 +92,7 @@ class AptWrapper(object):
         inst_progress = AptInstallProgress(progress)
         self._cache.commit(fetch_progress, inst_progress)
         self._cache.open()
+        self._cache.clear()
     """
 
     def upgrade(self, packages, progress=None):
@@ -121,6 +123,7 @@ class AptWrapper(object):
         inst_progress = AptInstallProgress(progress)
         self._cache.commit(install_progress=inst_progress)
         self._cache.open()
+        self._cache.clear()
 
     def get_package(self, package_name):
         if package_name in self._cache:
@@ -144,6 +147,7 @@ class AptWrapper(object):
         inst_progress = AptInstallProgress(progress)
         self._cache.commit(install_progress=inst_progress)
         self._cache.open()
+        self._cache.clear()
 
     def cache_updates(self, progress):
         self._mark_all_for_update()
