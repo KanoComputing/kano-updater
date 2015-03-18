@@ -13,6 +13,7 @@ import signal
 from gi.repository import GObject, Gtk
 
 from kano.utils import run_cmd
+from kano.logging import logger
 
 from kano_updater.commands.check import check_for_updates
 from kano_updater.commands.boot_check import boot_check
@@ -39,6 +40,8 @@ def launch_install_gui(confirm=True, splash_pid=None):
     win.show()
 
     if splash_pid:
+        msg = "Terminating the splash screen (pid={})".format(splash_pid)
+        logger.debug(msg)
         os.kill(splash_pid, signal.SIGTERM)
 
     Gtk.main()
