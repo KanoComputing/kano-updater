@@ -36,8 +36,12 @@ class AptDownloadProgress(apt.progress.base.AcquireProgress):
 
     def done(self, item_desc):
         super(AptDownloadProgress, self).done(item_desc)
-        msg = "Downloading {} {}".format(item_desc.shortdesc,
-                                         item_desc.description)
+        msg = "Downloading {}".format(item_desc.shortdesc)
+
+        # Show the long description too if it's not too long
+        if len(item_desc.description) < 40:
+            msg = "{} {}".format(msg, item_desc.description)
+
         self._updater_progress.next_step(self._phase_name, msg)
 
     def fail(self, item_desc):
