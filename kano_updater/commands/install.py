@@ -17,7 +17,7 @@ from kano_updater.os_version import OSVersion, bump_system_version, \
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.auxiliary_tasks import run_aux_tasks
-from kano_updater.progress import DummyProgress, Phase
+from kano_updater.progress import DummyProgress, Phase, Relaunch
 from kano_updater.utils import run_pip_command
 from kano_updater.commands.download import download
 
@@ -63,7 +63,9 @@ def install(progress=None):
         progress.start('install')
 
     try:
-        do_install(progress, status)
+        return do_install(progress, status)
+    except Relaunch as err:
+        raise
     except Exception as err:
         # Reset the state back to the previous one, so the updater
         # doesn't get stuck in 'installing' forever.
@@ -165,6 +167,7 @@ def do_install(progress, status):
 
         logger.info(_('The updater has been updated, relaunching.'))
         progress.relaunch()
+        return False
 
     progress.start('preupdate')
     try:
@@ -203,6 +206,7 @@ def do_install(progress, status):
     status.save()
 
     progress.finish('Update completed')
+    return True
 
 
 def install_deb_packages(progress):
