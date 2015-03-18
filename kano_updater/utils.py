@@ -23,6 +23,9 @@ from kano.network import is_internet
 # WARNING do not import GUI modules here (like KanoDialog)
 
 from kano_updater.paths import PIP_LOG_FILE
+from kano_updater.apt_wrapper import apt_handle
+from kano_updater.progress import DummyProgress
+
 
 UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
 STATUS_FILE = UPDATER_CACHE_DIR + "status"
@@ -93,6 +96,18 @@ def make_low_prio():
     # Set the lowest scheduling priority
     run_cmd("schedtool -D {}".format(pid))
     os.nice(19)
+
+
+def migrate_repository(apt_file, old_repo, new_repo):
+    try:
+        sed(old_repo, new_repo, apt_file, use_regexp=False)
+    except IOError as exc:
+        logger.warn('Changing repository URL failed ({})'.format(exc))
+        return
+
+    # TODO: track progress of this
+    apt_handle.update(DummyProgress())
+
 
 # --------------------------------------
 
@@ -422,14 +437,3 @@ def add_text_to_end(text_buffer, text, tag=None):
         text_buffer.insert(end, text)
     else:
         text_buffer.insert_with_tags(end, text, tag)
-
-
-def migrate_repository(apt_file, old_repo, new_repo):
-    try:
-        sed(old_repo, new_repo, apt_file, use_regexp=False)
-    except IOError as exc:
-        logger.warn('Changing repository URL failed ({})'.format(exc))
-        return
-
-    run_cmd_log('apt-get -y clean')
-    run_cmd_log('apt-get -y update')
