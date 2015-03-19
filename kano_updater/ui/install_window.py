@@ -49,7 +49,7 @@ class InstallWindow(Gtk.Window):
     def _start_install(self):
         progress = GtkProgress(self)
 
-        GLib.timeout_add_seconds(60, self._is_install_running)
+        self._timer_tag = GLib.timeout_add_seconds(60, self._is_install_running)
 
         self._install_thread = Thread(target=install, args=(progress,))
         # FIXME: What to do when the gui is killed
@@ -81,6 +81,7 @@ class InstallWindow(Gtk.Window):
 
     def _done_install(self, *_):
         self._install_thread.join()
+        GLib.source_remove(self._timer_tag)
 
         for child in self.get_children():
             self.remove(child)
