@@ -94,8 +94,8 @@ class UpdatesAvailableWindow(NotificationWindow):
     _IMAGE_HEIGHT = 270
 
     _TITLE = _('New Update')
-    _HEADING = _('Get new KANO powers')
-    _BYLINE = _('Download the new KANO OS to unlock more powers!')
+    _HEADING = _('Get new Kano powers')
+    _BYLINE = _('Download the new Kano OS to unlock more powers!')
     _ACTION = _('Download')
 
     def _action(self):
@@ -118,7 +118,7 @@ class UpdatesDownloadedWindow(NotificationWindow):
     _TITLE = _('New Update')
     _HEADING = _('Almost there...')
     _BYLINE = _('Downloaded and ready to go! In a matter\n'
-                'of minutes your KANO will be fresher than ever')
+                'of minutes your Kano will be fresher than ever')
     _ACTION = _('Install')
 
     def _action(self):

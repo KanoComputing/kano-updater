@@ -20,7 +20,7 @@ class Restart(Countdown):
         complete = Gtk.Label(_('Update complete!'))
         complete.get_style_context().add_class('complete')
 
-        info = Gtk.Label(_('Your KANO is up to date and \n'
+        info = Gtk.Label(_('Your Kano is up to date and \n'
                            'will automatically restart in 10 seconds'))
         info.set_justify(Gtk.Justification.CENTER)
         info.get_style_context().add_class('countdown')
