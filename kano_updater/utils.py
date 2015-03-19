@@ -47,6 +47,11 @@ def is_running():
     return False
 
 
+def remove_pid_file():
+    if os.path.exists(PID_FILE):
+        os.remove(PID_FILE)
+
+
 def run_pip_command(pip_args):
     # TODO Incorporate suppress_output when this is working
 

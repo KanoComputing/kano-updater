@@ -31,6 +31,7 @@ Options:
 import os
 import sys
 import gettext
+import atexit
 
 if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -52,8 +53,12 @@ from kano_updater.commands.install import install
 from kano_updater.commands.check import check_for_updates
 from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
-from kano_updater.utils import make_low_prio, install_docopt, is_running
+from kano_updater.utils import make_low_prio, install_docopt, is_running, \
+    remove_pid_file
 
+
+def clean_up():
+    remove_pid_file()
 
 def run_install(gui=False, confirm=True, splash_pid=None):
     if gui:
@@ -78,6 +83,8 @@ def run_install(gui=False, confirm=True, splash_pid=None):
 def main():
     msg = _('Administrator priviledges are required to perform this operation')
     enforce_root("{}: {}".format(_('ERROR'), msg))
+
+    atexit.register(clean_up)
 
     # docopt wasn't installed by default prior Kano OS 1.3.3
     # It needs to be installed to make sure the updater runs
