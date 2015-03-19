@@ -42,7 +42,7 @@ def is_running():
             return True
 
     with open(PID_FILE, 'w') as pid_file:
-        pid_file.write(os.getpid())
+        pid_file.write(str(os.getpid()))
 
     return False
 
