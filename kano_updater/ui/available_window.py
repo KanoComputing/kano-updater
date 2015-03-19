@@ -94,7 +94,7 @@ class UpdatesAvailableWindow(NotificationWindow):
     _IMAGE_HEIGHT = 270
 
     _TITLE = _('New Update')
-    _HEADING = _('Get New Powers')
+    _HEADING = _('Get new powers')
     _BYLINE = _('Download the latest Kano OS')
     _ACTION = _('Download')
 
