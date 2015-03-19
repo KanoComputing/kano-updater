@@ -53,12 +53,8 @@ from kano_updater.commands.check import check_for_updates
 from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
 from kano_updater.utils import make_low_prio, install_docopt, \
-    show_relaunch_countdown
+    show_relaunch_countdown, is_running
 
-
-def is_already_running():
-    # TODO
-    return False
 
 def run_install(gui=False, confirm=True, splash_pid=None):
     if gui:
@@ -94,9 +90,9 @@ def main():
     # We always want to keep the logs from updates
     logger.force_log_level('debug')
 
-    if is_already_running():
-        # TODO Report from status file
+    if not args['relaunch-countdown'] and is_running():
         msg = _('An instance of Kano Updater is already running')
+        logger.error(msg)
         sys.stderr.write("{}: {}\n".format(_('ERROR'), msg))
         sys.exit(1)
 

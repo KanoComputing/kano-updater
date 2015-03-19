@@ -31,6 +31,21 @@ UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
 STATUS_FILE = UPDATER_CACHE_DIR + "status"
 
 REPO_SERVER = 'repo.kano.me'
+PID_FILE = '/var/run/kano-updater.pid'
+
+def is_running():
+    if os.path.exists(PID_FILE):
+        with open(PID_FILE, 'r') as pid_file:
+            old_pid = pid_file.read()
+
+        if os.path.exists(os.path.join('/proc', old_pid)):
+            return True
+
+    with open(PID_FILE, 'w') as pid_file:
+        pid_file.write(os.getpid())
+
+    return False
+
 
 def run_pip_command(pip_args):
     # TODO Incorporate suppress_output when this is working
