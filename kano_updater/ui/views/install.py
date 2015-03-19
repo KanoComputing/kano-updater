@@ -93,10 +93,14 @@ class Install(Gtk.Overlay):
 
 
     def update_progress(self, percent, msg, sub_msg=''):
-        self._progress_bar.set_fraction(percent / 100.)
+        percent_fraction = percent / 100.
+        self._progress_bar.set_fraction(percent_fraction)
+
+        idx = percent_fraction * (len(STAGE_TEXT) - 1)
+        current_text = STAGE_TEXT[int(idx)]
+        self._psa.set_markup(current_text)
 
         if self._progress_phase.get_text() != msg:
-            self._psa.set_markup(STAGE_TEXT.get_next())
             self._progress_phase.set_text(msg)
 
         self._progress_subphase.set_text(sub_msg)
