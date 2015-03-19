@@ -7,6 +7,7 @@
 #
 
 TMP_FILE=/tmp/kano-updater_conf
+OLD_UPDATER_STATUS=/var/cache/kano-updater/status
 
 case "$1" in
     configure)
@@ -23,6 +24,12 @@ case "$1" in
 
         # Move the file to the sudoers directory
         mv $TMP_FILE /etc/sudoers.d/
+        
+        # Remove the old status file - if present
+        if [ -f "$OLD_UPDATER_STATUS" ]; then
+            rm $OLD_UPDATER_STATUS
+        fi
+
         ;;
 esac
 
