@@ -6,7 +6,7 @@
 #
 
 
-from kano_updater.utils import update_home_folders_from_skel
+from kano_updater.utils.system import update_home_folders_from_skel
 from kano.utils import run_cmd_log
 
 from kano_updater.progress import Phase

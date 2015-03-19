@@ -19,7 +19,7 @@ from kano_updater.commands.check import check_for_updates
 from kano_updater.commands.clean import clean
 from kano_updater.progress import Relaunch
 from kano_updater.status import UpdaterStatus
-from kano_updater.utils import show_relaunch_splash
+from kano_updater.utils.misc import show_relaunch_splash
 
 
 relaunch_required_flag = False

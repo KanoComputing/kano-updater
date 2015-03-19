@@ -18,7 +18,7 @@ from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.auxiliary_tasks import run_aux_tasks
 from kano_updater.progress import DummyProgress, Phase, Relaunch
-from kano_updater.utils import run_pip_command
+from kano_updater.utils.pip import run_pip_command
 from kano_updater.commands.download import download
 
 

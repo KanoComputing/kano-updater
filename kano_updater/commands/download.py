@@ -13,7 +13,8 @@ from kano_updater.paths import PIP_PACKAGES_LIST
 from kano_updater.status import UpdaterStatus
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.progress import DummyProgress, Phase
-from kano_updater.utils import run_pip_command, is_server_available
+from kano_updater.utils.pip import run_pip_command
+from kano_updater.utils.network import is_server_available
 from kano_updater.commands.check import check_for_updates
 
 

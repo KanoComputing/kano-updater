@@ -54,8 +54,9 @@ from kano_updater.commands.check import check_for_updates
 from kano_updater.commands.clean import clean
 from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
-from kano_updater.utils import make_low_prio, install_docopt, is_running, \
+from kano_updater.utils.system import make_low_prio, is_running, \
     remove_pid_file
+from kano_updater.utils.pip import install_docopt
 
 
 def clean_up():

@@ -14,7 +14,7 @@ from threading import Thread
 from kano.gtk3.apply_styles import apply_styling_to_screen
 from kano.gtk3.kano_dialog import KanoDialog
 
-from kano_updater.utils import kill_apps
+from kano_updater.utils.system import kill_apps
 from kano_updater.ui.paths import CSS_PATH
 from kano_updater.commands.install import install
 from kano_updater.ui.progress import GtkProgress

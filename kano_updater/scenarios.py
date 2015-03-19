@@ -1,17 +1,19 @@
 
 # scenarios.py
 #
-# Copyright (C) 2014, 2015 Kano Computing Ltd.
+# Copyright (C) 2014-2015 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
 import os
 
 from kano.logging import logger
-from kano_updater.os_version import OSVersion, TARGET_VERSION
-from kano_updater.utils import install, remove_user_files, update_failed, \
-    purge, rclocal_executable, migrate_repository
 from kano.utils import run_cmd_log, get_user_unsudoed, write_file_contents
+
+from kano_updater.os_version import OSVersion, TARGET_VERSION
+from kano_updater.utils.apt import install, purge, migrate_repository
+from kano_updater.utils.ui import update_failed
+from kano_updater.utils.system import remove_user_files, rclocal_executable
 
 
 class Scenarios(object):

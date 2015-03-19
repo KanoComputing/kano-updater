@@ -13,7 +13,7 @@ from kano.logging import logger
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.status import UpdaterStatus
 from kano_updater.progress import DummyProgress
-from kano_updater.utils import is_server_available
+from kano_updater.utils.network import is_server_available
 
 KANO_SOURCES_LIST = '/etc/apt/sources.list.d/kano.list'
 

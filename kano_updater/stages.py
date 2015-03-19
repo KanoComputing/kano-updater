@@ -22,7 +22,8 @@ python_modules_file = '/usr/share/kano-updater/python_modules'
 # and relaunch if necessary
 
 def upgrade_debian(gui_process):
-    from kano_updater.utils import fix_broken, launch_gui_if_not_running, set_gui_stage
+    from kano_updater.utils.apt import fix_broken
+    from kano_updater.utils.ui import launch_gui_if_not_running, set_gui_stage
 
     # setting up apt-get for non-interactive mode
     os.environ['DEBIAN_FRONTEND'] = 'noninteractive'

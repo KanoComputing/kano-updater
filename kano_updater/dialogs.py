@@ -9,7 +9,7 @@
 from gi.repository import Gtk, Pango
 from kano.gtk3.scrolled_window import ScrolledWindow
 from kano.gtk3 import kano_dialog
-from kano_updater.utils import add_text_to_end
+from kano_updater.utils.misc import add_text_to_end
 
 
 def show_results(msg_upgraded, msg_added, msg_removed, debian_err_packages,
