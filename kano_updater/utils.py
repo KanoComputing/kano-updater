@@ -134,8 +134,8 @@ def migrate_repository(apt_file, old_repo, new_repo):
 def _handle_sigusr1(signum, frame):
     pass
 
-def show_relaunch_countdown():
-    cmd = ["kano-updater", "relaunch-countdown", str(os.getpid())]
+def show_relaunch_splash():
+    cmd = ["kano-updater", "ui", "relaunch-splash", str(os.getpid())]
     p = subprocess.Popen(cmd, shell=False)
 
     # register a handler for SIGUSR1

@@ -11,7 +11,7 @@ from kano_updater.status import UpdaterStatus
 # from kano_updater.ui.
 
 
-def boot_check():
+def clean():
     status = UpdaterStatus.get_instance()
 
     old_status = status.state
