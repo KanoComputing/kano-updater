@@ -28,7 +28,8 @@ class GtkProgress(Progress):
         GLib.idle_add(self._window.error, err_msg)
 
     def _abort(self, phase, msg):
-        pass
+        err_msg = "{} - {}".format(phase.label.lower(), msg)
+        GLib.idle_add(self._window.error, err_msg)
 
     def _done(self, msg):
         GLib.idle_add(self._window.update_progress, 100,
