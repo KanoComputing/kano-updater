@@ -78,11 +78,11 @@ def launch_boot_check_gui(check_for_updates=False):
                                                                      text))
 
 
-def launch_relaunch_countdown_gui():
+def launch_relaunch_countdown_gui(parent_pid):
     from kano_updater.ui.relaunch_window import RelaunchWindow
 
     GObject.threads_init()
 
-    win = RelaunchWindow()
+    win = RelaunchWindow(parent_pid)
     win.show()
     Gtk.main()

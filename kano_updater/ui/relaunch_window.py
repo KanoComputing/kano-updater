@@ -18,7 +18,7 @@ from kano_updater.ui.views.relaunch import Relaunch
 class RelaunchWindow(Gtk.Window):
     CSS_FILE = os.path.join(CSS_PATH, 'updater.css')
 
-    def __init__(self):
+    def __init__(self, parent_pid):
         # Apply styling to window
         apply_styling_to_screen(self.CSS_FILE)
 
@@ -29,7 +29,7 @@ class RelaunchWindow(Gtk.Window):
         self.set_icon_name('kano-updater')
         self.set_title(_('Updater Splash'))
 
-        self._relaunch_screen = Relaunch()
+        self._relaunch_screen = Relaunch(parent_pid)
         self.add(self._relaunch_screen)
 
         self.show_all()

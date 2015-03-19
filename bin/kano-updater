@@ -15,7 +15,7 @@ Usage:
   kano-updater install [--gui [--no-confirm] [--splash-pid <pid>]]
   kano-updater set-state <state>
   kano-updater boot-check [--check-for-updates]
-  kano-updater relaunch-countdown
+  kano-updater relaunch-countdown <parent-pid>
   kano-updater [-f] [-n]
 
 Options:
@@ -68,6 +68,7 @@ def run_install(gui=False, confirm=True, splash_pid=None):
             launch_install_gui(confirm=confirm, splash_pid=splash_pid)
         except Relaunch as relaunch_exception:
             logger.flush()
+            clean_up()
             cmd_args = ['kano-updater', 'install', '--gui', '--no-confirm']
             if relaunch_exception.pid:
                 cmd_args += ['--splash-pid', str(relaunch_exception.pid)]
@@ -78,6 +79,7 @@ def run_install(gui=False, confirm=True, splash_pid=None):
             install(progress)
         except Relaunch:
             logger.flush()
+            clean_up()
             os.execvp('kano-updater', ['kano-updater', 'install'])
 
 def main():
@@ -111,7 +113,7 @@ def main():
         launch_boot_check_gui(args['--check-for-updates'])
     elif args['relaunch-countdown']:
         from kano_updater.ui.main import launch_relaunch_countdown_gui
-        launch_relaunch_countdown_gui()
+        launch_relaunch_countdown_gui(int(args['<parentpid>']))
     else:
         progress = CLIProgress()
 

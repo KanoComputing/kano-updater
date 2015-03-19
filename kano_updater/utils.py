@@ -15,6 +15,8 @@ import subprocess
 import shutil
 import pwd
 import grp
+import signal
+
 
 from kano.logging import logger
 from kano.utils import run_print_output_error, run_cmd, run_cmd_log, \
@@ -129,8 +131,19 @@ def migrate_repository(apt_file, old_repo, new_repo):
     apt_handle.update(DummyProgress())
 
 
+def _handle_sigusr1(signum, frame):
+    pass
+
 def show_relaunch_countdown():
-    p = subprocess.Popen(["/usr/bin/kano-updater", "relaunch-countdown"], shell=False)
+    cmd = ["kano-updater", "relaunch-countdown", str(os.getpid())]
+    p = subprocess.Popen(cmd, shell=False)
+
+    # register a handler for SIGUSR1
+    signal.signal(signal.SIGUSR1, _handle_sigusr1)
+
+    # wait until the child process signals that it's ready
+    signal.pause()
+
     return p.pid
 
 

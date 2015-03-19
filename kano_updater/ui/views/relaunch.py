@@ -7,13 +7,19 @@
 # Restart computer widget
 #
 
+import os
+import signal
+
 from gi.repository import Gtk
 
 from kano_updater.ui.views.countdown import Countdown
 
+
 class Relaunch(Countdown):
-    def __init__(self):
+    def __init__(self, parent_pid):
         Countdown.__init__(self)
+
+        self._parent_pid = parent_pid
 
         complete = Gtk.Label(_('Relaunching the Updater'))
         complete.get_style_context().add_class('complete')
@@ -25,3 +31,8 @@ class Relaunch(Countdown):
 
         self._main_grid.attach(complete, 0, 1, 1, 1)
         self._main_grid.attach(info, 0, 2, 1, 1)
+
+        self.connect('show', self._on_show)
+
+    def _on_show(self, widget=None):
+        os.kill(self._parent_pid, signal.SIGUSR1)
