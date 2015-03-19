@@ -113,7 +113,7 @@ def main():
         launch_boot_check_gui(args['--check-for-updates'])
     elif args['relaunch-countdown']:
         from kano_updater.ui.main import launch_relaunch_countdown_gui
-        launch_relaunch_countdown_gui(int(args['<parentpid>']))
+        launch_relaunch_countdown_gui(int(args['<parent-pid>']))
     else:
         progress = CLIProgress()
 
