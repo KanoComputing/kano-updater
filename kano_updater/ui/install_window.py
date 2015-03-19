@@ -8,8 +8,7 @@
 #
 
 import os
-import time
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, GLib
 from threading import Thread
 
 from kano.gtk3.apply_styles import apply_styling_to_screen
@@ -50,11 +49,35 @@ class InstallWindow(Gtk.Window):
     def _start_install(self):
         progress = GtkProgress(self)
 
+        GLib.timeout_add_seconds(60, self._is_install_running)
+
         self._install_thread = Thread(target=install, args=(progress,))
         # FIXME: What to do when the gui is killed
         #        and the thread is still running?
         self._install_thread.daemon = True
         self._install_thread.start()
+
+    def _is_install_running(self):
+        if self._install_thread.is_alive():
+            return True
+
+        self.destroy()
+        self._set_normal_cursor()
+
+        unexpected_quit = KanoDialog(
+            _('The install unexpectantly quit'),
+            _('Please try again later'),
+            {
+                'OK': {
+                    'return_value': True,
+                    'color': 'red'
+                }
+            })
+        unexpected_quit.run()
+
+        self.close_window()
+
+        return False
 
     def _done_install(self, *_):
         self._install_thread.join()
