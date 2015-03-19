@@ -326,7 +326,7 @@ static gboolean update_status(kano_updater_plugin_t *plugin_data)
 		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
 						UPDATES_DOWNLOADED_ICON_FILE);
 
-		if (g_strcmp0(plugin_data->prev_state, plugin_data->state) != 0)
+		if (g_strcmp0(plugin_data->prev_state, "downloading-updates") == 0)
 			show_notification(UPDATES_DOWNLOADED_NOTIFICATION);
 	} else {
 		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
