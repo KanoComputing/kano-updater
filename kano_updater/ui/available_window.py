@@ -1,10 +1,10 @@
 
-# check-for-updates
+# available_window.py
 #
-# Copyright (C) 2014-2015 Kano Computing Ltd.
+# Copyright (C) 2015 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
-# Checks for updates of packages that are maintained by Kano
+# Windows for notifying users that an update action is required.
 #
 
 import os
