@@ -13,7 +13,7 @@ class ProgressError(Exception):
 
 
 class Relaunch(Exception):
-    pass
+    pid = None
 
 
 class Phase(object):
