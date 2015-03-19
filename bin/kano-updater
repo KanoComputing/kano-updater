@@ -64,7 +64,7 @@ def run_install(gui=False, confirm=True, splash_pid=None):
         except Relaunch as relaunch_exception:
             logger.flush()
             cmd_args = ['kano-updater', 'install', '--gui', '--no-confirm']
-            if relaunch_exception.splash_pid:
+            if relaunch_exception.pid:
                 cmd_args += ['--splash-pid', str(relaunch_exception.pid)]
             os.execvp('kano-updater', cmd_args)
     else:
