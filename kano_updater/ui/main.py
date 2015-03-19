@@ -19,15 +19,19 @@ from kano_updater.commands.check import check_for_updates
 from kano_updater.commands.boot_check import boot_check
 from kano_updater.progress import Relaunch
 from kano_updater.status import UpdaterStatus
+from kano_updater.utils import show_relaunch_countdown
 
 
 relaunch_required_flag = False
+splash_pid = None
 
 
 def relaunch_required():
     global relaunch_required_flag
+    global splash_pid
 
     relaunch_required_flag = True
+    splash_pid = show_relaunch_countdown()
 
 
 def launch_install_gui(confirm=True, splash_pid=None):
@@ -47,7 +51,9 @@ def launch_install_gui(confirm=True, splash_pid=None):
     Gtk.main()
 
     if relaunch_required_flag:
-        raise Relaunch()
+        r_exc = Relaunch()
+        r_exc.pid = splash_pid
+        raise r_exc
 
 
 def launch_check_gui(min_time_between_checks=0):
