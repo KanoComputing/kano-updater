@@ -32,7 +32,7 @@ class Relaunch(Countdown):
         self._main_grid.attach(complete, 0, 1, 1, 1)
         self._main_grid.attach(info, 0, 2, 1, 1)
 
-        self.connect('map', self._on_map)
+        self.connect('map-event', self._on_map_event)
 
-    def _on_map(self, widget=None):
+    def _on_map_event(self, widget=None, event=None):
         os.kill(self._parent_pid, signal.SIGUSR1)
