@@ -9,6 +9,9 @@
 TMP_FILE=/tmp/kano-updater_conf
 OLD_UPDATER_STATUS=/var/cache/kano-updater/status
 
+LXDE_AUTOSTART_PATH="/etc/xdg/lxsession/LXDE/autostart"
+UPDATER_CMD="kano-updater ui boot-window"
+
 case "$1" in
     configure)
 
@@ -24,10 +27,15 @@ case "$1" in
 
         # Move the file to the sudoers directory
         mv $TMP_FILE /etc/sudoers.d/
-        
+
         # Remove the old status file - if present
         if [ -f "$OLD_UPDATER_STATUS" ]; then
             rm $OLD_UPDATER_STATUS
+        fi
+
+        # Add a command to run every time LXDE starts up
+        if ! grep "$UPDATER_CMD" "$LXDE_AUTOSTART_PATH"; then
+            echo "\n$UPDATER_CMD" >> $LXDE_AUTOSTART_PATH
         fi
 
         ;;

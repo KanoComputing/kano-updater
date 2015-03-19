@@ -6,10 +6,18 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
 #
 
+LXDE_AUTOSTART_PATH="/etc/xdg/lxsession/LXDE/autostart"
+UPDATER_CMD="kano-updater ui boot-window"
+
 case "$1" in
     remove|upgrade)
         # Remove config file
         rm /etc/sudoers.d/kano-updater_conf
+
+        # Remove the kano-updater boot window from LXDE autostart
+        if grep "$UPDATER_CMD" "$LXDE_AUTOSTART_PATH"; then
+            sed -i "/$UPDATER_CMD/d" $LXDE_AUTOSTART_PATH
+        fi
 
         ;;
 esac
