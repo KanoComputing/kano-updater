@@ -35,7 +35,7 @@ case "$1" in
 
         # Add a command to run every time LXDE starts up
         if ! grep "$UPDATER_CMD" "$LXDE_AUTOSTART_PATH"; then
-            echo "\n$UPDATER_CMD" >> $LXDE_AUTOSTART_PATH
+            echo -e "\n$UPDATER_CMD" >> $LXDE_AUTOSTART_PATH
         fi
 
         ;;
