@@ -180,13 +180,20 @@ class AptWrapper(object):
             logger.info('Cleaning dpkg journal')
             run_cmd_log("dpkg --configure -a")
 
+            self._cache.clear()
+            self._cache.open()
+
         progress.start('fix-broken')
 
         # Naughty but don't want to re-initialise
-        try:
-            self._cache._depcache.fix_broken()
-        except SystemError as e:
-            logger.error(e)
+        if self._cache._depcache.broken_count:
+            try:
+                self._cache._depcache.fix_broken()
+            except SystemError as e:
+                logger.error(e)
+
+            self._cache.clear()
+            self._cache.open()
 
 
 apt_handle = AptWrapper()
