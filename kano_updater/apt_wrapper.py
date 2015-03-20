@@ -170,7 +170,7 @@ class AptWrapper(object):
 
     def fix_broken(self, progress):
         progress.split(
-            Phase('dkpg-clean',
+            Phase('dpkg-clean',
                   _('Cleaning dpkg journal')),
             Phase('fix-broken',
                   _('Fixing broken packages'))
