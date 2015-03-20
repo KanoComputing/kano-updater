@@ -169,8 +169,8 @@ class AptWrapper(object):
         return False
 
     def clear_cache(self):
-        self._cache.open()
         self._cache.clear()
+        self._cache.open()
 
     def fix_broken(self, progress):
         progress.split(

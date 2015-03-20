@@ -128,6 +128,7 @@ def migrate_repository(apt_file, old_repo, new_repo):
         return
 
     # TODO: track progress of this
+    apt_handle.clear_cache()
     apt_handle.update(DummyProgress())
 
 
