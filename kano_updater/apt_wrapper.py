@@ -168,6 +168,10 @@ class AptWrapper(object):
 
         return False
 
+    def clear_cache(self):
+        self._cache.open()
+        self._cache.clear()
+
     def fix_broken(self, progress):
         progress.split(
             Phase('dpkg-clean',

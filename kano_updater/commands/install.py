@@ -128,6 +128,7 @@ def do_install(progress, status):
     )
 
     progress.start('init')
+    apt_handle.clear_cache()
     apt_handle.fix_broken(progress)
 
     # determine the versions (from and to)
