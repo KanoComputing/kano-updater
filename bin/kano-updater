@@ -99,7 +99,7 @@ def main():
     # We always want to keep the logs from updates
     logger.force_log_level('debug')
 
-    if not args['relaunch-countdown'] and is_running():
+    if not args['relaunch-splash'] and is_running():
         msg = _('An instance of Kano Updater is already running')
         logger.error(msg)
         sys.stderr.write("{}: {}\n".format(_('ERROR'), msg))
