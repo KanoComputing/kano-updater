@@ -97,7 +97,7 @@ def main():
     args = docopt.docopt(__doc__, version=str(TARGET_VERSION))
 
     # We always want to keep the logs from updates
-    logger.force_log_level('debug')
+    logger.force_log_level('info')
 
     if not args['relaunch-splash'] and is_running():
         msg = _('An instance of Kano Updater is already running')
