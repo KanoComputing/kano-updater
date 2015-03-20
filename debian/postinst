@@ -9,6 +9,8 @@
 TMP_FILE=/tmp/kano-updater_conf
 OLD_UPDATER_STATUS=/var/cache/kano-updater/status
 
+PIP_DEPENDENCIES="docopt ping"
+
 case "$1" in
     configure)
 
@@ -29,6 +31,8 @@ case "$1" in
         if [ -f "$OLD_UPDATER_STATUS" ]; then
             rm $OLD_UPDATER_STATUS
         fi
+
+        pip install --upgrade $PIP_DEPENDENCIES
 
         ;;
 esac
