@@ -82,7 +82,7 @@ class Install(Gtk.Overlay):
         psa.set_size_request(825, 300)
         psa.set_max_width_chars(50)
         psa.set_line_wrap(True)
-        psa.set_justify(Gtk.Justification.FILL)
+        psa.set_justify(Gtk.Justification.CENTER)
         psa.set_halign(Gtk.Align.CENTER)
         psa.set_valign(Gtk.Align.CENTER)
 
