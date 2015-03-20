@@ -10,7 +10,7 @@ TMP_FILE=/tmp/kano-updater_conf
 OLD_UPDATER_STATUS=/var/cache/kano-updater/status
 
 LXDE_AUTOSTART_PATH="/etc/xdg/lxsession/LXDE/autostart"
-UPDATER_CMD="kano-updater ui boot-window"
+UPDATER_CMD="sudo kano-updater ui boot-window"
 
 case "$1" in
     configure)
