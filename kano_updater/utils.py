@@ -65,9 +65,9 @@ def is_server_available():
     install_ping()
     import ping
 
-    lost_packet_percent = ping.quiet_ping(REPO_SERVER, timeout=0.2, count=1)[0]
+    lost_packet_percent = ping.quiet_ping(REPO_SERVER, timeout=3, count=5)[0]
 
-    return not lost_packet_percent
+    return lost_packet_percent < 50
 
 
 def install_ping():
