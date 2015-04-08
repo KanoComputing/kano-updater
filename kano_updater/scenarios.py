@@ -119,6 +119,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.3.3", "Kanux-Beta-1.3.4",
                           self.beta_133_to_beta_134)
 
+        self.add_scenario("Kanux-Beta-1.3.4", "Kanux-Beta-2.0.0",
+                          self.beta_134_to_beta_200)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -162,6 +165,9 @@ class PreUpdate(Scenarios):
         run_cmd_log('apt-get -y install xserver-xorg-video-fbturbo')
 
     def beta_133_to_beta_134(self):
+        pass
+
+    def beta_134_to_beta_200(self):
         pass
 
     # Not used at the moment: dev.kano.me > repo.kano.me
@@ -210,6 +216,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-1.3.3", "Kanux-Beta-1.3.4",
                           self.beta_133_to_beta_134)
+
+        self.add_scenario("Kanux-Beta-1.3.4", "Kanux-Beta-2.0.0",
+                          self.beta_134_to_beta_200)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -268,4 +277,7 @@ class PostUpdate(Scenarios):
         run_cmd_log('kano-apps install --no-gui terminal-quest')
 
     def beta_133_to_beta_134(self):
+        pass
+    
+    def beta_134_to_beta_200(self):
         pass
