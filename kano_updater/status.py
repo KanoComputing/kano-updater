@@ -66,6 +66,11 @@ class UpdaterStatus(object):
         with open(self._status_file, 'r') as status_file:
             try:
                 data = json.load(status_file)
+
+                # File format sanity check: Try to access the expected keys
+                data['state']
+                data['last_update']
+                data['last_check']
             except:
                 # Initialise the file again if it is corrupted
                 logger.warn("The status file was corrupted.")
