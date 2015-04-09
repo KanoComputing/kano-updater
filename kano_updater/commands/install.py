@@ -8,7 +8,7 @@
 import time
 
 from kano.logging import logger
-from kano.utils import read_file_contents_as_lines
+from kano.utils import read_file_contents_as_lines, is_internet
 
 from kano_updater.paths import PIP_PACKAGES_LIST, SYSTEM_VERSION_FILE
 from kano_updater.status import UpdaterStatus
@@ -225,7 +225,10 @@ def install_pip_packages(progress):
 
         success = run_pip_command("install --upgrade {}".format(pkg))
 
-        # TODO: abort the install?
         if not success:
             msg = "Installing the '{}' pip package failed".format(pkg)
             logger.error(msg)
+            if not is_internet():
+                msg="Network is down, aborting PIP install"
+                logger.error(msg)
+                raise IOError(msg)
