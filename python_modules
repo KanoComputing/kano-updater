@@ -1,7 +1,6 @@
 pip
 ping
-certifi
-requests
+requests==2.5.3
 tzupdate
 pam
 python-slugify
