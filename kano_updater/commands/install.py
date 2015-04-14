@@ -8,7 +8,8 @@
 import time
 
 from kano.logging import logger
-from kano.utils import read_file_contents_as_lines, is_internet
+from kano.utils import read_file_contents_as_lines
+from kano.network import is_internet
 
 from kano_updater.paths import PIP_PACKAGES_LIST, SYSTEM_VERSION_FILE
 from kano_updater.status import UpdaterStatus
