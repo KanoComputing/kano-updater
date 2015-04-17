@@ -35,6 +35,10 @@ def check_for_updates(min_time_between_checks=0, progress=None):
         logger.info(msg)
         progress.abort(msg)
 
+        # This was a successful check, so we need to update the timestamp.
+        status.last_check = int(time.time())
+        status.save()
+
         # Return True in all cases except when the state is UPDATES_INSTALLED
         # In that case, we've just updated and don't want to check for updates
         # again.
@@ -52,18 +56,25 @@ def check_for_updates(min_time_between_checks=0, progress=None):
             msg = _('Not enough time passed for a new update check!')
             logger.info(msg)
             progress.abort(msg)
+            
+            # Return without updating the timestamp, because the check
+            # happened too early.
             return False
 
     if not is_internet():
         err_msg = _('Must have internet to check for updates')
         logger.error(err_msg)
         progress.fail(err_msg)
+        
+        # Not updating the timestamp. The check failed.
         return False
 
     if not is_server_available():
         err_msg = _('Could not connect to the download server')
         logger.error(err_msg)
         progress.fail(err_msg)
+
+        # Not updating the timestamp. The check failed.
         return False
 
     if _do_check(progress):
