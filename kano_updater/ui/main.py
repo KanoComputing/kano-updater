@@ -56,13 +56,16 @@ def launch_install_gui(confirm=True, splash_pid=None):
         raise r_exc
 
 
-def launch_check_gui(min_time_between_checks=0):
-    if check_for_updates(min_time_between_checks=min_time_between_checks):
+def launch_check_gui():
+    rv = check_for_updates():
+    if rv:
         from kano_updater.ui.available_window import UpdatesAvailableWindow
 
         win = UpdatesAvailableWindow()
         win.show()
         Gtk.main()
+
+    return rv
 
 
 def launch_boot_gui():

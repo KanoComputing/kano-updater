@@ -18,7 +18,7 @@ from kano_updater.utils import is_server_available
 KANO_SOURCES_LIST = '/etc/apt/sources.list.d/kano.list'
 
 
-def check_for_updates(min_time_between_checks=0, progress=None):
+def check_for_updates(progress=None):
     status = UpdaterStatus.get_instance()
 
     # FIXME: FOR DEBUGGING ONLY
@@ -33,7 +33,6 @@ def check_for_updates(min_time_between_checks=0, progress=None):
     if status.state != UpdaterStatus.NO_UPDATES:
         msg = _('No need to check for updates')
         logger.info(msg)
-        progress.abort(msg)
 
         # This was a successful check, so we need to update the timestamp.
         status.last_check = int(time.time())
@@ -44,28 +43,11 @@ def check_for_updates(min_time_between_checks=0, progress=None):
         # again.
         return status.state != UpdaterStatus.UPDATES_INSTALLED
 
-    if min_time_between_checks:
-        target_delta = float(min_time_between_checks) * 60 * 60
-
-        time_now = time.time()
-        delta = time_now - status.last_check
-
-        if delta > target_delta:
-            logger.info(_('Time check passed, doing update check!'))
-        else:
-            msg = _('Not enough time passed for a new update check!')
-            logger.info(msg)
-            progress.abort(msg)
-            
-            # Return without updating the timestamp, because the check
-            # happened too early.
-            return False
-
     if not is_internet():
         err_msg = _('Must have internet to check for updates')
         logger.error(err_msg)
         progress.fail(err_msg)
-        
+
         # Not updating the timestamp. The check failed.
         return False
 

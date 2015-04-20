@@ -32,6 +32,7 @@ import os
 import sys
 import gettext
 import atexit
+import time
 
 if __name__ == '__main__' and __package__ is None:
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -61,6 +62,7 @@ from kano_updater.utils import make_low_prio, install_docopt, is_running, \
 def clean_up():
     remove_pid_file()
 
+
 def run_install(gui=False, confirm=True, splash_pid=None):
     if gui:
         from kano_updater.ui.main import launch_install_gui
@@ -82,6 +84,7 @@ def run_install(gui=False, confirm=True, splash_pid=None):
             logger.flush()
             clean_up()
             os.execvp('kano-updater', ['kano-updater', 'install'])
+
 
 def main():
     msg = _('Administrator priviledges are required to perform this operation')
@@ -137,14 +140,36 @@ def main():
             run_install(gui=args['--gui'], confirm=not args['--no-confirm'],
                         splash_pid=splash_pid)
         elif args['check']:
-            time = args['<time>'] if args['--interval'] else 0
+            if args['--interval']:
+                status = UpdaterStatus.get_instance()
+                target_delta = float(args['<time>']) * 60 * 60
+
+                time_now = time.time()
+                delta = time_now - status.last_check
+
+                if delta > target_delta:
+                    logger.info(_('Time check passed, doing update check!'))
+                else:
+                    msg = _('Not enough time passed for a new update check!')
+                    logger.warn(msg)
+                    progress.abort(msg)
+
+                    # Return if the check happened too early.
+                    return 2
 
             if args['--gui']:
                 from kano_updater.ui.main import launch_check_gui
-                launch_check_gui(min_time_between_checks=time)
+                updates_available = launch_check_gui()
             else:
-                check_for_updates(min_time_between_checks=time,
-                                  progress=progress)
+                updates_available = check_for_updates(progress=progress)
+
+            if updates_available:
+                logger.info(_('Updates available.'))
+            else:
+                logger.info(_('No updates found.'))
+
+            # Return 0 if there's an update, 1 if there isn't one
+            return not updates_available
         else:
             # Launch the GUI if no arguments were given for
             # backwards compatiblity
