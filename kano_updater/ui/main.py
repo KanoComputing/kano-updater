@@ -57,7 +57,7 @@ def launch_install_gui(confirm=True, splash_pid=None):
 
 
 def launch_check_gui():
-    rv = check_for_updates():
+    rv = check_for_updates()
     if rv:
         from kano_updater.ui.available_window import UpdatesAvailableWindow
 
