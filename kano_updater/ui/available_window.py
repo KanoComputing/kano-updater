@@ -44,7 +44,7 @@ class NotificationWindow(Gtk.Window):
         self.set_icon_name('kano-updater')
 
         # Put the window above all the existing ones when it starts
-        self.raise_()
+        self.get_window().raise_()
 
         image = Gtk.Image()
         image.set_from_file(self._HEADER_IMAGE)
