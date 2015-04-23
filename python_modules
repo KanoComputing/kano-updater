@@ -1,6 +1,6 @@
 pip
 ping
-requests
+requests==2.6.0
 tzupdate
 pam
 python-slugify
