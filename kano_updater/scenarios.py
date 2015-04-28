@@ -281,9 +281,9 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_134_to_beta_200(self):
-        if is_installed('kano-character-cli'):
-            cmd = 'kano-character-cli -c "Judoka_Base" "Hair_Black" "Skin_Orange" -r -s'
-            run_cmd_log(cmd)
-        else:
-            logger.warn(
-                "Can't create initial char, kano-character-cli not installed")
+        if not is_installed('kano-character-cli'):
+            logger.info(
+                "kano-character-cli not installed, attempt to install kano-profile")
+            install('kano-profile')
+        cmd = 'kano-character-cli -c "Judoka_Base" "Hair_Black" "Skin_Orange" -r -s'
+        run_cmd_log(cmd)
