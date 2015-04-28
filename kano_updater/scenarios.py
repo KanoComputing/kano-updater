@@ -278,6 +278,6 @@ class PostUpdate(Scenarios):
 
     def beta_133_to_beta_134(self):
         pass
-    
+
     def beta_134_to_beta_200(self):
         pass
