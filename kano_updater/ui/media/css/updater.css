@@ -32,7 +32,10 @@ GtkLabel {
     color: white;
 }
 
-.psa,
+.psa {
+    font-size: 20px;
+}
+
 .countdown,
 .restart-now {
     font-size: 16px;
