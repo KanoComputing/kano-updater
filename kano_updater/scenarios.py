@@ -11,7 +11,8 @@ from kano.logging import logger
 from kano_updater.os_version import OSVersion, TARGET_VERSION
 from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable, migrate_repository
-from kano.utils import run_cmd_log, get_user_unsudoed, write_file_contents
+from kano.utils import run_cmd_log, get_user_unsudoed, write_file_contents, \
+    is_installed
 
 
 class Scenarios(object):
@@ -280,4 +281,9 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_134_to_beta_200(self):
-        pass
+        if is_installed('kano-character-cli'):
+            cmd = 'kano-character-cli -c "Judoka_Base" "Hair_Black" "Skin_Orange" -r -s'
+            run_cmd_log(cmd)
+        else:
+            logger.warn(
+                "Can't create initial char, kano-character-cli not installed")
