@@ -14,6 +14,7 @@ Usage:
   kano-updater download [--low-prio]
   kano-updater install [--gui [--no-confirm] [--splash-pid <pid>]]
   kano-updater set-state <state>
+  kano-updater first-boot
   kano-updater clean
   kano-updater ui (relaunch-splash <parent-pid> | boot-window)
   kano-updater [-f] [-n]
@@ -123,6 +124,13 @@ def main():
         elif args['boot-window']:
             from kano_updater.ui.main import launch_boot_gui
             launch_boot_gui()
+    elif args['first-boot']:
+        # spoof the last_check timestamp to six days ago so the user won't
+        # be prompted to update in the first day after boot
+        status = UpdaterStatus.get_instance()
+        six_days_ago = time.time() - 6 * 24 * 60 * 60
+        status.last_check = status.last_update = six_days_ago
+        status.save()
     else:
         clean()
 
