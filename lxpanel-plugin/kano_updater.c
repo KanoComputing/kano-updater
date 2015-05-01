@@ -50,7 +50,7 @@
 #define PLUGIN_TOOLTIP _("Kano Updater")
 
 #define POLL_INTERVAL (10 * 60 * 1000) /* 10 minutes in microseconds*/
-#define CHECK_INTERVAL 60*60*24
+#define CHECK_INTERVAL (60 * 60 * 24 * 7) /* 7 days */
 
 #define FIFO_FILENAME ".kano-notifications.fifo"
 
