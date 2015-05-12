@@ -65,8 +65,8 @@
 
 #define UPDATES_AVAILABLE_NOTIFICATION \
 	"{" \
-		"\"title\": \"New Updates Available\"," \
-		"\"byline\": \"Click here to download them.\"," \
+		"\"title\": \"Get new powers\"," \
+		"\"byline\": \"Click here to download updates\"," \
 		"\"image\": \"/usr/share/kano-updater/images/notification-updates-available.png\"," \
 		"\"sound\": null," \
 		"\"type\": \"small\"," \
