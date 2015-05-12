@@ -123,6 +123,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-1.3.4", "Kanux-Beta-2.0.0",
                           self.beta_134_to_beta_200)
 
+        self.add_scenario("Kanux-Beta-2.0.0", "Kanux-Beta-2.0.1",
+                          self.beta_200_to_beta_201)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -169,6 +172,9 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_134_to_beta_200(self):
+        pass
+
+    def beta_200_to_beta_201(self):
         pass
 
     # Not used at the moment: dev.kano.me > repo.kano.me
@@ -220,6 +226,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-1.3.4", "Kanux-Beta-2.0.0",
                           self.beta_134_to_beta_200)
+
+        self.add_scenario("Kanux-Beta-2.0.0", "Kanux-Beta-2.0.1",
+                          self.beta_200_to_beta_201)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -287,3 +296,7 @@ class PostUpdate(Scenarios):
             install('kano-profile')
         cmd = 'kano-character-cli -c "Judoka_Base" "Hair_Black" "Skin_Orange" -r -s'
         run_cmd_log(cmd)
+
+    def beta_200_to_beta_201(self):
+        pass
+
