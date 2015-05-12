@@ -224,7 +224,7 @@ def install_pip_packages(progress):
     for pkg in packages:
         progress.next_step(phase_name, "Installing {}".format(pkg))
 
-        success = run_pip_command("install --upgrade {}".format(pkg))
+        success = run_pip_command("install --upgrade '{}'".format(pkg))
 
         if not success:
             msg = "Installing the '{}' pip package failed".format(pkg)
