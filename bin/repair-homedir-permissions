@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+#
+#  correct-homedir-permissions
+#
+# Copyright (C) 2015 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+#
+# This script will traverse through all users home directories and fix
+# old KanoOS 1.x permissions on sensitive files and directories.
+#
+
+import os
+import sys
+
+from kano.utils import run_cmd
+from kano.logging import logger
+
+
+def fix_user_files_permissions(path='/home', fixdirs=('.kano-logs', '.kanoprofile')):
+    '''
+    1 level recursive function to fix old style permissions for KanoOS sensitive directories.
+    This function must be run as root.
+    '''
+
+    # Start by enumerating all users directories
+    entries=os.listdir(path)
+    for entry in entries:
+        complete_path=os.path.join(path, entry)
+        if path == '/home':
+            logger.info ('looking into {} to fix file/directory permissions'.format(complete_path))
+            fix_user_files_permissions(complete_path)
+        else:
+            # We have descended to the root of the home user
+            # Fix permissions for KanoOS related data directories
+            if entry in fixdirs and os.path.isdir(entry):
+                username=complete_path.split('/')[2]
+                logger.info ('fixing file and directory permissions at: {}'.format(complete_path))
+                
+                # Set ownership of directories to the username holding this homedir,
+                # Allow userid/group read, write, and eXecute[on directories],
+                # And disallow others from read/write/execute access
+                run_cmd('chown -R {}:{} "{}"'.format(username, username, complete_path))
+                run_cmd('chmod -R ug+rwX,o-rwX "{}"'.format(complete_path))
+
+if __name__ == '__main__':
+
+    if os.getuid():
+        logger.error('fix_user_files_permissions is called from non-root (userid={})'.format(os.getuid()))
+        sys.exit(1)
+    else:
+        fix_user_files_permissions()
+        sys.exit(0)

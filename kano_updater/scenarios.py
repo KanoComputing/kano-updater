@@ -172,7 +172,9 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_134_to_beta_200(self):
-        pass
+        # All users upgrading from KanoOS 1.* should have their
+        # users home directory permissions fixed
+        run_cmd_log('/usr/bin/repair-homedir-permissions')
 
     def beta_200_to_beta_201(self):
         pass
