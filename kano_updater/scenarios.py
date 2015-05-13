@@ -175,7 +175,9 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_200_to_beta_201(self):
-        pass
+        # All users upgrading from KanoOS 1.* should have their
+        # users home directory permissions fixed
+        run_cmd_log('/usr/bin/repair-homedir-permissions')
 
     # Not used at the moment: dev.kano.me > repo.kano.me
     def _migrate_repo_url(self):
