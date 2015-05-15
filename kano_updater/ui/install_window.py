@@ -9,7 +9,7 @@
 
 import os
 from gi.repository import Gtk, Gdk, GLib
-from threading import Thread
+from threading import Thread, Lock
 
 from kano.gtk3.apply_styles import apply_styling_to_screen
 from kano.gtk3.kano_dialog import KanoDialog
@@ -43,6 +43,13 @@ class InstallWindow(Gtk.Window):
 
         self.show_all()
         self._set_wait_cursor()
+
+        # For passing user input to the install thread
+        self.user_input = None
+        self.user_input_lock = Lock()
+
+        # The lock is busy until the answer is ready
+        self.user_input_lock.acquire()
 
         self._start_install()
 
@@ -121,6 +128,29 @@ class InstallWindow(Gtk.Window):
             elif sub_msg == _('No updates to download'):
                 self._no_updates()
 
+    def user_prompt(self, msg, question, answers):
+        buttons = []
+        for ans in answers:
+            buttons.append({
+                'label': ans.upper(),
+                'return_value': ans,
+                'color': 'orange'
+            })
+
+        if len(buttons) == 2:
+            buttons[0]['color'] = 'green'
+            buttons[1]['color'] = 'red'
+
+        dialog = KanoDialog(msg, question, buttons, parent_window=self)
+
+        # Save the answer and indicate that it's ready
+        self.user_input = dialog.run()
+        self.user_input_lock.release()
+
+        del dialog
+
+        return False
+
     def error(self, msg):
         error = KanoDialog(
             _('Error updating'), msg,
@@ -134,6 +164,15 @@ class InstallWindow(Gtk.Window):
         error.run()
         # FIXME: This close doesn't work for some reason
         self.close_window()
+
+        return False
+
+    def reset_user_input(self):
+        self.user_input = None
+        if not self.user_input_lock.acquire(False):
+            raise Exception("Reset called on locked user_input!")
+
+        return False
 
     def _set_wait_cursor(self):
         cursor = Gdk.Cursor.new(Gdk.CursorType.WATCH)

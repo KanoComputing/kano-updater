@@ -5,6 +5,9 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
+import os
+import sys
+
 from kano.logging import logger
 
 
@@ -174,6 +177,15 @@ class Progress(object):
         logger.debug("Error {}: {}".format(phase.label, msg))
         self._error(phase, msg)
 
+    def prompt(self, msg, question, answers=None):
+        if not answers:
+            answers = ["yes", "no"]
+
+        if len(answers) <= 0:
+            raise ValueError('The must be at least one answer to the question!')
+
+        return self._prompt(msg, question, answers)
+
     def finish(self, msg):
         logger.debug("Complete: {}".format(msg))
         self._done(msg)
@@ -214,6 +226,25 @@ class Progress(object):
     def _done(self, msg):
         raise NotImplemented('The _done callback must be implemented')
 
+    def _prompt(self, msg, question, answers):
+        """
+            Prompt the user for input.
+
+            :param msg: A message to pass on to user.
+            :type msg: str
+
+            :param question: The question asked.
+            :type question: str
+
+            :param answers: The possible options.
+            :type answers: list of str
+
+            :return: One of the options.
+            :rtype: str
+        """
+
+        raise NotImplemented('The _prompt callback must be implemented')
+
     def _relaunch(self):
         """
             This one is implemented here, because we need to relaunch
@@ -247,6 +278,9 @@ class DummyProgress(Progress):
     def finish(self, msg):
         pass
 
+    def prompt(self, msg, question, answers=None):
+        pass
+
     # TODO: Not disabling this method, we need to relaunch in any case
     #def relaunch(self):
     #    pass
@@ -266,3 +300,21 @@ class CLIProgress(Progress):
 
     def _relaunch(self):
         raise Relaunch()
+
+    def _prompt(self, msg, question, answers):
+        if not os.isatty(sys.stdin.fileno()):
+            warn = "No tty, selecting the default answer for " + \
+                   "'{}' which is: {}".format(question, answers[0])
+            logger.warn(msg)
+            return answers[0]
+        else:
+            print msg
+            norm_answers = map(lambda l: l.strip().lower(), answers)
+            q_str = "{} [{}]: ".format(question, "/".join(norm_answers))
+
+            answer = raw_input(q_str)
+            while answer.strip().lower() not in norm_answers:
+                print "Type one of these:  {}".format(" ".join(norm_answers))
+                answer = raw_input(q_str)
+
+        return answer

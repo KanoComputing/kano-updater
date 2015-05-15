@@ -35,6 +35,19 @@ class GtkProgress(Progress):
         GLib.idle_add(self._window.update_progress, 100,
                       "Complete!", msg)
 
+    def _prompt(self, msg, question, answers):
+        GLib.idle_add(self._window.user_prompt, msg, question, answers)
+
+        # Wait for the answer from the user
+        self._window.user_input_lock.acquire()
+        answer = self._window.user_input
+
+        # Reinitialise user_input_lock
+        self._window.user_input_lock.release()
+        GLib.idle_add(self._window.reset_user_input)
+
+        return answer
+
     def _relaunch(self):
         GLib.idle_add(self._do_relaunch)
 
