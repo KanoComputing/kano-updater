@@ -6,9 +6,10 @@
 #
 
 import time
+import os
 
 from kano.logging import logger
-from kano.utils import read_file_contents_as_lines
+from kano.utils import read_file_contents_as_lines, get_free_space, run_cmd
 from kano.network import is_internet
 
 from kano_updater.paths import PIP_PACKAGES_LIST, SYSTEM_VERSION_FILE
@@ -33,6 +34,29 @@ def install(progress=None):
 
     if not progress:
         progress = DummyProgress()
+
+    # Check for available disk space before updating
+    # We require at least 1GB of space for the update to proceed
+    # TODO: Take this value from apt
+    mb_free = get_free_space()
+    if mb_free < 1024:
+        err_msg = _("Only {}MB free, at least 1GB is needed.".format(mb_free))
+        logger.warn(err_msg)
+        answer = progress.prompt(
+            'Feeling full!',
+            'My brain is feeling a bit full, but I can make some more ' \
+            'room if you\'d like?',
+            ['OK', 'CANCEL']
+        )
+
+        if answer.lower() == 'ok':
+            run_cmd('sudo expand-rootfs')
+            os.system('sudo reboot')
+        else:
+            logger.error(err_msg)
+            progress.fail(err_msg)
+
+        return False
 
     if status.state == UpdaterStatus.INSTALLING_UPDATES:
         msg = 'The install is already running'
