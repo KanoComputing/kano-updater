@@ -165,11 +165,13 @@ def main():
                     # Return if the check happened too early.
                     return 2
 
-            if args['--gui']:
-                from kano_updater.ui.main import launch_check_gui
-                updates_available = launch_check_gui()
-            else:
-                updates_available = check_for_updates(progress=progress)
+            # There used to be a dialog pop up if an update was found
+            # that we had removed (see the commented out lines bellow).
+            #if args['--gui']:
+            #    from kano_updater.ui.main import launch_check_gui
+            #    updates_available = launch_check_gui()
+            #else:
+            updates_available = check_for_updates(progress=progress)
 
             if updates_available:
                 logger.info(_('Updates available.'))
