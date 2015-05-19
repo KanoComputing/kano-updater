@@ -71,6 +71,21 @@ def launch_check_gui():
 def launch_boot_gui():
     old_status = clean()
     if old_status == UpdaterStatus.UPDATES_INSTALLED:
+        try:
+            from kano_profile.badges import \
+                increment_app_state_variable_with_dialog
+            increment_app_state_variable_with_dialog(
+                'kano-updater', 'updated', 1)
+        except Exception:
+            pass
+
+        try:
+            from kano_updater.version import VERSION
+            from kano_profile.tracker import track_data
+            track_data('updated-to', VERSION)
+        except Exception:
+            pass
+
         from kano_updater.ui.changes_dialog import ChangesDialog
         win = ChangesDialog()
         win.run()
