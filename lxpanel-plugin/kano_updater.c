@@ -68,7 +68,6 @@
 		"\"title\": \"Get new powers\"," \
 		"\"byline\": \"Click here to download updates\"," \
 		"\"image\": \"/usr/share/kano-updater/images/notification-updates-available.png\"," \
-		"\"sound\": null," \
 		"\"type\": \"small\"," \
 		"\"button1_label\": \"DOWNLOAD\"," \
 		"\"button1_colour\": \"#7abd48\"," \
@@ -84,7 +83,6 @@
 		"\"title\": \"Download Started\"," \
 		"\"byline\": \"The updates are downloading.\"," \
 		"\"image\": \"/usr/share/kano-updater/images/notification-updates-available.png\"," \
-		"\"sound\": null," \
 		"\"type\": \"small\"," \
 	"}\n"
 
@@ -93,7 +91,6 @@
 		"\"title\": \"Download Complete\"," \
 		"\"byline\": \"Time to power up!\"," \
 		"\"image\": \"/usr/share/kano-updater/images/notification-updates-downloaded.png\"," \
-		"\"sound\": null," \
 		"\"type\": \"small\"," \
 		"\"button1_label\": \"RESTART\"," \
 		"\"button1_colour\": \"#7abd48\"," \
