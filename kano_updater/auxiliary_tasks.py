@@ -26,7 +26,6 @@ def run_aux_tasks(progress):
 
     progress.start('updating-home-folders')
 
-    # TODO: We might want to keep this in install()
     try:
         update_home_folders_from_skel()
     except Exception as e:
