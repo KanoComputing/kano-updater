@@ -95,7 +95,7 @@
 		"\"button1_label\": \"RESTART\"," \
 		"\"button1_colour\": \"#7abd48\"," \
 		"\"button1_hover\": \"#84cc4e\"," \
-		"\"button1_command\": \"sudo kano-updater install --gui\"," \
+		"\"button1_command\": \"sudo kano-updater install --gui --no-confirm\"," \
 		"\"button2_label\": \"LATER\"," \
 		"\"button2_colour\": \"#e67677\"," \
 		"\"button2_hover\": \"#f27c7e\"" \
