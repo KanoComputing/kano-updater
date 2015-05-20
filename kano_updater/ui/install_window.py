@@ -72,7 +72,7 @@ class InstallWindow(Gtk.Window):
         self._set_normal_cursor()
 
         unexpected_quit = KanoDialog(
-            _('The install unexpectantly quit'),
+            _('The install quit unexpectedly'),
             _('Please try again later'),
             {
                 'OK': {
