@@ -93,14 +93,15 @@ class Progress(object):
 
         self._current_phase_idx = self._phases.index(phase)
 
-        log = "global({}%) local({}%): Starting '{}' ({}) [main phase '{}' ({})]".format(
-            phase.global_percent,
-            phase.percent,
-            phase.label,
-            phase.name,
-            phase.get_main_phase().label,
-            phase.get_main_phase().name
-        )
+        log = "global({}%) local({}%): " \
+              "Starting '{}' ({}) [main phase '{}' ({})]".format(
+                  phase.global_percent,
+                  phase.percent,
+                  phase.label,
+                  phase.name,
+                  phase.get_main_phase().label,
+                  phase.get_main_phase().name
+              )
         logger.debug(log)
 
         # Calculate current progres and emitt an event
@@ -148,15 +149,16 @@ class Progress(object):
         phase = self._get_phase_by_name(phase_name)
         phase.step = step
 
-        log = "global({}%) local({}%): Next step in '{}' ({})  [main phase '{}' ({})]: {}".format(
-            phase.global_percent,
-            phase.percent,
-            phase.label,
-            phase.name,
-            phase.get_main_phase().label,
-            phase.get_main_phase().name,
-            msg
-        )
+        log = "global({}%) local({}%): " \
+              "Next step in '{}' ({})  [main phase '{}' ({})]: {}".format(
+                  phase.global_percent,
+                  phase.percent,
+                  phase.label,
+                  phase.name,
+                  phase.get_main_phase().label,
+                  phase.get_main_phase().name,
+                  msg
+              )
         logger.debug(log)
         self._change(phase, msg)
 
@@ -215,16 +217,16 @@ class Progress(object):
             :type msg: str
         """
 
-        raise NotImplemented('The _change callback must be implemented')
+        raise NotImplementedError('The _change callback must be implemented')
 
     def _error(self, phase, msg):
-        raise NotImplemented('The _error callback must be implemented')
+        raise NotImplementedError('The _error callback must be implemented')
 
     def _abort(self, phase, msg):
-        raise NotImplemented('The _abort callback must be implemented')
+        raise NotImplementedError('The _abort callback must be implemented')
 
     def _done(self, msg):
-        raise NotImplemented('The _done callback must be implemented')
+        raise NotImplementedError('The _done callback must be implemented')
 
     def _prompt(self, msg, question, answers):
         """
@@ -243,7 +245,7 @@ class Progress(object):
             :rtype: str
         """
 
-        raise NotImplemented('The _prompt callback must be implemented')
+        raise NotImplementedError('The _prompt callback must be implemented')
 
     def _relaunch(self):
         """
@@ -305,11 +307,11 @@ class CLIProgress(Progress):
         if not os.isatty(sys.stdin.fileno()):
             warn = "No tty, selecting the default answer for " + \
                    "'{}' which is: {}".format(question, answers[0])
-            logger.warn(msg)
+            logger.warn(warn)
             return answers[0]
         else:
             print msg
-            norm_answers = map(lambda l: l.strip().lower(), answers)
+            norm_answers = [answer.strip().lower() for answer in answers]
             q_str = "{} [{}]: ".format(question, "/".join(norm_answers))
 
             answer = raw_input(q_str)

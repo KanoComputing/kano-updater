@@ -10,6 +10,7 @@ import traceback
 
 from kano_updater.utils import update_home_folders_from_skel
 from kano.utils import run_cmd_log
+from kano.logging import logger
 
 from kano_updater.progress import Phase
 
@@ -28,7 +29,7 @@ def run_aux_tasks(progress):
 
     try:
         update_home_folders_from_skel()
-    except Exception as e:
+    except Exception:
         logger.error("Updating home folders failed. See the traceback bellow:")
         _, _, tb = sys.exc_info()
         for tb_line in traceback.format_tb(tb):

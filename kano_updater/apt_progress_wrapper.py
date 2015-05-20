@@ -64,7 +64,7 @@ class AptOpProgress(apt.progress.base.OpProgress):
 
         ops = [self._get_op_key(op) for op in ops]
 
-        phases = map(lambda op: Phase(op, op), ops)
+        phases = [Phase(op, op) for op in ops]
         self._updater_progress.split(*phases)
 
         for op in ops:

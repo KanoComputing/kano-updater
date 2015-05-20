@@ -164,7 +164,8 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_132_to_beta_133(self):
-        # Downgrade the improved FBTurbo X11 driver to the official stable version
+        # Downgrade the improved FBTurbo X11 driver
+        # to the official stable version
         run_cmd_log('apt-get -y remove xf86-video-fbturbo-improved')
         run_cmd_log('apt-get -y install xserver-xorg-video-fbturbo')
 
@@ -248,7 +249,8 @@ class PostUpdate(Scenarios):
             pass
 
     def beta_111_to_beta_120(self):
-        run_cmd_log("kano-apps install --no-gui painter epdfview geany codecademy calculator leafpad vnc")
+        run_cmd_log("kano-apps install --no-gui painter epdfview geany " \
+                    "codecademy calculator leafpad vnc")
 
     def beta_120_to_beta_121(self):
         install('espeak')
@@ -257,7 +259,8 @@ class PostUpdate(Scenarios):
         run_cmd_log("kano-apps install --no-gui --icon-only xbmc")
 
         if not os.path.exists("/etc/apt/sources.list.d/kano-xbmc.list"):
-            run_cmd_log("apt-key adv --keyserver keyserver.ubuntu.com --recv-key 5243CDED")
+            run_cmd_log("apt-key adv --keyserver keyserver.ubuntu.com " \
+                                    "--recv-key 5243CDED")
             with open("/etc/apt/sources.list.d/kano-xbmc.list", "w") as f:
                 f.write("deb http://repo.kano.me/xbmc/ wheezy contrib\n")
 
@@ -273,7 +276,7 @@ class PostUpdate(Scenarios):
             new_name = 'custom-theme.xml'
             try:
                 os.rename(path + old_name, path + new_name)
-            except:
+            except Exception:
                 pass
 
     def beta_124_to_beta_125(self):
@@ -294,10 +297,14 @@ class PostUpdate(Scenarios):
     def beta_134_to_beta_200(self):
         if not is_installed('kano-character-cli'):
             logger.info(
-                "kano-character-cli not installed, attempt to install kano-profile")
+                "kano-character-cli not installed, "\
+                "attempt to install kano-profile"
+            )
             install('kano-profile')
-        cmd = 'kano-character-cli -c "Judoka_Base" "Hair_Black" "Skin_Orange" -r -s'
-        run_cmd_log(cmd)
+        run_cmd_log(
+            'kano-character-cli -c "Judoka_Base" "Hair_Black" "Skin_Orange" ' \
+                               '-r -s'
+        )
 
     def beta_200_to_beta_201(self):
         pass

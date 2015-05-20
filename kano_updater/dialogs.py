@@ -81,7 +81,7 @@ def show_results(msg_upgraded, msg_added, msg_removed, debian_err_packages,
         add_text_to_end(text_buffer, msg_python_err)
 
     if not (msg_upgraded or msg_added or msg_removed or debian_err_packages or
-       appstate_after_nonclean or python_ok or python_err):
+            appstate_after_nonclean or python_ok or python_err):
         add_text_to_end(text_buffer, "No updates needed this time.", bold_tag)
 
     result_dialog.run()

@@ -173,8 +173,8 @@ def do_install(progress, status):
                         'OS and reflash your SD card.')
 
         msg = "{}: {}".format(title, description)
-        logger.error("Updating from a version that is no longer supported" + \
-                     "()".format(system_version))
+        logger.error("Updating from a version that is no longer supported ({})"
+                     .format(system_version))
         progress.error(msg)
         raise InstallError(msg)
 
@@ -198,9 +198,9 @@ def do_install(progress, status):
     progress.start('preupdate')
     try:
         preup.run()
-    except Exception as e:
+    except Exception as err:
         logger.error('The pre-update scenarios failed.')
-        logger.error(str(e))
+        logger.error(str(err))
         progress.abort(_('The pre-update tasks failed.'))
         raise
 
@@ -215,9 +215,9 @@ def do_install(progress, status):
     progress.start('postupdate')
     try:
         postup.run()
-    except Exception as e:
+    except Exception as err:
         logger.error('The post-update scenarios failed.')
-        logger.error(str(e))
+        logger.error(str(err))
         progress.abort(_('The post-update tasks failed.'))
         raise
 
@@ -254,6 +254,6 @@ def install_pip_packages(progress):
             msg = "Installing the '{}' pip package failed".format(pkg)
             logger.error(msg)
             if not is_internet():
-                msg="Network is down, aborting PIP install"
+                msg = "Network is down, aborting PIP install"
                 logger.error(msg)
                 raise IOError(msg)

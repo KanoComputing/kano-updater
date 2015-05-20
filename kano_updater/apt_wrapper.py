@@ -61,7 +61,7 @@ class AptWrapper(object):
 
     """
     def install(self, packages, progress=None):
-        if type(packages) is not list:
+        if not isinstance(packages, list):
             packages = [packages]
 
         for pkg in self._cache:
@@ -79,7 +79,7 @@ class AptWrapper(object):
 
     """
     def remove(self, packages, purge=False, progress=None):
-        if type(packages) is not list:
+        if not isinstance(packages, list):
             packages = [packages]
 
         for pkg_name in packages:
@@ -96,7 +96,7 @@ class AptWrapper(object):
     """
 
     def upgrade(self, packages, progress=None):
-        if type(packages) is not list:
+        if not isinstance(packages, list):
             packages = [packages]
 
         for pkg_name in packages:
@@ -193,8 +193,8 @@ class AptWrapper(object):
         if self._cache._depcache.broken_count:
             try:
                 self._cache._depcache.fix_broken()
-            except SystemError as e:
-                logger.error(e)
+            except SystemError as err:
+                logger.error(err)
 
             self._cache.clear()
             self._cache.open()
