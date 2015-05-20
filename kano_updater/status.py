@@ -111,7 +111,7 @@ class UpdaterStatus(object):
 
     @last_update.setter
     def last_update(self, value):
-        if type(value) is not int:
+        if not isinstance(value, int):
             msg = "'last_update' must be an Unix timestamp (int)."
             raise UpdaterStatusError(msg)
 
@@ -124,7 +124,7 @@ class UpdaterStatus(object):
 
     @last_check.setter
     def last_check(self, value):
-        if type(value) is not int:
+        if not isinstance(value, int):
             msg = "'last_check' must be an Unix timestamp (int)."
             raise UpdaterStatusError(msg)
 
