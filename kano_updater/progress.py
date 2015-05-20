@@ -93,14 +93,15 @@ class Progress(object):
 
         self._current_phase_idx = self._phases.index(phase)
 
-        log = "global({}%) local({}%): Starting '{}' ({}) [main phase '{}' ({})]".format(
-            phase.global_percent,
-            phase.percent,
-            phase.label,
-            phase.name,
-            phase.get_main_phase().label,
-            phase.get_main_phase().name
-        )
+        log = "global({}%) local({}%): " \
+              "Starting '{}' ({}) [main phase '{}' ({})]".format(
+                  phase.global_percent,
+                  phase.percent,
+                  phase.label,
+                  phase.name,
+                  phase.get_main_phase().label,
+                  phase.get_main_phase().name
+              )
         logger.debug(log)
 
         # Calculate current progres and emitt an event
@@ -148,15 +149,16 @@ class Progress(object):
         phase = self._get_phase_by_name(phase_name)
         phase.step = step
 
-        log = "global({}%) local({}%): Next step in '{}' ({})  [main phase '{}' ({})]: {}".format(
-            phase.global_percent,
-            phase.percent,
-            phase.label,
-            phase.name,
-            phase.get_main_phase().label,
-            phase.get_main_phase().name,
-            msg
-        )
+        log = "global({}%) local({}%): " \
+              "Next step in '{}' ({})  [main phase '{}' ({})]: {}".format(
+                  phase.global_percent,
+                  phase.percent,
+                  phase.label,
+                  phase.name,
+                  phase.get_main_phase().label,
+                  phase.get_main_phase().name,
+                  msg
+              )
         logger.debug(log)
         self._change(phase, msg)
 
