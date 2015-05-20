@@ -307,7 +307,7 @@ class CLIProgress(Progress):
         if not os.isatty(sys.stdin.fileno()):
             warn = "No tty, selecting the default answer for " + \
                    "'{}' which is: {}".format(question, answers[0])
-            logger.warn(msg)
+            logger.warn(warn)
             return answers[0]
         else:
             print msg
