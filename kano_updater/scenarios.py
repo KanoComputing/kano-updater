@@ -276,7 +276,7 @@ class PostUpdate(Scenarios):
             new_name = 'custom-theme.xml'
             try:
                 os.rename(path + old_name, path + new_name)
-            except:
+            except Exception:
                 pass
 
     def beta_124_to_beta_125(self):

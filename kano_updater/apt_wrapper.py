@@ -193,8 +193,8 @@ class AptWrapper(object):
         if self._cache._depcache.broken_count:
             try:
                 self._cache._depcache.fix_broken()
-            except SystemError as e:
-                logger.error(e)
+            except SystemError as err:
+                logger.error(err)
 
             self._cache.clear()
             self._cache.open()

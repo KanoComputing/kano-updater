@@ -71,7 +71,7 @@ class UpdaterStatus(object):
                 data['state']
                 data['last_update']
                 data['last_check']
-            except:
+            except Exception:
                 # Initialise the file again if it is corrupted
                 logger.warn("The status file was corrupted.")
                 self.save()
