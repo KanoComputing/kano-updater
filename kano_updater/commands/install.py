@@ -254,6 +254,6 @@ def install_pip_packages(progress):
             msg = "Installing the '{}' pip package failed".format(pkg)
             logger.error(msg)
             if not is_internet():
-                msg="Network is down, aborting PIP install"
+                msg = "Network is down, aborting PIP install"
                 logger.error(msg)
                 raise IOError(msg)
