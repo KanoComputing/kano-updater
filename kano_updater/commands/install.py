@@ -173,8 +173,8 @@ def do_install(progress, status):
                         'OS and reflash your SD card.')
 
         msg = "{}: {}".format(title, description)
-        logger.error("Updating from a version that is no longer supported" + \
-                     "()".format(system_version))
+        logger.error("Updating from a version that is no longer supported ({})"
+                     .format(system_version))
         progress.error(msg)
         raise InstallError(msg)
 
