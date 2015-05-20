@@ -309,7 +309,7 @@ class CLIProgress(Progress):
             return answers[0]
         else:
             print msg
-            norm_answers = map(lambda l: l.strip().lower(), answers)
+            norm_answers = [answer.strip().lower() for answer in answers]
             q_str = "{} [{}]: ".format(question, "/".join(norm_answers))
 
             answer = raw_input(q_str)
