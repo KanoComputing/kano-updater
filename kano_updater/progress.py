@@ -217,16 +217,16 @@ class Progress(object):
             :type msg: str
         """
 
-        raise NotImplemented('The _change callback must be implemented')
+        raise NotImplementedError('The _change callback must be implemented')
 
     def _error(self, phase, msg):
-        raise NotImplemented('The _error callback must be implemented')
+        raise NotImplementedError('The _error callback must be implemented')
 
     def _abort(self, phase, msg):
-        raise NotImplemented('The _abort callback must be implemented')
+        raise NotImplementedError('The _abort callback must be implemented')
 
     def _done(self, msg):
-        raise NotImplemented('The _done callback must be implemented')
+        raise NotImplementedError('The _done callback must be implemented')
 
     def _prompt(self, msg, question, answers):
         """
@@ -245,7 +245,7 @@ class Progress(object):
             :rtype: str
         """
 
-        raise NotImplemented('The _prompt callback must be implemented')
+        raise NotImplementedError('The _prompt callback must be implemented')
 
     def _relaunch(self):
         """
