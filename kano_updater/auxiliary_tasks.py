@@ -31,7 +31,7 @@ def run_aux_tasks(progress):
         update_home_folders_from_skel()
     except Exception:
         logger.error("Updating home folders failed. See the traceback bellow:")
-        _, _, tb = sys.exc_info()
+        _out, _err, tb = sys.exc_info()
         for tb_line in traceback.format_tb(tb):
             logger.error(tb_line)
 
