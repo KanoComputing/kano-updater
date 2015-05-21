@@ -79,13 +79,6 @@ def launch_boot_gui():
         except Exception:
             pass
 
-        try:
-            from kano_updater.version import VERSION
-            from kano_profile.tracker import track_data
-            track_data('updated-to', VERSION)
-        except Exception:
-            pass
-
         from kano_updater.ui.changes_dialog import ChangesDialog
         win = ChangesDialog()
         win.run()
