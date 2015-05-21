@@ -44,7 +44,7 @@
 
 #define CHECK_FOR_UPDATES_CMD "sudo /usr/bin/kano-updater check --gui"
 #define DOWNLOAD_CMD "sudo /usr/bin/kano-updater download --low-prio"
-#define INSTALL_CMD "sudo /usr/bin/kano-updater install --gui"
+#define INSTALL_CMD "sudo /usr/bin/kano-updater install --gui --no-confirm"
 #define SOUND_CMD "/usr/bin/aplay /usr/share/kano-media/sounds/kano_open_app.wav"
 
 #define PLUGIN_TOOLTIP _("Kano Updater")
@@ -83,7 +83,7 @@
 		"\"title\": \"Download Started\"," \
 		"\"byline\": \"The updates are downloading.\"," \
 		"\"image\": \"/usr/share/kano-updater/images/notification-updates-available.png\"," \
-		"\"type\": \"small\"," \
+		"\"type\": \"small\"" \
 	"}\n"
 
 #define UPDATES_DOWNLOADED_NOTIFICATION \
