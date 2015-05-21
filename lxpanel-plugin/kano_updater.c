@@ -44,7 +44,7 @@
 
 #define CHECK_FOR_UPDATES_CMD "sudo /usr/bin/kano-updater check --gui"
 #define DOWNLOAD_CMD "sudo /usr/bin/kano-updater download --low-prio"
-#define INSTALL_CMD "sudo /usr/bin/kano-updater install --gui"
+#define INSTALL_CMD "sudo /usr/bin/kano-updater install --gui --no-confirm"
 #define SOUND_CMD "/usr/bin/aplay /usr/share/kano-media/sounds/kano_open_app.wav"
 
 #define PLUGIN_TOOLTIP _("Kano Updater")
@@ -83,7 +83,7 @@
 		"\"title\": \"Download Started\"," \
 		"\"byline\": \"The updates are downloading.\"," \
 		"\"image\": \"/usr/share/kano-updater/images/notification-updates-available.png\"," \
-		"\"type\": \"small\"," \
+		"\"type\": \"small\"" \
 	"}\n"
 
 #define UPDATES_DOWNLOADED_NOTIFICATION \
@@ -352,7 +352,7 @@ static gboolean update_status(kano_updater_plugin_t *plugin_data)
 		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
 						UPDATES_DOWNLOADED_ICON_FILE);
 
-		if (g_strcmp0(plugin_data->prev_state, "downloading-updates") == 0)
+		if (g_strcmp0(plugin_data->prev_state, plugin_data->state) != 0)
 			show_notification(UPDATES_DOWNLOADED_NOTIFICATION);
 	} else {
 		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
