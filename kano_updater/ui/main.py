@@ -71,11 +71,17 @@ def launch_check_gui():
 def launch_boot_gui():
     old_status = clean()
     if old_status == UpdaterStatus.UPDATES_INSTALLED:
-        # TODO: Implement the updater dialog properly
-        title = 'Kano OS was updated'
-        text = 'The update completed successfully. Enjoy the new version!'
-        run_cmd("kano-dialog title=\"{}\" description=\"{}\"".format(title,
-                                                                     text))
+        try:
+            from kano_profile.badges import \
+                increment_app_state_variable_with_dialog
+            increment_app_state_variable_with_dialog(
+                'kano-updater', 'updated', 1)
+        except Exception:
+            pass
+
+        from kano_updater.ui.changes_dialog import ChangesDialog
+        win = ChangesDialog()
+        win.run()
 
 
 def launch_relaunch_countdown_gui(parent_pid):
