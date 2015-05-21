@@ -5,7 +5,7 @@ python_modules usr/share/kano-updater
 kano_updater usr/lib/python2.7/dist-packages/
 
 lxpanel-plugin/kano_updater.so usr/lib/arm-linux-gnueabihf/lxpanel/plugins/
-lxpanel-plugin/*.png usr/share/kano-updater/images/
+lxpanel-plugin/images usr/share/kano-updater/
 
 icon/updater.app usr/share/applications/
 icon/kano-updater.png usr/share/icons/Kano/66x66/apps/
