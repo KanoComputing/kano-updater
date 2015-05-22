@@ -10,8 +10,6 @@
 import os
 import signal
 
-from gi.repository import GObject, Gtk
-
 from kano.utils import run_cmd
 from kano.logging import logger
 
@@ -35,6 +33,8 @@ def relaunch_required():
 
 
 def launch_install_gui(confirm=True, splash_pid=None):
+    from gi.repository import GObject, Gtk
+
     from kano_updater.ui.available_window import UpdatesDownloadedWindow
     from kano_updater.ui.install_window import InstallWindow
 
@@ -57,6 +57,8 @@ def launch_install_gui(confirm=True, splash_pid=None):
 
 
 def launch_check_gui():
+    from gi.repository import Gtk
+
     rv = check_for_updates()
     if rv:
         from kano_updater.ui.available_window import UpdatesAvailableWindow
@@ -69,6 +71,8 @@ def launch_check_gui():
 
 
 def launch_boot_gui():
+    # FIXME: This window uses Gtk2 which requires the other Gtk imports to be
+    #        loaded in the scope of the functions that require them.
     old_status = clean()
     if old_status == UpdaterStatus.UPDATES_INSTALLED:
         try:
@@ -85,6 +89,7 @@ def launch_boot_gui():
 
 
 def launch_relaunch_countdown_gui(parent_pid):
+    from gi.repository import GObject, Gtk
     from kano_updater.ui.relaunch_window import RelaunchWindow
 
     GObject.threads_init()
