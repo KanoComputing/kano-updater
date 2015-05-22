@@ -307,6 +307,4 @@ class PostUpdate(Scenarios):
         )
 
     def beta_200_to_beta_201(self):
-        home_dir = os.path.expanduser('~')
-        youtube_file = os.path.join(home_dir, '.kdesktop/YouTube.lnk')
-        remove_user_files([youtube_file])
+        remove_user_files(['.kdesktop/YouTube.lnk'])
