@@ -32,7 +32,7 @@ def relaunch_required():
     splash_pid = show_relaunch_splash()
 
 
-def launch_install_gui(confirm=True, splash_pid=None):
+def launch_install_gui(confirm=False, splash_pid=None):
     from gi.repository import GObject, Gtk
 
     from kano_updater.ui.available_window import UpdatesDownloadedWindow
@@ -74,7 +74,23 @@ def launch_boot_gui():
     # FIXME: This window uses Gtk2 which requires the other Gtk imports to be
     #        loaded in the scope of the functions that require them.
     old_status = clean()
-    if old_status == UpdaterStatus.UPDATES_INSTALLED:
+    if old_status == UpdaterStatus.INSTALLING_UPDATES:
+        from kano.gtk3.kano_dialog import KanoDialog
+        d = KanoDialog(
+            'Continue updating',
+            'The update you started didn\'t finish. Would you like to '
+            'continue?',
+            [{"label": "YES", "return_value": True, "color": "green"}],
+            orange_info={'name': 'SKIP', 'return_value': False},
+        )
+        rv = d.run()
+        del d
+        if rv:
+            status = UpdaterStatus.get_instance()
+            status.state = UpdaterStatus.NO_UPDATES
+            status.save()
+            launch_install_gui(False)
+    elif old_status == UpdaterStatus.UPDATES_INSTALLED:
         try:
             from kano_profile.badges import \
                 increment_app_state_variable_with_dialog
