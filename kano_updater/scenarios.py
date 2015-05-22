@@ -307,5 +307,4 @@ class PostUpdate(Scenarios):
         )
 
     def beta_200_to_beta_201(self):
-        pass
-
+        remove_user_files(['.kdesktop/YouTube.lnk'])
