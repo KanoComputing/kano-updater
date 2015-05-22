@@ -51,7 +51,12 @@ def install(progress=None):
 
         if answer.lower() == 'ok':
             run_cmd('sudo expand-rootfs')
+
+            status.state = UpdaterStatus.INSTALLING_UPDATES
+            status.save()
+
             os.system('sudo reboot')
+
         else:
             logger.error(err_msg)
             progress.fail(err_msg)
