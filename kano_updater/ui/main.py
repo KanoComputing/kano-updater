@@ -17,8 +17,7 @@ from kano_updater.commands.check import check_for_updates
 from kano_updater.commands.clean import clean
 from kano_updater.progress import Relaunch
 from kano_updater.status import UpdaterStatus
-from kano_updater.utils import show_relaunch_splash
-
+from kano_updater.utils import show_relaunch_splash, remove_pid_file
 
 relaunch_required_flag = False
 splash_pid = None
@@ -85,11 +84,17 @@ def launch_boot_gui():
         )
         rv = d.run()
         del d
+
         if rv:
             status = UpdaterStatus.get_instance()
             status.state = UpdaterStatus.NO_UPDATES
             status.save()
-            launch_install_gui(False)
+
+            remove_pid_file()
+
+            cmd_args = ['kano-updater', 'install', '--gui', '--no-confirm']
+            os.execvp('kano-updater', cmd_args)
+
     elif old_status == UpdaterStatus.UPDATES_INSTALLED:
         try:
             from kano_profile.badges import \
