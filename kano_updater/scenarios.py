@@ -126,6 +126,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-2.0.0", "Kanux-Beta-2.0.1",
                           self.beta_200_to_beta_201)
 
+        self.add_scenario("Kanux-Beta-2.0.1", "Kanux-Beta-2.1.0",
+                          self.beta_201_to_beta_210)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -180,6 +183,9 @@ class PreUpdate(Scenarios):
         # users home directory permissions fixed
         run_cmd_log('/usr/bin/repair-homedir-permissions')
 
+    def beta_201_to_beta_210(self):
+        pass
+
     # Not used at the moment: dev.kano.me > repo.kano.me
     def _migrate_repo_url(self):
         migrate_repository('/etc/apt/sources.list.d/kano.list',
@@ -232,6 +238,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-2.0.0", "Kanux-Beta-2.0.1",
                           self.beta_200_to_beta_201)
+
+        self.add_scenario("Kanux-Beta-2.0.1", "Kanux-Beta-2.1.0",
+                          self.beta_201_to_beta_210)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -308,3 +317,6 @@ class PostUpdate(Scenarios):
 
     def beta_200_to_beta_201(self):
         remove_user_files(['.kdesktop/YouTube.lnk'])
+
+    def beta_201_to_beta_210(self):
+        pass
