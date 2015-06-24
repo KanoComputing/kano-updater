@@ -46,6 +46,8 @@
 #define DOWNLOAD_CMD "sudo /usr/bin/kano-updater download --low-prio"
 #define INSTALL_CMD "sudo /usr/bin/kano-updater install --gui --no-confirm"
 #define SOUND_CMD "/usr/bin/aplay /usr/share/kano-media/sounds/kano_open_app.wav"
+#define DIALOG_CMD \
+	"/usr/bin/kano-dialog title=\"Updater\" description=\"My brain already has the latest bits and bytes - high five!\" button=OK"
 
 #define PLUGIN_TOOLTIP _("Kano Updater")
 
@@ -383,7 +385,11 @@ void install_clicked(GtkWidget *widget, gpointer data)
 void check_for_updates_clicked(GtkWidget *widget,
 			       kano_updater_plugin_t *plugin_data)
 {
-	launch_cmd(CHECK_FOR_UPDATES_CMD,  "kano-updater");
+	launch_cmd(CHECK_FOR_UPDATES_CMD, "kano-updater");
+	/* Display message if no updates are available */
+	if (IS_IN_STATE(plugin_data, "no-updates")) {
+		launch_cmd(DIALOG_CMD, NULL);
+	}
 }
 
 static void menu_add_item(GtkWidget *menu, gchar *label, gpointer activate_cb,
