@@ -43,6 +43,7 @@ if __name__ == '__main__' and __package__ is None:
     else:
         locale_path = None
 
+import kano.notifications as notifications
 from kano.utils import enforce_root
 from kano.logging import logger
 
@@ -63,9 +64,21 @@ from kano_updater.utils import make_low_prio, install_docopt, is_running, \
 def clean_up():
     remove_pid_file()
 
+    status = UpdaterStatus.get_instance()
+    status.is_gui_running = False
+    status.save()
+
+    notifications.resume()
+
 
 def run_install(gui=False, confirm=True, splash_pid=None):
     if gui:
+        notifications.pause()
+
+        status = UpdaterStatus.get_instance()
+        status.is_gui_running = True
+        status.save()
+
         from kano_updater.ui.main import launch_install_gui
 
         try:

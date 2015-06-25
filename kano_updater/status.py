@@ -55,6 +55,7 @@ class UpdaterStatus(object):
         self._state = self.NO_UPDATES
         self._last_check = 0
         self._last_update = 0
+        self._is_gui_running = False
 
         ensure_dir(os.path.dirname(self._status_file))
         if not os.path.exists(self._status_file):
@@ -81,11 +82,15 @@ class UpdaterStatus(object):
             self._last_update = data['last_update']
             self._last_check = data['last_check']
 
+            if 'is_gui_running' in data:
+                self._is_gui_running = (data['is_gui_running'] == 1)
+
     def save(self):
         data = {
             'state': self._state,
             'last_update': self._last_update,
-            'last_check': self._last_check
+            'last_check': self._last_check,
+            'is_gui_running': 1 if self._is_gui_running else 0
         }
 
         with open(self._status_file, 'w') as status_file:
@@ -129,3 +134,20 @@ class UpdaterStatus(object):
             raise UpdaterStatusError(msg)
 
         self._last_check = value
+
+    """
+    # -- is_gui_running
+
+    Stored internally as a boolean but saved to file as 0/1 to interface with C
+    """
+    @property
+    def is_gui_running(self):
+        return self._is_gui_running
+
+    @is_gui_running.setter
+    def is_gui_running(self, value):
+        if not isinstance(value, bool):
+            msg = "'is_gui_running' must be a boolean value."
+            raise UpdaterStatusError(msg)
+
+        self._is_gui_running = value
