@@ -109,6 +109,7 @@ typedef struct {
 	gchar *prev_state;
 	int last_update;
 	int last_check;
+	int is_gui_running;
 
 	GtkWidget *icon;
 
@@ -141,6 +142,7 @@ static GtkWidget *plugin_constructor(LXPanel *panel, config_setting_t *settings)
 	plugin_data->prev_state = g_new0(gchar, MAX_STATE_LENGTH);
 	plugin_data->last_update = 0;
 	plugin_data->last_check = 0;
+	plugin_data->is_gui_running = FALSE;
 
 	GtkWidget *icon = gtk_image_new_from_file(NO_UPDATES_ICON_FILE);
 	plugin_data->icon = icon;
@@ -319,6 +321,9 @@ static gboolean read_status(kano_updater_plugin_t *plugin_data)
                     plugin_data->last_update = (int) 
                         json_object_get_number(root, "last_update");
 
+                    plugin_data->is_gui_running = (int)
+                        json_object_get_number(root, "is_gui_running");
+
                     json_value_free(root_value);
                     return TRUE;
                 }
@@ -340,19 +345,22 @@ static gboolean update_status(kano_updater_plugin_t *plugin_data)
 		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
 						  UPDATES_AVAILABLE_ICON_FILE);
 
-		if (g_strcmp0(plugin_data->prev_state, plugin_data->state) != 0)
+		if (g_strcmp0(plugin_data->prev_state, plugin_data->state) != 0 &&
+			!plugin_data->is_gui_running)
 			show_notification(UPDATES_AVAILABLE_NOTIFICATION);
 	} else if (IS_IN_STATE(plugin_data, "downloading-updates")) {
 		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
 						DOWNLOADING_UPDATES_ICON_FILE);
 
-		if (g_strcmp0(plugin_data->prev_state, plugin_data->state) != 0)
+		if (g_strcmp0(plugin_data->prev_state, plugin_data->state) != 0 &&
+			!plugin_data->is_gui_running)
 			show_notification(UPDATES_DOWNLOADING_NOTIFICATION);
 	} else if (IS_IN_STATE(plugin_data, "updates-downloaded")) {
 		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
 						UPDATES_DOWNLOADED_ICON_FILE);
 
-		if (g_strcmp0(plugin_data->prev_state, plugin_data->state) != 0)
+		if (g_strcmp0(plugin_data->prev_state, plugin_data->state) != 0 &&
+			!plugin_data->is_gui_running)
 			show_notification(UPDATES_DOWNLOADED_NOTIFICATION);
 	} else {
 		gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
