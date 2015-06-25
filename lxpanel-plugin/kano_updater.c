@@ -310,23 +310,23 @@ static gboolean read_status(kano_updater_plugin_t *plugin_data)
 	if (json_value_get_type(root_value) == JSONObject) {
 		root = json_value_get_object(root_value);
 
-                // Sanity check for json expected format
-                char *state=(char *)json_object_get_string(root, "state");
-                if (state) {
-                    SET_STATE(plugin_data, state);
+		// Sanity check for json expected format
+		char *state = (char *)json_object_get_string(root, "state");
+		if (state) {
+			SET_STATE(plugin_data, state);
 
-                    plugin_data->last_check = (int) 
-                        json_object_get_number(root, "last_check");
+			plugin_data->last_check = (int)
+				json_object_get_number(root, "last_check");
 
-                    plugin_data->last_update = (int) 
-                        json_object_get_number(root, "last_update");
+			plugin_data->last_update = (int)
+				json_object_get_number(root, "last_update");
 
-                    plugin_data->is_gui_running = (int)
-                        json_object_get_number(root, "is_gui_running");
+			plugin_data->is_gui_running = (int)
+				json_object_get_number(root, "is_gui_running");
 
-                    json_value_free(root_value);
-                    return TRUE;
-                }
+			json_value_free(root_value);
+			return TRUE;
+		}
 	}
 
 	json_value_free(root_value);
