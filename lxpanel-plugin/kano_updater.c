@@ -46,8 +46,6 @@
 #define DOWNLOAD_CMD "sudo /usr/bin/kano-updater download --low-prio"
 #define INSTALL_CMD "sudo /usr/bin/kano-updater install --gui --no-confirm"
 #define SOUND_CMD "/usr/bin/aplay /usr/share/kano-media/sounds/kano_open_app.wav"
-#define DIALOG_CMD \
-    "/usr/bin/kano-dialog title=\"Updater\" description=\"My brain already has the latest bits and bytes - high five!\" button=OK"
 
 #define PLUGIN_TOOLTIP _("Kano Updater")
 
