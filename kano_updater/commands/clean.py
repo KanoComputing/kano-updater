@@ -32,7 +32,7 @@ def clean():
         msg = "The status was changed to: {}".format(status.state)
         logger.debug(msg)
 
-    status.is_gui_running = False
+    status.notifications_muted = False
 
     status.save()
 
