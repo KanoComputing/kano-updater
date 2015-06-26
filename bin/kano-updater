@@ -66,7 +66,7 @@ def clean_up():
     remove_pid_file()
 
     status = UpdaterStatus.get_instance()
-    status.is_gui_running = False
+    status.notifications_muted = False
     status.save()
 
     notifications.resume()
@@ -77,7 +77,7 @@ def run_install(gui=False, confirm=True, splash_pid=None):
         notifications.pause()
 
         status = UpdaterStatus.get_instance()
-        status.is_gui_running = True
+        status.notifications_muted = True
         status.save()
 
         from kano_updater.ui.main import launch_install_gui
