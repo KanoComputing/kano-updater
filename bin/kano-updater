@@ -70,6 +70,7 @@ def clean_up():
     status.save()
 
     notifications.resume()
+    logger.flush()
 
 
 def run_install(gui=False, confirm=True, splash_pid=None):
@@ -85,7 +86,6 @@ def run_install(gui=False, confirm=True, splash_pid=None):
         try:
             launch_install_gui(confirm=confirm, splash_pid=splash_pid)
         except Relaunch as relaunch_exception:
-            logger.flush()
             clean_up()
             cmd_args = ['kano-updater', 'install', '--gui', '--no-confirm']
             if relaunch_exception.pid:
@@ -96,7 +96,6 @@ def run_install(gui=False, confirm=True, splash_pid=None):
             progress = CLIProgress()
             install(progress)
         except Relaunch:
-            logger.flush()
             clean_up()
             os.execvp('kano-updater', ['kano-updater', 'install'])
 
