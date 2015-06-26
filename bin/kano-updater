@@ -31,25 +31,24 @@ Options:
 
 import os
 import sys
-import gettext
 import atexit
 import time
 
 if __name__ == '__main__' and __package__ is None:
-    dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    if dir_path != '/usr':
-        sys.path.insert(0, dir_path)
-        locale_path = os.path.join(dir_path, 'locale')
+    DIR_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    if DIR_PATH != '/usr':
+        sys.path.insert(0, DIR_PATH)
+        LOCALE_PATH = os.path.join(DIR_PATH, 'locale')
     else:
-        locale_path = None
+        LOCALE_PATH = None
+
+import kano_i18n.init
+kano_i18n.init.install('kano-updater', LOCALE_PATH)
 
 import kano.notifications as notifications
 from kano.utils import enforce_root
 from kano.logging import logger
 from kano.gtk3.kano_dialog import KanoDialog
-
-# FIXME Move into separate module
-gettext.install('kano-updater', locale_path, unicode=1)
 
 from kano_updater.os_version import TARGET_VERSION
 from kano_updater.commands.download import download
