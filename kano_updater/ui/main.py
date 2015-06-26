@@ -72,7 +72,9 @@ def launch_check_gui():
 def launch_boot_gui():
     # FIXME: This window uses Gtk2 which requires the other Gtk imports to be
     #        loaded in the scope of the functions that require them.
-    old_status = clean()
+    old_status = clean(dry_run=True)
+    status = UpdaterStatus.get_instance()
+
     if old_status == UpdaterStatus.INSTALLING_UPDATES:
         from kano.gtk3.kano_dialog import KanoDialog
         d = KanoDialog(
@@ -86,7 +88,7 @@ def launch_boot_gui():
         del d
 
         if rv:
-            status = UpdaterStatus.get_instance()
+            status.notifications_muted = True
             status.state = UpdaterStatus.NO_UPDATES
             status.save()
 
@@ -107,6 +109,8 @@ def launch_boot_gui():
         from kano_updater.ui.changes_dialog import ChangesDialog
         win = ChangesDialog()
         win.run()
+
+    status.save()
 
 
 def launch_relaunch_countdown_gui(parent_pid):
