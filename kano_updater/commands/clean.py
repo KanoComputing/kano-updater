@@ -11,7 +11,7 @@ from kano_updater.status import UpdaterStatus
 # from kano_updater.ui.
 
 
-def clean():
+def clean(dry_run=False):
     status = UpdaterStatus.get_instance()
 
     old_status = status.state
@@ -34,6 +34,7 @@ def clean():
 
     status.notifications_muted = False
 
-    status.save()
+    if not dry_run:
+        status.save()
 
     return old_status
