@@ -392,16 +392,7 @@ void install_clicked(GtkWidget *widget, gpointer data)
 
 void check_for_updates_clicked(GtkWidget *widget, kano_updater_plugin_t *plugin_data)
 {
-    // launch_cmd can't be used because we need to wait for 
-    // the command to finish
-    kdesk_hourglass_start("kano-dialog");
-    system(CHECK_FOR_UPDATES_CMD);
-    kdesk_hourglass_end();
-
-    /* Display message if no updates are available */
-    if (IS_IN_STATE(plugin_data, "no-updates")) {
-        launch_cmd(DIALOG_CMD, NULL);
-    }
+    launch_cmd(CHECK_FOR_UPDATES_CMD, "kano-updater");
 }
 
 static void menu_add_item(GtkWidget *menu, gchar *label, gpointer activate_cb,

@@ -46,6 +46,7 @@ if __name__ == '__main__' and __package__ is None:
 import kano.notifications as notifications
 from kano.utils import enforce_root
 from kano.logging import logger
+from kano.gtk3.kano_dialog import KanoDialog
 
 # FIXME Move into separate module
 gettext.install('kano-updater', locale_path, unicode=1)
@@ -180,15 +181,30 @@ def main():
 
             # There used to be a dialog pop up if an update was found
             # that we had removed (see the commented out lines bellow).
-            #if args['--gui']:
+            # if args['--gui']:
             #    from kano_updater.ui.main import launch_check_gui
             #    updates_available = launch_check_gui()
-            #else:
+            # else:
             updates_available = check_for_updates(progress=progress)
 
             if updates_available:
                 logger.info(_('Updates available.'))
             else:
+                if args['--gui']:
+                    # Show dialogue
+                    kdialog = KanoDialog(
+                        "Updater",
+                        "My brain already has the latest bits and bytes - high" \
+                        " five!",
+                        {
+                            "OK": {
+                                "return_value": True,
+                                "color": "green"
+                            },
+                        },
+                    )
+                    kdialog.run()
+                    del kdialog
                 logger.info(_('No updates found.'))
 
             # Return 0 if there's an update, 1 if there isn't one
