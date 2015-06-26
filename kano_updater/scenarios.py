@@ -311,8 +311,7 @@ class PostUpdate(Scenarios):
             )
             install('kano-profile')
         run_cmd_log(
-            'kano-character-cli -c "Judoka_Base" "Hair_Black" "Skin_Orange" ' \
-                               '-r -s'
+            'kano-character-cli -c "judoka" "Hair_Black" "Skin_Orange" -s'
         )
 
     def beta_200_to_beta_201(self):
