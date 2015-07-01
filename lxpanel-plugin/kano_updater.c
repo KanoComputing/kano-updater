@@ -172,8 +172,6 @@ static GtkWidget *plugin_constructor(LXPanel *panel, config_setting_t *settings)
 
     gtk_widget_set_sensitive(icon, TRUE);
 
-    update_status(plugin_data);
-
     plugin_data->timer = g_timeout_add(POLL_INTERVAL,
                        (GSourceFunc) check_for_updates,
                        (gpointer) plugin_data);
