@@ -267,3 +267,12 @@ def install_pip_packages(progress):
                 msg = "Network is down, aborting PIP install"
                 logger.error(msg)
                 raise IOError(msg)
+
+            # Try with the failsafe method
+            success_failsafe = run_pip_command(
+                "install --upgrade '{}'".format(pkg)
+            )
+            if not success_failsafe:
+                msg = "Installing the '{}' pip package failed (fsafe)".format(
+                    pkg)
+                logger.error(msg)
