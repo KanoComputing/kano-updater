@@ -12,7 +12,8 @@ from kano.logging import logger
 from kano.utils import read_file_contents_as_lines, get_free_space, run_cmd
 from kano.network import is_internet
 
-from kano_updater.paths import PIP_PACKAGES_LIST, SYSTEM_VERSION_FILE
+from kano_updater.paths import PIP_PACKAGES_LIST, SYSTEM_VERSION_FILE, \
+    PIP_CACHE_DIR
 from kano_updater.status import UpdaterStatus
 from kano_updater.os_version import OSVersion, bump_system_version, \
     TARGET_VERSION
@@ -247,8 +248,6 @@ def install_deb_packages(progress):
 def install_pip_packages(progress):
     phase_name = progress.get_current_phase().name
 
-    pip_cache = '/var/cache/kano-updater/pkg_cache'
-
     packages = read_file_contents_as_lines(PIP_PACKAGES_LIST)
     progress.init_steps(phase_name, len(packages))
 
@@ -257,7 +256,7 @@ def install_pip_packages(progress):
 
         success = run_pip_command(
             "install --upgrade --no-index --find-links=file://{} '{}'".format(
-                pip_cache, pkg)
+                PIP_CACHE_DIR, pkg)
         )
 
         if not success:

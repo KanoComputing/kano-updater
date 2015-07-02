@@ -9,7 +9,7 @@ from kano.network import is_internet
 from kano.logging import logger
 from kano.utils import read_file_contents_as_lines, ensure_dir
 
-from kano_updater.paths import PIP_PACKAGES_LIST
+from kano_updater.paths import PIP_PACKAGES_LIST, PIP_CACHE_DIR
 from kano_updater.status import UpdaterStatus
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.progress import DummyProgress, Phase
@@ -139,9 +139,7 @@ def _cache_pip_packages(progress):
     phase_name = 'downloading-pip-pkgs'
     progress.start(phase_name)
 
-    pip_cache = '/var/cache/kano-updater/pkg_cache'
-
-    ensure_dir(pip_cache)
+    ensure_dir(PIP_CACHE_DIR)
 
     packages = read_file_contents_as_lines(PIP_PACKAGES_LIST)
     progress.init_steps(phase_name, len(packages))
@@ -152,7 +150,8 @@ def _cache_pip_packages(progress):
         # The `--no-install` parameter has been deprecated in pip. However, the
         # version of pip in wheezy doesn't yet support the new approach which
         # is supposed to provide the same behaviour.
-        args = "install --upgrade --download '{}' '{}'".format(pip_cache, pkg)
+        args = "install --upgrade --download '{}' '{}'".format(PIP_CACHE_DIR,
+                                                               pkg)
         success = run_pip_command(args)
 
         # TODO: abort the install?
