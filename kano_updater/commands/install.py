@@ -12,7 +12,8 @@ from kano.logging import logger
 from kano.utils import read_file_contents_as_lines, get_free_space, run_cmd
 from kano.network import is_internet
 
-from kano_updater.paths import PIP_PACKAGES_LIST, SYSTEM_VERSION_FILE
+from kano_updater.paths import PIP_PACKAGES_LIST, SYSTEM_VERSION_FILE, \
+    PIP_CACHE_DIR
 from kano_updater.status import UpdaterStatus
 from kano_updater.os_version import OSVersion, bump_system_version, \
     TARGET_VERSION
@@ -44,7 +45,7 @@ def install(progress=None):
         logger.warn(err_msg)
         answer = progress.prompt(
             'Feeling full!',
-            'My brain is feeling a bit full, but I can make some more ' \
+            'My brain is feeling a bit full, but I can make some more '
             'room if you\'d like?',
             ['OK', 'CANCEL']
         )
@@ -253,7 +254,10 @@ def install_pip_packages(progress):
     for pkg in packages:
         progress.next_step(phase_name, "Installing {}".format(pkg))
 
-        success = run_pip_command("install --upgrade '{}'".format(pkg))
+        success = run_pip_command(
+            "install --upgrade --no-index --find-links=file://{} '{}'".format(
+                PIP_CACHE_DIR, pkg)
+        )
 
         if not success:
             msg = "Installing the '{}' pip package failed".format(pkg)
@@ -262,3 +266,12 @@ def install_pip_packages(progress):
                 msg = "Network is down, aborting PIP install"
                 logger.error(msg)
                 raise IOError(msg)
+
+            # Try with the failsafe method
+            success_failsafe = run_pip_command(
+                "install --upgrade '{}'".format(pkg)
+            )
+            if not success_failsafe:
+                msg = "Installing the '{}' pip package failed (fsafe)".format(
+                    pkg)
+                logger.error(msg)
