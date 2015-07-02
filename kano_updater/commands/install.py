@@ -44,7 +44,7 @@ def install(progress=None):
         logger.warn(err_msg)
         answer = progress.prompt(
             'Feeling full!',
-            'My brain is feeling a bit full, but I can make some more ' \
+            'My brain is feeling a bit full, but I can make some more '
             'room if you\'d like?',
             ['OK', 'CANCEL']
         )
