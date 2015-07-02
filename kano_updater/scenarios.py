@@ -269,7 +269,7 @@ class PostUpdate(Scenarios):
 
         if not os.path.exists("/etc/apt/sources.list.d/kano-xbmc.list"):
             run_cmd_log("apt-key adv --keyserver keyserver.ubuntu.com " \
-                                    "--recv-key 5243CDED")
+                        "--recv-key 5243CDED")
             with open("/etc/apt/sources.list.d/kano-xbmc.list", "w") as f:
                 f.write("deb http://repo.kano.me/xbmc/ wheezy contrib\n")
 
@@ -318,4 +318,5 @@ class PostUpdate(Scenarios):
         remove_user_files(['.kdesktop/YouTube.lnk'])
 
     def beta_201_to_beta_210(self):
-        pass
+        from kano_settings.system.advanced import set_everyone_youtube_cookies
+        set_everyone_youtube_cookies()
