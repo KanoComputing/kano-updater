@@ -247,13 +247,18 @@ def install_deb_packages(progress):
 def install_pip_packages(progress):
     phase_name = progress.get_current_phase().name
 
+    pip_cache = '/var/cache/kano-updater/pkg_cache'
+
     packages = read_file_contents_as_lines(PIP_PACKAGES_LIST)
     progress.init_steps(phase_name, len(packages))
 
     for pkg in packages:
         progress.next_step(phase_name, "Installing {}".format(pkg))
 
-        success = run_pip_command("install --upgrade '{}'".format(pkg))
+        success = run_pip_command(
+            "install --upgrade --no-index --find-links=file://{} '{}'".format(
+                pip_cache, pkg)
+        )
 
         if not success:
             msg = "Installing the '{}' pip package failed".format(pkg)
