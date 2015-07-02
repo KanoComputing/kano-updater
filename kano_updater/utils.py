@@ -23,7 +23,7 @@ from kano.utils import run_print_output_error, run_cmd, run_cmd_log, \
     chown_path, is_gui, sed, get_user_unsudoed
 from kano.network import is_internet
 import kano.notifications as notifications
-from kano.tolset.timeout import timeout, TimeoutError
+from kano.toolset.timeout import timeout, TimeoutError
 # WARNING do not import GUI modules here (like KanoDialog)
 
 from kano_updater.paths import PIP_LOG_FILE
