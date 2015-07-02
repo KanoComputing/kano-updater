@@ -45,7 +45,6 @@ if __name__ == '__main__' and __package__ is None:
 import kano_i18n.init
 kano_i18n.init.install('kano-updater', LOCALE_PATH)
 
-import kano.notifications as notifications
 from kano.utils import enforce_root
 from kano.logging import logger
 from kano.gtk3.kano_dialog import KanoDialog
@@ -58,7 +57,7 @@ from kano_updater.commands.clean import clean
 from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
 from kano_updater.utils import make_low_prio, install_docopt, is_running, \
-    remove_pid_file
+    remove_pid_file, pause_notifications, resume_notifications
 
 
 def clean_up():
@@ -68,13 +67,13 @@ def clean_up():
     status.notifications_muted = False
     status.save()
 
-    notifications.resume()
+    resume_notifications()
     logger.flush()
 
 
 def run_install(gui=False, confirm=True, splash_pid=None):
     if gui:
-        notifications.pause()
+        pause_notifications()
 
         status = UpdaterStatus.get_instance()
         status.notifications_muted = True
