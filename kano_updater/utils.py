@@ -22,6 +22,8 @@ from kano.logging import logger
 from kano.utils import run_print_output_error, run_cmd, run_cmd_log, \
     chown_path, is_gui, sed, get_user_unsudoed
 from kano.network import is_internet
+import kano.notifications as notifications
+from kano.toolset.timeout import timeout, TimeoutError
 # WARNING do not import GUI modules here (like KanoDialog)
 
 from kano_updater.paths import PIP_LOG_FILE
@@ -135,6 +137,7 @@ def migrate_repository(apt_file, old_repo, new_repo):
 def _handle_sigusr1(signum, frame):
     pass
 
+
 def show_relaunch_splash():
     cmd = ["kano-updater", "ui", "relaunch-splash", str(os.getpid())]
     p = subprocess.Popen(cmd, shell=False)
@@ -147,6 +150,31 @@ def show_relaunch_splash():
 
     return p.pid
 
+#
+# wrappers for the notifications API to make sure it doesn't get stuck
+#
+
+
+def pause_notifications():
+    @timeout(3)
+    def _do_pause_notifications():
+        notifications.pause()
+
+    try:
+        _do_pause_notifications()
+    except TimeoutError:
+        pass
+
+
+def resume_notifications():
+    @timeout(3)
+    def _do_resume_notifications():
+        notifications.resume()
+
+    try:
+        _do_resume_notifications()
+    except TimeoutError:
+        pass
 
 # --------------------------------------
 
