@@ -225,8 +225,11 @@ def update_failed(err):
     kdialog = kano_dialog.KanoDialog(_("Update error"), msg)
     kdialog.run()
 
-
+# TODO: This function has been deprecated and should be removed in
+# one of the next few releases. Don't use this one (check out the
+# kano_apps.utils module for an equivalent).
 def get_dpkg_dict(include_unpacked=False):
+    logger.warn("get_dpkg_dict() has been deprecated.")
     apps_ok = dict()
     apps_other = dict()
 
