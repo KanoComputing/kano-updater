@@ -36,6 +36,10 @@ def install(progress=None):
     if not progress:
         progress = DummyProgress()
 
+    #
+    run_cmd('sudo kano-empty-trash')
+
+
     # Check for available disk space before updating
     # We require at least 1GB of space for the update to proceed
     # TODO: Take this value from apt
