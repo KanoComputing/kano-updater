@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+#
+# kano-empty-trash
+#
+# Copyright (C) 2015 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+#
+# When run as a user, deletes their trash. When run as root, re-executes for each user in 
+# group 'kanousers'
+
+import os
+import shutil
+import sys
+
+from kano.utils import run_cmd
+from kano.logging import logger
+from kano_settings.system.get_username import get_real_users, pwd_field_id
+
+def onerror(fn, path, excinfo):
+    logger.error('error deleting {}'.format(path))
+
+def empty_user_trash(path):
+    trash_dir = os.path.join(path, '.local', 'share', 'Trash')
+    if os.path.exists(trash_dir):
+        shutil.rmtree(trash_dir, False, onerror)
+
+
+def empty_all_trash():
+    '''
+    Delete all trash directories.
+    This function must be run as root.
+    '''
+
+    # Start by enumerating all users
+    path = '/home'
+    users = get_real_users()
+    
+    for user in users:
+        uid = user[pwd_field_id['pw_uid']]
+        uname = user[pwd_field_id['pw_name']]
+        # Must set home dir. Also set SUDO_USER to avoid problem with logger:
+        # it thinks it must be root if sudo is in effect, but this is not the case here.
+        os.system('sudo -H -u#{} SUDO_USER={} /usr/bin/kano-empty-trash '.format(uid, uname))
+
+
+
+if __name__ == '__main__':
+
+    if os.getuid():
+        if os.environ.has_key('HOME'):
+            empty_user_trash(os.environ['HOME'])
+        else:
+            logger.error('HOME unset')
+        sys.exit(0)
+    else:
+        
+        empty_all_trash()
+        sys.exit(0)
