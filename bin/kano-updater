@@ -34,6 +34,7 @@ import os
 import sys
 import atexit
 import time
+import signal
 
 if __name__ == '__main__' and __package__ is None:
     DIR_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -60,6 +61,17 @@ from kano_updater.status import UpdaterStatus
 from kano_updater.utils import make_low_prio, install_docopt, is_running, \
     remove_pid_file, pause_notifications, resume_notifications, show_kano_dialog
 import kano_updater.priority as Priority
+
+
+def sigterm_on_download(signo, frame):
+    status = UpdaterStatus.get_instance()
+    if status.state == UpdaterStatus.DOWNLOADING_UPDATES:
+        msg = 'Updater got SIGTERM  while downloading in the background'
+        logger.debug(msg)
+        # Download was interrupted, go back one state
+        status.state = UpdaterStatus.UPDATES_AVAILABLE
+    # Exit from the signal handler to trigger the atexit hook
+    sys.exit(0)
 
 
 def clean_up():
@@ -183,6 +195,7 @@ def main():
 
         if args['download']:
             if args['--low-prio']:
+                signal.signal(signal.SIGTERM, sigterm_on_download)
                 make_low_prio()
             download(progress, gui=False)
             run_install(gui=True)
