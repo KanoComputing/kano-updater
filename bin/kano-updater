@@ -141,6 +141,8 @@ def main():
         status = UpdaterStatus.get_instance()
         six_days_ago = int(time.time() - 6 * 24 * 60 * 60)
         status.last_check = status.last_update = six_days_ago
+        one_day_ago = int(time.time() - 24 * 60 * 60)
+        status.last_check_urgent = one_day_ago
         status.save()
     else:
         clean()
@@ -185,7 +187,13 @@ def main():
             updates_available = check_for_updates(progress=progress)
 
             if updates_available:
-                logger.info(_('Updates available.'))
+                status = UpdaterStatus.get_instance()
+                if status.is_urgent():
+                    logger.info(_('Urgent updates available.'))
+                    progress = CLIProgress()
+                    download(progress)
+                else:
+                    logger.info(_('Updates available.'))
             else:
                 if args['--gui']:
                     # Show dialogue

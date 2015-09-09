@@ -13,7 +13,7 @@ from kano.utils import read_file_contents_as_lines, get_free_space, run_cmd
 from kano.network import is_internet
 
 from kano_updater.paths import PIP_PACKAGES_LIST, SYSTEM_VERSION_FILE, \
-    PIP_CACHE_DIR
+    PIP_CACHE_DIR, SCHEDULE_SHUTDOWN_FILE_PATH
 from kano_updater.status import UpdaterStatus
 from kano_updater.os_version import OSVersion, bump_system_version, \
     TARGET_VERSION
@@ -21,7 +21,7 @@ from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.auxiliary_tasks import run_aux_tasks
 from kano_updater.progress import DummyProgress, Phase, Relaunch
-from kano_updater.utils import run_pip_command
+from kano_updater.utils import run_pip_command, create_empty_file
 from kano_updater.commands.download import download
 
 
@@ -38,7 +38,6 @@ def install(progress=None):
 
     #
     run_cmd('sudo kano-empty-trash')
-
 
     # Check for available disk space before updating
     # We require at least 1GB of space for the update to proceed
@@ -67,6 +66,18 @@ def install(progress=None):
             progress.fail(err_msg)
 
         return False
+
+    if status.state == UpdaterStatus.UPDATES_DOWNLOADED and status.is_urgent():
+        answer = progress.prompt(
+            'Updater',
+            'Urgent updates have been downloaded! We will need to install these as soon' /
+            ' as possible to ensure the best experience.',
+            ['NOW', 'AT SHUTDOWN']
+        )
+        install_now = answer.lower() == 'now'
+
+        if not install_now:
+            schedule_install_shutdown()
 
     if status.state == UpdaterStatus.INSTALLING_UPDATES:
         msg = 'The install is already running'
@@ -111,6 +122,10 @@ def install(progress=None):
         progress.fail(err.message)
 
         return False
+
+
+def schedule_install_shutdown():
+    create_empty_file(SCHEDULE_SHUTDOWN_FILE_PATH)
 
 
 def do_install(progress, status):

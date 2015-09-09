@@ -76,4 +76,4 @@ def check_for_updates(progress=None):
 
 def _do_check(progress):
     apt_handle.update(progress, sources_list=KANO_SOURCES_LIST)
-    return apt_handle.is_update_avaliable()
+    return apt_handle.is_update_available()

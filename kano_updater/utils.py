@@ -286,7 +286,7 @@ def get_installed_version(pkg):
 
 
 def get_update_status():
-    status = {"last_update": 0, "update_available": 0, "last_check": 0}
+    status = {"last_update": 0, "update_available": 0, "last_check": 0, "last_check_urgent": 0}
     if os.path.exists(STATUS_FILE):
         with open(STATUS_FILE, "r") as sf:
             for line in sf:
@@ -507,3 +507,10 @@ def add_text_to_end(text_buffer, text, tag=None):
         text_buffer.insert(end, text)
     else:
         text_buffer.insert_with_tags(end, text, tag)
+
+
+def create_empty_file(path):
+    basedir = os.path.dirname(path)
+    if not os.path.exists(basedir):
+        os.makedirs(basedir)
+    open(path, 'a').close()

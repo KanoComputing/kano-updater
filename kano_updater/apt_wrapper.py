@@ -161,7 +161,7 @@ class AptWrapper(object):
             if pkg.is_upgradable:
                 pkg.mark_upgrade()
 
-    def is_update_avaliable(self):
+    def is_update_available(self):
         for pkg in self._cache:
             if pkg.is_upgradable:
                 return True
