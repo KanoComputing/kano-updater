@@ -19,7 +19,7 @@ import kano_updater.priority as Priority
 KANO_SOURCES_LIST = '/etc/apt/sources.list.d/kano.list'
 
 
-def check_for_updates(progress=None):
+def check_for_updates(progress=None, priority=Priority.NONE):
     status = UpdaterStatus.get_instance()
 
     # FIXME: FOR DEBUGGING ONLY
@@ -61,7 +61,7 @@ def check_for_updates(progress=None):
         return False
 
 
-    update_type = _do_check(progress)
+    update_type = _do_check(progress, priority=priority)
     if update_type == Priority.NONE:
         status.state = UpdaterStatus.NO_UPDATES
         logger.debug('No updates available')
@@ -80,13 +80,19 @@ def check_for_updates(progress=None):
     return rv
 
 
-def _do_check(progress):
+def _do_check(progress, priority=Priority.NONE):
     apt_handle.update(progress, sources_list=KANO_SOURCES_LIST)
 
-    if apt_handle.is_update_avaliable(priority=Priority.URGENT):
+    if (
+            priority <= Priority.URGENT
+            and apt_handle.is_update_avaliable(priority=Priority.URGENT)
+        ):
         return Priority.URGENT
 
-    if apt_handle.is_update_avaliable():
+    if (
+            priority <= Priority.STANDARD
+            and apt_handle.is_update_avaliable()
+        ):
         return Priority.STANDARD
 
     return Priority.NONE
