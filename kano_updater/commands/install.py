@@ -67,17 +67,20 @@ def install(progress=None):
 
         return False
 
-    if status.state == UpdaterStatus.UPDATES_DOWNLOADED and status.is_urgent():
-        answer = progress.prompt(
-            'Updater',
-            'Urgent updates have been downloaded! We will need to install these as soon' /
-            ' as possible to ensure the best experience.',
-            ['NOW', 'AT SHUTDOWN']
-        )
-        install_now = answer.lower() == 'now'
+    # if we have not scheduled an install at shutdown yet
+    if not os.path.exists(SCHEDULE_SHUTDOWN_FILE_PATH):
+        # prompt user for scheduling if urgent updates are downloaded
+        if status.state == UpdaterStatus.UPDATES_DOWNLOADED and status.is_urgent():
+            answer = progress.prompt(
+                'Updater',
+                'Urgent updates have been downloaded! We will need to install these as soon' /
+                ' as possible to ensure the best experience.',
+                ['NOW', 'AT SHUTDOWN']
+            )
+            install_now = answer.lower() == 'now'
 
-        if not install_now:
-            schedule_install_shutdown()
+            if not install_now:
+                schedule_install_shutdown()
 
     if status.state == UpdaterStatus.INSTALLING_UPDATES:
         msg = 'The install is already running'

@@ -24,10 +24,6 @@ class DownloadError(Exception):
 def download(progress=None):
     status = UpdaterStatus.get_instance()
 
-    dialog_title = "Updater"
-    dialog_description = "Urgent updates have been found! We'll download these automatically," \
-                         " and ask you to schedule the install when they finish."
-
     if not progress:
         progress = DummyProgress()
 
@@ -51,14 +47,6 @@ def download(progress=None):
         if status.state == UpdaterStatus.NO_UPDATES:
             progress.finish(_('No updates to download'))
             return False
-
-        # show a dialog informing the user of an automatic urgent download
-        if status.is_urgent():
-            progress.prompt(
-                dialog_title,
-                dialog_description,
-                ['OK']
-            )
 
         progress.start('downloading')
 
@@ -95,8 +83,9 @@ def download(progress=None):
     # show a dialog informing the user of an automatic urgent download
     if status.is_urgent():
         progress.prompt(
-            dialog_title,
-            dialog_description,
+            "Updater",
+            "Urgent updates have been found! We'll download these automatically," /
+            " and ask you to schedule the install when they finish.",
             ['OK']
         )
 
