@@ -27,6 +27,7 @@ def clean(dry_run=False):
     elif status.state == UpdaterStatus.UPDATES_INSTALLED:
         # Show a dialog and change the state back to no updates
         status.state = UpdaterStatus.NO_UPDATES
+        status.is_urgent = False
 
     if status.state != old_status:
         msg = "The status was changed to: {}".format(status.state)

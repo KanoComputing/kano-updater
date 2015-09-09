@@ -15,6 +15,7 @@ from kano_updater.apt_wrapper import apt_handle
 from kano_updater.progress import DummyProgress, Phase
 from kano_updater.utils import run_pip_command, is_server_available, show_kano_dialog
 from kano_updater.commands.check import check_for_updates
+import kano_updater.priority as Priority
 
 
 class DownloadError(Exception):
@@ -92,8 +93,11 @@ def download(progress=None, gui=True):
     status.state = UpdaterStatus.DOWNLOADING_UPDATES
     status.save()
 
+    if status.is_urgent:
+        priority = Priority.URGENT
+
     try:
-        success = do_download(progress, status)
+        success = do_download(progress, status, priority=priority)
     except Exception as err:
         progress.fail(err.message)
         logger.error(err.message)
@@ -109,7 +113,7 @@ def download(progress=None, gui=True):
     return success
 
 
-def do_download(progress, status):
+def do_download(progress, status, priority=Priority.NONE):
     progress.split(
         Phase(
             'downloading-pip-pkgs',
@@ -132,18 +136,22 @@ def do_download(progress, status):
     )
 
     _cache_pip_packages(progress)
-    _cache_deb_packages(progress)
+    _cache_deb_packages(progress, priority=priority)
 
     progress.finish('Done downloading')
     # TODO: Figure out if it has actually worked
     return True
 
 
-def _cache_pip_packages(progress):
+def _cache_pip_packages(progress, priority=Priority.NONE):
     """
         Downloads all updatable python modules and caches them in pip's
         internal pacakge cache.
     """
+
+    # Urgent updates don't do PIP updates
+    if priority == Priority.URGENT:
+        return
 
     phase_name = 'downloading-pip-pkgs'
     progress.start(phase_name)
@@ -169,9 +177,9 @@ def _cache_pip_packages(progress):
             logger.error(msg)
 
 
-def _cache_deb_packages(progress):
+def _cache_deb_packages(progress, priority=Priority.NONE):
     progress.start('updating-sources')
     apt_handle.update(progress=progress)
 
     progress.start('downloading-apt-packages')
-    apt_handle.cache_updates(progress)
+    apt_handle.cache_updates(progress, priority=priority)
