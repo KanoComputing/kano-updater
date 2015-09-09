@@ -43,14 +43,17 @@
 #define UPDATE_STATUS_FILE "/var/cache/kano-updater/status.json"
 
 #define CHECK_FOR_UPDATES_CMD "sudo /usr/bin/kano-updater check --gui"
+/* TODO: #define CHECK_FOR_URGENT_UPDATES_CMD "sudo /usr/bin/kano-updater check --gui" */
 #define DOWNLOAD_CMD "sudo /usr/bin/kano-updater download --low-prio"
 #define INSTALL_CMD "sudo /usr/bin/kano-updater install --gui --no-confirm"
 #define SOUND_CMD "/usr/bin/aplay /usr/share/kano-media/sounds/kano_open_app.wav"
 
 #define PLUGIN_TOOLTIP _("Kano Updater")
 
-#define POLL_INTERVAL (10 * 60 * 1000) /* 10 minutes in microseconds*/
+/* Frequency with which we check for updates depending on priorities */
+#define POLL_INTERVAL (10 * 60 * 1000) /* 10 minutes in microseconds */
 #define CHECK_INTERVAL (60 * 60 * 24 * 7) /* 7 days */
+#define URGENT_CHECK_INTERVAL (60 * 60 * 24) /* 1 day */
 
 #define FIFO_FILENAME ".kano-notifications.fifo"
 
@@ -109,6 +112,7 @@ typedef struct {
     gchar *prev_state;
     int last_update;
     int last_check;
+    int last_check_urgent;
     int notifications_muted;
 
     GtkWidget *icon;
@@ -142,6 +146,7 @@ static GtkWidget *plugin_constructor(LXPanel *panel, config_setting_t *settings)
     plugin_data->prev_state = g_new0(gchar, MAX_STATE_LENGTH);
     plugin_data->last_update = 0;
     plugin_data->last_check = 0;
+    plugin_data->last_check_urgent = 0;
     plugin_data->notifications_muted = FALSE;
 
     GtkWidget *icon = gtk_image_new_from_file(NO_UPDATES_ICON_FILE);
@@ -246,9 +251,14 @@ static void launch_cmd(const char *cmd, const char *appname)
 static gboolean check_for_updates(kano_updater_plugin_t *plugin_data)
 {
     int now = time(NULL);
+    /* TODO */
+    // if ((now - plugin_data->last_check_urgent) >= URGENT_CHECK_INTERVAL) {
+    //     launch_cmd(CHECK_FOR_URGENT_UPDATES_CMD, NULL);
+    // }
     if ((now - plugin_data->last_check) >= CHECK_INTERVAL) {
         launch_cmd(CHECK_FOR_UPDATES_CMD, NULL);
     }
+
     return TRUE;
 }
 
@@ -315,6 +325,9 @@ static gboolean read_status(kano_updater_plugin_t *plugin_data)
 
             plugin_data->last_check = (int)
                 json_object_get_number(root, "last_check");
+
+            plugin_data->last_check_urgent = (int)
+                json_object_get_number(root, "last_check_urgent");
 
             plugin_data->last_update = (int)
                 json_object_get_number(root, "last_update");
