@@ -23,6 +23,7 @@ from kano_updater.auxiliary_tasks import run_aux_tasks
 from kano_updater.progress import DummyProgress, Phase, Relaunch
 from kano_updater.utils import run_pip_command, create_empty_file, show_kano_dialog
 from kano_updater.commands.download import download
+import kano_updater.priority as Priority
 
 
 class InstallError(Exception):
@@ -120,10 +121,38 @@ def is_scheduled():
     return os.path.exists(SCHEDULE_SHUTDOWN_FILE_PATH)
 
 
-def do_install(progress, status):
+def do_install(progress, status, priority=Priority.NONE):
     status.state = UpdaterStatus.INSTALLING_UPDATES
     status.save()
 
+    if priority == Priority.URGENT:
+        install_urgent(progress, status)
+    else:
+        install_standard(progress, status)
+
+    status.state = UpdaterStatus.UPDATES_INSTALLED
+    status.last_update = int(time.time())
+    status.save()
+
+    progress.finish('Update completed')
+    return True
+
+
+def install_urgent(progress, status):
+    progress.split(
+        Phase(
+            'installing-urgent',
+            _('Installing Hotfix'),
+            100,
+            is_main=True
+        )
+    )
+    logger.debug('Installing urgent hotfix')
+    progress.start('installing-urgent')
+    install_deb_packages(progress)
+
+
+def install_standard(progress, status):
     progress.split(
         Phase(
             'init',
@@ -244,19 +273,17 @@ def do_install(progress, status):
     progress.start('aux-tasks')
     run_aux_tasks(progress)
 
-    status.state = UpdaterStatus.UPDATES_INSTALLED
-    status.last_update = int(time.time())
-    status.save()
-
-    progress.finish('Update completed')
-    return True
 
 
-def install_deb_packages(progress):
-    apt_handle.upgrade_all(progress)
+def install_deb_packages(progress, priority=Priority.NONE):
+    apt_handle.upgrade_all(progress, priority=priority)
 
 
-def install_pip_packages(progress):
+def install_pip_packages(progress, priority=Priority.NONE):
+    # Urgent updates don't do PIP updates
+    if priority == Priority.URGENT:
+        return
+
     phase_name = progress.get_current_phase().name
 
     packages = read_file_contents_as_lines(PIP_PACKAGES_LIST)

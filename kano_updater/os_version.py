@@ -39,6 +39,10 @@ class OSVersion(object):
     def to_version_string(self):
         return "{}-{}-{}".format(self._os, self._codename, self._number)
 
+    @property
+    def version_number(self):
+        return self._number
+
     def __str__(self):
         return self.to_version_string()
 
@@ -56,6 +60,7 @@ class OSVersion(object):
 
 
 TARGET_VERSION = OSVersion.from_version_string(VERSION)
+SYSTEM_VERSION = OSVersion.from_version_file(SYSTEM_VERSION_FILE)
 
 
 def bump_system_version():

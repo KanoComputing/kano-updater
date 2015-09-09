@@ -1,7 +1,7 @@
 #
 # Checking to see if updates exist
 #
-# Copyright (C) 2014 Kano Computing Ltd.
+# Copyright (C) 2014-2015 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
@@ -14,6 +14,7 @@ from kano_updater.apt_wrapper import apt_handle
 from kano_updater.status import UpdaterStatus
 from kano_updater.progress import DummyProgress
 from kano_updater.utils import is_server_available
+import kano_updater.priority as Priority
 
 KANO_SOURCES_LIST = '/etc/apt/sources.list.d/kano.list'
 
@@ -59,14 +60,19 @@ def check_for_updates(progress=None):
         # Not updating the timestamp. The check failed.
         return False
 
-    if _do_check(progress):
-        status.state = UpdaterStatus.UPDATES_AVAILABLE
-        logger.debug('Updates available')
-        rv = True
-    else:
+
+    update_type = _do_check(progress)
+    if update_type == Priority.NONE:
         status.state = UpdaterStatus.NO_UPDATES
         logger.debug('No updates available')
         rv = False
+    else:
+        if update_type == Priority.URGENT:
+            status.is_urgent = True
+
+        status.state = UpdaterStatus.UPDATES_AVAILABLE
+        logger.debug('Updates available')
+        rv = True
 
     status.last_check = int(time.time())
     status.save()
@@ -76,4 +82,11 @@ def check_for_updates(progress=None):
 
 def _do_check(progress):
     apt_handle.update(progress, sources_list=KANO_SOURCES_LIST)
-    return apt_handle.is_update_available()
+
+    if apt_handle.is_update_avaliable(priority=Priority.URGENT):
+        return Priority.URGENT
+
+    if apt_handle.is_update_avaliable():
+        return Priority.STANDARD
+
+    return Priority.NONE
