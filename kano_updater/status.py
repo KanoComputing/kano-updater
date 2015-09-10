@@ -86,7 +86,7 @@ class UpdaterStatus(object):
             self._last_update = data['last_update']
             self._last_check = data['last_check']
             self._last_check_urgent = data['last_check_urgent']
-            self._is_urgent = data['is_urgent']
+            self._is_urgent = (data['is_urgent'] == 1)
 
             if 'notifications_muted' in data:
                 self._notifications_muted = (data['notifications_muted'] == 1)

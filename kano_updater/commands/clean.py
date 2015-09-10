@@ -32,7 +32,7 @@ def clean(dry_run=False):
         msg = "The status was changed to: {}".format(status.state)
         logger.debug(msg)
 
-    status.is_urgent(False)
+    status.is_urgent = False
     status.notifications_muted = False
 
     if not dry_run:

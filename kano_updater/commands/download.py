@@ -81,7 +81,7 @@ def download(progress=None):
         return False
 
     # show a dialog informing the user of an automatic urgent download
-    if status.is_urgent():
+    if status.is_urgent:
         progress.prompt(
             "Updater",
             "Urgent updates have been found! We'll download these automatically," /
