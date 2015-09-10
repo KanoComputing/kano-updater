@@ -162,6 +162,9 @@ class AptWrapper(object):
     def _mark_all_for_update(self, priority=Priority.NONE):
         for pkg in self._cache:
             if self._is_package_upgradable(pkg, priority=priority):
+                logger.debug('Marking {} ({}) for upgrade'.format(
+                    pkg.shortname, pkg.candidate.version
+                ))
                 pkg.mark_upgrade()
 
     @staticmethod
