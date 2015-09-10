@@ -157,6 +157,7 @@ def install_urgent(progress, status):
     logger.debug('Installing urgent hotfix')
     progress.start('installing-urgent')
     install_deb_packages(progress, priority=Priority.URGENT)
+    status.is_urgent = False
 
 
 def install_standard(progress, status):
