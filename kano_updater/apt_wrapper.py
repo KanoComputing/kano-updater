@@ -169,13 +169,13 @@ class AptWrapper(object):
         if not pkg.is_upgradable:
             return False
 
-        if not (
-                priority.os_match_required and
-                pkg.candidate.version.startswith(SYSTEM_VERSION.version_number)
-            ):
+        if priority.priority < pkg.candidate.policy_priority:
             return False
 
-        if priority.priority < pkg.candidate.policy_priority:
+        if not (
+                priority.os_match_required and
+                pkg.candidate.version.startswith(SYSTEM_VERSION.major_version)
+            ):
             return False
 
         return True

@@ -33,6 +33,11 @@ class OSVersion(object):
         self._codename = codename
         self._number = version
 
+        try:
+            self._major_version = '.'.join(version.split('.')[0:2])
+        except:
+            self._major_version = version
+
     def to_issue(self):
         return "{} {} {} \\l".format(self._os, self._codename, self._number)
 
@@ -40,8 +45,8 @@ class OSVersion(object):
         return "{}-{}-{}".format(self._os, self._codename, self._number)
 
     @property
-    def version_number(self):
-        return self._number
+    def major_version(self):
+        return self._major_version
 
     def __str__(self):
         return self.to_version_string()
