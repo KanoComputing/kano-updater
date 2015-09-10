@@ -11,6 +11,7 @@ from gi.repository import Gtk
 import os
 from threading import Timer
 
+from kano_updater.commands.install import is_scheduled
 from kano_updater.ui.views.countdown import Countdown
 from kano_updater.paths import SCHEDULE_SHUTDOWN_FILE_PATH
 
@@ -22,7 +23,7 @@ class Finish(Countdown):
         complete = Gtk.Label(_('Update complete!'))
         complete.get_style_context().add_class('complete')
 
-        self._shutdown_scheduled = os.path.exists(SCHEDULE_SHUTDOWN_FILE_PATH)
+        self._shutdown_scheduled = is_scheduled()
         finish_method = 'restart'
 
         if self._shutdown_scheduled:

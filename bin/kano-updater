@@ -92,7 +92,7 @@ def run_install(gui=False, confirm=True, splash_pid=None):
     else:
         try:
             progress = CLIProgress()
-            install(progress)
+            install(progress, gui)
         except Relaunch:
             clean_up()
             os.execvp('kano-updater', ['kano-updater', 'install'])
@@ -152,7 +152,7 @@ def main():
         if args['download']:
             if args['--low-prio']:
                 make_low_prio()
-            download(progress)
+            download(progress, gui=False)
         elif args['install']:
             splash_pid = None
             if args['--splash-pid']:
@@ -188,10 +188,10 @@ def main():
 
             if updates_available:
                 status = UpdaterStatus.get_instance()
-                if status.is_urgent():
+                if status.is_urgent:
                     logger.info(_('Urgent updates available.'))
                     progress = CLIProgress()
-                    download(progress)
+                    download(progress, gui=False)
                 else:
                     logger.info(_('Updates available.'))
             else:

@@ -514,3 +514,12 @@ def create_empty_file(path):
     if not os.path.exists(basedir):
         os.makedirs(basedir)
     open(path, 'a').close()
+
+
+def show_kano_dialog(title, description, buttons):
+    import subprocess as s
+    p = s.Popen('kano-dialog title="{}" description="{}" buttons={}',
+                stdout=s.PIPE, stderr=s.PIPE)
+    output, errors = p.communicate()
+
+    return output, errors

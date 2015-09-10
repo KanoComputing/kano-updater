@@ -5,6 +5,8 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
+import os
+
 from kano.network import is_internet
 from kano.logging import logger
 from kano.utils import read_file_contents_as_lines, ensure_dir
@@ -13,7 +15,7 @@ from kano_updater.paths import PIP_PACKAGES_LIST, PIP_CACHE_DIR
 from kano_updater.status import UpdaterStatus
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.progress import DummyProgress, Phase
-from kano_updater.utils import run_pip_command, is_server_available
+from kano_updater.utils import run_pip_command, is_server_available, show_kano_dialog
 from kano_updater.commands.check import check_for_updates
 
 
@@ -21,7 +23,7 @@ class DownloadError(Exception):
     pass
 
 
-def download(progress=None):
+def download(progress=None, gui=True):
     status = UpdaterStatus.get_instance()
 
     if not progress:
@@ -81,13 +83,13 @@ def download(progress=None):
         return False
 
     # show a dialog informing the user of an automatic urgent download
-    if status.is_urgent:
-        progress.prompt(
-            "Updater",
-            "Urgent updates have been found! We'll download these automatically," /
-            " and ask you to schedule the install when they finish.",
-            ['OK']
-        )
+    if status.is_urgent and not gui:
+        # TODO: mute notifications?
+        title = 'Updater'
+        description = "Urgent updates have been found! We'll download these automatically," \
+                      " and ask you to schedule the install when they finish."
+        buttons = '"OK"'
+        ret, _ = show_kano_dialog(title, description, buttons)
 
     status.state = UpdaterStatus.DOWNLOADING_UPDATES
     status.save()
