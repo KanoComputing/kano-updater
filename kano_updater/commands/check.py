@@ -72,6 +72,7 @@ def check_for_updates(progress=None, priority=Priority.NONE):
 
         status.state = UpdaterStatus.UPDATES_AVAILABLE
         logger.debug('Updates available')
+        logger.debug('Found update of priority: {}'.format(priority.priority))
         rv = True
 
     status.last_check = int(time.time())
@@ -82,6 +83,8 @@ def check_for_updates(progress=None, priority=Priority.NONE):
 
 def _do_check(progress, priority=Priority.NONE):
     apt_handle.update(progress, sources_list=KANO_SOURCES_LIST)
+    logger.debug('Checking urgent: {}'.format(priority <= Priority.URGENT))
+    logger.debug('Checking standard: {}'.format(priority <= Priority.STANDARD))
 
     if (
             priority <= Priority.URGENT
