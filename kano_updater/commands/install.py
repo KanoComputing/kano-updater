@@ -97,8 +97,15 @@ def install(progress=None, gui=True):
 
         progress.start('install')
 
+    priority = Priority.NONE
+
+    if status.is_urgent:
+        priority = Priority.URGENT
+
+    logger.debug('Installing with priority {}'.format(priority.priority))
+
     try:
-        return do_install(progress, status)
+        return do_install(progress, status, priority=priority)
     except Relaunch as err:
         raise
     except Exception as err:
@@ -149,7 +156,7 @@ def install_urgent(progress, status):
     )
     logger.debug('Installing urgent hotfix')
     progress.start('installing-urgent')
-    install_deb_packages(progress)
+    install_deb_packages(progress, priority=Priority.URGENT)
 
 
 def install_standard(progress, status):
