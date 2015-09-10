@@ -5,8 +5,6 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
-import os
-
 from kano.network import is_internet
 from kano.logging import logger
 from kano.utils import read_file_contents_as_lines, ensure_dir
