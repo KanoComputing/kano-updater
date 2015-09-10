@@ -135,7 +135,7 @@ def do_download(progress, status, priority=Priority.NONE):
         )
     )
 
-    _cache_pip_packages(progress)
+    _cache_pip_packages(progress, priority=priority)
     _cache_deb_packages(progress, priority=priority)
 
     progress.finish('Done downloading')
