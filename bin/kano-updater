@@ -153,6 +153,8 @@ def main():
             if args['--low-prio']:
                 make_low_prio()
             download(progress, gui=False)
+            if status.is_urgent:
+                run_install(gui=False)
         elif args['install']:
             splash_pid = None
             if args['--splash-pid']:
@@ -192,6 +194,7 @@ def main():
                     logger.info(_('Urgent updates available.'))
                     progress = CLIProgress()
                     download(progress, gui=False)
+                    run_install(gui=False)
                 else:
                     logger.info(_('Updates available.'))
             else:

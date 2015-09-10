@@ -518,7 +518,8 @@ def create_empty_file(path):
 
 def show_kano_dialog(title, description, buttons):
     import subprocess as s
-    p = s.Popen('kano-dialog title="{}" description="{}" buttons={}',
+    p = s.Popen('kano-dialog title="{}" description="{}" buttons={}'
+                .format(title, description, buttons),
                 stdout=s.PIPE, stderr=s.PIPE)
     output, errors = p.communicate()
 
