@@ -93,8 +93,12 @@ def download(progress=None, gui=True):
     status.state = UpdaterStatus.DOWNLOADING_UPDATES
     status.save()
 
+    priority = Priority.NONE
+
     if status.is_urgent:
         priority = Priority.URGENT
+
+    logger.debug('Downloading with priority {}'.format(priority.priority))
 
     try:
         success = do_download(progress, status, priority=priority)
