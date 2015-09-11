@@ -10,7 +10,7 @@
 kano-updater will help you keep your Kano OS up-to-date.
 
 Usage:
-  kano-updater check [--gui] [--interval <time>] [--priority (standard | urgent)]
+  kano-updater check [--gui] [--interval <time>] [--urgent]
   kano-updater download [--low-prio]
   kano-updater install [--gui [--no-confirm] [--splash-pid <pid>]]
   kano-updater set-state <state>
@@ -200,11 +200,8 @@ def main():
 
             priority = Priority.NONE
 
-            if args['--priority']:
-                if args['urgent']:
-                    priority = Priority.URGENT
-                elif args['standard']:
-                    priority = Priority.STANDARD
+            if args['--urgent']:
+                priority = Priority.URGENT
 
             # There used to be a dialog pop up if an update was found
             # that we had removed (see the commented out lines bellow).
