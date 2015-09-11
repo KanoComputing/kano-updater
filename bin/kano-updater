@@ -51,13 +51,13 @@ from kano.gtk3.kano_dialog import KanoDialog
 
 from kano_updater.os_version import TARGET_VERSION
 from kano_updater.commands.download import download
-from kano_updater.commands.install import install
+from kano_updater.commands.install import install, is_scheduled, schedule_install_shutdown
 from kano_updater.commands.check import check_for_updates
 from kano_updater.commands.clean import clean
 from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
 from kano_updater.utils import make_low_prio, install_docopt, is_running, \
-    remove_pid_file, pause_notifications, resume_notifications
+    remove_pid_file, pause_notifications, resume_notifications, show_kano_dialog
 
 
 def clean_up():
@@ -71,7 +71,21 @@ def clean_up():
     logger.flush()
 
 
-def run_install(gui=False, confirm=True, splash_pid=None):
+def run_install(gui=False, confirm=True, splash_pid=None, status=None):
+    # if we have not scheduled an urgent install at shutdown yet
+    if status.is_urgent and not is_scheduled():
+        # prompt user for scheduling if urgent updates are downloaded
+        if status.state == UpdaterStatus.UPDATES_DOWNLOADED and status.is_urgent:
+            title = "Updater"
+            description = "Urgent updates have been downloaded! We'll need to install these as soon" \
+                          " as possible to ensure the best experience.",
+            buttons = "REBOOT NOW:green:1,AT SHUTDOWN:orange:0"
+            install_now = show_kano_dialog(title, description, buttons)
+
+            if not install_now:
+                schedule_install_shutdown()
+                sys.exit(0)
+
     if gui:
         pause_notifications()
 
@@ -148,23 +162,22 @@ def main():
         clean()
 
         progress = CLIProgress()
+        status = UpdaterStatus.get_instance()
 
         if args['download']:
             if args['--low-prio']:
                 make_low_prio()
             download(progress, gui=False)
-            if status.is_urgent:
-                run_install(gui=False)
+            run_install(gui=True, status=status)
         elif args['install']:
             splash_pid = None
             if args['--splash-pid']:
                 splash_pid = int(args['<pid>'])
 
             run_install(gui=args['--gui'], confirm=not args['--no-confirm'],
-                        splash_pid=splash_pid)
+                        splash_pid=splash_pid, status=status)
         elif args['check']:
             if args['--interval']:
-                status = UpdaterStatus.get_instance()
                 target_delta = float(args['<time>']) * 60 * 60
 
                 time_now = time.time()
@@ -194,7 +207,7 @@ def main():
                     logger.info(_('Urgent updates available.'))
                     progress = CLIProgress()
                     download(progress, gui=False)
-                    run_install(gui=False)
+                    run_install(gui=True, status=status)
                 else:
                     logger.info(_('Updates available.'))
             else:
@@ -220,7 +233,7 @@ def main():
         else:
             # Launch the GUI if no arguments were given for
             # backwards compatiblity
-            run_install(gui=True, confirm=False)
+            run_install(gui=True, confirm=False, status=status)
 
     return 0
 

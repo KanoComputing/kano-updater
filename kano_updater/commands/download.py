@@ -83,10 +83,10 @@ def download(progress=None, gui=True):
     # show a dialog informing the user of an automatic urgent download
     if status.is_urgent and not gui:
         # TODO: mute notifications?
-        title = 'Updater'
+        title = "Updater"
         description = "Urgent updates have been found! We'll download these automatically," \
                       " and ask you to schedule the install when they finish."
-        buttons = '"OK"'
+        buttons = "OK:green:1"
         ret, _ = show_kano_dialog(title, description, buttons)
 
     status.state = UpdaterStatus.DOWNLOADING_UPDATES
