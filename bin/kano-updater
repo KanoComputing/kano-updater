@@ -78,13 +78,14 @@ def run_install(gui=False, confirm=True, splash_pid=None, status=None):
         if status.state == UpdaterStatus.UPDATES_DOWNLOADED and status.is_urgent:
             title = "Updater"
             description = "Urgent updates have been downloaded! We'll need to install these as soon" \
-                          " as possible to ensure the best experience.",
-            buttons = "REBOOT NOW:green:1,AT SHUTDOWN:orange:0"
-            install_now = show_kano_dialog(title, description, buttons)
+                          " as possible to ensure the best experience."
+            buttons = "RESTART NOW:green:1,AT SHUTDOWN:orange:0"
+            show_kano_dialog(title, description, buttons)
 
-            if not install_now:
-                schedule_install_shutdown()
-                return
+            # schedule the install at shutdown anyway
+            # in case of restart now, the scheduling is cleared anyway
+            schedule_install_shutdown()
+            return
 
     if gui:
         pause_notifications()
@@ -147,6 +148,9 @@ def main():
             from kano_updater.ui.main import launch_relaunch_countdown_gui
             launch_relaunch_countdown_gui(int(args['<parent-pid>']))
         elif args['boot-window']:
+            status = UpdaterStatus.get_instance()
+            if status.is_urgent:
+                run_install(gui=True, status=status)
             from kano_updater.ui.main import launch_boot_gui
             launch_boot_gui()
     elif args['first-boot']:
