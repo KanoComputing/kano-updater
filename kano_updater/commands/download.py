@@ -87,7 +87,7 @@ def download(progress=None, gui=True):
         description = "Urgent updates have been found! We'll download these automatically," \
                       " and ask you to schedule the install when they finish."
         buttons = "OK:green:1"
-        ret, _ = show_kano_dialog(title, description, buttons)
+        show_kano_dialog(title, description, buttons)
 
     status.state = UpdaterStatus.DOWNLOADING_UPDATES
     status.save()
