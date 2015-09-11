@@ -47,7 +47,7 @@ class Finish(Countdown):
         self._start_timer()
 
     def _start_timer(self):
-        timer = Timer(11, self._reboot, ())
+        timer = Timer(11, self._finish, ())
         timer.daemon = True
         timer.start()
 
