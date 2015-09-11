@@ -67,20 +67,6 @@ def install(progress=None, gui=True):
 
         return False
 
-    # if we have not scheduled an install at shutdown yet and not running in gui mode
-    if not is_scheduled() and not gui:
-        # prompt user for scheduling if urgent updates are downloaded
-        if status.state == UpdaterStatus.UPDATES_DOWNLOADED and status.is_urgent:
-            title = 'Updater'
-            description = 'Urgent updates have been downloaded! We will need to install these as soon' \
-                          ' as possible to ensure the best experience.',
-            buttons = '"REBOOT NOW":green:1,"AT SHUTDOWN":orange:0'
-            install_now, _ = show_kano_dialog(title, description, buttons)
-
-            if not install_now:
-                schedule_install_shutdown()
-                return True
-
     if status.state == UpdaterStatus.INSTALLING_UPDATES:
         msg = 'The install is already running'
         logger.warn(msg)

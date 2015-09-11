@@ -518,9 +518,12 @@ def create_empty_file(path):
 
 def show_kano_dialog(title, description, buttons):
     import subprocess as s
-    p = s.Popen('kano-dialog title="{}" description="{}" buttons={}'
-                .format(title, description, buttons),
-                stdout=s.PIPE, stderr=s.PIPE)
-    output, errors = p.communicate()
-
-    return output, errors
+    answer = 1
+    try:
+        answer = s.check_output(['kano-updater',
+                                 'title={}'.format(title),
+                                 'description={}'.format(description),
+                                 'buttons={}'.format(buttons)])
+    except:
+        pass
+    return answer == 1
