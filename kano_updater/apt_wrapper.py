@@ -175,9 +175,11 @@ class AptWrapper(object):
         if priority.priority < pkg.candidate.policy_priority:
             return False
 
-        if not (
+        if (
                 priority.os_match_required and
-                pkg.candidate.version.startswith(SYSTEM_VERSION.major_version)
+                not pkg.candidate.version.startswith(
+                    SYSTEM_VERSION.major_version
+                )
             ):
             return False
 
