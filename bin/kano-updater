@@ -72,8 +72,8 @@ def clean_up():
 
 
 def run_install(gui=False, confirm=True, splash_pid=None, status=None):
-    # if we have not scheduled an urgent install at shutdown yet
-    if status.is_urgent and not is_scheduled():
+    # if we scheduled an update on shutdown and get asked to install again, do it
+    if not is_scheduled():
         # prompt user for scheduling if urgent updates are downloaded
         if status.state == UpdaterStatus.UPDATES_DOWNLOADED and status.is_urgent:
             title = "Updater"
@@ -84,7 +84,7 @@ def run_install(gui=False, confirm=True, splash_pid=None, status=None):
 
             if not install_now:
                 schedule_install_shutdown()
-                sys.exit(0)
+                return
 
     if gui:
         pause_notifications()

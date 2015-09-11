@@ -520,7 +520,7 @@ def show_kano_dialog(title, description, buttons):
     import subprocess as s
     answer = 1
     try:
-        answer = s.check_output(['kano-updater',
+        answer = s.check_output(['kano-dialog',
                                  'title={}'.format(title),
                                  'description={}'.format(description),
                                  'buttons={}'.format(buttons)])
