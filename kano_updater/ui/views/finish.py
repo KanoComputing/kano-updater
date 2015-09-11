@@ -13,7 +13,6 @@ from threading import Timer
 
 from kano_updater.commands.install import is_scheduled
 from kano_updater.ui.views.countdown import Countdown
-from kano_updater.paths import SCHEDULE_SHUTDOWN_FILE_PATH
 
 
 class Finish(Countdown):
@@ -44,10 +43,7 @@ class Finish(Countdown):
         self.connect('show', self._on_show)
 
     def _on_show(self, widget=None):
-        if self._shutdown_scheduled:
-            self.get_toplevel().connect('key-press-event', self._shutdown)
-        else:
-            self.get_toplevel().connect('key-press-event', self._reboot)
+        self.get_toplevel().connect('key-press-event', self._finish)
         self._start_timer()
 
     def _start_timer(self):
@@ -55,14 +51,11 @@ class Finish(Countdown):
         timer.daemon = True
         timer.start()
 
-    def _reboot(self, window=None, event=None):
+    def _finish(self, window=None, event=None):
         if event and event.get_keycode()[1] != 36:  # ENTER
             return
 
-        os.system('reboot')
-
-    def _shutdown(self, window=None, event=None):
-        if event and event.get_keycode()[1] != 36:  # ENTER
-            return
-
-        os.system('poweroff')
+        if self._shutdown_scheduled:
+            os.system('poweroff')
+        else:
+            os.system('reboot')
