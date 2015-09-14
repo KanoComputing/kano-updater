@@ -64,6 +64,7 @@ def check_for_updates(progress=None, priority=Priority.NONE):
     update_type = _do_check(progress, priority=priority)
     if update_type == Priority.NONE:
         status.state = UpdaterStatus.NO_UPDATES
+        status.notifications_muted = True
         logger.debug('No updates available')
         rv = False
     else:
