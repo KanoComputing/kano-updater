@@ -151,6 +151,13 @@ def install_urgent(progress, status):
     progress.start('installing-urgent')
     install_deb_packages(progress, priority=Priority.URGENT)
     status.is_urgent = False
+    try:
+        from kano_profile.tracker import track_data
+        track_data('applied_hotfix', {
+            'package_list': apt_handle.get_changes(),
+        })
+    except Exception:
+        pass
 
 
 def install_standard(progress, status):
