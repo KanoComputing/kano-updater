@@ -73,16 +73,20 @@ def clean_up():
 
 
 def run_install(gui=False, confirm=True, splash_pid=None, status=None):
-    # prompt user for scheduling if urgent updates are downloaded
-    if status.state == UpdaterStatus.UPDATES_DOWNLOADED and status.is_urgent:
-        title = "Updater"
-        description = "Urgent updates have been downloaded! We'll need to install these as soon" \
-                      " as possible to ensure the best experience."
-        buttons = "RESTART NOW:green:1,AT BOOT:orange:0"
-        install_now = show_kano_dialog(title, description, buttons)
+    # using the confirm flag to distinguish between boot updater calls and others
+    if confirm:
+        # prompt user for scheduling if urgent updates are downloaded
+        if status.state == UpdaterStatus.UPDATES_DOWNLOADED and status.is_urgent:
+            title = "Updater"
+            description = "Urgent updates have been downloaded! We'll need to install these as soon" \
+                          " as possible to ensure the best experience."
+            buttons = "RESTART NOW:green:1,AT BOOT:orange:0"
+            install_now = show_kano_dialog(title, description, buttons)
 
-        if not install_now:
-            return
+            if not install_now:
+                return
+
+            confirm = False
 
     if gui:
         pause_notifications()
@@ -147,7 +151,7 @@ def main():
         elif args['boot-window']:
             status = UpdaterStatus.get_instance()
             if status.is_urgent:
-                run_install(gui=True, status=status)
+                run_install(gui=True, confirm=False, status=status)
             from kano_updater.ui.main import launch_boot_gui
             launch_boot_gui()
     elif args['first-boot']:
