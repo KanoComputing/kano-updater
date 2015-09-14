@@ -156,6 +156,7 @@ def install_urgent(progress, status):
         track_data('applied_hotfix', {
             'package_list': apt_handle.get_changes(),
         })
+        logger.debug('HOTFIX_TRACK: '{}''.format(apt_handle.get_changes()))
     except Exception:
         pass
 
