@@ -150,6 +150,7 @@ def install_urgent(progress, status):
         )
     )
     logger.debug('Installing urgent hotfix')
+    logger.debug('HOTFIX_TRACK: "{}"'.format(apt_handle.get_changes()))
     progress.start('installing-urgent')
     install_deb_packages(progress, priority=Priority.URGENT)
     status.is_urgent = False
