@@ -46,7 +46,7 @@ case "$1" in
         pip install --upgrade $PIP_DEPENDENCIES
 
         # Add the urgent repo to sources - if not already existent
-        grep -q -F "\"$URGENT_REPO\"" $KANO_SOURCES || echo "$URGENT_REPO" >> $KANO_SOURCES
+        pcregrep -qM "\"$URGENT_REPO\"" $KANO_SOURCES || echo "$URGENT_REPO" >> $KANO_SOURCES
 
         ;;
 esac
