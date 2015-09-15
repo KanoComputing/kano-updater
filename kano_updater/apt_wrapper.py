@@ -177,7 +177,7 @@ class AptWrapper(object):
         if not pkg.is_upgradable:
             return False
 
-        if priority.priority < pkg.candidate.policy_priority:
+        if pkg.candidate.policy_priority < priority.priority:
             return False
 
         if (
