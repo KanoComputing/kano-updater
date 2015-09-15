@@ -19,7 +19,7 @@ import signal
 
 
 from kano.logging import logger
-from kano.utils import run_print_output_error, run_cmd, run_cmd_log, \
+from kano.utils import run_print_output_error, run_cmd, run_bg, run_cmd_log, \
     chown_path, is_gui, sed, get_user_unsudoed
 from kano.network import is_internet
 import kano.notifications as notifications
@@ -509,14 +509,14 @@ def add_text_to_end(text_buffer, text, tag=None):
         text_buffer.insert_with_tags(end, text, tag)
 
 
-def show_kano_dialog(title, description, buttons):
-    import subprocess as s
-    answer = 1
-    try:
-        answer = s.check_output(['kano-dialog',
-                                 'title={}'.format(title),
-                                 'description={}'.format(description),
-                                 'buttons={}'.format(buttons)])
-    except:
-        pass
-    return answer == 1
+def show_kano_dialog(title, description, buttons, blocking=True):
+    retval = None
+    cmd = 'kano-dialog title="{}" description="{}" buttons="{}"'.format(
+          title, description, buttons)
+
+    if blocking:
+        _, _, retval = run_cmd(cmd)
+    else:
+        retval = run_bg('exec ' + cmd)
+
+    return retval
