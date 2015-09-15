@@ -154,8 +154,8 @@ def install_urgent(progress, status):
     status.is_urgent = False
     try:
         from kano_profile.tracker import track_data
-        track_data('applied_hotfix', {
-            'package_list': packages_to_update
+        track_data('updated_hotfix', {
+            'packages': packages_to_update
         })
         logger.debug('Tracking Data: "{}"'.format(packages_to_update))
     except ImportError as imp_exc:
