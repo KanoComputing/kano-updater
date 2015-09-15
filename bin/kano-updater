@@ -14,7 +14,7 @@ Usage:
   kano-updater download [--low-prio]
   kano-updater install [--gui [--no-confirm] [--splash-pid <pid>]]
   kano-updater set-state <state>
-  kano-updater set-scheduled <1|0>
+  kano-updater set-scheduled (1|0)
   kano-updater first-boot
   kano-updater clean
   kano-updater ui (relaunch-splash <parent-pid> | boot-window)
@@ -77,24 +77,25 @@ def run_install(gui=False, confirm=True, splash_pid=None):
     status = UpdaterStatus.get_instance()
 
     # if install is already scheduled, do the install, otherwise, ask for scheduling
-    if status.state == UpdaterStatus.UPDATES_DOWNLOADED and status.is_urgent and not status.is_scheduled:
-        title = "Updater"
-        description = "Urgent updates have been downloaded! We'll need to install these as soon" \
-                      " as possible to ensure the best experience."
-        buttons = "RESTART NOW:green:1,LATER:orange:0"
-        install_now = show_kano_dialog(title, description, buttons)
-
-        # schedule the install to happen at shutdown
-        # prevents unscheduling if the user closes the dialog from the startbar
-        status.is_scheduled = True
-        status.save()
-
-        # continue with the install if the user clicked RESTART NOW
-        if not install_now:
-            return
-
+    if status.state == UpdaterStatus.UPDATES_DOWNLOADED and status.is_urgent:
         # stops the confirm window for urgent updates
         confirm = False
+
+        if not status.is_scheduled:
+            title = "Updater"
+            description = "Urgent updates have been downloaded! We'll need to install these as soon" \
+                          " as possible to ensure the best experience."
+            buttons = "RESTART NOW:green:1,LATER:orange:0"
+            install_now = show_kano_dialog(title, description, buttons)
+
+            # schedule the install to happen at shutdown
+            # prevents unscheduling if the user closes the dialog from the startbar
+            status.is_scheduled = True
+            status.save()
+
+            # user clicked LATER, abort install
+            if not install_now:
+                return
 
     if gui:
         pause_notifications()
@@ -151,7 +152,7 @@ def main():
         status.save()
     elif args['set-scheduled']:
         status = UpdaterStatus.get_instance()
-        status.state = args['<1|0>']
+        status.is_scheduled = args['1']  # if 1 was supplied, is_scheduled becomes True, else False
         status.save()
     elif args['clean']:
         clean()
