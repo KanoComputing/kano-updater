@@ -52,8 +52,13 @@ class AptWrapper(object):
 
         progress.start(updating_sources)
         apt_progress = AptDownloadProgress(progress, src_count)
-        self._cache.update(fetch_progress=apt_progress,
-                           sources_list=sources_list)
+        try:
+            self._cache.update(fetch_progress=apt_progress,
+                               sources_list=sources_list)
+        except apt.cache.FetchFailedException:
+            err_msg = N_('Failed to update sources')
+            logger.error(err_msg)
+            progress.fail(_(err_msg))
 
         progress.start(cache_init)
         ops = [_('Reading package lists'), _('Building dependency tree'),
