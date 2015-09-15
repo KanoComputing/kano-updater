@@ -509,13 +509,6 @@ def add_text_to_end(text_buffer, text, tag=None):
         text_buffer.insert_with_tags(end, text, tag)
 
 
-def create_empty_file(path):
-    basedir = os.path.dirname(path)
-    if not os.path.exists(basedir):
-        os.makedirs(basedir)
-    open(path, 'a').close()
-
-
 def show_kano_dialog(title, description, buttons):
     import subprocess as s
     answer = 1
