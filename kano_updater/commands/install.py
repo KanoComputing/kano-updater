@@ -148,9 +148,21 @@ def install_urgent(progress, status):
         )
     )
     logger.debug('Installing urgent hotfix')
+    packages_to_update = apt_handle.packages_to_be_upgraded()
     progress.start('installing-urgent')
     install_deb_packages(progress, priority=Priority.URGENT)
     status.is_urgent = False
+    try:
+        from kano_profile.tracker import track_data
+        track_data('updated_hotfix', {
+            'packages': packages_to_update
+        })
+        logger.debug('Tracking Data: "{}"'.format(packages_to_update))
+    except ImportError as imp_exc:
+        logger.error(("Couldn't track hotfix installation, failed to import "
+                      "tracking module: [{}]").format(imp_exc))
+    except Exception:
+        pass
 
 
 def install_standard(progress, status):

@@ -172,6 +172,13 @@ class AptWrapper(object):
                 ))
                 pkg.mark_upgrade()
 
+    def packages_to_be_upgraded(self):
+        ret = {}
+        for pkg in self._cache.get_changes():
+            ret[pkg.name] = pkg.versions.keys()
+
+        return ret
+
     @staticmethod
     def _is_package_upgradable(pkg, priority=Priority.NONE):
         if not pkg.is_upgradable:
