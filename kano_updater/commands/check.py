@@ -76,13 +76,21 @@ def check_for_updates(progress=None, priority=Priority.NONE):
         logger.debug('Found update of priority: {}'.format(priority.priority))
         rv = True
 
-    status.last_check = int(time.time())
+    if priority <= Priority.STANDARD:
+        status.last_check = int(time.time())
+
+    status.last_check_urgent = int(time.time())
+
     status.save()
 
     return rv
 
 
 def _do_check(progress, priority=Priority.NONE):
+    '''
+    Perform checks for all priorities greater than the one provided.
+    '''
+
     apt_handle.update(progress, sources_list=KANO_SOURCES_LIST)
     logger.debug('Checking urgent: {}'.format(priority <= Priority.URGENT))
     logger.debug('Checking standard: {}'.format(priority <= Priority.STANDARD))
