@@ -135,6 +135,8 @@ def do_install(progress, status, priority=Priority.NONE):
     status.save()
 
     progress.finish('Update completed')
+    # Ensure logs are on disk
+    logger.flush()
     return True
 
 
@@ -156,7 +158,10 @@ def install_urgent(progress, status):
         track_data('applied_hotfix', {
             'package_list': apt_handle.get_changes(),
         })
-        logger.debug('HOTFIX_TRACK: '{}''.format(apt_handle.get_changes()))
+        logger.debug('HOTFIX_TRACK: "{}"'.format(apt_handle.get_changes()))
+    except ImportError as imp_exc:
+        logger.error(("Couldn't track hotfix installation, failed to import "
+                      "tracking module: [{}]").format(imp_exc))
     except Exception:
         pass
 
