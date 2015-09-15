@@ -175,7 +175,7 @@ class AptWrapper(object):
     def packages_to_be_upgraded(self):
         ret = {}
         for pkg in self._cache.get_changes():
-            ret[pkg.name] = pkg.versions
+            ret[pkg.name] = pkg.versions.keys()
 
         return ret
 
