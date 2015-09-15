@@ -135,8 +135,6 @@ def do_install(progress, status, priority=Priority.NONE):
     status.save()
 
     progress.finish('Update completed')
-    # Ensure logs are on disk
-    logger.flush()
     return True
 
 
