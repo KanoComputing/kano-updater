@@ -128,10 +128,10 @@ class UpdaterStatus(object):
 
     @is_scheduled.setter
     def is_scheduled(self, value):
-        if value is '1':
-            value = True
-        else:
-            value = False
+        if not isinstance(value, bool):
+            msg = "'is_scheduled' must be a boolean value."
+            raise UpdaterStatusError(msg)
+
         self._is_scheduled = value
 
     # -- last_update
