@@ -14,3 +14,5 @@ SYSTEM_ISSUE_FILE = '/etc/issue'
 SYSTEM_VERSION_FILE = '/etc/kanux_version'
 
 STATUS_FILE_PATH = '/var/cache/kano-updater/status.json'
+
+SCHEDULE_SHUTDOWN_FILE_PATH = '/tmp/kano-updater/scheduled/shutdown.txt'

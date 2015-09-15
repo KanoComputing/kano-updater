@@ -51,7 +51,7 @@ from kano.gtk3.kano_dialog import KanoDialog
 
 from kano_updater.os_version import TARGET_VERSION
 from kano_updater.commands.download import download
-from kano_updater.commands.install import install
+from kano_updater.commands.install import install, is_scheduled, schedule_install_shutdown
 from kano_updater.commands.check import check_for_updates
 from kano_updater.commands.clean import clean
 from kano_updater.progress import CLIProgress, Relaunch
@@ -73,19 +73,27 @@ def clean_up():
 
 
 def run_install(gui=False, confirm=True, splash_pid=None, status=None):
-    # using the confirm flag to distinguish between boot updater calls and others
-    if confirm:
-        # prompt user for scheduling if urgent updates are downloaded
-        if status.state == UpdaterStatus.UPDATES_DOWNLOADED and status.is_urgent:
+    # prompt user for scheduling if urgent updates are downloaded
+    if status.state == UpdaterStatus.UPDATES_DOWNLOADED and status.is_urgent:
+        # using the confirm flag to distinguish between boot updater calls and others
+        # if install is already scheduled, do the install, otherwise, ask for scheduling
+        if confirm and not is_scheduled():
             title = "Updater"
             description = "Urgent updates have been downloaded! We'll need to install these as soon" \
                           " as possible to ensure the best experience."
-            buttons = "RESTART NOW:green:1,AT BOOT:orange:0"
+            buttons = "RESTART NOW:green:1,LATER:orange:0"
             install_now = show_kano_dialog(title, description, buttons)
 
+            # schedule the install to happen at shutdown
+            # it will be cleared automatically if the user continues with the install
+            # prevents unscheduling if the user closes the dialog from the startbar
+            schedule_install_shutdown()
+
+            # continue with the install if the user clicked RESTART NOW
             if not install_now:
                 return
 
+            # stops the confirm window for urgent updates
             confirm = False
 
     if gui:
