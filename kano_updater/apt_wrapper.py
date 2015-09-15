@@ -179,7 +179,6 @@ class AptWrapper(object):
 
         return ret
 
-
     @staticmethod
     def _is_package_upgradable(pkg, priority=Priority.NONE):
         if not pkg.is_upgradable:
