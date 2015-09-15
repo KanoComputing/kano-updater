@@ -13,7 +13,7 @@ from kano.utils import read_file_contents_as_lines, get_free_space, run_cmd
 from kano.network import is_internet
 
 from kano_updater.paths import PIP_PACKAGES_LIST, SYSTEM_VERSION_FILE, \
-    PIP_CACHE_DIR, SCHEDULE_SHUTDOWN_FILE_PATH
+    PIP_CACHE_DIR
 from kano_updater.status import UpdaterStatus
 from kano_updater.os_version import OSVersion, bump_system_version, \
     TARGET_VERSION
@@ -21,7 +21,7 @@ from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.auxiliary_tasks import run_aux_tasks
 from kano_updater.progress import DummyProgress, Phase, Relaunch
-from kano_updater.utils import run_pip_command, create_empty_file
+from kano_updater.utils import run_pip_command
 from kano_updater.commands.download import download
 import kano_updater.priority as Priority
 
@@ -120,14 +120,6 @@ def install(progress=None, gui=True):
         return False
 
 
-def schedule_install_shutdown():
-    create_empty_file(SCHEDULE_SHUTDOWN_FILE_PATH)
-
-
-def is_scheduled():
-    return os.path.exists(SCHEDULE_SHUTDOWN_FILE_PATH)
-
-
 def do_install(progress, status, priority=Priority.NONE):
     status.state = UpdaterStatus.INSTALLING_UPDATES
     status.save()
@@ -139,6 +131,7 @@ def do_install(progress, status, priority=Priority.NONE):
 
     status.state = UpdaterStatus.UPDATES_INSTALLED
     status.last_update = int(time.time())
+    status.is_scheduled = False
     status.save()
 
     progress.finish('Update completed')

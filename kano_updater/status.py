@@ -57,6 +57,7 @@ class UpdaterStatus(object):
         self._last_check_urgent = 0
         self._last_update = 0
         self._is_urgent = False
+        self._is_scheduled = False
         self._notifications_muted = False
 
         ensure_dir(os.path.dirname(self._status_file))
@@ -76,6 +77,7 @@ class UpdaterStatus(object):
                 data['last_check']
                 data['last_check_urgent']
                 data['is_urgent']
+                data['is_scheduled']
             except Exception:
                 # Initialise the file again if it is corrupted
                 logger.warn("The status file was corrupted.")
@@ -87,6 +89,7 @@ class UpdaterStatus(object):
             self._last_check = data['last_check']
             self._last_check_urgent = data['last_check_urgent']
             self._is_urgent = (data['is_urgent'] == 1)
+            self._is_scheduled = (data['is_scheduled'] == 1)
 
             if 'notifications_muted' in data:
                 self._notifications_muted = (data['notifications_muted'] == 1)
@@ -98,6 +101,7 @@ class UpdaterStatus(object):
             'last_check': self._last_check,
             'last_check_urgent': self._last_check_urgent,
             'is_urgent': 1 if self._is_urgent else 0,
+            'is_scheduled': 1 if self._is_scheduled else 0,
             'notifications_muted': 1 if self._notifications_muted else 0
         }
 
@@ -116,6 +120,19 @@ class UpdaterStatus(object):
             raise UpdaterStatusError(msg)
 
         self._state = value
+
+    # -- scheduling
+    @property
+    def is_scheduled(self):
+        return self._is_scheduled
+
+    @is_scheduled.setter
+    def is_scheduled(self, value):
+        if value is '1':
+            value = True
+        else:
+            value = False
+        self._is_scheduled = value
 
     # -- last_update
     @property

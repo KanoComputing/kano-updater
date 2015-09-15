@@ -101,7 +101,8 @@
         "\"button1_command\": \"sudo kano-updater install --gui --no-confirm\"," \
         "\"button2_label\": \"LATER\"," \
         "\"button2_colour\": \"#e67677\"," \
-        "\"button2_hover\": \"#f27c7e\"" \
+        "\"button2_hover\": \"#f27c7e\"," \
+        "\"button2_command\": \"sudo kano-updater set-scheduled 1\"" \
     "}\n"
 
 typedef struct {
