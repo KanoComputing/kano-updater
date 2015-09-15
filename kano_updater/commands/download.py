@@ -24,6 +24,7 @@ class DownloadError(Exception):
 
 def download(progress=None, gui=True):
     status = UpdaterStatus.get_instance()
+    dialog_proc = None
 
     if not progress:
         progress = DummyProgress()
@@ -88,7 +89,7 @@ def download(progress=None, gui=True):
         description = "Urgent updates have been found! We'll download these automatically," \
                       " and ask you to schedule the install when they finish."
         buttons = "OK:green:1"
-        show_kano_dialog(title, description, buttons)
+        dialog_proc = show_kano_dialog(title, description, buttons, blocking=False)
 
     status.state = UpdaterStatus.DOWNLOADING_UPDATES
     status.save()
@@ -101,7 +102,7 @@ def download(progress=None, gui=True):
     logger.debug('Downloading with priority {}'.format(priority.priority))
 
     try:
-        success = do_download(progress, status, priority=priority)
+        success = do_download(progress, status, priority=priority, dialog_proc=dialog_proc=None)
     except Exception as err:
         progress.fail(err.message)
         logger.error(err.message)
@@ -117,7 +118,7 @@ def download(progress=None, gui=True):
     return success
 
 
-def do_download(progress, status, priority=Priority.NONE):
+def do_download(progress, status, priority=Priority.NONE, dialog_proc=None):
     progress.split(
         Phase(
             'downloading-pip-pkgs',
@@ -143,6 +144,11 @@ def do_download(progress, status, priority=Priority.NONE):
     _cache_deb_packages(progress, priority=priority)
 
     progress.finish('Done downloading')
+
+    # kill the dialog if it is still on
+    if dialog_proc:
+        dialog_proc.terminate()
+
     # TODO: Figure out if it has actually worked
     return True
 
