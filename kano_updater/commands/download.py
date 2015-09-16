@@ -7,7 +7,7 @@
 
 from kano.network import is_internet
 from kano.logging import logger
-from kano.utils import read_file_contents_as_lines, ensure_dir
+from kano.utils import read_file_contents_as_lines, ensure_dir, make_normal_prio
 
 from kano_updater.paths import PIP_PACKAGES_LIST, PIP_CACHE_DIR
 from kano_updater.status import UpdaterStatus
@@ -98,6 +98,8 @@ def download(progress=None, gui=True):
 
     if status.is_urgent:
         priority = Priority.URGENT
+        logger.info('Urgent update detected, bumping to normal priority')
+        make_normal_prio()
 
     logger.debug('Downloading with priority {}'.format(priority.priority))
 

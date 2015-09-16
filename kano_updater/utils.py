@@ -115,11 +115,35 @@ def supress_output(function, *args, **kwargs):
 def make_low_prio():
     # set IO class of this process to Idle
     pid = os.getpid()
-    run_cmd("ioprio -c 3 -p {}".format(pid))
+    unused1, unused2, rc = run_cmd_log("ionice -c 3 -p {}".format(pid))
+    if rc != 0:
+        logger.error('ionice command returned non-zero code: [{}]'.format(rc))
 
     # Set the lowest scheduling priority
-    run_cmd("schedtool -D {}".format(pid))
+    unused1, unused2, rc = run_cmd_log("schedtool -D {}".format(pid))
+    if rc != 0:
+        logger.error(
+            'schedtool command returned non-zero code: [{}]'.format(rc))
     os.nice(19)
+
+
+def make_normal_prio():
+    # set IO class of this process to Idle
+    pid = os.getpid()
+    unused1, unused2, rc = run_cmd_log("ionice -c 0 -p {}".format(pid))
+    if rc != 0:
+        logger.error('ionice command returned non-zero code: [{}]'.format(rc))
+
+    # Set the lowest scheduling priority
+    unused1, unused2, rc = run_cmd_log("schedtool -N {}".format(pid))
+    if rc != 0:
+        logger.error(
+            'schedtool command returned non-zero code: [{}]'.format(rc))
+    try:
+        current_niceness = os.nice(0)
+        os.nice(-1 * current_niceness)
+    except OSError as os_ex:
+        logger.error("Can't renice to 0 due to permissions [{}]".format(os_ex))
 
 
 def migrate_repository(apt_file, old_repo, new_repo):
