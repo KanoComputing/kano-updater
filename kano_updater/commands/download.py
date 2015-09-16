@@ -7,13 +7,14 @@
 
 from kano.network import is_internet
 from kano.logging import logger
-from kano.utils import read_file_contents_as_lines, ensure_dir, make_normal_prio
+from kano.utils import read_file_contents_as_lines, ensure_dir
 
 from kano_updater.paths import PIP_PACKAGES_LIST, PIP_CACHE_DIR
 from kano_updater.status import UpdaterStatus
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.progress import DummyProgress, Phase
-from kano_updater.utils import run_pip_command, is_server_available, show_kano_dialog
+from kano_updater.utils import run_pip_command, is_server_available,\
+        show_kano_dialog, make_normal_prio
 from kano_updater.commands.check import check_for_updates
 import kano_updater.priority as Priority
 
