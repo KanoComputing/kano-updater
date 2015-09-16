@@ -17,7 +17,7 @@ from kano.gtk3.apply_styles import apply_common_to_screen
 from kano_updater.utils import make_low_prio
 from kano_updater.ui.paths import CSS_PATH, IMAGE_PATH
 
-UPDATE_IMAGE = os.path.join(IMAGE_PATH, 'update-screen.png')
+UPDATE_IMAGE = os.path.join(IMAGE_PATH, 'update-screen.gif')
 
 
 class NotificationWindow(Gtk.Window):
