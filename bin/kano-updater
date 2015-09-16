@@ -175,11 +175,16 @@ def main():
         elif args['boot-window']:
             status = UpdaterStatus.get_instance()
 
-            if status.is_scheduled:
+            if status.is_scheduled and status.is_urgent:
+                clean()
                 return run_install(gui=True, confirm=False)
 
             from kano_updater.ui.main import launch_boot_gui
             launch_boot_gui()
+
+            if status.is_scheduled:
+                run_install(gui=True, confirm=True)
+
         elif args['shutdown-window']:
             from kano_updater.ui.main import launch_shutdown_gui
             launch_shutdown_gui()
