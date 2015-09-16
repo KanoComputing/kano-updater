@@ -121,9 +121,10 @@ def launch_shutdown_gui():
 
     status = UpdaterStatus.get_instance()
 
-    win = InstallWindow() if (status.is_urgent and status.is_scheduled) else UpdateNowShutdownWindow()
-    win.show()
-    Gtk.main()
+    if status.is_scheduled:
+        win = InstallWindow() if status.is_urgent else UpdateNowShutdownWindow()
+        win.show()
+        Gtk.main()
 
 
 def launch_relaunch_countdown_gui(parent_pid):
