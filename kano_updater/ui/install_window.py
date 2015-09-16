@@ -19,7 +19,7 @@ from kano_updater.ui.paths import CSS_PATH
 from kano_updater.commands.install import install
 from kano_updater.ui.progress import GtkProgress
 from kano_updater.ui.views.install import Install
-from kano_updater.ui.views.restart import Finish
+from kano_updater.ui.views.finish import Finish
 
 
 class InstallWindow(Gtk.Window):
