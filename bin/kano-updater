@@ -17,7 +17,7 @@ Usage:
   kano-updater set-scheduled (1|0)
   kano-updater first-boot
   kano-updater clean
-  kano-updater ui (relaunch-splash <parent-pid> | boot-window)
+  kano-updater ui (relaunch-splash <parent-pid> | boot-window | shutdown-window)
   kano-updater [-f] [-n]
 
 Options:
@@ -180,6 +180,9 @@ def main():
 
             from kano_updater.ui.main import launch_boot_gui
             launch_boot_gui()
+        elif args['shutdown-window']:
+            from kano_updater.ui.main import launch_shutdown_gui
+            launch_shutdown_gui()
     elif args['first-boot']:
         # spoof the last_check timestamp to six days ago so the user won't
         # be prompted to update in the first day after boot

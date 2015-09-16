@@ -14,6 +14,7 @@ from kano.gtk3.buttons import KanoButton, OrangeButton
 from kano.gtk3.heading import Heading
 from kano.gtk3.apply_styles import apply_common_to_screen
 
+from kano_updater.status import UpdaterStatus
 from kano_updater.utils import make_low_prio
 from kano_updater.ui.paths import CSS_PATH, IMAGE_PATH
 
@@ -64,7 +65,7 @@ class NotificationWindow(Gtk.Window):
         action.set_halign(Gtk.Align.CENTER)
 
         later = OrangeButton(_('Later'))
-        later.connect('clicked', Gtk.main_quit)
+        later.connect('clicked', self._do_later)
         later.set_halign(Gtk.Align.START)
         later.set_margin_left(40)
 
@@ -80,6 +81,11 @@ class NotificationWindow(Gtk.Window):
         self.add(box)
 
         self.show_all()
+
+    def _do_later(self, *_):
+        status = UpdaterStatus.get_instance()
+        status.is_scheduled = True
+        Gtk.main_quit()
 
     def _do_action(self, *_):
         self.destroy()
@@ -122,6 +128,24 @@ class UpdatesDownloadedWindow(NotificationWindow):
     _BYLINE = _('Downloaded and ready to go! In a matter\n'
                 'of minutes your Kano will be fresher than ever')
     _ACTION = _('Install')
+
+    def _action(self):
+        from kano_updater.ui.install_window import InstallWindow
+
+        win = InstallWindow()
+        win.show()
+
+
+class UpdateNowShutdownWindow(NotificationWindow):
+    _HEADER_IMAGE = UPDATE_IMAGE
+    _IMAGE_WIDTH = 590
+    _IMAGE_HEIGHT = 270
+
+    _TITLE = _('New Update')
+    _HEADING = _('Best time to update is now!')
+    _BYLINE = _('Latest updates and content are ready to go! We\n'
+                'will make sure to Shutdown once we finish installing!')
+    _ACTION = _('Update Now')
 
     def _action(self):
         from kano_updater.ui.install_window import InstallWindow
