@@ -174,8 +174,10 @@ def main():
             launch_relaunch_countdown_gui(int(args['<parent-pid>']))
         elif args['boot-window']:
             status = UpdaterStatus.get_instance()
+
             if status.is_scheduled:
-                run_install(gui=True, confirm=True)
+                return run_install(gui=True, confirm=False)
+
             from kano_updater.ui.main import launch_boot_gui
             launch_boot_gui()
     elif args['first-boot']:
