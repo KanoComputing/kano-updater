@@ -105,7 +105,7 @@ def download(progress=None, gui=True):
     logger.debug('Downloading with priority {}'.format(priority.priority))
 
     try:
-        success = do_download(progress, status, priority=priority, dialog_proc=None)
+        success = do_download(progress, status, priority=priority, dialog_proc=dialog_proc)
     except Exception as err:
         progress.fail(err.message)
         logger.error(err.message)
