@@ -234,7 +234,7 @@ def install_standard(progress, status):
         msg = "{}: {}".format(title, description)
         logger.error("Updating from a version that is no longer supported ({})"
                      .format(system_version))
-        progress.error(msg)
+        progress.fail(msg)
         raise InstallError(msg)
 
     old_updater = apt_handle.get_package('kano-updater').installed.version
