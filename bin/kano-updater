@@ -208,7 +208,9 @@ def main():
                 signal.signal(signal.SIGTERM, sigterm_on_download)
                 make_low_prio()
             download(progress, gui=False)
-            run_install(gui=True)
+
+            if status.is_urgent:
+                run_install(gui=True)
         elif args['install']:
             splash_pid = None
             if args['--splash-pid']:
