@@ -85,7 +85,7 @@ def clean_up():
     logger.flush()
 
 
-def run_install(gui=False, confirm=True, splash_pid=None):
+def scheduled_install(gui=False, confirm=True, splash_pid=None):
     status = UpdaterStatus.get_instance()
 
     # if install is already scheduled, do the install, otherwise, ask for scheduling
@@ -93,25 +93,27 @@ def run_install(gui=False, confirm=True, splash_pid=None):
         # stops the confirm window for urgent updates
         confirm = False
 
-        if not status.is_scheduled:
-            title = "Updater"
-            description = "Urgent updates have been downloaded! We'll need to install these as soon" \
-                          " as possible to ensure the best experience."
-            buttons = "RESTART NOW:green:1,LATER:orange:0"
-            install_now = show_kano_dialog(title, description, buttons)
+        title = "Updater"
+        description = "Urgent updates have been downloaded! We'll need to install these as soon" \
+                      " as possible to ensure the best experience."
+        buttons = "INSTALL NOW:green:1,LATER:orange:0"
+        install_now = show_kano_dialog(title, description, buttons)
 
-            # schedule the install to happen at shutdown
-            # prevents unscheduling if the user closes the dialog from the startbar
-            status.is_scheduled = True
-            status.save()
+        # schedule the install to happen at shutdown
+        # prevents unscheduling if the user closes the dialog from the startbar
+        status.is_scheduled = True
+        status.save()
 
-            # user clicked LATER, abort install
-            if not install_now:
-                return
+        # user clicked INSTALL NOW, abort install
+        if install_now:
+            run_install(gui, confirm, splash_pid)
 
+
+def run_install(gui=False, confirm=True, splash_pid=None):
     if gui:
         pause_notifications()
 
+        status = UpdaterStatus.get_instance()
         status.notifications_muted = True
         status.save()
 
@@ -208,9 +210,7 @@ def main():
                 signal.signal(signal.SIGTERM, sigterm_on_download)
                 make_low_prio()
             download(progress, gui=False)
-
-            if status.is_urgent:
-                run_install(gui=True)
+            scheduled_install(gui=True)
         elif args['install']:
             splash_pid = None
             if args['--splash-pid']:
@@ -255,7 +255,7 @@ def main():
                     logger.info(_('Urgent updates available.'))
                     progress = CLIProgress()
                     download(progress, gui=False)
-                    run_install(gui=True)
+                    scheduled_install(gui=True)
                 else:
                     logger.info(_('Updates available.'))
             else:
