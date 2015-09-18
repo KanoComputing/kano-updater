@@ -191,6 +191,8 @@ def main():
             from kano_updater.ui.main import launch_shutdown_gui
             launch_shutdown_gui()
     elif args['first-boot']:
+        os.popen('sleep 800 && sudo kano-updater check --gui &')
+        """
         # spoof the last_check timestamp to six days ago so the user won't
         # be prompted to update in the first day after boot
         status = UpdaterStatus.get_instance()
@@ -199,6 +201,7 @@ def main():
         one_day_ago = int(time.time() - 24 * 60 * 60)
         status.last_check_urgent = one_day_ago
         status.save()
+        """
     else:
         clean()
 
