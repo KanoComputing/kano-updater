@@ -188,6 +188,9 @@ def main():
                 run_install(gui=True, confirm=True)
 
         elif args['shutdown-window']:
+            status = UpdaterStatus.get_instance()
+            status.is_shutdown = True
+            status.save()
             from kano_updater.ui.main import launch_shutdown_gui
             launch_shutdown_gui()
     elif args['first-boot']:

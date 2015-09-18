@@ -17,12 +17,14 @@ from kano_updater.ui.views.countdown import Countdown
 
 
 class Finish(Countdown):
-    def __init__(self, restart=True):
+    def __init__(self):
         Countdown.__init__(self)
-        self._shutdown_scheduled = restart
 
         complete = Gtk.Label(_('Update complete!'))
         complete.get_style_context().add_class('complete')
+
+        status = UpdaterStatus.get_instance()
+        self._shutdown_scheduled = status.is_shutdown
 
         if self._shutdown_scheduled:
             finish_method = 'shutdown'
