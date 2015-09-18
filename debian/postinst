@@ -9,16 +9,6 @@
 TMP_FILE=/tmp/kano-updater_conf
 OLD_UPDATER_STATUS=/var/cache/kano-updater/status
 KANO_SOURCES="/etc/apt/sources.list.d/kano.list"
-URGENT_REPO="
-#
-# Kano Urgent Repository
-# Contains urgent fixes to packages
-#
-# Key:
-# curl -L http://repo.kano.me/archive/repo.gpg.key | apt-key add -
-#
-deb http://repo.kano.me/archive/ release-urgent main
-"
 
 PIP_DEPENDENCIES="docopt ping"
 
@@ -46,7 +36,9 @@ case "$1" in
         pip install --upgrade $PIP_DEPENDENCIES
 
         # Add the urgent repo to sources - if not already existent
-        pcregrep -qM "\"$URGENT_REPO\"" $KANO_SOURCES || echo "$URGENT_REPO" >> $KANO_SOURCES
+        grep -q 'release-urgent' $KANO_SOURCES || \
+            grep -m 1 '^deb http://.*.kano.me/archive/' $KANO_SOURCES | \
+            sed -r "s|^deb http://([a-z]*).kano.me.*$|deb http://\1.kano.me/archive release-urgent main|" >> $KANO_SOURCES
 
         ;;
 esac
