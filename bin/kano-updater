@@ -85,7 +85,7 @@ def clean_up():
     logger.flush()
 
 
-def scheduled_install(gui=False, confirm=True, splash_pid=None):
+def schedule_install(gui=False, confirm=True, splash_pid=None):
     status = UpdaterStatus.get_instance()
 
     # if install is already scheduled, do the install, otherwise, ask for scheduling
@@ -210,7 +210,7 @@ def main():
                 signal.signal(signal.SIGTERM, sigterm_on_download)
                 make_low_prio()
             download(progress, gui=False)
-            scheduled_install(gui=True)
+            schedule_install(gui=True)
         elif args['install']:
             splash_pid = None
             if args['--splash-pid']:
@@ -255,7 +255,7 @@ def main():
                     logger.info(_('Urgent updates available.'))
                     progress = CLIProgress()
                     download(progress, gui=False)
-                    scheduled_install(gui=True)
+                    schedule_install(gui=True)
                 else:
                     logger.info(_('Updates available.'))
             else:
