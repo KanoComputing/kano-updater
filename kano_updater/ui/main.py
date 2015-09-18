@@ -123,7 +123,7 @@ def launch_shutdown_gui():
 
     if status.is_scheduled:
         GObject.threads_init()
-        win = InstallWindow() if status.is_urgent else UpdateNowShutdownWindow()
+        win = InstallWindow(restart=False) if status.is_urgent else UpdateNowShutdownWindow()
         win.show()
         Gtk.main()
 

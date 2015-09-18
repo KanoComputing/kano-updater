@@ -150,5 +150,5 @@ class UpdateNowShutdownWindow(NotificationWindow):
     def _action(self):
         from kano_updater.ui.install_window import InstallWindow
 
-        win = InstallWindow()
+        win = InstallWindow(restart=False)
         win.show()
