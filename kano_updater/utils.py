@@ -535,7 +535,7 @@ def add_text_to_end(text_buffer, text, tag=None):
 
 def show_kano_dialog(title, description, buttons, blocking=True):
     retval = None
-    cmd = 'kano-dialog title="{}" description="{}" buttons="{}"'.format(
+    cmd = 'kano-dialog title="{}" description="{}" buttons="{}" no-taskbar'.format(
           title, description, buttons)
 
     if blocking:
