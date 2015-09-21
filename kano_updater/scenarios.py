@@ -331,4 +331,4 @@ class PostUpdate(Scenarios):
         set_everyone_youtube_cookies()
 
     def beta_210_to_beta_211(self):
-        install('telnet')
+        install('telnet python-serial')
