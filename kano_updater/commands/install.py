@@ -132,7 +132,6 @@ def do_install(progress, status, priority=Priority.NONE):
     status.state = UpdaterStatus.UPDATES_INSTALLED
     status.last_update = int(time.time())
     status.is_scheduled = False
-    status.is_shutdown = False
     status.save()
 
     progress.finish('Update completed')

@@ -176,6 +176,8 @@ def main():
             launch_relaunch_countdown_gui(int(args['<parent-pid>']))
         elif args['boot-window']:
             status = UpdaterStatus.get_instance()
+            status.is_shutdown = False
+            status.save()
 
             if status.is_scheduled and status.is_urgent:
                 clean()
