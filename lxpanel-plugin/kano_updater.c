@@ -43,7 +43,9 @@
 #define UPDATE_STATUS_FILE "/var/cache/kano-updater/status.json"
 
 #define CHECK_FOR_UPDATES_CMD "sudo /usr/bin/kano-updater check --gui"
+#define CHECK_FOR_UPDATES_BG_CMD "sudo /usr/bin/kano-updater check"
 #define CHECK_FOR_URGENT_UPDATES_CMD "sudo /usr/bin/kano-updater check --gui --urgent"
+#define CHECK_FOR_URGENT_UPDATES_BG_CMD "sudo /usr/bin/kano-updater check --urgent"
 #define DOWNLOAD_CMD "sudo /usr/bin/kano-updater download --low-prio"
 #define INSTALL_CMD "sudo /usr/bin/kano-updater install --gui --no-confirm"
 #define SOUND_CMD "/usr/bin/aplay /usr/share/kano-media/sounds/kano_open_app.wav"
@@ -254,10 +256,10 @@ static gboolean check_for_updates(kano_updater_plugin_t *plugin_data)
 {
     int now = time(NULL);
     if ((now - plugin_data->last_check_urgent) >= URGENT_CHECK_INTERVAL) {
-        launch_cmd(CHECK_FOR_URGENT_UPDATES_CMD, NULL);
+        launch_cmd(CHECK_FOR_URGENT_UPDATES_BG_CMD, NULL);
     }
     if ((now - plugin_data->last_check) >= CHECK_INTERVAL) {
-        launch_cmd(CHECK_FOR_UPDATES_CMD, NULL);
+        launch_cmd(CHECK_FOR_UPDATES_BG_CMD, NULL);
     }
 
     return TRUE;
