@@ -1,3 +1,9 @@
+kano-updater (2.2-1) unstable; urgency=low
+
+  * Add support for security hotfixes
+  * Add support for scheduling updates for later
+
+ -- Team Kano <dev@kano.me>  Fri, 25 Sep 2015 14:35:00 +0000
 kano-updater (2.1-1) unstable; urgency=low
 
   * Keeping the version in sync with the OS version.

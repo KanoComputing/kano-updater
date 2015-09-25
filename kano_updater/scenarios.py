@@ -129,8 +129,8 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-2.0.1", "Kanux-Beta-2.1.0",
                           self.beta_201_to_beta_210)
 
-        self.add_scenario("Kanux-Beta-2.1.0", "Kanux-Beta-2.1.1",
-                          self.beta_210_to_beta_211)
+        self.add_scenario("Kanux-Beta-2.1.0", "Kanux-Beta-2.2.0",
+                          self.beta_210_to_beta_210)
 
     def beta_103_to_beta_110(self):
         pass
@@ -189,7 +189,7 @@ class PreUpdate(Scenarios):
     def beta_201_to_beta_210(self):
         pass
 
-    def beta_210_to_beta_211(self):
+    def beta_210_to_beta_220(self):
         pass
 
     # Not used at the moment: dev.kano.me > repo.kano.me
@@ -249,7 +249,7 @@ class PostUpdate(Scenarios):
                           self.beta_201_to_beta_210)
 
         self.add_scenario("Kanux-Beta-2.1.0", "Kanux-Beta-2.1.1",
-                          self.beta_210_to_beta_211)
+                          self.beta_210_to_beta_220)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -330,5 +330,5 @@ class PostUpdate(Scenarios):
         from kano_settings.system.advanced import set_everyone_youtube_cookies
         set_everyone_youtube_cookies()
 
-    def beta_210_to_beta_211(self):
+    def beta_210_to_beta_220(self):
         install('telnet python-serial')
