@@ -1,0 +1,11 @@
+Package: *
+Pin: release n=release
+Pin-Priority: 600
+
+Package: *
+Pin: release n=release-urgent
+Pin-Priority: 900
+
+Package: *
+Pin: release n=devel
+Pin-Priority: 300

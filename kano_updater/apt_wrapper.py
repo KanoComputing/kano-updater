@@ -14,7 +14,9 @@ from kano.utils import run_cmd_log
 
 from kano_updater.apt_progress_wrapper import AptDownloadProgress, \
     AptOpProgress, AptInstallProgress
+from kano_updater.os_version import SYSTEM_VERSION
 from kano_updater.progress import Phase
+import kano_updater.priority as Priority
 
 
 class AptWrapper(object):
@@ -50,8 +52,13 @@ class AptWrapper(object):
 
         progress.start(updating_sources)
         apt_progress = AptDownloadProgress(progress, src_count)
-        self._cache.update(fetch_progress=apt_progress,
-                           sources_list=sources_list)
+        try:
+            self._cache.update(fetch_progress=apt_progress,
+                               sources_list=sources_list)
+        except apt.cache.FetchFailedException:
+            err_msg = N_('Failed to update sources')
+            logger.error(err_msg)
+            progress.fail(_(err_msg))
 
         progress.start(cache_init)
         ops = [_('Reading package lists'), _('Building dependency tree'),
@@ -95,7 +102,7 @@ class AptWrapper(object):
         self._cache.clear()
     """
 
-    def upgrade(self, packages, progress=None):
+    def upgrade(self, packages, progress=None, priority=Priority.NONE):
         if not isinstance(packages, list):
             packages = [packages]
 
@@ -103,7 +110,7 @@ class AptWrapper(object):
             if pkg_name in self._cache:
                 pkg = self._cache[pkg_name]
 
-                if pkg.is_upgradable:
+                if self._is_package_upgradable(pkg, priority=priority):
                     pkg.mark_upgrade()
 
         phase_name = progress.get_current_phase().name
@@ -129,8 +136,9 @@ class AptWrapper(object):
         if package_name in self._cache:
             return self._cache[package_name]
 
-    def upgrade_all(self, progress=None):
-        self._cache.upgrade(dist_upgrade=True)
+    def upgrade_all(self, progress=None, priority=Priority.NONE):
+        if priority != Priority.URGENT:
+            self._cache.upgrade(dist_upgrade=True)
 
         phase_name = progress.get_current_phase().name
         download = "{}-downloading".format(phase_name)
@@ -141,7 +149,7 @@ class AptWrapper(object):
         )
 
         progress.start(download)
-        self.cache_updates(progress)
+        self.cache_updates(progress, priority=priority)
 
         progress.start(install)
         inst_progress = AptInstallProgress(progress)
@@ -149,21 +157,49 @@ class AptWrapper(object):
         self._cache.open()
         self._cache.clear()
 
-    def cache_updates(self, progress):
-        self._mark_all_for_update()
+    def cache_updates(self, progress, priority=Priority.NONE):
+        self._mark_all_for_update(priority=priority)
 
         apt_progress = AptDownloadProgress(progress,
                                            self._cache.install_count)
         self._cache.fetch_archives(apt_progress)
 
-    def _mark_all_for_update(self):
+    def _mark_all_for_update(self, priority=Priority.NONE):
         for pkg in self._cache:
-            if pkg.is_upgradable:
+            if self._is_package_upgradable(pkg, priority=priority):
+                logger.debug('Marking {} ({}) for upgrade'.format(
+                    pkg.shortname, pkg.candidate.version
+                ))
                 pkg.mark_upgrade()
 
-    def is_update_avaliable(self):
+    def packages_to_be_upgraded(self):
+        ret = {}
+        for pkg in self._cache.get_changes():
+            ret[pkg.name] = pkg.versions.keys()
+
+        return ret
+
+    @staticmethod
+    def _is_package_upgradable(pkg, priority=Priority.NONE):
+        if not pkg.is_upgradable:
+            return False
+
+        if pkg.candidate.policy_priority < priority.priority:
+            return False
+
+        if (
+                priority.os_match_required and
+                not pkg.candidate.version.startswith(
+                    SYSTEM_VERSION.major_version
+                )
+            ):
+            return False
+
+        return True
+
+    def is_update_avaliable(self, priority=Priority.STANDARD):
         for pkg in self._cache:
-            if pkg.is_upgradable:
+            if self._is_package_upgradable(pkg, priority=priority):
                 return True
 
         return False

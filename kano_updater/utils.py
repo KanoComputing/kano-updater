@@ -19,7 +19,7 @@ import signal
 
 
 from kano.logging import logger
-from kano.utils import run_print_output_error, run_cmd, run_cmd_log, \
+from kano.utils import run_print_output_error, run_cmd, run_bg, run_cmd_log, \
     chown_path, is_gui, sed, get_user_unsudoed
 from kano.network import is_internet
 import kano.notifications as notifications
@@ -115,11 +115,35 @@ def supress_output(function, *args, **kwargs):
 def make_low_prio():
     # set IO class of this process to Idle
     pid = os.getpid()
-    run_cmd("ioprio -c 3 -p {}".format(pid))
+    unused1, unused2, rc = run_cmd_log("ionice -c 3 -p {}".format(pid))
+    if rc != 0:
+        logger.error('ionice command returned non-zero code: [{}]'.format(rc))
 
     # Set the lowest scheduling priority
-    run_cmd("schedtool -D {}".format(pid))
+    unused1, unused2, rc = run_cmd_log("schedtool -D {}".format(pid))
+    if rc != 0:
+        logger.error(
+            'schedtool command returned non-zero code: [{}]'.format(rc))
     os.nice(19)
+
+
+def make_normal_prio():
+    # set IO class of this process to Idle
+    pid = os.getpid()
+    unused1, unused2, rc = run_cmd_log("ionice -c 0 -p {}".format(pid))
+    if rc != 0:
+        logger.error('ionice command returned non-zero code: [{}]'.format(rc))
+
+    # Set the lowest scheduling priority
+    unused1, unused2, rc = run_cmd_log("schedtool -N {}".format(pid))
+    if rc != 0:
+        logger.error(
+            'schedtool command returned non-zero code: [{}]'.format(rc))
+    try:
+        current_niceness = os.nice(0)
+        os.nice(-1 * current_niceness)
+    except OSError as os_ex:
+        logger.error("Can't renice to 0 due to permissions [{}]".format(os_ex))
 
 
 def migrate_repository(apt_file, old_repo, new_repo):
@@ -286,7 +310,7 @@ def get_installed_version(pkg):
 
 
 def get_update_status():
-    status = {"last_update": 0, "update_available": 0, "last_check": 0}
+    status = {"last_update": 0, "update_available": 0, "last_check": 0, "last_check_urgent": 0}
     if os.path.exists(STATUS_FILE):
         with open(STATUS_FILE, "r") as sf:
             for line in sf:
@@ -507,3 +531,16 @@ def add_text_to_end(text_buffer, text, tag=None):
         text_buffer.insert(end, text)
     else:
         text_buffer.insert_with_tags(end, text, tag)
+
+
+def show_kano_dialog(title, description, buttons, blocking=True):
+    retval = None
+    cmd = 'kano-dialog title="{}" description="{}" buttons="{}" no-taskbar'.format(
+          title, description, buttons)
+
+    if blocking:
+        _, _, retval = run_cmd(cmd)
+    else:
+        retval = run_bg('exec ' + cmd)
+
+    return retval

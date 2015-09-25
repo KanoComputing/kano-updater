@@ -13,16 +13,19 @@ from kano_updater.paths import PIP_PACKAGES_LIST, PIP_CACHE_DIR
 from kano_updater.status import UpdaterStatus
 from kano_updater.apt_wrapper import apt_handle
 from kano_updater.progress import DummyProgress, Phase
-from kano_updater.utils import run_pip_command, is_server_available
+from kano_updater.utils import run_pip_command, is_server_available,\
+        show_kano_dialog, make_normal_prio
 from kano_updater.commands.check import check_for_updates
+import kano_updater.priority as Priority
 
 
 class DownloadError(Exception):
     pass
 
 
-def download(progress=None):
+def download(progress=None, gui=True):
     status = UpdaterStatus.get_instance()
+    dialog_proc = None
 
     if not progress:
         progress = DummyProgress()
@@ -80,11 +83,29 @@ def download(progress=None):
         progress.fail(err_msg)
         return False
 
+    # show a dialog informing the user of an automatic urgent download
+    if status.is_urgent and not gui:
+        # TODO: mute notifications?
+        title = "Updater"
+        description = "Urgent updates have been found! We'll download these automatically," \
+                      " and ask you to schedule the install when they finish."
+        buttons = "OK:green:1"
+        dialog_proc = show_kano_dialog(title, description, buttons, blocking=False)
+
     status.state = UpdaterStatus.DOWNLOADING_UPDATES
     status.save()
 
+    priority = Priority.NONE
+
+    if status.is_urgent:
+        priority = Priority.URGENT
+        logger.info('Urgent update detected, bumping to normal priority')
+        make_normal_prio()
+
+    logger.debug('Downloading with priority {}'.format(priority.priority))
+
     try:
-        success = do_download(progress, status)
+        success = do_download(progress, status, priority=priority, dialog_proc=dialog_proc)
     except Exception as err:
         progress.fail(err.message)
         logger.error(err.message)
@@ -100,7 +121,7 @@ def download(progress=None):
     return success
 
 
-def do_download(progress, status):
+def do_download(progress, status, priority=Priority.NONE, dialog_proc=None):
     progress.split(
         Phase(
             'downloading-pip-pkgs',
@@ -122,19 +143,28 @@ def do_download(progress, status):
         )
     )
 
-    _cache_pip_packages(progress)
-    _cache_deb_packages(progress)
+    _cache_pip_packages(progress, priority=priority)
+    _cache_deb_packages(progress, priority=priority)
 
     progress.finish('Done downloading')
+
+    # kill the dialog if it is still on
+    if dialog_proc:
+        dialog_proc.terminate()
+
     # TODO: Figure out if it has actually worked
     return True
 
 
-def _cache_pip_packages(progress):
+def _cache_pip_packages(progress, priority=Priority.NONE):
     """
         Downloads all updatable python modules and caches them in pip's
         internal pacakge cache.
     """
+
+    # Urgent updates don't do PIP updates
+    if priority == Priority.URGENT:
+        return
 
     phase_name = 'downloading-pip-pkgs'
     progress.start(phase_name)
@@ -160,9 +190,9 @@ def _cache_pip_packages(progress):
             logger.error(msg)
 
 
-def _cache_deb_packages(progress):
+def _cache_deb_packages(progress, priority=Priority.NONE):
     progress.start('updating-sources')
     apt_handle.update(progress=progress)
 
     progress.start('downloading-apt-packages')
-    apt_handle.cache_updates(progress)
+    apt_handle.cache_updates(progress, priority=priority)

@@ -19,13 +19,14 @@ from kano_updater.ui.paths import CSS_PATH
 from kano_updater.commands.install import install
 from kano_updater.ui.progress import GtkProgress
 from kano_updater.ui.views.install import Install
-from kano_updater.ui.views.restart import Restart
+from kano_updater.ui.views.finish import Finish
 
 
 class InstallWindow(Gtk.Window):
     CSS_FILE = os.path.join(CSS_PATH, 'updater.css')
 
     def __init__(self):
+
         # Apply styling to window
         apply_styling_to_screen(self.CSS_FILE)
 
@@ -93,8 +94,8 @@ class InstallWindow(Gtk.Window):
         for child in self.get_children():
             self.remove(child)
 
-        reboot_screen = Restart()
-        self.add(reboot_screen)
+        finish_screen = Finish()
+        self.add(finish_screen)
 
         self.show_all()
 

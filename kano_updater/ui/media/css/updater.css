@@ -37,7 +37,7 @@ GtkLabel {
 }
 
 .countdown,
-.restart-now {
+.finish-now {
     font-size: 16px;
 }
 
@@ -46,6 +46,6 @@ GtkLabel {
     font-size: 14px;
 }
 
-.restart-now {
+.finish-now {
     padding-top: 20px;
 }

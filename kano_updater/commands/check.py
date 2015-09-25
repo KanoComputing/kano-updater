@@ -1,7 +1,7 @@
 #
 # Checking to see if updates exist
 #
-# Copyright (C) 2014 Kano Computing Ltd.
+# Copyright (C) 2014-2015 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
@@ -14,11 +14,12 @@ from kano_updater.apt_wrapper import apt_handle
 from kano_updater.status import UpdaterStatus
 from kano_updater.progress import DummyProgress
 from kano_updater.utils import is_server_available
+import kano_updater.priority as Priority
 
 KANO_SOURCES_LIST = '/etc/apt/sources.list.d/kano.list'
 
 
-def check_for_updates(progress=None):
+def check_for_updates(progress=None, priority=Priority.NONE):
     status = UpdaterStatus.get_instance()
 
     # FIXME: FOR DEBUGGING ONLY
@@ -59,21 +60,51 @@ def check_for_updates(progress=None):
         # Not updating the timestamp. The check failed.
         return False
 
-    if _do_check(progress):
-        status.state = UpdaterStatus.UPDATES_AVAILABLE
-        logger.debug('Updates available')
-        rv = True
-    else:
+
+    update_type = _do_check(progress, priority=priority)
+    if update_type == Priority.NONE:
         status.state = UpdaterStatus.NO_UPDATES
         logger.debug('No updates available')
         rv = False
+    else:
+        if update_type == Priority.URGENT:
+            status.notifications_muted = True
+            status.is_urgent = True
 
-    status.last_check = int(time.time())
+        status.state = UpdaterStatus.UPDATES_AVAILABLE
+        logger.debug('Updates available')
+        logger.debug('Found update of priority: {}'.format(priority.priority))
+        rv = True
+
+    if priority <= Priority.STANDARD:
+        status.last_check = int(time.time())
+
+    status.last_check_urgent = int(time.time())
+
     status.save()
 
     return rv
 
 
-def _do_check(progress):
+def _do_check(progress, priority=Priority.NONE):
+    '''
+    Perform checks for all priorities greater than the one provided.
+    '''
+
     apt_handle.update(progress, sources_list=KANO_SOURCES_LIST)
-    return apt_handle.is_update_avaliable()
+    logger.debug('Checking urgent: {}'.format(priority <= Priority.URGENT))
+    logger.debug('Checking standard: {}'.format(priority <= Priority.STANDARD))
+
+    if (
+            priority <= Priority.URGENT
+            and apt_handle.is_update_avaliable(priority=Priority.URGENT)
+        ):
+        return Priority.URGENT
+
+    if (
+            priority <= Priority.STANDARD
+            and apt_handle.is_update_avaliable()
+        ):
+        return Priority.STANDARD
+
+    return Priority.NONE

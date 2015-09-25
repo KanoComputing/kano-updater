@@ -10,13 +10,14 @@
 kano-updater will help you keep your Kano OS up-to-date.
 
 Usage:
-  kano-updater check [--gui] [--interval <time>]
+  kano-updater check [--gui] [--interval <time>] [--urgent]
   kano-updater download [--low-prio]
   kano-updater install [--gui [--no-confirm] [--splash-pid <pid>]]
   kano-updater set-state <state>
+  kano-updater set-scheduled (1|0)
   kano-updater first-boot
   kano-updater clean
-  kano-updater ui (relaunch-splash <parent-pid> | boot-window)
+  kano-updater ui (relaunch-splash <parent-pid> | boot-window | shutdown-window)
   kano-updater [-f] [-n]
 
 Options:
@@ -33,6 +34,7 @@ import os
 import sys
 import atexit
 import time
+import signal
 
 if __name__ == '__main__' and __package__ is None:
     DIR_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -57,7 +59,19 @@ from kano_updater.commands.clean import clean
 from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
 from kano_updater.utils import make_low_prio, install_docopt, is_running, \
-    remove_pid_file, pause_notifications, resume_notifications
+    remove_pid_file, pause_notifications, resume_notifications, show_kano_dialog
+import kano_updater.priority as Priority
+
+
+def sigterm_on_download(signo, frame):
+    status = UpdaterStatus.get_instance()
+    if status.state == UpdaterStatus.DOWNLOADING_UPDATES:
+        msg = 'Updater got SIGTERM  while downloading in the background'
+        logger.debug(msg)
+        # Download was interrupted, go back one state
+        status.state = UpdaterStatus.UPDATES_AVAILABLE
+    # Exit from the signal handler to trigger the atexit hook
+    sys.exit(0)
 
 
 def clean_up():
@@ -69,6 +83,30 @@ def clean_up():
 
     resume_notifications()
     logger.flush()
+
+
+def schedule_install(gui=False, confirm=True, splash_pid=None):
+    status = UpdaterStatus.get_instance()
+
+    # if install is already scheduled, do the install, otherwise, ask for scheduling
+    if status.state == UpdaterStatus.UPDATES_DOWNLOADED and status.is_urgent:
+        # stops the confirm window for urgent updates
+        confirm = False
+
+        title = "Updater"
+        description = "Urgent updates have been downloaded! We'll need to install these as soon" \
+                      " as possible to ensure the best experience."
+        buttons = "INSTALL NOW:green:1,LATER:orange:0"
+        install_now = show_kano_dialog(title, description, buttons)
+
+        # schedule the install to happen at shutdown
+        # prevents unscheduling if the user closes the dialog from the startbar
+        status.is_scheduled = True
+        status.save()
+
+        # user clicked INSTALL NOW, abort install
+        if install_now:
+            run_install(gui, confirm, splash_pid)
 
 
 def run_install(gui=False, confirm=True, splash_pid=None):
@@ -92,7 +130,7 @@ def run_install(gui=False, confirm=True, splash_pid=None):
     else:
         try:
             progress = CLIProgress()
-            install(progress)
+            install(progress, gui)
         except Relaunch:
             clean_up()
             os.execvp('kano-updater', ['kano-updater', 'install'])
@@ -126,6 +164,10 @@ def main():
         status = UpdaterStatus.get_instance()
         status.state = args['<state>']
         status.save()
+    elif args['set-scheduled']:
+        status = UpdaterStatus.get_instance()
+        status.is_scheduled = args['1']  # if 1 was supplied, is_scheduled becomes True, else False
+        status.save()
     elif args['clean']:
         clean()
     elif args['ui']:
@@ -133,24 +175,47 @@ def main():
             from kano_updater.ui.main import launch_relaunch_countdown_gui
             launch_relaunch_countdown_gui(int(args['<parent-pid>']))
         elif args['boot-window']:
+            status = UpdaterStatus.get_instance()
+            status.is_shutdown = False
+            status.save()
+
+            if status.is_scheduled and status.is_urgent:
+                clean()
+                return run_install(gui=True, confirm=False)
+
             from kano_updater.ui.main import launch_boot_gui
             launch_boot_gui()
+
+            if status.is_scheduled:
+                run_install(gui=True, confirm=True)
+
+        elif args['shutdown-window']:
+            status = UpdaterStatus.get_instance()
+            status.is_shutdown = True
+            status.save()
+            from kano_updater.ui.main import launch_shutdown_gui
+            launch_shutdown_gui()
     elif args['first-boot']:
         # spoof the last_check timestamp to six days ago so the user won't
         # be prompted to update in the first day after boot
         status = UpdaterStatus.get_instance()
         six_days_ago = int(time.time() - 6 * 24 * 60 * 60)
         status.last_check = status.last_update = six_days_ago
+        one_day_ago = int(time.time() - 24 * 60 * 60)
+        status.last_check_urgent = one_day_ago
         status.save()
     else:
         clean()
 
         progress = CLIProgress()
+        status = UpdaterStatus.get_instance()
 
         if args['download']:
             if args['--low-prio']:
+                signal.signal(signal.SIGTERM, sigterm_on_download)
                 make_low_prio()
-            download(progress)
+            download(progress, gui=False)
+            schedule_install(gui=True)
         elif args['install']:
             splash_pid = None
             if args['--splash-pid']:
@@ -160,7 +225,6 @@ def main():
                         splash_pid=splash_pid)
         elif args['check']:
             if args['--interval']:
-                status = UpdaterStatus.get_instance()
                 target_delta = float(args['<time>']) * 60 * 60
 
                 time_now = time.time()
@@ -176,16 +240,29 @@ def main():
                     # Return if the check happened too early.
                     return 2
 
+            priority = Priority.NONE
+
+            if args['--urgent']:
+                priority = Priority.URGENT
+
             # There used to be a dialog pop up if an update was found
             # that we had removed (see the commented out lines bellow).
             # if args['--gui']:
             #    from kano_updater.ui.main import launch_check_gui
             #    updates_available = launch_check_gui()
             # else:
-            updates_available = check_for_updates(progress=progress)
+            updates_available = check_for_updates(progress=progress,
+                                                  priority=priority)
 
             if updates_available:
-                logger.info(_('Updates available.'))
+                status = UpdaterStatus.get_instance()
+                if status.is_urgent:
+                    logger.info(_('Urgent updates available.'))
+                    progress = CLIProgress()
+                    download(progress, gui=False)
+                    schedule_install(gui=True)
+                else:
+                    logger.info(_('Updates available.'))
             else:
                 if args['--gui']:
                     # Show dialogue

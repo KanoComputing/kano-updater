@@ -2,12 +2,13 @@
 
 # postinst
 #
-# Copyright (C) 2014 Kano Computing Ltd.
+# Copyright (C) 2014-2015 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
 #
 
 TMP_FILE=/tmp/kano-updater_conf
 OLD_UPDATER_STATUS=/var/cache/kano-updater/status
+KANO_SOURCES="/etc/apt/sources.list.d/kano.list"
 
 PIP_DEPENDENCIES="docopt ping"
 
@@ -33,6 +34,11 @@ case "$1" in
         fi
 
         pip install --upgrade $PIP_DEPENDENCIES
+
+        # Add the urgent repo to sources - if not already existent
+        grep -q 'release-urgent' $KANO_SOURCES || \
+            grep -m 1 '^deb http://.*.kano.me/archive/' $KANO_SOURCES | \
+            sed -r "s|^deb http://([a-z]*).kano.me.*$|deb http://\1.kano.me/archive release-urgent main|" >> $KANO_SOURCES
 
         ;;
 esac

@@ -23,13 +23,14 @@ from kano_updater.auxiliary_tasks import run_aux_tasks
 from kano_updater.progress import DummyProgress, Phase, Relaunch
 from kano_updater.utils import run_pip_command
 from kano_updater.commands.download import download
+import kano_updater.priority as Priority
 
 
 class InstallError(Exception):
     pass
 
 
-def install(progress=None):
+def install(progress=None, gui=True):
     status = UpdaterStatus.get_instance()
     logger.debug("Installing update (updater state = {})".format(status.state))
 
@@ -38,7 +39,6 @@ def install(progress=None):
 
     #
     run_cmd('sudo kano-empty-trash')
-
 
     # Check for available disk space before updating
     # We require at least 1GB of space for the update to proceed
@@ -97,8 +97,15 @@ def install(progress=None):
 
         progress.start('install')
 
+    priority = Priority.NONE
+
+    if status.is_urgent:
+        priority = Priority.URGENT
+
+    logger.debug('Installing with priority {}'.format(priority.priority))
+
     try:
-        return do_install(progress, status)
+        return do_install(progress, status, priority=priority)
     except Relaunch as err:
         raise
     except Exception as err:
@@ -113,10 +120,52 @@ def install(progress=None):
         return False
 
 
-def do_install(progress, status):
+def do_install(progress, status, priority=Priority.NONE):
     status.state = UpdaterStatus.INSTALLING_UPDATES
     status.save()
 
+    if priority == Priority.URGENT:
+        install_urgent(progress, status)
+    else:
+        install_standard(progress, status)
+
+    status.state = UpdaterStatus.UPDATES_INSTALLED
+    status.last_update = int(time.time())
+    status.is_scheduled = False
+    status.save()
+
+    progress.finish('Update completed')
+    return True
+
+
+def install_urgent(progress, status):
+    progress.split(
+        Phase(
+            'installing-urgent',
+            _('Installing Hotfix'),
+            100,
+            is_main=True
+        )
+    )
+    logger.debug('Installing urgent hotfix')
+    packages_to_update = apt_handle.packages_to_be_upgraded()
+    progress.start('installing-urgent')
+    install_deb_packages(progress, priority=Priority.URGENT)
+    status.is_urgent = False
+    try:
+        from kano_profile.tracker import track_data
+        track_data('updated_hotfix', {
+            'packages': packages_to_update
+        })
+        logger.debug('Tracking Data: "{}"'.format(packages_to_update))
+    except ImportError as imp_exc:
+        logger.error(("Couldn't track hotfix installation, failed to import "
+                      "tracking module: [{}]").format(imp_exc))
+    except Exception:
+        pass
+
+
+def install_standard(progress, status):
     progress.split(
         Phase(
             'init',
@@ -185,7 +234,7 @@ def do_install(progress, status):
         msg = "{}: {}".format(title, description)
         logger.error("Updating from a version that is no longer supported ({})"
                      .format(system_version))
-        progress.error(msg)
+        progress.fail(msg)
         raise InstallError(msg)
 
     old_updater = apt_handle.get_package('kano-updater').installed.version
@@ -237,19 +286,17 @@ def do_install(progress, status):
     progress.start('aux-tasks')
     run_aux_tasks(progress)
 
-    status.state = UpdaterStatus.UPDATES_INSTALLED
-    status.last_update = int(time.time())
-    status.save()
-
-    progress.finish('Update completed')
-    return True
 
 
-def install_deb_packages(progress):
-    apt_handle.upgrade_all(progress)
+def install_deb_packages(progress, priority=Priority.NONE):
+    apt_handle.upgrade_all(progress, priority=priority)
 
 
-def install_pip_packages(progress):
+def install_pip_packages(progress, priority=Priority.NONE):
+    # Urgent updates don't do PIP updates
+    if priority == Priority.URGENT:
+        return
+
     phase_name = progress.get_current_phase().name
 
     packages = read_file_contents_as_lines(PIP_PACKAGES_LIST)

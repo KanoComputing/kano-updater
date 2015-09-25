@@ -113,6 +113,21 @@ def launch_boot_gui():
     status.save()
 
 
+def launch_shutdown_gui():
+    from gi.repository import GObject, Gtk
+
+    from kano_updater.ui.available_window import UpdateNowShutdownWindow
+    from kano_updater.ui.install_window import InstallWindow
+
+    status = UpdaterStatus.get_instance()
+
+    if status.is_scheduled:
+        GObject.threads_init()
+        win = InstallWindow() if status.is_urgent else UpdateNowShutdownWindow()
+        win.show()
+        Gtk.main()
+
+
 def launch_relaunch_countdown_gui(parent_pid):
     from gi.repository import GObject, Gtk
     from kano_updater.ui.relaunch_window import RelaunchWindow

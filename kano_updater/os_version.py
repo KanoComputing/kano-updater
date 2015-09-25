@@ -33,11 +33,20 @@ class OSVersion(object):
         self._codename = codename
         self._number = version
 
+        try:
+            self._major_version = '.'.join(version.split('.')[0:2])
+        except:
+            self._major_version = version
+
     def to_issue(self):
         return "{} {} {} \\l".format(self._os, self._codename, self._number)
 
     def to_version_string(self):
         return "{}-{}-{}".format(self._os, self._codename, self._number)
+
+    @property
+    def major_version(self):
+        return self._major_version
 
     def __str__(self):
         return self.to_version_string()
@@ -56,6 +65,7 @@ class OSVersion(object):
 
 
 TARGET_VERSION = OSVersion.from_version_string(VERSION)
+SYSTEM_VERSION = OSVersion.from_version_file(SYSTEM_VERSION_FILE)
 
 
 def bump_system_version():

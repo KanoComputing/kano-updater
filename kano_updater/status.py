@@ -54,8 +54,12 @@ class UpdaterStatus(object):
 
         self._state = self.NO_UPDATES
         self._last_check = 0
+        self._last_check_urgent = 0
         self._last_update = 0
+        self._is_urgent = False
+        self._is_scheduled = False
         self._notifications_muted = False
+        self._is_shutdown = False
 
         ensure_dir(os.path.dirname(self._status_file))
         if not os.path.exists(self._status_file):
@@ -72,6 +76,10 @@ class UpdaterStatus(object):
                 data['state']
                 data['last_update']
                 data['last_check']
+                data['last_check_urgent']
+                data['is_urgent']
+                data['is_scheduled']
+                data['is_shutdown']
             except Exception:
                 # Initialise the file again if it is corrupted
                 logger.warn("The status file was corrupted.")
@@ -81,6 +89,10 @@ class UpdaterStatus(object):
             self._state = data['state']
             self._last_update = data['last_update']
             self._last_check = data['last_check']
+            self._last_check_urgent = data['last_check_urgent']
+            self._is_urgent = (data['is_urgent'] == 1)
+            self._is_scheduled = (data['is_scheduled'] == 1)
+            self._is_shutdown = (data['is_shutdown'] == 1)
 
             if 'notifications_muted' in data:
                 self._notifications_muted = (data['notifications_muted'] == 1)
@@ -90,11 +102,15 @@ class UpdaterStatus(object):
             'state': self._state,
             'last_update': self._last_update,
             'last_check': self._last_check,
+            'last_check_urgent': self._last_check_urgent,
+            'is_urgent': 1 if self._is_urgent else 0,
+            'is_scheduled': 1 if self._is_scheduled else 0,
+            'is_shutdown': 1 if self._is_shutdown else 0,
             'notifications_muted': 1 if self._notifications_muted else 0
         }
 
         with open(self._status_file, 'w') as status_file:
-            json.dump(data, status_file)
+            json.dump(data, status_file, indent=4)
 
     # -- state
     @property
@@ -108,6 +124,19 @@ class UpdaterStatus(object):
             raise UpdaterStatusError(msg)
 
         self._state = value
+
+    # -- scheduling
+    @property
+    def is_scheduled(self):
+        return self._is_scheduled
+
+    @is_scheduled.setter
+    def is_scheduled(self, value):
+        if not isinstance(value, bool):
+            msg = "'is_scheduled' must be a boolean value."
+            raise UpdaterStatusError(msg)
+
+        self._is_scheduled = value
 
     # -- last_update
     @property
@@ -135,6 +164,32 @@ class UpdaterStatus(object):
 
         self._last_check = value
 
+    # -- is_urgent - flag used to distinguish between update priority levels
+    @property
+    def is_urgent(self):
+        return self._is_urgent
+
+    @is_urgent.setter
+    def is_urgent(self, value):
+        if not isinstance(value, bool):
+            msg = "'is_urgent' must be a boolean value."
+            raise UpdaterStatusError(msg)
+
+        self._is_urgent = value
+
+    # -- last_check_urgent - used for very urgent updates
+    @property
+    def last_check_urgent(self):
+        return self._last_check
+
+    @last_check_urgent.setter
+    def last_check_urgent(self, value):
+        if not isinstance(value, int):
+            msg = "'last_check_urgent' must be an Unix timestamp (int)."
+            raise UpdaterStatusError(msg)
+
+        self._last_check_urgent = value
+
     """
     # -- notifications_muted
 
@@ -151,3 +206,16 @@ class UpdaterStatus(object):
             raise UpdaterStatusError(msg)
 
         self._notifications_muted = value
+
+    # -- is_shutdown - used to determine whether to finish install with reboot or shutdown
+    @property
+    def is_shutdown(self):
+        return self._is_shutdown
+
+    @is_shutdown.setter
+    def is_shutdown(self, value):
+        if not isinstance(value, bool):
+            msg = "'is_shutdown' must be a boolean value."
+            raise UpdaterStatusError(msg)
+
+        self._is_shutdown = value
