@@ -1,4 +1,4 @@
-kano-updater (2.2-1) unstable; urgency=low
+kano-updater (2.2.0-1) unstable; urgency=low
 
   * Add support for security hotfixes
   * Add support for scheduling updates for later
