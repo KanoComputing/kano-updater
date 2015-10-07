@@ -87,7 +87,8 @@ def download(progress=None, gui=True):
     if status.is_urgent and not gui:
         # TODO: mute notifications?
         title = "Updater"
-        description = "Urgent updates have been found! We'll download these automatically," \
+        description = "Kano HQ has just released a critical update that will repair" \
+                      " some important things on your system! We'll download these automatically," \
                       " and ask you to schedule the install when they finish."
         buttons = "OK:green:1"
         dialog_proc = show_kano_dialog(title, description, buttons, blocking=False)
