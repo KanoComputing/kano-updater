@@ -98,11 +98,21 @@ class Gamestate(object):
         self.gamestate_change_listener = listener
 
     def update(self, delta_t):
+        '''
+        This is the entry point into updating the game logic.
+        It calls the update method of the currently running gamestate.
+
+        It is called in the Gameloop as long as the game is running.
+        '''
         drawables = self.current_state.update(delta_t)
         return drawables
 
     @property
     def is_running(self):
+        '''
+        This method is used by the Gameloop in order to determine
+        whether or not to quit the game.
+        '''
         return self._is_running
 
     def quit(self):

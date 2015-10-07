@@ -128,6 +128,8 @@ class Flappy(pygame.sprite.Sprite):
         return self.FLAPPY_IMAGES[index]
 
     def dive_animation(self):
+        # TODO: performance optimisations
+        # TODO: update self.hitmask when a rotation is performed?
         if self.velocity <= 0:
             # tilt flappy to the jump angle as long as he is gaining altitude
             self.image, self.rect = rotate_center(self.get_current_flappy_image(), self.rect, self.JUMP_TILT_ANGLE)

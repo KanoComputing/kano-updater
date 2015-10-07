@@ -56,6 +56,10 @@ class Ground(pygame.sprite.Sprite):
 class GroundManager(object):
     '''
     This class is the top level manager for the "floor assembly".
+
+    It composes the ground out of as many Ground objects as needed in order to
+    fill the Display. Similar to PipeManager, as soon as a Ground sprite falls
+    off the Dispaly to the left, it is moved at the end for continuous animation.
     '''
 
     GROUND_Y = 0.94
@@ -79,16 +83,25 @@ class GroundManager(object):
 
     def clear(self, display, background):
         '''
+        This method clears the ground sprites from the background and is
+        called by the Display update when drawing drawables.
         '''
         self.ground_group.clear(display, background)
 
     def draw(self, display):
         '''
+        This method draws the ground sprites onto the Display surface and is
+        called by the Display update when drawing drawables.
         '''
         return self.ground_group.draw(display)
 
     def update(self, delta_t):
         '''
+        This method updates the entire "floor assembly" and is called
+        by each individual game state when appropriate.
+
+        It calls the update for each Ground object and moves the first Ground
+        when it falls off the display to the left.
         '''
         # call the update function of every Ground sprite
         for ground in self.ground_list:
@@ -114,6 +127,8 @@ class GroundManager(object):
 
     def get_ground_under_flappy(self):
         '''
+        This method returns the Ground object that is directly under Flappy.
+        It is called by FlappyFlyingState in its update_state method.
         '''
         for ground in self.ground_list:
             # TODO: better way of using flappy's position (.. > s.d_w * 0.2)

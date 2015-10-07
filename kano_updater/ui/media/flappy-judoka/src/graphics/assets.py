@@ -4,6 +4,8 @@
 # Copyright (C) 2015 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
+#
+# A static object to load all game assets after the Display initialisation.
 
 
 import pygame
@@ -13,6 +15,11 @@ from src.utils import debugger, load_image
 
 class Assets(object):
     '''
+    This class is the main object for game assets.
+    Flappy, Pipe, Ground, Display get their assets from here.
+
+    Also, since the Display instanciates this class, the final Display
+    dimensions are also stored here for all users of the class.
     '''
 
     FLAPPY_SCALE = 0.13      # % of display height

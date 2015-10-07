@@ -4,6 +4,8 @@
 # Copyright (C) 2015 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
+#
+# A collection of HUDs specific to each individual Gamestate.
 
 
 import os
@@ -17,6 +19,11 @@ from src.paths import fonts_path
 
 class TemplateHUD(object):
     '''
+    This is a template of a HUD for the individual gamestates of the game.
+
+    It defines the rendering parameters - colors, fonts sizes, positions.
+    It also defines part of the update method which is to draw the controls
+    in the bottom left of the Display.
     '''
 
     # font size parameters
@@ -63,6 +70,10 @@ class TemplateHUD(object):
 
     def update(self, fps):
         '''
+        This is the main entry point into rendering the HUD.
+        It is called by the Display update method.
+
+        On every frame, the HUD draws the controls on top of the Display.
         '''
 
         # on every frame, all subclasses will draw the controls + quit hints
@@ -83,6 +94,8 @@ class TemplateHUD(object):
 
 class IntroHUD(TemplateHUD):
     '''
+    This HUD is used in tandem with IntroState.
+    It displays the game banner and a hint on how to get started.
     '''
 
     # parameters defining the Y position of the texts
@@ -103,6 +116,7 @@ class IntroHUD(TemplateHUD):
 
     def state_update(self):
         '''
+        For this specific HUD, render the banner and hint.
         '''
         self.display.blit(self.banner_text, (self.banner_text_x, self.banner_text_y))
         self.display.blit(self.hint_text, (self.hint_text_x, self.hint_text_y))
@@ -110,6 +124,8 @@ class IntroHUD(TemplateHUD):
 
 class NewGameHUD(TemplateHUD):
     '''
+    This HUD is used in tandem with NewGameState.
+    It displays a 'New Game' title and a hint on how to get started.
     '''
 
     # parameters defining the Y position of the texts
@@ -130,6 +146,7 @@ class NewGameHUD(TemplateHUD):
 
     def state_update(self):
         '''
+        For this specific HUD, render the title and hint.
         '''
         self.display.blit(self.title_text, (self.title_text_x, self.title_text_y))
         self.display.blit(self.hint_text, (self.hint_text_x, self.hint_text_y))
@@ -137,6 +154,10 @@ class NewGameHUD(TemplateHUD):
 
 class FlappyFlyingHUD(TemplateHUD):
     '''
+    This HUD is used in tandem with FlappyFlyingState.
+
+    It only renders the score with a Sprite. For this, it implements the
+    ScoreChangedListener to receive notifications when the score changes.
     '''
 
     # parameters defining the Y position of the texts
@@ -156,6 +177,7 @@ class FlappyFlyingHUD(TemplateHUD):
 
     def state_update(self):
         '''
+        For this specific HUD, render the score.
         '''
         self.score_text_group.draw(self.display)
 
@@ -182,6 +204,8 @@ class FlappyFlyingHUD(TemplateHUD):
 
 class GameOverHUD(TemplateHUD):
     '''
+    This HUD is used in tandem with GameOverState.
+    It displays a 'Game Over' title, the score achieved, and a hint.
     '''
 
     # parameters defining the Y position of the texts
@@ -207,6 +231,7 @@ class GameOverHUD(TemplateHUD):
 
     def state_update(self):
         '''
+        For this specific HUD, render the banner, score, and hint.
         '''
         self.display.blit(self.title_text, (self.title_text_x, self.title_text_y))
         self.display.blit(self.score_text, (self.score_text_x, self.score_text_y))

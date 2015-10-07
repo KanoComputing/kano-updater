@@ -122,7 +122,7 @@ class PipeManager(object):
 
     def draw(self, display):
         '''
-        This method draws the pipes on the Display surface and is
+        This method draws the pipes onto the Display surface and is
         called by the Display update when drawing drawables.
         '''
         return self.pipes_group.draw(display)

@@ -4,6 +4,8 @@
 # Copyright (C) 2015 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
+#
+# This is the main Game View, the game rendering window.
 
 
 import random
@@ -17,6 +19,18 @@ from src.utils import debugger
 
 class Display(object):
     '''
+    This is the main Game View, the game rendering window.
+    It presents the running Gamestate to the player.
+
+    It sets the pygame display mode and screen resolution, listens for notifications
+    from Gamestate by implementing the interface, composes and draws the background,
+    and renders on each frame the drawables it's given, as well as the HUD on top.
+
+    The frame by frame rendering unfortunately does not make use of DirtySprite
+    with LayeredDirty grouping due to pygame on the RPI - different implementations?
+
+    The drawables are esentially objects which need to have
+    clear() and draw() methods - See pygame.sprite.RenderUpdates.
     '''
 
     # default values for the Display resolution
@@ -55,6 +69,10 @@ class Display(object):
 
     def setup(self):
         '''
+        This method is called by the Gameloop in order to initialise the Display.
+
+        It provides the implementation of the state change listener
+        such that the Display can react on specific state transitions.
         '''
         Gamestate.get().set_gamestate_change_listener(self.mGamestateChangeListener(self))
 
@@ -81,6 +99,10 @@ class Display(object):
 
     def update(self, drawables, fps):
         '''
+        This is the games main rendering method.
+        Each time it is called, a new frame gets drawn on the screen.
+
+        It is called in the Gameloop as long as the game is running.
         '''
         for drawable in drawables:
             # instead of drawing the background every time, clear just the rects
@@ -92,7 +114,7 @@ class Display(object):
         self.hud.update(fps)
 
         # update the entire screen
-        pygame.display.update()
+        pygame.display.update()  # TODO: improve the drawing pipeline
 
     # Implements
     class mGamestateChangeListener(Gamestate.GamestateChangeListener):
