@@ -15,7 +15,7 @@ from kano.gtk3.apply_styles import apply_styling_to_screen
 from kano.gtk3.kano_dialog import KanoDialog
 
 from kano_updater.utils import kill_apps
-from kano_updater.ui.paths import CSS_PATH
+from kano_updater.ui.paths import CSS_PATH, FLAPPY_PATH
 from kano_updater.commands.install import install
 from kano_updater.ui.progress import GtkProgress
 from kano_updater.ui.views.install import Install
@@ -31,7 +31,11 @@ class InstallWindow(Gtk.Window):
         apply_styling_to_screen(self.CSS_FILE)
 
         Gtk.Window.__init__(self)
-        self.fullscreen()
+        # self.fullscreen()
+        screen = Gdk.Screen.get_default()
+        width = screen.get_width()
+        height = screen.get_height()
+        self.set_size_request(width, height + 80)
         self.set_keep_above(True)
 
         self.set_icon_name('kano-updater')
@@ -43,6 +47,7 @@ class InstallWindow(Gtk.Window):
         kill_apps()
 
         self.show_all()
+        self._install_screen._pgl.hide()
         self._set_wait_cursor()
 
         # For passing user input to the install thread
@@ -53,6 +58,19 @@ class InstallWindow(Gtk.Window):
         self.user_input_lock.acquire()
 
         self._start_install()
+
+    def _launch_game(self, window=None, event=None):
+        try:
+            if event and event.get_keycode()[1] == 44:  # [J] key
+                self.set_keep_below(True)
+                os.system('{} --width 1000 --height 700 &'.format(FLAPPY_PATH))
+                os.system('kill -9 `pgrep -f kano-feedback`')      # kill kano-feedback-widget
+                os.system('kill -9 `pgrep -f kano-world-widget`')  # kill kano-world share widget
+                os.system('lxpanelctl exit')                       # kill lxpanel
+                # minimise all windows, and restore focus to the Updater and then Flappy
+                os.system('wmctrl -k on && wmctrl -a "Updater" && wmctrl -a "Flappy"')
+        except:
+            pass
 
     def _start_install(self):
         progress = GtkProgress(self)
@@ -119,8 +137,14 @@ class InstallWindow(Gtk.Window):
     def close_window(self, widget=None, event=None):
         Gtk.main_quit()
 
-    def update_progress(self, percent, msg, sub_msg=''):
+    def update_progress(self, percent, msg, phase_name, sub_msg=''):
         self._install_screen.update_progress(percent, msg, sub_msg)
+
+        # enabling flappy-judoka launch only after these phases
+        # i.e. when a reboot is inevitable
+        if phase_name in ['downloading', 'downloading-pip-pkgs', 'init', 'installing-urgent']:
+            self.get_toplevel().connect('key-release-event', self._launch_game)
+            self._install_screen._pgl.show()
 
         # FIXME Progress to next with the done
         if percent == 100:

@@ -7,8 +7,10 @@
 # Install widget
 #
 
+
 from gi.repository import Gtk
 from kano_updater.ui.stage_text import STAGE_TEXT
+
 
 class Install(Gtk.Overlay):
 
@@ -17,9 +19,12 @@ class Install(Gtk.Overlay):
 
         style = self.get_style_context().add_class('install')
 
+        self._pgl = self._create_play_game_label()
+        self._pgl.hide()
         progress = self._create_progress_grid()
         self._psa = self._create_psa()
 
+        self.add_overlay(self._pgl)
         self.add(progress)
         self.add_overlay(self._psa)
 
@@ -35,6 +40,16 @@ class Install(Gtk.Overlay):
         self._progress_bar.set_margin_bottom(8)
 
         return self._progress_bar
+
+    def _create_play_game_label(self):
+        play_game_label = Gtk.Label()
+        play_game_label.set_text(_('Do you want to play a cool game instead? PRESS [J] TO LAUNCH!'))
+        play_game_label.set_size_request(825, 100)
+        play_game_label.set_halign(Gtk.Align.CENTER)
+        play_game_label.set_valign(Gtk.Align.START)
+        play_game_label.get_style_context().add_class('play-game')
+
+        return play_game_label
 
     def _create_phase_label(self):
         self._progress_phase = Gtk.Label()
@@ -71,7 +86,6 @@ class Install(Gtk.Overlay):
         progress_grid.get_style_context().add_class('progress')
         progress_grid.set_margin_bottom(80)
 
-
         box = Gtk.EventBox(hexpand=True, vexpand=True)
         box.add(progress_grid)
 
@@ -90,7 +104,6 @@ class Install(Gtk.Overlay):
         style.add_class('psa')
 
         return psa
-
 
     def update_progress(self, percent, msg, sub_msg=''):
         percent_fraction = percent / 100.

@@ -21,7 +21,7 @@ class GtkProgress(Progress):
 
     def _change(self, phase, msg):
         GLib.idle_add(self._window.update_progress, phase.global_percent,
-                      phase.get_main_phase().label, msg)
+                      phase.get_main_phase().label, phase.get_main_phase().name, msg)
 
     def _error(self, phase, msg):
         err_msg = "Error {} - {}".format(phase.label.lower(), msg)
@@ -33,7 +33,7 @@ class GtkProgress(Progress):
 
     def _done(self, msg):
         GLib.idle_add(self._window.update_progress, 100,
-                      "Complete!", msg)
+                      "Complete!", '', msg)
 
     def _prompt(self, msg, question, answers):
         GLib.idle_add(self._window.user_prompt, msg, question, answers)
