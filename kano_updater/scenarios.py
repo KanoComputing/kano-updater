@@ -327,8 +327,8 @@ class PostUpdate(Scenarios):
         remove_user_files(['.kdesktop/YouTube.lnk'])
 
     def beta_201_to_beta_210(self):
-        from kano_settings.system.advanced import set_everyone_youtube_cookies
-        set_everyone_youtube_cookies()
+        from kano_settings.system.advanced import set_everyone_cookies
+        set_everyone_cookies()
 
     def beta_210_to_beta_220(self):
         install('telnet python-serial')
