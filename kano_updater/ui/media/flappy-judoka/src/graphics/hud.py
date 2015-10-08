@@ -194,6 +194,7 @@ class FlappyFlyingHUD(TemplateHUD):
         score_text_y = self.display_height * self.SCORE_Y
         self.score_text_sprite.rect.center = (score_text_x, score_text_y)
 
+    # Implements
     class mScoreChangedListener(FlappyFlyingState.ScoreChangedListener):
         def __init__(self, parent):
             self.parent = parent

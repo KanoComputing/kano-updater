@@ -287,8 +287,8 @@ class FlappyFlyingState(GamestateTemplate):
         self.flappy_group = pygame.sprite.RenderUpdates(self.flappy)
 
         self.flappy_hit_pipe = False  # flag to allow for falling animation after pipe smash
-        self.distance = 0             # distance traveled to calculate the score
         self.score = 0                # the number of pipes flappy passed through
+        self.counted_pipe = None      # pipe we are currently going through
 
         self.score_changed_listeners = list()
 
@@ -303,7 +303,7 @@ class FlappyFlyingState(GamestateTemplate):
     def state_update(self, delta_t):
         # keep moving the pipes and ground as long as flappy did not crash
         if not self.flappy_hit_pipe:
-            self.distance = self.pipes.update(delta_t)
+            self.pipes.update(delta_t)
             self.ground.update(delta_t)
 
         # update flappy's Y position, simulating gravity
@@ -324,16 +324,16 @@ class FlappyFlyingState(GamestateTemplate):
         return [self.flappy_group, self.pipes, self.ground]
 
     def update_score(self):
-        old_score = self.score
-
-        # calculate score based on distance traveled and the pipe spacing intervals
-        traveled = self.distance - self.pipes.PIPE_INIT_X + self.flappy.default_position[0]
-        intervals = self.pipes.PIPE_SPACING_X + self.pipes.pipe_width
-        self.score = max(int(traveled / intervals + 1), 0)  # use max because of traveled < 0
-
-        # if there is a new score, notify all listeners
-        if self.score != old_score:
-            self.call_score_changed_listeners()
+        for i in xrange(0, len(self.pipes.pipes_list), 2):
+            flappy_to_pipe = self.flappy.default_position[0] - self.pipes.pipes_list[i].position[0]
+            if flappy_to_pipe > 0 and flappy_to_pipe < self.pipes.pipe_width:
+                if id(self.pipes.pipes_list[i]) != self.counted_pipe:
+                    self.counted_pipe = id(self.pipes.pipes_list[i])
+                    self.score += 1
+                    self.call_score_changed_listeners()
+                    break
+            else:
+                break
 
     def add_score_changed_listener(self, listener):
         if not isinstance(listener, self.ScoreChangedListener):
