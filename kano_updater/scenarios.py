@@ -130,7 +130,7 @@ class PreUpdate(Scenarios):
                           self.beta_201_to_beta_210)
 
         self.add_scenario("Kanux-Beta-2.1.0", "Kanux-Beta-2.2.0",
-                          self.beta_210_to_beta_210)
+                          self.beta_210_to_beta_220)
 
     def beta_103_to_beta_110(self):
         pass
@@ -248,7 +248,7 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-2.0.1", "Kanux-Beta-2.1.0",
                           self.beta_201_to_beta_210)
 
-        self.add_scenario("Kanux-Beta-2.1.0", "Kanux-Beta-2.1.1",
+        self.add_scenario("Kanux-Beta-2.1.0", "Kanux-Beta-2.2.0",
                           self.beta_210_to_beta_220)
 
     def beta_103_to_beta_110(self):
