@@ -12,7 +12,7 @@ import os
 import sys
 import pygame
 
-from paths import images_path
+from paths import images_path, sounds_path
 
 
 TMP_DIR = '/tmp/flappy'
@@ -81,6 +81,19 @@ def load_image(name, colorkey=None, alpha=False):
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey, pygame.RLEACCEL)
     return image
+
+
+def load_sound(name):
+    '''
+    '''
+    path = os.path.join(sounds_path, name)
+    try:
+        sound = pygame.mixer.Sound(path)
+    except pygame.error:
+        debugger("FATAL ERROR: utils: load_sound: Could not load '{}' from '{}' !"
+                 .format(name, path), fatal=True)
+
+    return sound
 
 
 def rotate_center(image, rect, angle):

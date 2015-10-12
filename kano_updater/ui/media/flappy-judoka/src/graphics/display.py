@@ -64,9 +64,6 @@ class Display(object):
         self.randomise_background()
         self.draw_background()
 
-        # set the initial HUD as the IntroHUD
-        self.hud = IntroHUD(self.display)
-
     def setup(self):
         '''
         This method is called by the Gameloop in order to initialise the Display.
@@ -74,7 +71,7 @@ class Display(object):
         It provides the implementation of the state change listener
         such that the Display can react on specific state transitions.
         '''
-        Gamestate.get().set_gamestate_change_listener(self.mGamestateChangeListener(self))
+        Gamestate.get().add_gamestate_change_listener(self.mGamestateChangeListener(self))
 
     def randomise_background(self):
         # pick a random background from the list

@@ -62,7 +62,7 @@ class GroundManager(object):
     off the Dispaly to the left, it is moved at the end for continuous animation.
     '''
 
-    GROUND_Y = 0.94
+    GROUND_Y = 0.945
 
     def __init__(self):
         self.display_width = Assets.get().display_width

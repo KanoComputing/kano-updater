@@ -53,13 +53,13 @@ class Gamestate(object):
         else:
             Gamestate._singleton_instance = self
 
-        self.gamestate_change_listener = self.GamestateChangeListener()
+        self.gamestate_change_listeners = list()
 
     def setup(self):
         '''
         This method is called by the gameloop in order to initialise the gamestate.
         '''
-        self._current_state = IntroState()
+        self.current_state = IntroState()
         self._is_running = True  # flag for the gameloop to determine when to exit
 
     @staticmethod
@@ -78,24 +78,40 @@ class Gamestate(object):
 
         if isinstance(new_state, IntroState):
             debugger('Gamestate: current_state.setter: Setting state to IntroState')
-            self.gamestate_change_listener.on_intro()
+            self.call_gamestate_change_listeners_on_intro()
         elif isinstance(new_state, NewGameState):
             debugger('Gamestate: current_state.setter: Setting state to NewGameState')
-            self.gamestate_change_listener.on_new_game()
+            self.call_gamestate_change_listeners_on_new_game()
         elif isinstance(new_state, FlappyFlyingState):
             debugger('Gamestate: current_state.setter: Setting state to FlappyFlyingState')
-            self.gamestate_change_listener.on_flappy_flying()
+            self.call_gamestate_change_listeners_on_flappy_flying()
         elif isinstance(new_state, GameOverState):
             debugger('Gamestate: current_state.setter: Setting state to GameOverState')
-            self.gamestate_change_listener.on_game_over(self.current_state.score)
+            self.call_gamestate_change_listeners_on_game_over(self.current_state.score)
         else:
             debugger('FATAL ERROR: Gamestate: current_state.setter: Given state is not valid!', fatal=True)
 
-    def set_gamestate_change_listener(self, listener):
+    def add_gamestate_change_listener(self, listener):
         if not isinstance(listener, self.GamestateChangeListener):
             debugger('FATAL ERROR: Gamestate: set_gamestate_change_listener:'
                      ' Given listener is not an instance of GamestateChangeListener!', fatal=True)
-        self.gamestate_change_listener = listener
+        self.gamestate_change_listeners.append(listener)
+
+    def call_gamestate_change_listeners_on_intro(self):
+        for listener in self.gamestate_change_listeners:
+            listener.on_intro()
+
+    def call_gamestate_change_listeners_on_new_game(self):
+        for listener in self.gamestate_change_listeners:
+            listener.on_new_game()
+
+    def call_gamestate_change_listeners_on_flappy_flying(self):
+        for listener in self.gamestate_change_listeners:
+            listener.on_flappy_flying()
+
+    def call_gamestate_change_listeners_on_game_over(self, score):
+        for listener in self.gamestate_change_listeners:
+            listener.on_game_over(score)
 
     def update(self, delta_t):
         '''

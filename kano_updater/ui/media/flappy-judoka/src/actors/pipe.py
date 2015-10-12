@@ -112,7 +112,7 @@ class PipeManager(object):
         # initialising parameters for randomizing top/bottom pipe y positions
         self.rand_from = int(self.display_height * self.SPACING_FROM_Y)
         self.rand_to = int(self.display_height * self.SPACING_TO_Y)
-        debugger('PipeManager: __init__: (rand_from, rand_to) = {}'.format(self.rand_from, self.rand_to))
+        debugger('PipeManager: __init__: (rand_from, rand_to) = {}'.format((self.rand_from, self.rand_to)))
 
         # calculate the number of pipes needed and generate them
         self.no_of_pipes = self.display_width / (self.pipe_width + self.PIPE_MIN_SPACING_X) + 2
@@ -120,7 +120,7 @@ class PipeManager(object):
         self.pipes_list = self.generate_pipes()
         self.pipes_group = pygame.sprite.RenderUpdates(self.pipes_list)
 
-        self.difficulty_counter = 0
+        self.difficulty_counter = self.no_of_pipes
 
     def clear(self, display, background):
         '''
@@ -208,7 +208,7 @@ class PipeManager(object):
             self.pipes_list[i].position = (x, top_y)
             self.pipes_list[i + 1].position = (x, bottom_y)
 
-        self.difficulty_counter = 0
+        self.difficulty_counter = self.no_of_pipes
 
     def update_difficulty(self):
         self.difficulty_counter += 1

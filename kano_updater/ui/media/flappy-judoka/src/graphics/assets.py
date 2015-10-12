@@ -10,7 +10,7 @@
 
 import pygame
 
-from src.utils import debugger, load_image
+from src.utils import debugger, load_image, load_sound
 
 
 class Assets(object):
@@ -54,19 +54,20 @@ class Assets(object):
         self.FLAPPY_MIDDLE_IMAGE = load_image('flappy-middle.png', colorkey=None, alpha=True)
         self.FLAPPY_DOWN_IMAGE = load_image('flappy-down.png', colorkey=None, alpha=True)
 
-        # self.PIPE_TOP_IMAGE = load_image('pipe-top.png')
         self.PIPE_TOP_IMAGE = load_image('yellow-cable-top.png')
-        # self.PIPE_BODY_IMAGE = load_image('pipe-body.png')
         self.PIPE_BODY_IMAGE = load_image('yellow-cable-body.png')
 
-        # self.BACKGROUND_DAY_COLOR = (74, 190, 206)
         self.BACKGROUND_DAY_COLOR = (49, 64, 70)
-        # self.BACKGROUND_DAY_IMAGE = load_image('background-skyline-day.png')
         self.BACKGROUND_DAY_IMAGE = load_image('background.png')
-        # self.BACKGROUND_NIGHT_COLOR = (0, 134, 148)
-        # self.BACKGROUND_NIGHT_IMAGE = load_image('background-skyline-night.png')
 
         self.GROUND_IMAGE = load_image('ground.png')
+
+        # sounds downloaded under CCO License from http://www.freesound.org/
+        # some of these have been edited to fit the game
+        self.GAME_OVER_SOUND = load_sound('game-over.wav')
+        self.START_GAME_SOUND = load_sound('game-start.wav')
+        self.FLAPPY_FLAP_SOUND = load_sound('jump.wav')
+        self.GAINED_POINT_SOUND = load_sound('point.wav')
 
     def resize(self):
         self.FLAPPY_UP_IMAGE = self.aspect_ratio_scale(self.FLAPPY_UP_IMAGE, self.FLAPPY_SCALE, smooth=True)
@@ -85,7 +86,6 @@ class Assets(object):
         self.PIPE_BOTTOM_IMAGE = pygame.transform.flip(pipe_top, False, True)
 
         self.BACKGROUND_DAY_IMAGE = self.aspect_ratio_scale(self.BACKGROUND_DAY_IMAGE, self.BACKGROUND_SCALE)
-        # self.BACKGROUND_NIGHT_IMAGE = self.aspect_ratio_scale(self.BACKGROUND_NIGHT_IMAGE, self.BACKGROUND_SCALE)
 
         self.GROUND_IMAGE = self.aspect_ratio_scale(self.GROUND_IMAGE, self.GROUND_SCALE)
 

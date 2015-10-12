@@ -29,6 +29,10 @@ class Flappy(pygame.sprite.Sprite):
     the class constants below.
     '''
 
+    class FlappyFlapListener(object):
+        def on_flappy_flap(self):
+            pass
+
     # physics constants
     ACCELERATION = 2.5      # defines the gravity's strength
     MAX_VELOCITY = 0.95     # defines the max speed with which Flappy can fall
@@ -71,6 +75,8 @@ class Flappy(pygame.sprite.Sprite):
         self.velocity = 0
         self.idle_direction = -1
         self.animation_ms = 0
+
+        self.flappy_flap_listeners = list()
 
     def idle_animation(self, delta_t):
         '''
@@ -148,3 +154,14 @@ class Flappy(pygame.sprite.Sprite):
         # staying alive, staying alive, flap flap flap flap
         if self.position[1] > 0:  # do not go above screen
             self.velocity = self.JUMP_VELOCITY
+            self.call_flappy_flap_listeners()
+
+    def add_flappy_flap_listener(self, listener):
+        if not isinstance(listener, self.FlappyFlapListener):
+            debugger('FATAL ERROR: Flappy: add_flappy_flap_listener:'
+                     ' Given listener is not an instance of FlappyFlapListener!', fatal=True)
+        self.flappy_flap_listeners.append(listener)
+
+    def call_flappy_flap_listeners(self):
+        for listener in self.flappy_flap_listeners:
+            listener.on_flappy_flap()

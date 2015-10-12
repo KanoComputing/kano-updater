@@ -18,6 +18,7 @@ import pygame
 
 from src.core.gamestate import Gamestate
 from src.graphics.display import Display
+from src.graphics.sound import Sound
 from src.utils import debugger
 
 
@@ -38,11 +39,13 @@ class Gameloop(object):
 
     def setup(self):
         self.display = Display()
+        self.sound = Sound()
         self.gamestate = Gamestate()
 
         # given that there is some iteraction between the game view
         # and the game logic, separate the setup for both
         self.display.setup()
+        self.sound.setup()
         self.gamestate.setup()
 
     def run(self):
