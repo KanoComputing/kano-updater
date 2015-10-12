@@ -7,8 +7,14 @@
 # Install widget
 #
 
-from gi.repository import Gtk
+
+import os
+
+from gi.repository import Gtk, Gdk
 from kano_updater.ui.stage_text import STAGE_TEXT
+from kano_updater.ui.paths import FLAPPY_PATH
+from kano.utils import is_model_2_b
+
 
 class Install(Gtk.Overlay):
 
@@ -17,11 +23,15 @@ class Install(Gtk.Overlay):
 
         style = self.get_style_context().add_class('install')
 
+        self._pgl = self._create_play_game_label()
         progress = self._create_progress_grid()
         self._psa = self._create_psa()
 
+        self.add_overlay(self._pgl)
         self.add(progress)
         self.add_overlay(self._psa)
+
+        self._is_game_first_launch = True
 
     def _create_progress_bar(self):
         self._progress_bar = Gtk.ProgressBar(hexpand=False)
@@ -35,6 +45,16 @@ class Install(Gtk.Overlay):
         self._progress_bar.set_margin_bottom(8)
 
         return self._progress_bar
+
+    def _create_play_game_label(self):
+        play_game_label = Gtk.Label()
+        play_game_label.set_text(_('Do you want to play a cool game instead? PRESS [J] TO LAUNCH!'))
+        play_game_label.set_size_request(825, 100)
+        play_game_label.set_halign(Gtk.Align.CENTER)
+        play_game_label.set_valign(Gtk.Align.START)
+        play_game_label.get_style_context().add_class('play-game')
+
+        return play_game_label
 
     def _create_phase_label(self):
         self._progress_phase = Gtk.Label()
@@ -71,7 +91,6 @@ class Install(Gtk.Overlay):
         progress_grid.get_style_context().add_class('progress')
         progress_grid.set_margin_bottom(80)
 
-
         box = Gtk.EventBox(hexpand=True, vexpand=True)
         box.add(progress_grid)
 
@@ -91,8 +110,14 @@ class Install(Gtk.Overlay):
 
         return psa
 
+    def update_progress(self, percent, phase_name, msg, sub_msg=''):
+        # enable flappy-judoka only for the RPI2
+        # enabling flappy-judoka launch only after these phases (when a reboot is iminent)
+        if is_model_2_b():
+            if phase_name in ['downloading', 'downloading-pip-pkgs', 'init', 'installing-urgent']:
+                self.get_toplevel().connect('key-release-event', self._launch_game)
+                self._pgl.show()
 
-    def update_progress(self, percent, msg, sub_msg=''):
         percent_fraction = percent / 100.
         self._progress_bar.set_fraction(percent_fraction)
 
@@ -106,3 +131,34 @@ class Install(Gtk.Overlay):
         self._progress_subphase.set_text(sub_msg)
         self._percent_display.set_text(
             "Time flies - {}% already!".format(percent))
+
+    def hide_game_play_label(self):
+        # this method needs to be called after show_all
+        # TODO: better way of doing this
+        self._pgl.hide()
+
+    def _launch_game(self, window=None, event=None):
+        try:
+            if event and event.get_keyval()[1] in [Gdk.KEY_j, Gdk.KEY_J]:
+                if self._is_game_first_launch:
+                    self._is_game_first_launch = False
+                    self._first_game_launch(window)
+                else:
+                    self._relaunch_game()
+        except:
+            pass
+
+    def _first_game_launch(self, window=None):
+        # this function lets flappy-judoka run on top of the updater
+        if window is not None:
+            window.set_keep_below(True)
+
+        os.system('{} &'.format(FLAPPY_PATH))
+        os.system('pkill -KILL -f kano-feedback')      # kill kano-feedback-widget
+        os.system('pkill -KILL -f kano-world-widget')  # kill kano-world share widget
+        os.system('lxpanelctl exit')                   # kill lxpanel
+        # minimise all windows, and restore focus to the Updater and then Flappy
+        os.system('wmctrl -k on && wmctrl -a "Updater" && wmctrl -a "Flappy Judoka"')
+
+    def _relaunch_game(self):
+        os.system('{} &'.format(FLAPPY_PATH))

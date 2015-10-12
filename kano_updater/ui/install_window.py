@@ -31,7 +31,13 @@ class InstallWindow(Gtk.Window):
         apply_styling_to_screen(self.CSS_FILE)
 
         Gtk.Window.__init__(self)
-        self.fullscreen()
+        # self.fullscreen()
+        # Gtk hack: set the width, height of the window to larger than screen
+        # resolution in order fix set_keep_below(True) which doesn't work with fullscreen
+        screen = Gdk.Screen.get_default()
+        width = screen.get_width()
+        height = screen.get_height()
+        self.set_size_request(width, height + 80)
         self.set_keep_above(True)
 
         self.set_icon_name('kano-updater')
@@ -43,6 +49,7 @@ class InstallWindow(Gtk.Window):
         kill_apps()
 
         self.show_all()
+        self._install_screen.hide_game_play_label()
         self._set_wait_cursor()
 
         # For passing user input to the install thread
@@ -119,8 +126,8 @@ class InstallWindow(Gtk.Window):
     def close_window(self, widget=None, event=None):
         Gtk.main_quit()
 
-    def update_progress(self, percent, msg, sub_msg=''):
-        self._install_screen.update_progress(percent, msg, sub_msg)
+    def update_progress(self, percent, msg, phase_name, sub_msg=''):
+        self._install_screen.update_progress(percent, phase_name, msg, sub_msg)
 
         # FIXME Progress to next with the done
         if percent == 100:

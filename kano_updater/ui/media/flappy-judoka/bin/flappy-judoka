@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+
+# flappy-judoka
+#
+# Copyright (C) 2015 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
+#
+#
+# This is the entry point into the game code.
+#
+# The main() method does only the following:
+#   - checks to see if another instance of the game is already running (RPI ONLY!)
+#   - parses the cmdline arguments to set the display resolution
+#   - starts the gameloop
+
+
+"""
+flappy-judoka is a remake of the famouse FlappyBirds game.
+
+Usage:
+  flappy-judoka [--width <w_pixels>] [--height <h_pixels>]
+
+Options:
+  --help        Show this message
+  --width       Windowed Mode, width resolution in pixels
+  --height      Windowed Mode, height resolution in pixels
+"""
+
+
+import os
+import sys
+import pygame
+
+# append to Python's system path the game directory path, i.e. flappy-judoka
+# this allows the executable to import normally independent of the current directory
+if __name__ == '__main__' and __package__ is None:
+    DIR_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    if DIR_PATH != '/usr':
+        sys.path.append(DIR_PATH)
+        LOCALE_PATH = os.path.join(DIR_PATH, 'locale')
+    else:
+        LOCALE_PATH = None
+
+from src.core.gameloop import Gameloop
+from src.utils import debugger, is_running
+
+
+# UNCOMMENT THE 2 LINES BELOW TO GET A PROFILE FOR THE GAME
+# from profilehooks import profile
+# @profile
+def main():
+    # make sure the game launches only once
+    if is_running():
+        debugger('flappy-judoka: main: Game is already running! Exiting..')
+        return
+
+    # checking if we received params from docopt
+    try:
+        import docopt
+        from src.graphics.display import Display
+
+        args = docopt.docopt(__doc__)
+
+        if args['--width']:
+            Display.WIDTH = int(args['<w_pixels>'])
+        if args['--height']:
+            Display.HEIGHT = int(args['<h_pixels>'])
+    except:
+        debugger('ERROR: flappy-judoka: main: Loading docopt parameters failed!')
+
+    pygame.init()
+    debugger('flappy-judoka: main: Started')
+
+    Gameloop().run()
+
+    debugger('flappy-judoka: main: Exiting')
+    pygame.quit()
+
+
+if __name__ == '__main__':
+    sys.exit(main())

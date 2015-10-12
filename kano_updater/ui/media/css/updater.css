@@ -49,3 +49,9 @@ GtkLabel {
 .finish-now {
     padding-top: 20px;
 }
+
+.play-game {
+    padding-top: 100px;
+    font: Bariol Bold 22px;
+    color: white;
+}
