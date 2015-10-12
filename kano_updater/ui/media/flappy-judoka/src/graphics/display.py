@@ -38,7 +38,7 @@ class Display(object):
     WIDTH = 0.52
     HEIGHT = 0.65
 
-    GAME_TITLE = 'Flappy'
+    GAME_TITLE = 'Flappy Judoka'
 
     def __init__(self):
 
