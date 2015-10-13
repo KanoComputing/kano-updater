@@ -49,7 +49,7 @@ class Install(Gtk.Overlay):
     def _create_play_game_label(self):
         play_game_label = Gtk.Label()
         play_game_label.set_text(_('Do you want to play a cool game instead? PRESS [J] TO LAUNCH!'))
-        play_game_label.set_size_request(825, 100)
+        play_game_label.set_size_request(825, 300)
         play_game_label.set_halign(Gtk.Align.CENTER)
         play_game_label.set_valign(Gtk.Align.START)
         play_game_label.get_style_context().add_class('play-game')
