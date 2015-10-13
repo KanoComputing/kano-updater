@@ -35,8 +35,8 @@ class Display(object):
 
     # default values for the Display resolution
     # these may be overriden by parameters cmdline args in bin/flappy-judoka: main()
-    WIDTH = 0.52
-    HEIGHT = 0.65
+    WIDTH = 0.60
+    HEIGHT = 0.72
 
     GAME_TITLE = 'Flappy Judoka'
 
@@ -49,13 +49,21 @@ class Display(object):
             self.WIDTH = int(self.WIDTH * monitor_info.current_w)
             self.HEIGHT = int(self.HEIGHT * monitor_info.current_h)
 
-        debugger('Display: __init__: Setting game resolution {}x{}'.format(self.WIDTH, self.HEIGHT))
-        self.display = pygame.display.set_mode((self.WIDTH, self.HEIGHT), pygame.NOFRAME)
-        pygame.display.set_caption(self.GAME_TITLE)
-
         # TODO: remove this if font sizes in HUDs are scaled
         if self.HEIGHT < 400:
             debugger('WARNING: flappy-judoka: main: Height resolution is below the recommended value 400!')
+
+        self.display = pygame.display.set_mode((self.WIDTH, self.HEIGHT), pygame.NOFRAME)
+        debugger('Display: __init__: Setting game resolution {}x{}'.format(self.WIDTH, self.HEIGHT))
+
+        # setting the window name (this is for the window manager to have a reference)
+        pygame.display.set_caption(self.GAME_TITLE)
+
+        # hiding mouse pointer when the game runs
+        pygame.mouse.set_visible(False)
+
+        # grabing all keyboard and mouse inputs, apps behind the game won't get input
+        pygame.event.set_grab(True)
 
         # initialising and loading assets based on screen resolution
         Assets(self.WIDTH, self.HEIGHT)
