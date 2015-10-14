@@ -98,7 +98,7 @@
         "\"byline\": \"Time to power up!\"," \
         "\"image\": \"/usr/share/kano-updater/images/notification-updates-downloaded.png\"," \
         "\"type\": \"small\"," \
-        "\"button1_label\": \"RESTART\"," \
+        "\"button1_label\": \"INSTALL\"," \
         "\"button1_colour\": \"#7abd48\"," \
         "\"button1_hover\": \"#84cc4e\"," \
         "\"button1_command\": \"sudo kano-updater install --gui --no-confirm\"," \
