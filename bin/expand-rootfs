@@ -23,26 +23,28 @@ do_expand_rootfs() {
         return 1
     fi
 
-    if ! [ -h /dev/root ]; then
-	logger -i "/dev/root does not exist or is not a symlink. Don't know how to expand"
+    if ! [ -h /dev/disk/by-label/rootfs ]; then
+	logger -i "/dev/disk/by-label/rootfs does not exist or is not a symlink. Don't know how to expand"
 	return 2
     fi
 
-    ROOT_PART=$(readlink /dev/root)
-    PART_NUM=${ROOT_PART#mmcblk0p}
+    ROOT_PART=$(readlink /dev/disk/by-label/rootfs)
+    PART_NUM=${ROOT_PART#../../mmcblk0p}
     if [ "$PART_NUM" = "$ROOT_PART" ]; then
-	logger -i "/dev/root is not an SD card. Don't know how to expand"
+	logger -i "/dev/disk/by-label/rootfs is not an SD card. Don't know how to expand"
 	return 3
     fi
 
     LAST_PART_NUM=$(parted /dev/mmcblk0 -ms unit s p | tail -n 1 | cut -f 1 -d:)
     if [ "$LAST_PART_NUM" != "$PART_NUM" ]; then
-	logger -i "/dev/root is not the last partition. Don't know how to expand"
+	logger -i "/dev/disk/by-label/rootfs is not the last partition. Don't know how to expand"
 	return 4
     fi
 
     # Get the starting offset of the root partition
     PART_START=$(parted /dev/mmcblk0 -ms unit s p | grep "^${PART_NUM}" | cut -f 2 -d:)
+    # Remove suffix:
+    PART_START=${PART_START%s} 
     logger -i "resizing root partition, starts at offset: $PART_START"
     [ "$PART_START" ] || return 5
 
@@ -67,7 +69,7 @@ cat <<\EOF > /etc/init.d/resize2fs_once &&
 #!/bin/sh
 ### BEGIN INIT INFO
 # Provides:          resize2fs_once
-# Required-Start:
+# Required-Start:    $local_fs
 # Required-Stop:
 # Default-Start: 2 3 4 5 S
 # Default-Stop:
@@ -80,7 +82,7 @@ cat <<\EOF > /etc/init.d/resize2fs_once &&
 case "$1" in
   start)
     log_daemon_msg "Starting resize2fs_once" &&
-    resize2fs /dev/root &&
+    resize2fs /dev/disk/by-label/rootfs &&
     rm /etc/init.d/resize2fs_once &&
     date > /etc/root_has_been_expanded &&
     update-rc.d resize2fs_once remove &&
