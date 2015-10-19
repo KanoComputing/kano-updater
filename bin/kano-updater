@@ -199,8 +199,13 @@ def main():
         # spoof the last_check timestamp to four days ago so the user won't
         # be prompted to update in the first three days after boot
         status = UpdaterStatus.get_instance()
+        # stop update notifications for three days
+        three_days = 3 * 24 * 60 * 60
+        status.first_boot_countdown = int(time.time() + three_days)
+        # set the last check flag four days ago to only check for updates in 3 days again
         four_days_ago = int(time.time() - 4 * 24 * 60 * 60)
         status.last_check = status.last_update = four_days_ago
+        # set the urgent last check flag to yesterday to immediately check again
         one_day_ago = int(time.time() - 24 * 60 * 60)
         status.last_check_urgent = one_day_ago
         status.save()
@@ -252,7 +257,8 @@ def main():
             #    updates_available = launch_check_gui()
             # else:
             updates_available = check_for_updates(progress=progress,
-                                                  priority=priority)
+                                                  priority=priority,
+                                                  is_gui=args['gui'])
 
             if updates_available:
                 status = UpdaterStatus.get_instance()

@@ -19,7 +19,7 @@ import kano_updater.priority as Priority
 KANO_SOURCES_LIST = '/etc/apt/sources.list.d/kano.list'
 
 
-def check_for_updates(progress=None, priority=Priority.NONE):
+def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
     status = UpdaterStatus.get_instance()
 
     # FIXME: FOR DEBUGGING ONLY
@@ -30,6 +30,15 @@ def check_for_updates(progress=None, priority=Priority.NONE):
 
     if not progress:
         progress = DummyProgress()
+
+    countdown = status.first_boot_countdown - int(time.time())
+
+    # block update checks when:
+    #  1) three days have NOT passed since the first boot
+    #  2) and not checking for URGENT updates
+    #  3) and the check is triggered from background hooks (not by user)
+    if (countdown > 0) and (priority is not Priority.URGENT) and (not is_gui):
+        return False
 
     if status.state != UpdaterStatus.NO_UPDATES:
         msg = _('No need to check for updates')

@@ -56,6 +56,7 @@ class UpdaterStatus(object):
         self._last_check = 0
         self._last_check_urgent = 0
         self._last_update = 0
+        self._first_boot_countdown = 0
         self._is_urgent = False
         self._is_scheduled = False
         self._notifications_muted = False
@@ -77,6 +78,7 @@ class UpdaterStatus(object):
                 data['last_update']
                 data['last_check']
                 data['last_check_urgent']
+                data['first_boot_countdown']
                 data['is_urgent']
                 data['is_scheduled']
                 data['is_shutdown']
@@ -90,6 +92,7 @@ class UpdaterStatus(object):
             self._last_update = data['last_update']
             self._last_check = data['last_check']
             self._last_check_urgent = data['last_check_urgent']
+            self._first_boot_countdown = data['first_boot_countdown']
             self._is_urgent = (data['is_urgent'] == 1)
             self._is_scheduled = (data['is_scheduled'] == 1)
             self._is_shutdown = (data['is_shutdown'] == 1)
@@ -103,6 +106,7 @@ class UpdaterStatus(object):
             'last_update': self._last_update,
             'last_check': self._last_check,
             'last_check_urgent': self._last_check_urgent,
+            'first_boot_countdown': self._first_boot_countdown,
             'is_urgent': 1 if self._is_urgent else 0,
             'is_scheduled': 1 if self._is_scheduled else 0,
             'is_shutdown': 1 if self._is_shutdown else 0,
@@ -189,6 +193,19 @@ class UpdaterStatus(object):
             raise UpdaterStatusError(msg)
 
         self._last_check_urgent = value
+
+    # -- first_boot_countdown - used to stop updates for a set amount of time
+    @property
+    def first_boot_countdown(self):
+        return self._first_boot_countdown
+
+    @first_boot_countdown.setter
+    def first_boot_countdown(self, value):
+        if not isinstance(value, int):
+            msg = "'first_boot_countdown' must be an Unix timestamp (int)."
+            raise UpdaterStatusError(msg)
+
+        self._first_boot_countdown = value
 
     """
     # -- notifications_muted
