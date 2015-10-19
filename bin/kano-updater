@@ -258,7 +258,7 @@ def main():
             # else:
             updates_available = check_for_updates(progress=progress,
                                                   priority=priority,
-                                                  is_gui=args['gui'])
+                                                  is_gui=args['--gui'])
 
             if updates_available:
                 status = UpdaterStatus.get_instance()
