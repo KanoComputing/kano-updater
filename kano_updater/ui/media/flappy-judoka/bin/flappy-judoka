@@ -45,6 +45,7 @@ from src.core.gameloop import Gameloop
 from src.utils import debugger, is_running
 
 from kano_profile.tracker import track_action, session_start, session_end
+from kano.logging import logger
 
 
 # how long the game is being played for
@@ -81,6 +82,7 @@ def main():
         track_action('updater-flappy-judoka-start')
         tracking_session = session_start('updater-flappy-judoka', os.getpid())
     except Exception:
+        logger.warn('Starting tracking session failed!')
         debugger('ERROR: flappy-judoka: main: Starting tracking session failed!')
 
     pygame.init()
@@ -95,6 +97,7 @@ def main():
     try:
         session_end(tracking_session)
     except:
+        logger.warn('Ending tracking session failed!')
         debugger('ERROR: flappy-judoka: main: Ending tracking session failed!')
 
 

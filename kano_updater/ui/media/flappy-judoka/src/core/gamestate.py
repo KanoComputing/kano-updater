@@ -24,6 +24,7 @@ from src.graphics.collision import check_collision
 from src.utils import debugger
 
 from kano_profile.tracker import track_data
+from kano.logging import logger
 
 
 class Gamestate(object):
@@ -387,10 +388,11 @@ class GameOverState(GamestateTemplate):
 
         try:
             # TODO: track best score as well
-            track_data('updater-flappy-judoka', {
+            track_data('updater-flappy-judoka-score', {
                 'score': score
             })
         except:
+            logger.warn('Tracking the users score failed!')
             debugger('ERROR: GameOverState: __init__: Tracking the users score failed!')
 
     # @Override
