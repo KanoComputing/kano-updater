@@ -44,11 +44,19 @@ if __name__ == '__main__' and __package__ is None:
 from src.core.gameloop import Gameloop
 from src.utils import debugger, is_running
 
+from kano_profile.tracker import track_action, session_start, session_end
+
+
+# how long the game is being played for
+tracking_session = None
+
 
 # UNCOMMENT THE 2 LINES BELOW TO GET A PROFILE FOR THE GAME
 # from profilehooks import profile
 # @profile
 def main():
+    global tracking_session
+
     # make sure the game launches only once
     if is_running():
         debugger('flappy-judoka: main: Game is already running! Exiting..')
@@ -68,6 +76,13 @@ def main():
     except:
         debugger('ERROR: flappy-judoka: main: Loading docopt parameters failed!')
 
+    # tracking for how long the game is running
+    try:
+        track_action('updater-flappy-judoka-start')
+        tracking_session = session_start('updater-flappy-judoka', os.getpid())
+    except Exception:
+        debugger('ERROR: flappy-judoka: main: Starting tracking session failed!')
+
     pygame.init()
     debugger('flappy-judoka: main: Started')
 
@@ -75,6 +90,12 @@ def main():
 
     debugger('flappy-judoka: main: Exiting')
     pygame.quit()
+
+    # letting the tracking session know the game is closing
+    try:
+        session_end(tracking_session)
+    except:
+        debugger('ERROR: flappy-judoka: main: Ending tracking session failed!')
 
 
 if __name__ == '__main__':

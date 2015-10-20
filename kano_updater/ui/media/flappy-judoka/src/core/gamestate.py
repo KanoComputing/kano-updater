@@ -23,6 +23,8 @@ from src.actors.ground import GroundManager
 from src.graphics.collision import check_collision
 from src.utils import debugger
 
+from kano_profile.tracker import track_data
+
 
 class Gamestate(object):
     '''
@@ -382,6 +384,14 @@ class GameOverState(GamestateTemplate):
         self.score = score
 
         self.pipes.reset_pipes()
+
+        try:
+            # TODO: track best score as well
+            track_data('updater-flappy-judoka', {
+                'score': score
+            })
+        except:
+            debugger('ERROR: GameOverState: __init__: Tracking the users score failed!')
 
     # @Override
     def state_controls(self, event):
