@@ -333,9 +333,9 @@ class PostUpdate(Scenarios):
     def beta_210_to_beta_220(self):
         install('telnet python-serial')
         try:
-            from kano_profile.apps import save_app_state_variable
+            from kano_profile.apps import save_app_state_variable_all_users
 
-            save_app_state_variable("init-flow-completed", "level", 1)
+            save_app_state_variable_all_users("init-flow-completed", "level", 1)
 
         except Exception as e:
             logger.error(
