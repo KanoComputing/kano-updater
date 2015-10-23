@@ -339,5 +339,5 @@ class PostUpdate(Scenarios):
 
         except Exception as e:
             logger.error(
-                "kano-profile could not award character creator, exception e".format(e)
+                "kano-profile could not award character creator, exception {}".format(e)
             )
