@@ -337,7 +337,7 @@ class PostUpdate(Scenarios):
 
             save_app_state_variable_all_users("init-flow-completed", "level", 1)
 
-        except Exception as e:
+        except ImportError:
             logger.error(
-                "kano-profile could not award character creator, exception {}".format(e)
+                "Could not award Computer Commander badge, import error"
             )
