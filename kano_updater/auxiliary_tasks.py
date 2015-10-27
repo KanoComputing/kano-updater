@@ -55,4 +55,4 @@ def _expand_rootfs():
     run_cmd_log('/usr/bin/expand-rootfs')
 
 def _sync():
-    run_cmd_log("su '{}' -c 'kano-sync --upload-tracking-data'".format(get_user_unsudoed()))
+    run_cmd_log("su '{}' -c 'kano-sync --skip-kdesk --sync --backup --upload-tracking-data -s'".format(get_user_unsudoed()))
