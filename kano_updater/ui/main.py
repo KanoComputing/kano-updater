@@ -20,15 +20,15 @@ from kano_updater.status import UpdaterStatus
 from kano_updater.utils import show_relaunch_splash, remove_pid_file
 
 relaunch_required_flag = False
-splash_pid = None
+launched_splash_pid = None
 
 
 def relaunch_required():
     global relaunch_required_flag
-    global splash_pid
+    global launched_splash_pid
 
     relaunch_required_flag = True
-    splash_pid = show_relaunch_splash()
+    launched_splash_pid = show_relaunch_splash()
 
 
 def launch_install_gui(confirm=False, splash_pid=None):
@@ -51,7 +51,7 @@ def launch_install_gui(confirm=False, splash_pid=None):
 
     if relaunch_required_flag:
         r_exc = Relaunch()
-        r_exc.pid = splash_pid
+        r_exc.pid = launched_splash_pid
         raise r_exc
 
 
