@@ -59,6 +59,6 @@ class Finish(Countdown):
             return
 
         if self._shutdown_scheduled:
-            os.system('poweroff')
+            os.system('systemctl poweroff')
         else:
-            os.system('reboot')
+            os.system('systemctl reboot')
