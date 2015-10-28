@@ -9,7 +9,7 @@ import sys
 import traceback
 
 from kano_updater.utils import update_home_folders_from_skel
-from kano.utils import run_cmd_log
+from kano.utils import run_cmd_log, get_user_unsudoed
 from kano.logging import logger
 
 from kano_updater.progress import Phase
@@ -22,7 +22,9 @@ def run_aux_tasks(progress):
         Phase('refreshing-kdesk',
               _('Refreshing the desktop')),
         Phase('expanding-rootfs',
-              _('Expanding filesystem partitions'))
+              _('Expanding filesystem partitions')),
+        Phase('syncing',
+              _('Syncing'))
     )
 
     progress.start('updating-home-folders')
@@ -39,6 +41,8 @@ def run_aux_tasks(progress):
     _refresh_kdesk()
     progress.start('expanding-rootfs')
     _expand_rootfs()
+    progress.start('syncing')
+    _sync()
 
 
 def _refresh_kdesk():
@@ -49,3 +53,6 @@ def _refresh_kdesk():
 def _expand_rootfs():
     # TODO: Do we care about the return value?
     run_cmd_log('/usr/bin/expand-rootfs')
+
+def _sync():
+    run_cmd_log("su '{}' -c 'kano-sync --skip-kdesk --sync --backup --upload-tracking-data -s'".format(get_user_unsudoed()))
