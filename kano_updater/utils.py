@@ -346,7 +346,7 @@ def reboot(title, description):
     from kano.gtk3 import kano_dialog
     kdialog = kano_dialog.KanoDialog(title, description)
     kdialog.run()
-    run_cmd('reboot')
+    run_cmd('systemctl reboot')
 
 
 def remove_user_files(files):

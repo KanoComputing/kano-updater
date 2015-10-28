@@ -60,7 +60,7 @@ def install(progress=None, gui=True):
             status.state = UpdaterStatus.INSTALLING_UPDATES
             status.save()
 
-            os.system('sudo reboot')
+            os.system('sudo systemctl reboot')
 
         else:
             logger.error(err_msg)
