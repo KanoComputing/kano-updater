@@ -360,3 +360,23 @@ class PostUpdate(Scenarios):
 
     def beta_220_to_beta_230(self):
         install('rsync')
+
+        os.system('sudo adduser {} i2c'.format(get_user_unsudoed()))
+
+        try:
+            found_i2c_dev = False
+
+            with open('/etc/modules', 'r') as f:
+                for line in f:
+                    if line.strip() == 'i2c_dev':
+                        found_i2c_dev = True
+
+            if not found_i2c_dev:
+                with open('/etc/modules', 'a') as f:
+                    f.write('\ni2c_dev\n')
+
+        except Exception as e:
+            logger.error(
+                'Something unexpected occurred in beta_220_to_beta_230 - [{}]'
+                .format(e)
+            )
