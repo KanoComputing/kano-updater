@@ -132,6 +132,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-2.1.0", "Kanux-Beta-2.2.0",
                           self.beta_210_to_beta_220)
 
+        self.add_scenario("Kanux-Beta-2.2.0", "Kanux-Beta-2.3.0",
+                          self.beta_220_to_beta_230)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -192,6 +195,16 @@ class PreUpdate(Scenarios):
     def beta_210_to_beta_220(self):
         pass
 
+    def beta_220_to_beta_230(self):
+        out, err, rv = run_cmd_log('apt-mark showauto | grep modemmanager')
+        # If the user has manually installed modemmanager, it will be marked as
+        # manually installed.
+        # Return value will be 0 if modemmanager is marked as an auto installed
+        if rv == 0:
+            out, err, rv = run_cmd_log('apt-get -y purge modemmanager')
+            if rv == 0:
+                run_cmd_log('apt-get -y autoremove')
+
     # Not used at the moment: dev.kano.me > repo.kano.me
     def _migrate_repo_url(self):
         migrate_repository('/etc/apt/sources.list.d/kano.list',
@@ -250,6 +263,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-2.1.0", "Kanux-Beta-2.2.0",
                           self.beta_210_to_beta_220)
+
+        self.add_scenario("Kanux-Beta-2.2.0", "Kanux-Beta-2.3.0",
+                          self.beta_220_to_beta_230)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -341,3 +357,6 @@ class PostUpdate(Scenarios):
             logger.error(
                 "Could not award Computer Commander badge, import error"
             )
+
+    def beta_220_to_beta_230(self):
+        pass
