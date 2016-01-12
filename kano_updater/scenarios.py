@@ -8,9 +8,10 @@
 import os
 
 from kano.logging import logger
+
 from kano_updater.os_version import OSVersion, TARGET_VERSION
 from kano_updater.utils import install, remove_user_files, update_failed, \
-    purge, rclocal_executable, migrate_repository
+    purge, rclocal_executable, migrate_repository, get_users
 from kano.utils import run_cmd_log, get_user_unsudoed, write_file_contents, \
     is_installed
 
@@ -361,7 +362,19 @@ class PostUpdate(Scenarios):
     def beta_220_to_beta_230(self):
         install('rsync')
 
-        os.system('sudo adduser {} i2c'.format(get_user_unsudoed()))
+        try:
+            linux_users = get_users()
+            if not linux_users:
+                logger.error('beta_220_to_beta_230: linux_users is empty!')
+
+            for user in linux_users:
+                os.system('sudo usermod -a -G i2c {}'.format(user))
+
+        except Exception as e:
+            logger.error(
+                'Something unexpected occurred in beta_220_to_beta_230 when'
+                ' adding users to the i2c group - [{}]'.format(e)
+            )
 
         try:
             found_i2c_dev = False
@@ -377,6 +390,6 @@ class PostUpdate(Scenarios):
 
         except Exception as e:
             logger.error(
-                'Something unexpected occurred in beta_220_to_beta_230 - [{}]'
-                .format(e)
+                'Something unexpected occurred in beta_220_to_beta_230 when'
+                ' adding i2c_dev to /etc/modules - [{}]'.format(e)
             )

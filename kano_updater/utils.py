@@ -2,8 +2,8 @@
 
 # utils.py
 #
-# Copyright (C) 2014 Kano Computing Ltd.
-# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+# Copyright (C) 2014-2016 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Utilities for the updater and the pre and post update scripts
 #
@@ -37,6 +37,7 @@ STATUS_FILE = UPDATER_CACHE_DIR + "status"
 REPO_SERVER = 'repo.kano.me'
 PID_FILE = '/var/run/kano-updater.pid'
 
+
 def is_running():
     if os.path.exists(PID_FILE):
         with open(PID_FILE, 'r') as pid_file:
@@ -61,6 +62,26 @@ def run_pip_command(pip_args):
 
     _, _, rv = run_cmd_log("pip {} --log {}".format(pip_args, PIP_LOG_FILE))
     return rv == 0
+
+
+def get_users(self, minimum_id=1000):
+    # TODO: this was taken from kano-greeter, but should be in toolset
+    '''
+    Returns a list of interactive users on the system
+    as reported by Unix /etc/password database
+    '''
+    interactive_users = []
+    system_users = pwd.getpwall()
+
+    # special usernames to exlude from the list
+    exclude = ('nobody')
+
+    for user in system_users:
+        if user.pw_uid >= minimum_id and user.pw_name not in exclude:
+            # This is an interactive user created by Kano
+            interactive_users.append(user.pw_name)
+
+    return sorted(interactive_users, reverse=False)
 
 
 def is_server_available():
