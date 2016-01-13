@@ -359,4 +359,4 @@ class PostUpdate(Scenarios):
             )
 
     def beta_220_to_beta_230(self):
-        pass
+        install('rsync')
