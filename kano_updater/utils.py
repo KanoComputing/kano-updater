@@ -207,7 +207,7 @@ def install(pkgs, die_on_err=True):
     if isinstance(pkgs, list):
         pkgs = ' '.join(pkgs)
 
-    cmd = 'apt-get install -o Dpkg::Options::="--force-confdef" ' + \
+    cmd = 'apt-get install --no-install-recommends -o Dpkg::Options::="--force-confdef" ' + \
           '-o Dpkg::Options::="--force-confold" -y --force-yes ' + str(pkgs)
     _, _, rv = run_cmd_log(cmd)
 
