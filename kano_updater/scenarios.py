@@ -361,6 +361,7 @@ class PostUpdate(Scenarios):
 
     def beta_220_to_beta_230(self):
         install('rsync')
+        run_cmd_log('kano-apps install --no-gui powerup')
 
         try:
             linux_users = get_users()
