@@ -1,15 +1,22 @@
+kano-updater (2.3.0-1) unstable; urgency=low
+
+  * Install Make Light by default
+
+ -- Team Kano <dev@kano.me>  Wed, 20 Jan 2016 14:35:00 +0000
+
 kano-updater (2.2.0-1) unstable; urgency=low
 
   * Add support for security hotfixes
   * Add support for scheduling updates for later
 
  -- Team Kano <dev@kano.me>  Fri, 25 Sep 2015 14:35:00 +0000
+
 kano-updater (2.1-1) unstable; urgency=low
 
   * Keeping the version in sync with the OS version.
 
  -- Team Kano <dev@kano.me>  Thu, 02 Jul 2015 17:05:00 +0000
- 
+
 kano-updater (2.0.0-2) unstable; urgency=low
 
   * Adding new subcommand: first-boot to be used from kano-uixinit
