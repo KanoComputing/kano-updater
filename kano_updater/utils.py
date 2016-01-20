@@ -64,7 +64,7 @@ def run_pip_command(pip_args):
     return rv == 0
 
 
-def get_users(self, minimum_id=1000):
+def get_users(minimum_id=1000):
     # TODO: this was taken from kano-greeter, but should be in toolset
     '''
     Returns a list of interactive users on the system
