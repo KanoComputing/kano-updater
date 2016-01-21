@@ -360,36 +360,64 @@ class PostUpdate(Scenarios):
             )
 
     def beta_220_to_beta_230(self):
+        # A few helper fns to keep the scenario tidy
+        def add_users_to_i2c_group():
+            try:
+                linux_users = get_users()
+                if not linux_users:
+                    logger.error('beta_220_to_beta_230: linux_users is empty!')
+
+                for user in linux_users:
+                    os.system('sudo usermod -a -G i2c {}'.format(user))
+
+            except Exception as e:
+                logger.error(
+                    "Couldn't add users to i2c group - [{}]".format(e)
+                )
+
+        def add_i2c_module_to_auto_loaded():
+            try:
+                found_i2c_dev = False
+
+                with open('/etc/modules', 'r') as f:
+                    for line in f:
+                        if line.strip() == 'i2c_dev':
+                            found_i2c_dev = True
+
+                if not found_i2c_dev:
+                    with open('/etc/modules', 'a') as f:
+                        f.write('\ni2c_dev\n')
+
+            except Exception as e:
+                logger.error(
+                    "Couldn't add i2c_dev to /etc/modules - [{}]".format(e)
+                )
+
+        def remove_powerup_lnk_file():
+            try:
+                linux_users = get_users()
+                if not linux_users:
+                    logger.error('beta_220_to_beta_230: linux_users is empty!')
+
+                lnk_dir_template = os.path.join(
+                    os.sep,
+                    'home',
+                    '{user}',
+                    '.kdesktop',
+                    'Powerup.lnk'
+                )
+                for user in linux_users:
+                    lnk_dir = lnk_dir_template.format(user=user)
+                    if os.path.exists(lnk_dir):
+                        os.remove(lnk_dir)
+            except Exception as e:
+                logger.error("Couldn't remove Powerup.lnk - [{}]".format(e))
+
+        # Scenario work starts here
         install('rsync')
+        run_cmd_log('kano-apps install --no-gui powerup')
 
-        try:
-            linux_users = get_users()
-            if not linux_users:
-                logger.error('beta_220_to_beta_230: linux_users is empty!')
+        remove_powerup_lnk_file()
 
-            for user in linux_users:
-                os.system('sudo usermod -a -G i2c {}'.format(user))
-
-        except Exception as e:
-            logger.error(
-                'Something unexpected occurred in beta_220_to_beta_230 when'
-                ' adding users to the i2c group - [{}]'.format(e)
-            )
-
-        try:
-            found_i2c_dev = False
-
-            with open('/etc/modules', 'r') as f:
-                for line in f:
-                    if line.strip() == 'i2c_dev':
-                        found_i2c_dev = True
-
-            if not found_i2c_dev:
-                with open('/etc/modules', 'a') as f:
-                    f.write('\ni2c_dev\n')
-
-        except Exception as e:
-            logger.error(
-                'Something unexpected occurred in beta_220_to_beta_230 when'
-                ' adding i2c_dev to /etc/modules - [{}]'.format(e)
-            )
+        add_users_to_i2c_group()
+        add_i2c_module_to_auto_loaded()
