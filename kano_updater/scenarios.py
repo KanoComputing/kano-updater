@@ -361,18 +361,24 @@ class PostUpdate(Scenarios):
 
     def beta_220_to_beta_230(self):
         # A few helper fns to keep the scenario tidy
-        def add_users_to_i2c_group():
+        def ensure_system_group_exists(group):
+            if(os.system('getent group {}'.format(group)) != 0):
+                rc = os.system('groupadd -f -r {}'.format(group))
+                if rc != 0:
+                    logger.error("could not create group")
+
+        def add_users_to_group(group):
             try:
                 linux_users = get_users()
                 if not linux_users:
                     logger.error('beta_220_to_beta_230: linux_users is empty!')
 
                 for user in linux_users:
-                    os.system('sudo usermod -a -G i2c {}'.format(user))
+                    os.system('sudo usermod -a -G {} {}'.format(group, user))
 
             except Exception as e:
                 logger.error(
-                    "Couldn't add users to i2c group - [{}]".format(e)
+                    "Couldn't add users to {} group - [{}]".format(group, e)
                 )
 
         def add_i2c_module_to_auto_loaded():
@@ -413,11 +419,27 @@ class PostUpdate(Scenarios):
             except Exception as e:
                 logger.error("Couldn't remove Powerup.lnk - [{}]".format(e))
 
+        def enable_spi_device():
+            from kano_settings.boot_config import set_config_value
+            set_config_value("dtparam=spi", "on")
+            try:
+                from kano_settings.boot_config import end_config_transaction
+                end_config_transaction()
+            except ImportError:
+                logger.error("end_config_transaciton not present - update to kano-settings failed?")
+
         # Scenario work starts here
         install('rsync')
         run_cmd_log('kano-apps install --no-gui powerup')
 
         remove_powerup_lnk_file()
 
-        add_users_to_i2c_group()
+        ensure_system_group_exists('gpio')
+        ensure_system_group_exists('spi')
+        add_users_to_group('i2c')
+        add_users_to_group('gpio')
+        add_users_to_group('spi')
         add_i2c_module_to_auto_loaded()
+
+        # enable spi device
+        enable_spi_device()
