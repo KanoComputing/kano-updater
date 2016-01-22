@@ -84,6 +84,11 @@ def get_users(minimum_id=1000):
     return sorted(interactive_users, reverse=False)
 
 
+def run_for_every_user(cmd):
+    for user in get_users():
+        run_cmd_log("sudo su -c '{cmd}' - {user}".format(cmd=cmd, user=user))
+
+
 def is_server_available():
     install_ping()
     import ping
