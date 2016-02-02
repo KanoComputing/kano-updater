@@ -89,7 +89,7 @@ def launch_boot_gui():
 
         if rv:
             status.notifications_muted = True
-            status.state = UpdaterStatus.NO_UPDATES
+            status.state = UpdaterStatus.UPDATES_AVAILABLE
             status.save()
 
             remove_pid_file()
