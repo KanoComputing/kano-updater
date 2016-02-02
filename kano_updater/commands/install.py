@@ -48,9 +48,8 @@ def install(progress=None, gui=True):
         err_msg = _("Only {}MB free, at least 1GB is needed.".format(mb_free))
         logger.warn(err_msg)
         answer = progress.prompt(
-            'Feeling full!',
-            'My brain is feeling a bit full, but I can make some more '
-            'room if you\'d like?',
+            'Not enough space to update!',
+            'But I can make more room if you\'d like?',
             ['OK', 'CANCEL']
         )
 
