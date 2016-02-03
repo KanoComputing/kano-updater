@@ -19,6 +19,8 @@ def run_aux_tasks(progress):
     progress.split(
         Phase('updating-home-folders',
               _('Updating home folders from template')),
+        Phase('checking-for-app-updates',
+              _('Refreshing Kano Apps')),
         Phase('refreshing-kdesk',
               _('Refreshing the desktop')),
         Phase('expanding-rootfs',
@@ -39,6 +41,8 @@ def run_aux_tasks(progress):
         for tb_line in traceback.format_tb(tb):
             logger.error(tb_line)
 
+    progress.start('checking-for-app-updates')
+    _check_for_app_updates()
     progress.start('refreshing-kdesk')
     _refresh_kdesk()
     progress.start('expanding-rootfs')
@@ -47,6 +51,10 @@ def run_aux_tasks(progress):
     _kano_content_prune()
     progress.start('syncing')
     _sync()
+
+
+def _check_for_app_updates():
+    run_cmd_log('/usr/bin/kano-apps check-for-updates')
 
 
 def _refresh_kdesk():
