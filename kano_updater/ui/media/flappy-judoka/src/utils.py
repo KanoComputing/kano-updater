@@ -1,7 +1,7 @@
 
 # utils.py
 #
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2016 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 #
@@ -110,12 +110,11 @@ def rotate_center(image, rect, angle):
     return rot_image, rot_rect
 
 
-def set_window_on_top(display):
+def set_window_on_top(window_name):
     '''
     NOTE: This function is designed to work for the RPI!
     '''
     try:
-        os.system('wmctrl -a -r "{}" -b add,above &'.format(display.GAME_TITLE))
+        os.system('wmctrl -r "{}" -b add,above &'.format(window_name))
     except:
         debugger('ERROR: utils: set_window_on_top: wmctrl failed!')
-    display.is_set_to_top = True

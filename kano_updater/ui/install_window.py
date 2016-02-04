@@ -1,11 +1,10 @@
-
 # install_window.py
 #
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2016 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Installer main window
-#
+
 
 import os
 from gi.repository import Gtk, Gdk, GLib
@@ -14,7 +13,7 @@ from threading import Thread, Lock
 from kano.gtk3.apply_styles import apply_styling_to_screen
 from kano.gtk3.kano_dialog import KanoDialog
 
-from kano_updater.utils import kill_apps
+from kano_updater.utils import kill_apps, kill_flappy_judoka
 from kano_updater.ui.paths import CSS_PATH
 from kano_updater.commands.install import install
 from kano_updater.ui.progress import GtkProgress
@@ -79,6 +78,7 @@ class InstallWindow(Gtk.Window):
         self.destroy()
         self._set_normal_cursor()
 
+        kill_flappy_judoka()
         unexpected_quit = KanoDialog(
             _('The install quit unexpectedly'),
             _('Please try again later'),
@@ -110,6 +110,7 @@ class InstallWindow(Gtk.Window):
         self.destroy()
         self._set_normal_cursor()
 
+        kill_flappy_judoka()
         no_updates = KanoDialog(
             _('No updates available'),
             _('Your system is already up to date'),
@@ -160,6 +161,7 @@ class InstallWindow(Gtk.Window):
         return False
 
     def error(self, msg):
+        kill_flappy_judoka()
         error = KanoDialog(
             _('Error updating'), msg,
             {

@@ -1,16 +1,16 @@
-
 # progress.py
 #
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2016 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Thread-safe progress reporting for Gtk
-#
+
 
 from gi.repository import GLib, Gtk
 
 from kano_updater.progress import Progress
 from kano_updater.ui.main import relaunch_required
+from kano_updater.utils import kill_flappy_judoka
 
 
 class GtkProgress(Progress):
@@ -24,10 +24,12 @@ class GtkProgress(Progress):
                       phase.get_main_phase().label, phase.get_main_phase().name, msg)
 
     def _error(self, phase, msg):
+        kill_flappy_judoka()
         err_msg = "Error {} - {}".format(phase.label.lower(), msg)
         GLib.idle_add(self._window.error, err_msg)
 
     def _abort(self, phase, msg):
+        kill_flappy_judoka()
         err_msg = "{} - {}".format(phase.label.lower(), msg)
         GLib.idle_add(self._window.error, err_msg)
 

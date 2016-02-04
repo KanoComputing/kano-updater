@@ -1,19 +1,21 @@
-
 # install.py
 #
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2016 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Install widget
-#
 
 
 import os
+import traceback
 
 from gi.repository import Gtk, Gdk
+
 from kano_updater.ui.stage_text import STAGE_TEXT
 from kano_updater.ui.paths import FLAPPY_PATH
+
 from kano.utils import has_min_performance, RPI_2_B_SCORE
+from kano.logging import logger
 
 
 class Install(Gtk.Overlay):
@@ -21,7 +23,7 @@ class Install(Gtk.Overlay):
     def __init__(self):
         Gtk.Overlay.__init__(self, hexpand=True, vexpand=True)
 
-        style = self.get_style_context().add_class('install')
+        self.get_style_context().add_class('install')
 
         self._pgl = self._create_play_game_label()
         progress = self._create_progress_grid()
@@ -141,25 +143,8 @@ class Install(Gtk.Overlay):
     def _launch_game(self, window=None, event=None):
         try:
             if event and event.get_keyval()[1] in [Gdk.KEY_j, Gdk.KEY_J]:
-                if self._is_game_first_launch:
-                    self._is_game_first_launch = False
-                    self._first_game_launch(window)
-                else:
-                    self._relaunch_game()
+                os.system('{} &'.format(FLAPPY_PATH))
+
         except:
-            pass
-
-    def _first_game_launch(self, window=None):
-        # this function lets flappy-judoka run on top of the updater
-        if window is not None:
-            window.set_keep_below(True)
-
-        os.system('{} &'.format(FLAPPY_PATH))
-        os.system('pkill -KILL -f kano-feedback')      # kill kano-feedback-widget
-        os.system('pkill -KILL -f kano-world-widget')  # kill kano-world share widget
-        os.system('lxpanelctl exit')                   # kill lxpanel
-        # minimise all windows, and restore focus to the Updater and then Flappy
-        os.system('wmctrl -k on && wmctrl -a "Updater" && wmctrl -a "Flappy Judoka"')
-
-    def _relaunch_game(self):
-        os.system('{} &'.format(FLAPPY_PATH))
+            logger.error('Unexpected error in _launch_game()\n{}'
+                         .format(traceback.format_exc))

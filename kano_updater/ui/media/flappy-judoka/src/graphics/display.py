@@ -1,7 +1,7 @@
 
 # display.py
 #
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2016 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 #
@@ -14,7 +14,7 @@ import pygame
 from src.core.gamestate import Gamestate
 from src.graphics.hud import IntroHUD, NewGameHUD, FlappyFlyingHUD, GameOverHUD
 from src.graphics.assets import Assets
-from src.utils import debugger
+from src.utils import debugger, set_window_on_top
 
 
 class Display(object):
@@ -79,6 +79,7 @@ class Display(object):
         It provides the implementation of the state change listener
         such that the Display can react on specific state transitions.
         '''
+        set_window_on_top(self.GAME_TITLE)
         Gamestate.get().add_gamestate_change_listener(self.mGamestateChangeListener(self))
 
     def randomise_background(self):
