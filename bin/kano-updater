@@ -118,9 +118,11 @@ def tracefunc(frame, event, arg, indent=[0]):
     return tracefunc
 
 import sys
+from kano.pydebug import start_x
 
 def run_install(gui=False, confirm=True, splash_pid=None):
     sys.settrace(tracefunc)
+    start_x(None, None)
     logger.debug('Running install with GUI: {}, confirm: {}, splash PID {}'
                  .format(gui, confirm, splash_pid))
     if gui:
