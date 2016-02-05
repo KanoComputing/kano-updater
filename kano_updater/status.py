@@ -127,11 +127,12 @@ class UpdaterStatus(object):
 
     @state.setter
     def state(self, value):
+        logger.debug("Setting the status' state to: {}".format(value))
         if value not in self._valid_states:
             msg = "'{}' is not a valid state".format(value)
+            logger.debug(msg)
             raise UpdaterStatusError(msg)
 
-        logger.debug("Setting the status' state to: {}".format(value))
         self._state = value
 
     # -- scheduling
