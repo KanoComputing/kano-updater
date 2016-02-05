@@ -128,17 +128,17 @@ def run_install(gui=False, confirm=True, splash_pid=None):
     if gui:
         pause_notifications()
 
-        status = UpdaterStatus.get_instance()
-        status.notifications_muted = True
+        stati = UpdaterStatus.get_instance()
+        stati.notifications_muted = True
         if splash_pid:  # When relaunching, we always want updates
             logger.debug('Have PID: {}, setting status to {}'
                          .format(splash_pid, UpdaterStatus.UPDATES_DOWNLOADED))
-            status.status = UpdaterStatus.UPDATES_DOWNLOADED
+            stati.status = UpdaterStatus.UPDATES_DOWNLOADED
         else:
             logger.debug('No PID: {}'.format(splash_pid))
 
-        status.status = UpdaterStatus.UPDATES_DOWNLOADED
-        status.save()
+        stati.status = UpdaterStatus.UPDATES_DOWNLOADED
+        stati.save()
 
         from kano_updater.ui.main import launch_install_gui
 
