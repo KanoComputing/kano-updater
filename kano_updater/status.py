@@ -41,12 +41,14 @@ class UpdaterStatus(object):
 
     @staticmethod
     def get_instance():
+        logger.debug('Getting status instance')
         if not UpdaterStatus._singleton_instance:
             UpdaterStatus()
 
         return UpdaterStatus._singleton_instance
 
     def __init__(self):
+        logger.debug('Creating new status instance')
         if UpdaterStatus._singleton_instance:
             raise Exception('This class is a singleton!')
         else:
@@ -69,6 +71,7 @@ class UpdaterStatus(object):
             self.load()
 
     def load(self):
+        logger.debug('Loading status instance from file')
         with open(self._status_file, 'r') as status_file:
             try:
                 data = json.load(status_file)
@@ -101,6 +104,7 @@ class UpdaterStatus(object):
                 self._notifications_muted = (data['notifications_muted'] == 1)
 
     def save(self):
+        logger.debug('Saving status instance')
         data = {
             'state': self._state,
             'last_update': self._last_update,
@@ -127,6 +131,7 @@ class UpdaterStatus(object):
             msg = "'{}' is not a valid state".format(value)
             raise UpdaterStatusError(msg)
 
+        logger.debug("Setting the status' state to: {}".format(value))
         self._state = value
 
     # -- scheduling
@@ -140,6 +145,7 @@ class UpdaterStatus(object):
             msg = "'is_scheduled' must be a boolean value."
             raise UpdaterStatusError(msg)
 
+        logger.debug("Setting the status' is_scheduled to: {}".format(value))
         self._is_scheduled = value
 
     # -- last_update
@@ -153,6 +159,7 @@ class UpdaterStatus(object):
             msg = "'last_update' must be an Unix timestamp (int)."
             raise UpdaterStatusError(msg)
 
+        logger.debug("Setting the status' last_update to: {}".format(value))
         self._last_update = value
 
     # -- last_check
@@ -166,6 +173,7 @@ class UpdaterStatus(object):
             msg = "'last_check' must be an Unix timestamp (int)."
             raise UpdaterStatusError(msg)
 
+        logger.debug("Setting the status' last_check to: {}".format(value))
         self._last_check = value
 
     # -- is_urgent - flag used to distinguish between update priority levels
@@ -179,6 +187,7 @@ class UpdaterStatus(object):
             msg = "'is_urgent' must be a boolean value."
             raise UpdaterStatusError(msg)
 
+        logger.debug("Setting the status' is_urgent to: {}".format(value))
         self._is_urgent = value
 
     # -- last_check_urgent - used for very urgent updates
@@ -192,6 +201,8 @@ class UpdaterStatus(object):
             msg = "'last_check_urgent' must be an Unix timestamp (int)."
             raise UpdaterStatusError(msg)
 
+        logger.debug("Setting the status' last_check_urgent to: {}"
+                     .format(value))
         self._last_check_urgent = value
 
     # -- first_boot_countdown - used to stop updates for a set amount of time
@@ -205,6 +216,8 @@ class UpdaterStatus(object):
             msg = "'first_boot_countdown' must be an Unix timestamp (int)."
             raise UpdaterStatusError(msg)
 
+        logger.debug("Setting the status' first_boot_countdown to: {}"
+                     .format(value))
         self._first_boot_countdown = value
 
     """
@@ -222,6 +235,8 @@ class UpdaterStatus(object):
             msg = "'notifications_muted' must be a boolean value."
             raise UpdaterStatusError(msg)
 
+        logger.debug("Setting the status' notifications_muted to: {}"
+                     .format(value))
         self._notifications_muted = value
 
     # -- is_shutdown - used to determine whether to finish install with reboot or shutdown
@@ -235,4 +250,5 @@ class UpdaterStatus(object):
             msg = "'is_shutdown' must be a boolean value."
             raise UpdaterStatusError(msg)
 
+        logger.debug("Setting the status' is_shutdown to: {}".format(value))
         self._is_shutdown = value
