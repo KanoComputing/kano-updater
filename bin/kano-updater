@@ -108,8 +108,19 @@ def schedule_install(gui=False, confirm=True, splash_pid=None):
         if install_now:
             run_install(gui, confirm, splash_pid)
 
+def tracefunc(frame, event, arg, indent=[0]):
+    if event == "call":
+        indent[0] += 2
+        print "-" * indent[0] + "> call function", frame.f_code.co_name
+    elif event == "return":
+        print "<" + "-" * indent[0], "exit function", frame.f_code.co_name
+        indent[0] -= 2
+    return tracefunc
+
+import sys
 
 def run_install(gui=False, confirm=True, splash_pid=None):
+    sys.settrace(tracefunc)
     logger.debug('Running install with GUI: {}, confirm: {}, splash PID {}'
                  .format(gui, confirm, splash_pid))
     if gui:
@@ -118,7 +129,13 @@ def run_install(gui=False, confirm=True, splash_pid=None):
         status = UpdaterStatus.get_instance()
         status.notifications_muted = True
         if splash_pid:  # When relaunching, we always want updates
+            logger.debug('Have PID: {}, setting status to {}'
+                         .format(splash_pid, UpdaterStatus.UPDATES_DOWNLOADED))
             status.status = UpdaterStatus.UPDATES_DOWNLOADED
+        else:
+            logger.debug('No PID: {}'.format(splash_pid))
+
+        status.status = UpdaterStatus.UPDATES_DOWNLOADED
         status.save()
 
         from kano_updater.ui.main import launch_install_gui
