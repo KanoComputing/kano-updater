@@ -110,11 +110,16 @@ def schedule_install(gui=False, confirm=True, splash_pid=None):
 
 
 def run_install(gui=False, confirm=True, splash_pid=None):
+    logger.debug('Running install with GUI: {}, confirm: {}, splash PID {}'
+                 .format(gui, confirm, splash_pid))
     if gui:
         pause_notifications()
 
         status = UpdaterStatus.get_instance()
         status.notifications_muted = True
+        if splash_pid:  # When relaunching, we always want updates
+            status.state = UpdaterStatus.UPDATES_DOWNLOADED
+
         status.save()
 
         from kano_updater.ui.main import launch_install_gui

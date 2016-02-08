@@ -48,6 +48,7 @@ def download(progress=None, gui=True):
         progress.start('checking')
         check_for_updates(progress=progress)
         if status.state == UpdaterStatus.NO_UPDATES:
+            logger.info('No updates to download')
             progress.finish(_('No updates to download'))
             return False
 
