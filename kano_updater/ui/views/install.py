@@ -13,7 +13,7 @@ import os
 from gi.repository import Gtk, Gdk
 from kano_updater.ui.stage_text import STAGE_TEXT
 from kano_updater.ui.paths import FLAPPY_PATH
-from kano.utils import is_model_2_b
+from kano.utils import has_min_performance, RPI_2_B_SCORE
 
 
 class Install(Gtk.Overlay):
@@ -115,8 +115,7 @@ class Install(Gtk.Overlay):
         if phase_name in ['downloading', 'downloading-pip-pkgs', 'init', 'installing-urgent']:
             # killing the notification daemon in case there are frozen notifications at this point
             os.system('pkill -f kano-notifications-daemon')
-            if is_model_2_b():
-                # enable flappy-judoka only for the RPI2
+            if has_min_performance(RPI_2_B_SCORE):
                 self.get_toplevel().connect('key-release-event', self._launch_game)
                 self._pgl.show()
 
