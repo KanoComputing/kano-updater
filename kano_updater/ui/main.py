@@ -76,26 +76,14 @@ def launch_boot_gui():
     status = UpdaterStatus.get_instance()
 
     if old_status == UpdaterStatus.INSTALLING_UPDATES:
-        from kano.gtk3.kano_dialog import KanoDialog
-        d = KanoDialog(
-            'Continue updating',
-            'The update you started didn\'t finish. Would you like to '
-            'continue?',
-            [{"label": "YES", "return_value": True, "color": "green"}],
-            orange_info={'name': 'SKIP', 'return_value': False},
-        )
-        rv = d.run()
-        del d
+        status.notifications_muted = True
+        status.state = UpdaterStatus.UPDATES_AVAILABLE
+        status.save()
 
-        if rv:
-            status.notifications_muted = True
-            status.state = UpdaterStatus.UPDATES_AVAILABLE
-            status.save()
+        remove_pid_file()
 
-            remove_pid_file()
-
-            cmd_args = ['kano-updater', 'install', '--gui', '--no-confirm']
-            os.execvp('kano-updater', cmd_args)
+        cmd_args = ['kano-updater', 'install', '--gui', '--no-confirm']
+        os.execvp('kano-updater', cmd_args)
 
     elif old_status == UpdaterStatus.UPDATES_INSTALLED:
         try:
