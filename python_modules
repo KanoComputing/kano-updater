@@ -5,6 +5,5 @@ tzupdate
 pam
 python-slugify
 decorator
-youtube_dl<2015.04.26
 docopt
 futures==2.1.4
