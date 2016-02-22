@@ -1,7 +1,12 @@
+kano-updater (2.4.0-1) unstable; urgency=low
+
+  * Improved Flappy Judoka game launching
+
+ -- Team Kano <dev@kano.me>  Wed, 20 Jan 2016 14:35:00 +0000
+
 kano-updater (2.3.0-1) unstable; urgency=low
 
   * Install Make Light by default
-  * Improved Flappy Judoka game launching
 
  -- Team Kano <dev@kano.me>  Wed, 20 Jan 2016 14:35:00 +0000
 
