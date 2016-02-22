@@ -10,6 +10,7 @@
 
 import os
 import sys
+import signal
 import pygame
 
 from paths import images_path, sounds_path
@@ -110,11 +111,25 @@ def rotate_center(image, rect, angle):
     return rot_image, rot_rect
 
 
-def set_window_on_top(window_name):
+def setup_window_on_top_signal():
+    signal.signal(signal.SIGUSR1, give_focus_to_game)
+
+
+def give_focus_to_game(signal=None, frame=None):
     '''
     NOTE: This function is designed to work for the RPI!
     '''
     try:
-        os.system('wmctrl -r "{}" -b add,above &'.format(window_name))
+        os.system('wmctrl -a "Flappy Judoka" &')
+    except:
+        debugger('ERROR: utils: give_focus_to_game: wmctrl failed!')
+
+
+def set_window_on_top(signal=None, frame=None):
+    '''
+    NOTE: This function is designed to work for the RPI!
+    '''
+    try:
+        os.system('wmctrl -r "Flappy Judoka" -b add,above &')
     except:
         debugger('ERROR: utils: set_window_on_top: wmctrl failed!')

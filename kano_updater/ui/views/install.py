@@ -115,8 +115,6 @@ class Install(Gtk.Overlay):
     def update_progress(self, percent, phase_name, msg, sub_msg=''):
         # enabling flappy-judoka launch only after these phases (when a reboot is iminent)
         if phase_name in ['downloading', 'downloading-pip-pkgs', 'init', 'installing-urgent']:
-            # killing the notification daemon in case there are frozen notifications at this point
-            os.system('pkill -f kano-notifications-daemon')
             if has_min_performance(RPI_2_B_SCORE):
                 self.get_toplevel().connect('key-release-event', self._launch_game)
                 self._pgl.show()

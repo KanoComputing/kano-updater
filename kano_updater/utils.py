@@ -14,12 +14,10 @@ import shutil
 import pwd
 import grp
 import signal
-import traceback
 
 from kano.logging import logger
 from kano.utils import run_print_output_error, run_cmd, run_bg, run_cmd_log, \
     chown_path, is_gui, sed, get_user_unsudoed
-from kano.utils import is_running as is_running_toolset
 from kano.network import is_internet
 import kano.notifications as notifications
 from kano.timeout import timeout, TimeoutError
@@ -133,9 +131,22 @@ def kill_flappy_judoka():
     """
     try:
         os.system('pkill -KILL -f flappy-judoka')
-    except Exception:
-        logger.error('Unexpected error in kill_flappy_judoka()\n{}'
-                     .format(traceback.format_exc))
+    except Exception as e:
+        logger.error('Unexpected error in kill_flappy_judoka()', exception=e)
+
+
+def bring_flappy_judoka_to_front():
+    """
+    Puts Flappy Judoka game on top of the updater.
+
+    It works by asking the window manager to give focus back to the game when
+    something else grabs it, i.e. when relaunching. This will happen in the
+    game's signal for SIGUSR1.
+    """
+    try:
+        os.system('pkill -USR1 -f flappy-judoka')
+    except Exception as e:
+        logger.error('Unexpected error in bring_flappy_judoka_to_front()', exception=e)
 
 
 # TODO: Might be useful in kano.utils

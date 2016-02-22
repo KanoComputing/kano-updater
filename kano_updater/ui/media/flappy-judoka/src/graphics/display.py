@@ -14,7 +14,7 @@ import pygame
 from src.core.gamestate import Gamestate
 from src.graphics.hud import IntroHUD, NewGameHUD, FlappyFlyingHUD, GameOverHUD
 from src.graphics.assets import Assets
-from src.utils import debugger, set_window_on_top
+from src.utils import debugger, set_window_on_top, setup_window_on_top_signal
 
 
 class Display(object):
@@ -79,7 +79,8 @@ class Display(object):
         It provides the implementation of the state change listener
         such that the Display can react on specific state transitions.
         '''
-        set_window_on_top(self.GAME_TITLE)
+        setup_window_on_top_signal()
+        set_window_on_top()
         Gamestate.get().add_gamestate_change_listener(self.mGamestateChangeListener(self))
 
     def randomise_background(self):
