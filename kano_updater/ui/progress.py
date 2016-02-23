@@ -24,7 +24,6 @@ class GtkProgress(Progress):
                       phase.get_main_phase().label, phase.get_main_phase().name, msg)
 
     def _error(self, phase, msg):
-        kill_flappy_judoka()
         err_msg = "Error {} - {}".format(phase.label.lower(), msg)
         GLib.idle_add(self._window.error, err_msg)
 
