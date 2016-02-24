@@ -1,7 +1,7 @@
 
 # utils.py
 #
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2016 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 #
@@ -10,6 +10,7 @@
 
 import os
 import sys
+import signal
 import pygame
 
 from paths import images_path, sounds_path
@@ -110,12 +111,25 @@ def rotate_center(image, rect, angle):
     return rot_image, rot_rect
 
 
-def set_window_on_top(display):
+def setup_window_on_top_signal():
+    signal.signal(signal.SIGUSR1, give_focus_to_game)
+
+
+def give_focus_to_game(signal=None, frame=None):
     '''
     NOTE: This function is designed to work for the RPI!
     '''
     try:
-        os.system('wmctrl -a -r "{}" -b add,above &'.format(display.GAME_TITLE))
+        os.system('wmctrl -a "Flappy Judoka" &')
+    except:
+        debugger('ERROR: utils: give_focus_to_game: wmctrl failed!')
+
+
+def set_window_on_top(signal=None, frame=None):
+    '''
+    NOTE: This function is designed to work for the RPI!
+    '''
+    try:
+        os.system('wmctrl -r "Flappy Judoka" -b add,above &')
     except:
         debugger('ERROR: utils: set_window_on_top: wmctrl failed!')
-    display.is_set_to_top = True

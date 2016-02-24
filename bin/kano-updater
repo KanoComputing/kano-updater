@@ -24,9 +24,10 @@ Options:
   -h, --help       Show this message.
   -v, --version    Print the version of the updater.
   -g, --gui        Run the install procedure with a GUI.
-  --no-confirm     Don't confirm before installing
   -l, --low-prio   Run the process with low shed and io priority.
   --interval       Minimum time interval between checks (in hours)
+  --no-confirm     Don't confirm before installing
+  --urgent         Check for urgent updates
 """
 
 

@@ -1,11 +1,10 @@
-
 # install_window.py
 #
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2016 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Installer main window
-#
+
 
 import os
 from gi.repository import Gtk, Gdk, GLib
@@ -14,7 +13,7 @@ from threading import Thread, Lock
 from kano.gtk3.apply_styles import apply_styling_to_screen
 from kano.gtk3.kano_dialog import KanoDialog
 
-from kano_updater.utils import kill_apps
+from kano_updater.utils import kill_apps, kill_flappy_judoka, bring_flappy_judoka_to_front
 from kano_updater.ui.paths import CSS_PATH
 from kano_updater.commands.install import install
 from kano_updater.ui.progress import GtkProgress
@@ -31,13 +30,7 @@ class InstallWindow(Gtk.Window):
         apply_styling_to_screen(self.CSS_FILE)
 
         Gtk.Window.__init__(self)
-        # self.fullscreen()
-        # Gtk hack: set the width, height of the window to larger than screen
-        # resolution in order fix set_keep_below(True) which doesn't work with fullscreen
-        screen = Gdk.Screen.get_default()
-        width = screen.get_width()
-        height = screen.get_height()
-        self.set_size_request(width, height + 80)
+        self.fullscreen()
         self.set_keep_above(True)
 
         self.set_icon_name('kano-updater')
@@ -60,6 +53,7 @@ class InstallWindow(Gtk.Window):
         self.user_input_lock.acquire()
 
         self._start_install()
+        bring_flappy_judoka_to_front()
 
     def _start_install(self):
         progress = GtkProgress(self)
@@ -79,6 +73,7 @@ class InstallWindow(Gtk.Window):
         self.destroy()
         self._set_normal_cursor()
 
+        kill_flappy_judoka()
         unexpected_quit = KanoDialog(
             _('The install quit unexpectedly'),
             _('Please try again later'),
@@ -110,6 +105,7 @@ class InstallWindow(Gtk.Window):
         self.destroy()
         self._set_normal_cursor()
 
+        kill_flappy_judoka()
         no_updates = KanoDialog(
             _('No updates available'),
             _('Your system is already up to date'),
@@ -160,6 +156,7 @@ class InstallWindow(Gtk.Window):
         return False
 
     def error(self, msg):
+        kill_flappy_judoka()
         error = KanoDialog(
             _('Error updating'), msg,
             {

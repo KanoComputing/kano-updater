@@ -14,6 +14,8 @@ from kano.gtk3.apply_styles import apply_styling_to_screen
 
 from kano_updater.ui.paths import CSS_PATH
 from kano_updater.ui.views.relaunch import Relaunch
+from kano_updater.utils import bring_flappy_judoka_to_front
+
 
 class RelaunchWindow(Gtk.Window):
     CSS_FILE = os.path.join(CSS_PATH, 'updater.css')
@@ -34,6 +36,8 @@ class RelaunchWindow(Gtk.Window):
 
         self.show_all()
         self._set_wait_cursor()
+
+        bring_flappy_judoka_to_front()
 
     def _set_wait_cursor(self):
         cursor = Gdk.Cursor.new(Gdk.CursorType.WATCH)

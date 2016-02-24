@@ -1,12 +1,10 @@
-#!/usr/bin/env python
-
 # utils.py
 #
 # Copyright (C) 2014-2016 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Utilities for the updater and the pre and post update scripts
-#
+
 
 import os
 import sys
@@ -16,7 +14,6 @@ import shutil
 import pwd
 import grp
 import signal
-
 
 from kano.logging import logger
 from kano.utils import run_print_output_error, run_cmd, run_bg, run_cmd_log, \
@@ -122,6 +119,34 @@ def kill_apps():
     variables = 'HOME={} USER={}'.format(home, user)
     run_cmd('{} /usr/bin/kano-launcher /bin/true kano-kill-apps'.format(
         variables))
+
+
+def kill_flappy_judoka():
+    """
+    Kills Flappy Judoka game.
+
+    This is mainly required due to the way we do window management. The game will
+    set itself on top of the Updater (which has set_keep_above true), but if any
+    dialogs are shown, it goes underneath, still capturing keyboard and mouse input.
+    """
+    try:
+        os.system('pkill -KILL -f flappy-judoka')
+    except Exception as e:
+        logger.error('Unexpected error in kill_flappy_judoka()', exception=e)
+
+
+def bring_flappy_judoka_to_front():
+    """
+    Puts Flappy Judoka game on top of the updater.
+
+    It works by asking the window manager to give focus back to the game when
+    something else grabs it, i.e. when relaunching. This will happen in the
+    game's signal for SIGUSR1.
+    """
+    try:
+        os.system('pkill -USR1 -f flappy-judoka')
+    except Exception as e:
+        logger.error('Unexpected error in bring_flappy_judoka_to_front()', exception=e)
 
 
 # TODO: Might be useful in kano.utils
@@ -272,6 +297,7 @@ def update_failed(err):
           "Make sure you are connected to the Internet, and give it another go.\n\n"
           "If you still have problems, we can help at http://help.kano.me")
 
+    kill_flappy_judoka()
     kdialog = kano_dialog.KanoDialog(_("Update error"), msg)
     kdialog.run()
 
