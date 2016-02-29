@@ -210,7 +210,7 @@ class PreUpdate(Scenarios):
                 run_cmd_log('apt-get -y autoremove')
 
     def beta_230_to_beta_240(self):
-        pass
+        run_cmd_log('apt-get install bluez')
 
     # Not used at the moment: dev.kano.me > repo.kano.me
     def _migrate_repo_url(self):
