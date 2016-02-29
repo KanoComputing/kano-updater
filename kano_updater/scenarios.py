@@ -136,6 +136,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-2.2.0", "Kanux-Beta-2.3.0",
                           self.beta_220_to_beta_230)
 
+        self.add_scenario("Kanux-Beta-2.3.0", "Kanux-Beta-2.4.0",
+                          self.beta_230_to_beta_240)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -206,6 +209,9 @@ class PreUpdate(Scenarios):
             if rv == 0:
                 run_cmd_log('apt-get -y autoremove')
 
+    def beta_230_to_beta_240(self):
+        pass
+
     # Not used at the moment: dev.kano.me > repo.kano.me
     def _migrate_repo_url(self):
         migrate_repository('/etc/apt/sources.list.d/kano.list',
@@ -267,6 +273,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-2.2.0", "Kanux-Beta-2.3.0",
                           self.beta_220_to_beta_230)
+
+        self.add_scenario("Kanux-Beta-2.3.0", "Kanux-Beta-2.4.0",
+                          self.beta_230_to_beta_240)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -443,3 +452,6 @@ class PostUpdate(Scenarios):
 
         # enable spi device
         enable_spi_device()
+
+    def beta_230_to_beta_240(self):
+        pass
