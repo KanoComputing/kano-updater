@@ -197,7 +197,7 @@ class AptWrapper(object):
 
         return True
 
-    def is_update_avaliable(self, priority=Priority.STANDARD):
+    def is_update_available(self, priority=Priority.STANDARD):
         for pkg in self._cache:
             if self._is_package_upgradable(pkg, priority=priority):
                 return True

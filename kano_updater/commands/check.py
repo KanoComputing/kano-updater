@@ -106,13 +106,13 @@ def _do_check(progress, priority=Priority.NONE):
 
     if (
             priority <= Priority.URGENT
-            and apt_handle.is_update_avaliable(priority=Priority.URGENT)
+            and apt_handle.is_update_available(priority=Priority.URGENT)
         ):
         return Priority.URGENT
 
     if (
             priority <= Priority.STANDARD
-            and apt_handle.is_update_avaliable()
+            and apt_handle.is_update_available()
         ):
         return Priority.STANDARD
 
