@@ -147,6 +147,12 @@ def install_ind_package(progress, package):
         progress.abort(_(msg))
         return False
 
+    if package not in status.updatable_independent_packages:
+        msg = 'tried to install non-independent package {} using update_ind_pkg'.format(package)
+        logger.warn(msg)
+        progress.abort(_(msg))
+        return False        
+
     status.state = UpdaterStatus.INSTALLING_INDEPENDENT
     status.save()
 
