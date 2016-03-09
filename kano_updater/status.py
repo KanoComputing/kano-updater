@@ -25,6 +25,7 @@ class UpdaterStatus(object):
     UPDATES_DOWNLOADED = 'updates-downloaded'
     INSTALLING_UPDATES = 'installing-updates'
     UPDATES_INSTALLED = 'updates-installed'
+    INSTALLING_INDEPENDENT = 'installing-independent'
 
     _status_file = STATUS_FILE_PATH
 
@@ -34,6 +35,7 @@ class UpdaterStatus(object):
         DOWNLOADING_UPDATES,
         UPDATES_DOWNLOADED,
         INSTALLING_UPDATES,
+        INSTALLING_INDEPENDENT,
         UPDATES_INSTALLED
     ]
 
@@ -56,6 +58,7 @@ class UpdaterStatus(object):
 
         self._state = self.NO_UPDATES
         self._last_check = 0
+        self._updatable_independent_packages = []
         self._last_check_urgent = 0
         self._last_update = 0
         self._first_boot_countdown = 0
@@ -94,6 +97,7 @@ class UpdaterStatus(object):
             self._state = data['state']
             self._last_update = data['last_update']
             self._last_check = data['last_check']
+            self._updatable_independent_packages = data.get('ind_pkg',[])
             self._last_check_urgent = data['last_check_urgent']
             self._first_boot_countdown = data['first_boot_countdown']
             self._is_urgent = (data['is_urgent'] == 1)
@@ -109,6 +113,7 @@ class UpdaterStatus(object):
             'state': self._state,
             'last_update': self._last_update,
             'last_check': self._last_check,
+            'ind_pkg': self._updatable_independent_packages,
             'last_check_urgent': self._last_check_urgent,
             'first_boot_countdown': self._first_boot_countdown,
             'is_urgent': 1 if self._is_urgent else 0,
@@ -176,6 +181,18 @@ class UpdaterStatus(object):
 
         logger.debug("Setting the status' last_check to: {}".format(value))
         self._last_check = value
+
+    @property
+    def updatable_independent_packages(self):
+        return self._updatable_independent_packages
+
+    @updatable_independent_packages.setter
+    def updatable_independent_packages(self, value):
+        if not isinstance(value, list) and all([isinstance(p, str) for p in value]):
+            msg = "'ind_pkg' must be a list of package names"
+            raise UpdaterStatusError(msg)
+        logger.debug("Setting the status' updatable_independent_packages to: {}".format(value))
+        self._updatable_independent_packages = value
 
     # -- is_urgent - flag used to distinguish between update priority levels
     @property

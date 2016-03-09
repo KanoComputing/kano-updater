@@ -67,7 +67,8 @@ def install(progress=None, gui=True):
 
         return False
 
-    if status.state == UpdaterStatus.INSTALLING_UPDATES:
+    if (status.state == UpdaterStatus.INSTALLING_UPDATES or
+        status.state == UpdaterStatus.INSTALLING_INDEPENDENT):
         msg = 'The install is already running'
         logger.warn(msg)
         progress.abort(_(msg))
@@ -127,6 +128,29 @@ def do_install(progress, status, priority=Priority.NONE):
         install_urgent(progress, status)
     else:
         install_standard(progress, status)
+
+    status.state = UpdaterStatus.UPDATES_INSTALLED
+    status.last_update = int(time.time())
+    status.is_scheduled = False
+    status.save()
+
+    progress.finish('Update completed')
+    return True
+
+def install_ind_package(progress, package):
+    status = UpdaterStatus.get_instance()
+    # install an independent package.
+
+    if status.state == UpdaterStatus.INSTALLING_UPDATES:
+        msg = 'The install is already running'
+        logger.warn(msg)
+        progress.abort(_(msg))
+        return False
+
+    status.state = UpdaterStatus.INSTALLING_INDEPENDENT
+    status.save()
+
+    apt_handle.upgrade(package, progress)
 
     status.state = UpdaterStatus.UPDATES_INSTALLED
     status.last_update = int(time.time())
@@ -284,7 +308,6 @@ def install_standard(progress, status):
     # We don't care too much when these fail
     progress.start('aux-tasks')
     run_aux_tasks(progress)
-
 
 
 def install_deb_packages(progress, priority=Priority.NONE):

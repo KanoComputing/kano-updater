@@ -17,6 +17,8 @@ Usage:
   kano-updater set-scheduled (1|0)
   kano-updater first-boot
   kano-updater clean
+  kano-updater avail-ind-pkgs
+  kano-updater update-ind-pkg <package>
   kano-updater ui (relaunch-splash <parent-pid> | boot-window | shutdown-window)
   kano-updater [-f] [-n]
 
@@ -54,7 +56,7 @@ from kano.gtk3.kano_dialog import KanoDialog
 
 from kano_updater.os_version import TARGET_VERSION
 from kano_updater.commands.download import download
-from kano_updater.commands.install import install
+from kano_updater.commands.install import install, install_ind_package
 from kano_updater.commands.check import check_for_updates
 from kano_updater.commands.clean import clean
 from kano_updater.progress import CLIProgress, Relaunch
@@ -140,6 +142,11 @@ def run_install(gui=False, confirm=True, splash_pid=None):
         except Relaunch:
             clean_up()
             os.execvp('kano-updater', ['kano-updater', 'install'])
+
+
+def run_install_ind_pkg(package):
+    progress = CLIProgress()
+    install_ind_package(progress, package)
 
 
 def main():
@@ -234,6 +241,13 @@ def main():
 
             run_install(gui=args['--gui'], confirm=not args['--no-confirm'],
                         splash_pid=splash_pid)
+        elif args['update-ind-pkg']:
+            package = args['<package>']
+            run_install_ind_pkg(package)
+            
+        elif args['avail-ind-pkgs']:
+            print status.updatable_independent_packages
+            sys.exit(0)
         elif args['check']:
             if args['--interval']:
                 target_delta = float(args['<time>']) * 60 * 60
