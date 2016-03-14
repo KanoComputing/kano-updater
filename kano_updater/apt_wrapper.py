@@ -17,7 +17,7 @@ from kano_updater.apt_progress_wrapper import AptDownloadProgress, \
 from kano_updater.os_version import SYSTEM_VERSION
 from kano_updater.progress import Phase
 import kano_updater.priority as Priority
-
+from kano_updater.special_packages import independent_install_list
 
 class AptWrapper(object):
     def __init__(self):
@@ -197,10 +197,20 @@ class AptWrapper(object):
 
         return True
 
-    def is_update_avaliable(self, priority=Priority.STANDARD):
+    def independent_packages_available(self, priority=Priority.STANDARD):
+        pkgs = []
         for pkg in self._cache:
-            if self._is_package_upgradable(pkg, priority=priority):
-                return True
+            if pkg.name in independent_install_list:
+                if self._is_package_upgradable(pkg, priority=priority):
+                    pkgs.append(pkg.name)
+
+        return pkgs
+
+    def is_update_available(self, priority=Priority.STANDARD):
+        for pkg in self._cache:
+            if pkg.name not in independent_install_list:
+                if self._is_package_upgradable(pkg, priority=priority):
+                    return True
 
         return False
 

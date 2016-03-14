@@ -88,6 +88,8 @@ def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
     if priority <= Priority.STANDARD:
         status.last_check = int(time.time())
 
+    status.updatable_independent_packages = _get_ind_packages(priority)
+
     status.last_check_urgent = int(time.time())
 
     status.save()
@@ -106,14 +108,18 @@ def _do_check(progress, priority=Priority.NONE):
 
     if (
             priority <= Priority.URGENT
-            and apt_handle.is_update_avaliable(priority=Priority.URGENT)
+            and apt_handle.is_update_available(priority=Priority.URGENT)
         ):
         return Priority.URGENT
 
     if (
             priority <= Priority.STANDARD
-            and apt_handle.is_update_avaliable()
+            and apt_handle.is_update_available()
         ):
         return Priority.STANDARD
 
     return Priority.NONE
+
+def _get_ind_packages(priority=Priority.NONE):
+    return apt_handle.independent_packages_available(priority)
+    
