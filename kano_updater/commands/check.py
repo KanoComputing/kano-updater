@@ -88,7 +88,9 @@ def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
     if priority <= Priority.STANDARD:
         status.last_check = int(time.time())
 
-    status.updatable_independent_packages = _get_ind_packages(priority)
+    # always check independent packages as NONE as urgent updates to
+    # these packages are dealt with by the main updater
+    status.updatable_independent_packages = get_ind_packages(Priority.NONE)
 
     status.last_check_urgent = int(time.time())
 
@@ -120,6 +122,6 @@ def _do_check(progress, priority=Priority.NONE):
 
     return Priority.NONE
 
-def _get_ind_packages(priority=Priority.NONE):
+def get_ind_packages(priority=Priority.NONE):
     return apt_handle.independent_packages_available(priority)
     
