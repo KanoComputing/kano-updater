@@ -25,6 +25,7 @@ def clean(dry_run=False):
         # The installation was interrupted, go back one state
         status.state = UpdaterStatus.UPDATES_DOWNLOADED
     elif status.state == UpdaterStatus.INSTALLING_INDEPENDENT:
+        # The installation was interrupted, go back one state
         status.state = UpdaterStatus.NO_UPDATES
     elif status.state == UpdaterStatus.UPDATES_INSTALLED:
         # Show a dialog and change the state back to no updates

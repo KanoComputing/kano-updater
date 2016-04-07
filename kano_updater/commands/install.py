@@ -23,6 +23,7 @@ from kano_updater.auxiliary_tasks import run_aux_tasks
 from kano_updater.progress import DummyProgress, Phase, Relaunch
 from kano_updater.utils import run_pip_command
 from kano_updater.commands.download import download
+from kano_updater.commands.check import get_ind_packages
 import kano_updater.priority as Priority
 
 
@@ -141,7 +142,12 @@ def install_ind_package(progress, package):
     status = UpdaterStatus.get_instance()
     # install an independent package.
 
-    if status.state == UpdaterStatus.INSTALLING_UPDATES:
+    previous_state = status.state
+
+    # Allow installing only if the updater is in certain safe states.
+    if status.state not in [UpdaterStatus.NO_UPDATES,
+                            UpdaterStatus.UPDATES_AVAILABLE,
+                            UpdaterStatus.UPDATES_INSTALLED]:
         msg = 'The install is already running'
         logger.warn(msg)
         progress.abort(_(msg))
@@ -158,8 +164,12 @@ def install_ind_package(progress, package):
 
     apt_handle.upgrade(package, progress)
 
-    status.state = UpdaterStatus.UPDATES_INSTALLED
+    status.state = previous_state
     status.last_update = int(time.time())
+
+    # always check independent packages as NONE as urgent updates to
+    # these packages are dealt with by the main updater
+    status.updatable_independent_packages = get_ind_packages(Priority.NONE)
     status.is_scheduled = False
     status.save()
 

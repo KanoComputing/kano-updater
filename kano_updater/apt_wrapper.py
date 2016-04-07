@@ -208,7 +208,8 @@ class AptWrapper(object):
 
     def is_update_available(self, priority=Priority.STANDARD):
         for pkg in self._cache:
-            if pkg.name not in independent_install_list:
+            # exclude independent packages, UNLESS this is an urgent update
+            if priority == Priority.URGENT or pkg.name not in independent_install_list:
                 if self._is_package_upgradable(pkg, priority=priority):
                     return True
 
