@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+# kano-updater-quickcheck
+#
+# Copyright (C) 2015 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
+#
+
+STATUS_FILE=/var/cache/kano-updater/status.json
+
+# check if we need to run 
+DO_RUN=$(jq '.is_scheduled!=0 or .state!="no-updates"' $STATUS_FILE)
+
+if [ "$DO_RUN" == "true" ] ; then
+    /usr/bin/kano-updater ui boot-window
+fi

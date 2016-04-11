@@ -1,3 +1,9 @@
+kano-updater (3.0.0-1) unstable; urgency=low
+
+  * Add kano-updater-quickcheck command
+
+ -- Team Kano <dev@kano.me>  Mon, 11 Apr 2016 18:04:00 +0100
+
 kano-updater (2.5.0-1) unstable; urgency=low
 
   * Fixed urgent updates for Jessie users
