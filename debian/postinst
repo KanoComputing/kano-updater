@@ -35,10 +35,15 @@ case "$1" in
 
         pip install --upgrade $PIP_DEPENDENCIES
 
-        # Add the urgent repo to sources - if not already existent
+        # Add the urgent repo to sources - if not already existent (jessie users)
+        grep -q 'release-urgent' $KANO_SOURCES || \
+            grep -m 1 '^deb http://.*.kano.me/archive-jessie/' $KANO_SOURCES | \
+                sed -r "s|^deb http://([a-z]*).kano.me.*$|deb http://\1.kano.me/archive-jessie/ release-urgent main|" >> $KANO_SOURCES
+
+        # Add the urgent repo to sources - if not already existent (wheezy users)
         grep -q 'release-urgent' $KANO_SOURCES || \
             grep -m 1 '^deb http://.*.kano.me/archive/' $KANO_SOURCES | \
-            sed -r "s|^deb http://([a-z]*).kano.me.*$|deb http://\1.kano.me/archive release-urgent main|" >> $KANO_SOURCES
+                sed -r "s|^deb http://([a-z]*).kano.me.*$|deb http://\1.kano.me/archive/ release-urgent main|" >> $KANO_SOURCES
 
         ;;
 esac
