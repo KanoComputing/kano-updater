@@ -466,4 +466,13 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_240_to_beta_300(self):
-        pass
+        def enable_audio_device():
+            from kano_settings.boot_config import set_config_value
+            set_config_value("dtparam=audio", "on")
+            try:
+                from kano_settings.boot_config import end_config_transaction
+                end_config_transaction()
+            except ImportError:
+                logger.error("end_config_transaciton not present - update to kano-settings failed?")
+        enable_audio_device()
+
