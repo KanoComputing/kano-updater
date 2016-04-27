@@ -142,8 +142,8 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-2.4.0", "Kanux-Beta-3.0.0",
                           self.beta_240_to_beta_300)
 
-        self.add_scenario("Kanux-Beta-3.0.0", "Kanux-Beta-3.0.1",
-                          self.beta_300_to_beta_301)
+        self.add_scenario("Kanux-Beta-3.0.0", "Kanux-Beta-3.1.0",
+                          self.beta_300_to_beta_310)
 
     def beta_103_to_beta_110(self):
         pass
@@ -221,7 +221,7 @@ class PreUpdate(Scenarios):
     def beta_240_to_beta_300(self):
         pass
 
-    def beta_300_to_beta_301(self):
+    def beta_300_to_beta_310(self):
         pass
 
     # Not used at the moment: dev.kano.me > repo.kano.me
@@ -292,8 +292,8 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-2.4.0", "Kanux-Beta-3.0.0",
                           self.beta_240_to_beta_300)
 
-        self.add_scenario("Kanux-Beta-3.0.0", "Kanux-Beta-3.0.1",
-                          self.beta_300_to_beta_301)
+        self.add_scenario("Kanux-Beta-3.0.0", "Kanux-Beta-3.1.0",
+                          self.beta_300_to_beta_310)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -485,5 +485,5 @@ class PostUpdate(Scenarios):
                 logger.error("end_config_transaciton not present - update to kano-settings failed?")
         enable_audio_device()
 
-    def beta_300_to_beta_301(self):
+    def beta_300_to_beta_310(self):
         pass
