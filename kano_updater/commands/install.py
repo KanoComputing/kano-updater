@@ -131,6 +131,11 @@ def do_install(progress, status, priority=Priority.NONE):
         install_standard(progress, status)
 
     status.state = UpdaterStatus.UPDATES_INSTALLED
+
+    # Clear the list of independent packages.
+    # They should all have been updated by the full update.
+    status.updatable_independent_packages = []
+
     status.last_update = int(time.time())
     status.is_scheduled = False
     status.save()
