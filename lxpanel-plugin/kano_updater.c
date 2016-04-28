@@ -360,23 +360,29 @@ static gboolean update_status(kano_updater_plugin_t *plugin_data)
         gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
                           UPDATES_AVAILABLE_ICON_FILE);
 
-        if (g_strcmp0(plugin_data->prev_state, plugin_data->state) != 0 &&
-            !plugin_data->notifications_muted)
-            show_notification(UPDATES_AVAILABLE_NOTIFICATION);
+        /**
+         * FIXME: Temporarily disable for the dashboard notifications
+         * if (g_strcmp0(plugin_data->prev_state, plugin_data->state) != 0 &&
+         *         !plugin_data->notifications_muted)
+         *     show_notification(UPDATES_AVAILABLE_NOTIFICATION);
+         */
     } else if (IS_IN_STATE(plugin_data, "downloading-updates")) {
         gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
                         DOWNLOADING_UPDATES_ICON_FILE);
 
         if (g_strcmp0(plugin_data->prev_state, plugin_data->state) != 0 &&
-            !plugin_data->notifications_muted)
+                !plugin_data->notifications_muted)
             show_notification(UPDATES_DOWNLOADING_NOTIFICATION);
     } else if (IS_IN_STATE(plugin_data, "updates-downloaded")) {
         gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
                         UPDATES_DOWNLOADED_ICON_FILE);
 
-        if (g_strcmp0(plugin_data->prev_state, plugin_data->state) != 0 &&
-            !plugin_data->notifications_muted)
-            show_notification(UPDATES_DOWNLOADED_NOTIFICATION);
+        /**
+         * FIXME: Temporarily disable for the dashboard notifications
+         * if (g_strcmp0(plugin_data->prev_state, plugin_data->state) != 0 &&
+         *         !plugin_data->notifications_muted)
+         *     show_notification(UPDATES_DOWNLOADED_NOTIFICATION);
+         */
     } else {
         gtk_image_set_from_file(GTK_IMAGE(plugin_data->icon),
                     NO_UPDATES_ICON_FILE);
