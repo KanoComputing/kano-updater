@@ -491,11 +491,44 @@ class PostUpdate(Scenarios):
                 from kano_settings.boot_config import end_config_transaction
                 end_config_transaction()
             except ImportError:
-                logger.error("end_config_transaciton not present - update to kano-settings failed?")
+                logger.error("end_config_transaction not present - update to kano-settings failed?")
         enable_audio_device()
 
     def beta_300_to_beta_310(self):
         pass
 
     def beta_310_to_beta_320(self):
-        pass
+        config_path = '/boot/config.txt'
+        use_transactions = False
+        # if we can't use transactions, fall back to editting the file directly
+        tmp_path = config_path
+
+        try:
+            try:
+                # append uart config to config.txt
+                from kano_settings.boot_config import _trans, \
+                    end_config_transaction
+
+                use_transactions = True
+                tmp_path = '/tmp/config.tmp'
+                _trans().copy_to(tmp_path)
+
+            except ImportError:
+                pass
+
+            from textwrap import dedent
+            extra_config = dedent("""
+            [pi3]
+            # for light board
+            enable_uart=1
+            """)
+
+            with open(tmp_path, 'a') as tmp_config:
+                tmp_config.write(extra_config)
+
+            if use_transactions:
+                _trans().copy_from(tmp_path)
+
+                end_config_transaction()
+        except:
+            logger.error("failed to update config")
