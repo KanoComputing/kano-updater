@@ -521,6 +521,7 @@ class PostUpdate(Scenarios):
             [pi3]
             # for light board
             enable_uart=1
+            [all]
             """)
 
             with open(tmp_path, 'a') as tmp_config:
