@@ -11,7 +11,7 @@ from kano.logging import logger
 
 from kano_updater.os_version import OSVersion, TARGET_VERSION
 from kano_updater.utils import install, remove_user_files, update_failed, \
-    purge, rclocal_executable, migrate_repository, get_users
+    purge, rclocal_executable, migrate_repository, get_users, run_for_every_user
 from kano.utils import run_cmd_log, get_user_unsudoed, write_file_contents, \
     is_installed
 
@@ -495,10 +495,10 @@ class PostUpdate(Scenarios):
         enable_audio_device()
 
         # tell kano-overworld to skip onboarding stage
-        run_cmd_log('/usr/bin/luajit /usr/share/kano-overworld/bin/skip-onboarding.lua', unsudo=True)
+        run_for_every_user('/usr/bin/luajit /usr/share/kano-overworld/bin/skip-onboarding.lua')
 
         # tell dashboard to skip Overworld and kit setup onboarding phase
-        run_cmd_log('touch ~/.dashboard-onboarding-vid-only', unsudo=True)
+        run_for_every_user('touch ~/.dashboard-click-onboarding-done')
 
     def beta_300_to_beta_310(self):
         pass
