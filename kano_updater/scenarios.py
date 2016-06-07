@@ -494,6 +494,12 @@ class PostUpdate(Scenarios):
                 logger.error("end_config_transaction not present - update to kano-settings failed?")
         enable_audio_device()
 
+        # tell kano-overworld to skip onboarding stage
+        run_cmd_log('/usr/bin/luajit /usr/share/kano-overworld/bin/skip-onboarding.lua', unsudo=True)
+
+        # tell dashboard to skip Overworld and kit setup onboarding phase
+        run_cmd_log('touch ~/.dashboard-onboarding-vid-only', unsudo=True)
+
     def beta_300_to_beta_310(self):
         pass
 
