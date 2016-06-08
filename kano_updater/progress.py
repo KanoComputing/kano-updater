@@ -20,6 +20,19 @@ class Relaunch(Exception):
 
 
 class Phase(object):
+    '''
+    A single task
+
+    :param name: The identifier for the phase
+    :param label: The human readable label for the phase
+    :param weight: Metric for task size. Often used as percentage of the whole
+    :param is_main: Should subtasks be labelled as belonging to this task
+    :type name: str
+    :type label: str
+    :type weight: int or float
+    :type is_main: bool
+    '''
+
     def __init__(self, name, label, weight=1, is_main=False):
         self.name = name
         self.label = label
