@@ -148,6 +148,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.1.0", "Kanux-Beta-3.2.0",
                           self.beta_310_to_beta_320)
 
+        self.add_scenario("Kanux-Beta-3.2.0", "Kanux-Beta-3.3.0",
+                          self.beta_320_to_beta_330)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -230,6 +233,9 @@ class PreUpdate(Scenarios):
     def beta_310_to_beta_320(self):
         pass
 
+    def beta_320_to_beta_330(self):
+        pass
+
     # Not used at the moment: dev.kano.me > repo.kano.me
     def _migrate_repo_url(self):
         migrate_repository('/etc/apt/sources.list.d/kano.list',
@@ -303,6 +309,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-3.1.0", "Kanux-Beta-3.2.0",
                           self.beta_310_to_beta_320)
+
+        self.add_scenario("Kanux-Beta-3.2.0", "Kanux-Beta-3.3.0",
+                          self.beta_320_to_beta_330)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -539,3 +548,6 @@ class PostUpdate(Scenarios):
                 end_config_transaction()
         except:
             logger.error("failed to update config")
+
+    def beta_320_to_beta_330(self):
+        pass
