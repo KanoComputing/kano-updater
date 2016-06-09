@@ -182,8 +182,7 @@ def _cache_pip_packages(progress, priority=Priority.NONE):
         # The `--no-install` parameter has been deprecated in pip. However, the
         # version of pip in wheezy doesn't yet support the new approach which
         # is supposed to provide the same behaviour.
-        args = "install --upgrade --download '{}' '{}'".format(PIP_CACHE_DIR,
-                                                               pkg)
+        args = "download --dest '{}' '{}'".format(PIP_CACHE_DIR, pkg)
         success = run_pip_command(args)
 
         # TODO: abort the install?
