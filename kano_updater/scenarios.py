@@ -550,4 +550,12 @@ class PostUpdate(Scenarios):
             logger.error("failed to update config")
 
     def beta_320_to_beta_330(self):
-        pass
+        def disable_audio_dither():
+            from kano_settings.boot_config import set_config_value
+            set_config_value("disable_audio_dither", "1")
+            try:
+                from kano_settings.boot_config import end_config_transaction
+                end_config_transaction()
+            except ImportError:
+                logger.error("end_config_transaction not present")
+        disable_audio_dither()
