@@ -550,6 +550,7 @@ class PostUpdate(Scenarios):
             logger.error("failed to update config")
 
     def beta_320_to_beta_330(self):
+
         def disable_audio_dither():
             from kano_settings.boot_config import set_config_value
             set_config_value("disable_audio_dither", "1")
@@ -558,4 +559,29 @@ class PostUpdate(Scenarios):
                 end_config_transaction()
             except ImportError:
                 logger.error("end_config_transaction not present")
+
+        def fix_scratch_projects():
+            # When scratch was run as root, some projects may end
+            # up in the wrong place. Copy them to a readable directory
+            # and make a symlink to them for each user
+
+            root_path = '/root/Documents/Scratch Projects/'
+            user_path = 'Documents/Scratch Projects'
+            backup_path = '/var/cache/kano-updater/scratch_projects'
+            try:
+                scratch_files = os.listdir(root_path)
+                if scratch_files:
+                    run_cmd_log("mkdir -p {}".format(backup_path))
+                    run_cmd_log('cp -r "{}"/* {}'.format(
+                        root_path, backup_path))
+                    run_cmd_log('chmod -R o+rw {}'.format(backup_path))
+                    run_for_every_user('mkdir -p ~/"{}"'.format(user_path))
+                    run_for_every_user('ln -s {} ~/"{}/restored_older_projects"'.format(
+                        backup_path, user_path))
+
+            except:
+                # no scratch files to worry about
+                pass
+
         disable_audio_dither()
+        fix_scratch_projects()
