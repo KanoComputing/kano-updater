@@ -151,6 +151,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.2.0", "Kanux-Beta-3.3.0",
                           self.beta_320_to_beta_330)
 
+        self.add_scenario("Kanux-Beta-3.3.0", "Kanux-Beta-3.4.0",
+                          self.beta_330_to_beta_340)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -236,6 +239,9 @@ class PreUpdate(Scenarios):
     def beta_320_to_beta_330(self):
         pass
 
+    def beta_330_to_beta_340(self):
+        pass
+
     # Not used at the moment: dev.kano.me > repo.kano.me
     def _migrate_repo_url(self):
         migrate_repository('/etc/apt/sources.list.d/kano.list',
@@ -312,6 +318,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-3.2.0", "Kanux-Beta-3.3.0",
                           self.beta_320_to_beta_330)
+
+        self.add_scenario("Kanux-Beta-3.3.0", "Kanux-Beta-3.4.0",
+                          self.beta_330_to_beta_340)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -559,3 +568,6 @@ class PostUpdate(Scenarios):
             except ImportError:
                 logger.error("end_config_transaction not present")
         disable_audio_dither()
+
+    def beta_330_to_beta_340(self):
+        pass
