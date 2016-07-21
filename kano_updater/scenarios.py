@@ -79,6 +79,11 @@ class Scenarios(object):
                 update_failed(msg)
                 raise Exception(msg)
 
+        self._finalise()
+
+    def _finalise(self):
+        pass
+
 
 class PreUpdate(Scenarios):
     _type = "pre"
@@ -225,7 +230,7 @@ class PreUpdate(Scenarios):
                 run_cmd_log('apt-get -y autoremove')
 
     def beta_230_to_beta_240(self):
-        run_cmd_log('apt-get install bluez')
+        pass
 
     def beta_240_to_beta_300(self):
         pass
@@ -241,6 +246,11 @@ class PreUpdate(Scenarios):
 
     def beta_330_to_beta_340(self):
         pass
+
+    def _finalise(self):
+        # When bluez is installed through a dependency it fails to configure
+        # Get around this by installing it first
+        run_cmd_log('apt-get -y install bluez')
 
     # Not used at the moment: dev.kano.me > repo.kano.me
     def _migrate_repo_url(self):
@@ -570,4 +580,6 @@ class PostUpdate(Scenarios):
         disable_audio_dither()
 
     def beta_330_to_beta_340(self):
-        pass
+        # fix locale database if it was
+        # corrupted by the NOOBS file hole problem
+        run_cmd_log('locale-gen')
