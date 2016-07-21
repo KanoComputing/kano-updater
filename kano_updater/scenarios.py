@@ -250,8 +250,7 @@ class PreUpdate(Scenarios):
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
         # Get around this by installing it first
-        run_cmd_log('apt-get install bluez')
-
+        run_cmd_log('apt-get -y install bluez')
 
     # Not used at the moment: dev.kano.me > repo.kano.me
     def _migrate_repo_url(self):
@@ -581,4 +580,6 @@ class PostUpdate(Scenarios):
         disable_audio_dither()
 
     def beta_330_to_beta_340(self):
-        pass
+        # fix locale database if it was
+        # corrupted by the NOOBS file hole problem
+        run_cmd_log('locale-gen')
