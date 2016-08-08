@@ -159,6 +159,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.3.0", "Kanux-Beta-3.4.0",
                           self.beta_330_to_beta_340)
 
+        self.add_scenario("Kanux-Beta-3.4.0", "Kanux-Beta-3.5.0",
+                          self.beta_340_to_beta_350)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -247,6 +250,9 @@ class PreUpdate(Scenarios):
     def beta_330_to_beta_340(self):
         pass
 
+    def beta_340_to_beta_350(self):
+        pass
+
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
         # Get around this by installing it first
@@ -331,6 +337,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-3.3.0", "Kanux-Beta-3.4.0",
                           self.beta_330_to_beta_340)
+
+        self.add_scenario("Kanux-Beta-3.4.0", "Kanux-Beta-3.5.0",
+                          self.beta_340_to_beta_350)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -583,3 +592,6 @@ class PostUpdate(Scenarios):
         # fix locale database if it was
         # corrupted by the NOOBS file hole problem
         run_cmd_log('locale-gen')
+
+    def beta_340_to_beta_350(self):
+        pass
