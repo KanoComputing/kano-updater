@@ -46,8 +46,8 @@ class AptWrapper(object):
         cache_init = "{}-apt-cache-init".format(
             progress.get_current_phase().name)
         progress.split(
-            Phase(updating_sources, _('Updating apt sources')),
-            Phase(cache_init, _('Initialising apt cache'))
+            Phase(updating_sources, _("Updating apt sources")),
+            Phase(cache_init, _("Initialising apt cache"))
         )
 
         progress.start(updating_sources)
@@ -56,13 +56,13 @@ class AptWrapper(object):
             self._cache.update(fetch_progress=apt_progress,
                                sources_list=sources_list)
         except apt.cache.FetchFailedException:
-            err_msg = N_('Failed to update sources')
+            err_msg = N_("Failed to update sources")
             logger.error(err_msg)
             progress.fail(_(err_msg))
 
         progress.start(cache_init)
-        ops = [_('Reading package lists'), _('Building dependency tree'),
-               _('Reading state information'), _('Building data structures')]
+        ops = [_("Reading package lists"), _("Building dependency tree"),
+               _("Reading state information"), _("Building data structures")]
         op_progress = AptOpProgress(progress, ops)
         self._cache.open(op_progress)
 
@@ -117,8 +117,8 @@ class AptWrapper(object):
         download = "{}-downloading".format(phase_name)
         install = "{}-installing".format(phase_name)
         progress.split(
-            Phase(download, "Downloading packages"),
-            Phase(install, "Installing packages")
+            Phase(download, _("Downloading packages")),
+            Phase(install, _("Installing packages"))
         )
 
         progress.start(download)
@@ -144,8 +144,8 @@ class AptWrapper(object):
         download = "{}-downloading".format(phase_name)
         install = "{}-installing".format(phase_name)
         progress.split(
-            Phase(download, "Downloading packages"),
-            Phase(install, "Installing packages")
+            Phase(download, _("Downloading packages")),
+            Phase(install, _("Installing packages"))
         )
 
         progress.start(download)
@@ -167,7 +167,7 @@ class AptWrapper(object):
     def _mark_all_for_update(self, priority=Priority.NONE):
         for pkg in self._cache:
             if self._is_package_upgradable(pkg, priority=priority):
-                logger.debug('Marking {} ({}) for upgrade'.format(
+                logger.debug("Marking {} ({}) for upgrade".format(
                     pkg.shortname, pkg.candidate.version
                 ))
                 pkg.mark_upgrade()
@@ -222,13 +222,13 @@ class AptWrapper(object):
     def fix_broken(self, progress):
         progress.split(
             Phase('dpkg-clean',
-                  _('Cleaning dpkg journal')),
+                  _("Cleaning dpkg journal")),
             Phase('fix-broken',
-                  _('Fixing broken packages'))
+                  _("Fixing broken packages"))
         )
         if self._cache.dpkg_journal_dirty:
             progress.start('dpkg-clean')
-            logger.info('Cleaning dpkg journal')
+            logger.info("Cleaning dpkg journal")
             run_cmd_log("dpkg --configure -a")
 
             self._cache.clear()

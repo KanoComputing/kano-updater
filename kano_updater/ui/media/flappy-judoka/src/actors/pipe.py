@@ -107,16 +107,16 @@ class PipeManager(object):
         self.pipe_spacing_y = self.PIPE_MAX_SPACING_Y
 
         self.pipe_width, self.pipe_height = Assets.get().PIPE_BOTTOM_IMAGE.get_size()
-        debugger('PipeManager: __init__: pipe_width = {}, pipe_height = {}'.format(self.pipe_width, self.pipe_height))
+        debugger("PipeManager: __init__: pipe_width = {}, pipe_height = {}".format(self.pipe_width, self.pipe_height))
 
         # initialising parameters for randomizing top/bottom pipe y positions
         self.rand_from = int(self.display_height * self.SPACING_FROM_Y)
         self.rand_to = int(self.display_height * self.SPACING_TO_Y)
-        debugger('PipeManager: __init__: (rand_from, rand_to) = {}'.format((self.rand_from, self.rand_to)))
+        debugger("PipeManager: __init__: (rand_from, rand_to) = {}".format((self.rand_from, self.rand_to)))
 
         # calculate the number of pipes needed and generate them
         self.no_of_pipes = self.display_width / (self.pipe_width + self.PIPE_MIN_SPACING_X) + 2
-        debugger('PipeManager: __init__: no_of_pipes = {}'.format(self.no_of_pipes))
+        debugger("PipeManager: __init__: no_of_pipes = {}".format(self.no_of_pipes))
         self.pipes_list = self.generate_pipes()
         self.pipes_group = pygame.sprite.RenderUpdates(self.pipes_list)
 
@@ -151,7 +151,7 @@ class PipeManager(object):
 
         # if the first two pipes fall off the screen completely
         if self.pipes_list[0].position[0] < -self.pipe_width / 2:
-            debugger('PipeManager: update: A pipe object fell off the screen')
+            debugger("PipeManager: update: A pipe object fell off the screen")
 
             # remove the first pipes (by X) top/bottom
             first_top_pipe = self.pipes_list.pop(0)
@@ -220,10 +220,10 @@ class PipeManager(object):
             if self.pipe_spacing_x > self.PIPE_MIN_SPACING_X:
                 self.pipe_spacing_x -= self.PIPE_SPACING_DECREASE
                 self.pipe_spacing_y -= self.PIPE_SPACING_DECREASE
-                debugger('PipeManager: update_difficulty: Making spacing smaller X = {}, Y = {}'
+                debugger("PipeManager: update_difficulty: Making spacing smaller X = {}, Y = {}"
                          .format(self.pipe_spacing_x, self.pipe_spacing_y))
             else:
-                debugger('PipeManager: update_difficulty: Highest difficulty reached! WOOHOO! Keep going!')
+                debugger("PipeManager: update_difficulty: Highest difficulty reached! WOOHOO! Keep going!")
 
     def randomize_pipe_y_positions(self):
         spacing_center_y = random.randint(self.rand_from, self.rand_to)

@@ -52,7 +52,7 @@ class Gamestate(object):
 
     def __init__(self):
         if Gamestate._singleton_instance:
-            raise Exception('This class is a singleton!')
+            raise Exception("This class is a singleton!")
         else:
             Gamestate._singleton_instance = self
 
@@ -68,7 +68,7 @@ class Gamestate(object):
     @staticmethod
     def get():
         if not Gamestate._singleton_instance:
-            debugger('FATAL ERROR: Gamestate: get: Gamestate was not initialised!', fatal=True)
+            debugger("FATAL ERROR: Gamestate: get: Gamestate was not initialised!", fatal=True)
         return Gamestate._singleton_instance
 
     @property
@@ -80,24 +80,24 @@ class Gamestate(object):
         self._current_state = new_state
 
         if isinstance(new_state, IntroState):
-            debugger('Gamestate: current_state.setter: Setting state to IntroState')
+            debugger("Gamestate: current_state.setter: Setting state to IntroState")
             self.call_gamestate_change_listeners_on_intro()
         elif isinstance(new_state, NewGameState):
-            debugger('Gamestate: current_state.setter: Setting state to NewGameState')
+            debugger("Gamestate: current_state.setter: Setting state to NewGameState")
             self.call_gamestate_change_listeners_on_new_game()
         elif isinstance(new_state, FlappyFlyingState):
-            debugger('Gamestate: current_state.setter: Setting state to FlappyFlyingState')
+            debugger("Gamestate: current_state.setter: Setting state to FlappyFlyingState")
             self.call_gamestate_change_listeners_on_flappy_flying()
         elif isinstance(new_state, GameOverState):
-            debugger('Gamestate: current_state.setter: Setting state to GameOverState')
+            debugger("Gamestate: current_state.setter: Setting state to GameOverState")
             self.call_gamestate_change_listeners_on_game_over(self.current_state.score)
         else:
-            debugger('FATAL ERROR: Gamestate: current_state.setter: Given state is not valid!', fatal=True)
+            debugger("FATAL ERROR: Gamestate: current_state.setter: Given state is not valid!", fatal=True)
 
     def add_gamestate_change_listener(self, listener):
         if not isinstance(listener, self.GamestateChangeListener):
-            debugger('FATAL ERROR: Gamestate: set_gamestate_change_listener:'
-                     ' Given listener is not an instance of GamestateChangeListener!', fatal=True)
+            debugger("FATAL ERROR: Gamestate: set_gamestate_change_listener:" \
+                     " Given listener is not an instance of GamestateChangeListener!", fatal=True)
         self.gamestate_change_listeners.append(listener)
 
     def call_gamestate_change_listeners_on_intro(self):
@@ -135,7 +135,7 @@ class Gamestate(object):
         return self._is_running
 
     def quit(self):
-        debugger('Gamestate: quit: Setting _is_running to False')
+        debugger("Gamestate: quit: Setting _is_running to False")
         self._is_running = False
 
 
@@ -169,7 +169,7 @@ class GamestateTemplate(object):
 
             # these controls apply to all states that subclass the template
             elif event.key in self.QUIT_KEYS:
-                debugger('GamestateTemplate: update: Pressed a QUIT key')
+                debugger("GamestateTemplate: update: Pressed a QUIT key")
                 self.state_instance.quit()
 
             else:
@@ -219,7 +219,7 @@ class IntroState(GamestateTemplate):
     # @Override
     def state_controls(self, event):
         if event.key in self.START_KEYS:
-            debugger('IntroState: state_controls: Pressed a START key')
+            debugger("IntroState: state_controls: Pressed a START key")
             self.state_instance.current_state = NewGameState(self.pipes)
             return True  # state has changed, do not call state_update
         return False
@@ -260,7 +260,7 @@ class NewGameState(GamestateTemplate):
     # @Override
     def state_controls(self, event):
         if event.key in self.START_KEYS:
-            debugger('NewGameState: state_controls: Pressed a START key')
+            debugger("NewGameState: state_controls: Pressed a START key")
             self.state_instance.current_state = FlappyFlyingState(self.flappy, self.pipes, self.ground)
             return True  # state has changed, do not call state_update
         return False
@@ -314,7 +314,7 @@ class FlappyFlyingState(GamestateTemplate):
     # @Override
     def state_controls(self, event):
         if event.key in self.FLAP_KEYS:
-            debugger('FlappyFlyingState: state_controls: Pressed a FLAP key')
+            debugger("FlappyFlyingState: state_controls: Pressed a FLAP key")
             if not self.flappy_hit_pipe:
                 self.flappy.flap()
 
@@ -356,8 +356,8 @@ class FlappyFlyingState(GamestateTemplate):
 
     def add_score_changed_listener(self, listener):
         if not isinstance(listener, self.ScoreChangedListener):
-            debugger('FATAL ERROR: PipeManager: add_score_changed_listener:'
-                     ' Given listener is not an instance of ScoreChangedListener!', fatal=True)
+            debugger("FATAL ERROR: PipeManager: add_score_changed_listener:" \
+                     " Given listener is not an instance of ScoreChangedListener!", fatal=True)
         self.score_changed_listeners.append(listener)
 
     def call_score_changed_listeners(self):
@@ -392,13 +392,13 @@ class GameOverState(GamestateTemplate):
                 'score': score
             })
         except:
-            logger.warn('Tracking the users score failed!')
-            debugger('ERROR: GameOverState: __init__: Tracking the users score failed!')
+            logger.warn("Tracking the users score failed!")
+            debugger("ERROR: GameOverState: __init__: Tracking the users score failed!")
 
     # @Override
     def state_controls(self, event):
         if event.key in self.START_KEYS:
-            debugger('GameOverState: state_controls: Pressed a START key')
+            debugger("GameOverState: state_controls: Pressed a START key")
             self.state_instance.current_state = NewGameState(self.pipes)
             return True  # state has changed, do not call state_update
         return False

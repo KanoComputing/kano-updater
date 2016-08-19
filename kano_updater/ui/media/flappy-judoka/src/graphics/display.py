@@ -38,23 +38,23 @@ class Display(object):
     WIDTH = 0.60
     HEIGHT = 0.72
 
-    GAME_TITLE = 'Flappy Judoka'
+    GAME_TITLE = _("Flappy Judoka")
 
     def __init__(self):
 
         # if the resolution was not changed through cmdline args, use the default scaling
         if self.WIDTH < 1 and self.HEIGHT < 1:
             monitor_info = pygame.display.Info()
-            debugger('Display: __init__: Monitor resolution is {}x{}'.format(monitor_info.current_w, monitor_info.current_h))
+            debugger("Display: __init__: Monitor resolution is {}x{}".format(monitor_info.current_w, monitor_info.current_h))
             self.WIDTH = int(self.WIDTH * monitor_info.current_w)
             self.HEIGHT = int(self.HEIGHT * monitor_info.current_h)
 
         # TODO: remove this if font sizes in HUDs are scaled
         if self.HEIGHT < 400:
-            debugger('WARNING: flappy-judoka: main: Height resolution is below the recommended value 400!')
+            debugger("WARNING: flappy-judoka: main: Height resolution is below the recommended value 400!")
 
         self.display = pygame.display.set_mode((self.WIDTH, self.HEIGHT), pygame.NOFRAME)
-        debugger('Display: __init__: Setting game resolution {}x{}'.format(self.WIDTH, self.HEIGHT))
+        debugger("Display: __init__: Setting game resolution {}x{}".format(self.WIDTH, self.HEIGHT))
 
         # setting the window name (this is for the window manager to have a reference)
         pygame.display.set_caption(self.GAME_TITLE)
@@ -129,21 +129,21 @@ class Display(object):
             self.parent = parent
 
         def on_intro(self):
-            debugger('Display: mGamestateChangeListener: on_intro: Setting the IntroHUD')
+            debugger("Display: mGamestateChangeListener: on_intro: Setting the IntroHUD")
             self.parent.hud = IntroHUD(self.parent.display)
 
         def on_new_game(self):
-            debugger('Display: mGamestateChangeListener: on_new_game: Redrawing background')
+            debugger("Display: mGamestateChangeListener: on_new_game: Redrawing background")
             self.parent.randomise_background()
             self.parent.draw_background()
             self.parent.hud = NewGameHUD(self.parent.display)
 
         def on_flappy_flying(self):
-            debugger('Display: mGamestateChangeListener: on_flappy_flying: Redrawing background')
+            debugger("Display: mGamestateChangeListener: on_flappy_flying: Redrawing background")
             self.parent.draw_background()
             self.parent.hud = FlappyFlyingHUD(self.parent.display, self.parent.background)
 
         def on_game_over(self, score):
-            debugger('Display: mGamestateChangeListener: on_game_over: Redrawing background')
+            debugger("Display: mGamestateChangeListener: on_game_over: Redrawing background")
             self.parent.draw_background()
             self.parent.hud = GameOverHUD(self.parent.display, score)

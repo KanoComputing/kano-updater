@@ -4,5 +4,4 @@
 *.pyo
 *~
 *.mo
-po/messages.pot
 *.so

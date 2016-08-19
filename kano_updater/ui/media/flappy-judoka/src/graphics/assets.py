@@ -32,7 +32,7 @@ class Assets(object):
 
     def __init__(self, display_width, display_height):
         if Assets._singleton_instance:
-            raise Exception('This class is a singleton!')
+            raise Exception("This class is a singleton!")
         else:
             Assets._singleton_instance = self
 
@@ -48,7 +48,7 @@ class Assets(object):
         return Assets._singleton_instance
 
     def load(self):
-        debugger('Assets: load: Loading all game assets')
+        debugger("Assets: load: Loading all game assets")
 
         self.FLAPPY_UP_IMAGE = load_image('flappy-up.png', colorkey=None, alpha=True)
         self.FLAPPY_MIDDLE_IMAGE = load_image('flappy-middle.png', colorkey=None, alpha=True)

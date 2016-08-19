@@ -36,7 +36,7 @@ class AptDownloadProgress(apt.progress.base.AcquireProgress):
 
     def done(self, item_desc):
         super(AptDownloadProgress, self).done(item_desc)
-        msg = "Downloading {}".format(item_desc.shortdesc)
+        msg = _("Downloading {}").format(item_desc.shortdesc)
 
         # Show the long description too if it's not too long
         if len(item_desc.description) < 40:
@@ -103,25 +103,25 @@ class AptInstallProgress(apt.progress.base.InstallProgress):
         updater_progress.init_steps(self._phase_name, 100)
 
     def conffile(self, current, new):
-        print 'conffile', current, new
+        print "conffile", current, new
 
     def error(self, pkg, errormsg):
         self._updater_progress.fail("{}: {}".format(pkg, errormsg))
 
     def processing(self, pkg, stage):
-        print 'processing', pkg, stage
+        print "processing", pkg, stage
 
     def dpkg_status_change(self, pkg, status):
-        print 'dpkg_status_change', pkg, status
+        print "dpkg_status_change", pkg, status
 
     def status_change(self, pkg, percent, status):
         self._updater_progress.set_step(self._phase_name, percent, status)
 
     #def start_update(self):
-    #    print 'start_update'
+    #    print "start_update"
 
     #def finish_update(self):
-    #    #print 'finish_update'
+    #    #print "finish_update"
 
     def fork(self):
         """Fork."""

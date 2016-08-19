@@ -99,7 +99,7 @@ def install_ping():
     try:
         import ping
     except ImportError:
-        logger.info('ping not found on the system, installing')
+        logger.info("ping not found on the system, installing")
         run_pip_command('install ping')
 
 
@@ -132,7 +132,7 @@ def kill_flappy_judoka():
     try:
         os.system('pkill -KILL -f flappy-judoka')
     except Exception as e:
-        logger.error('Unexpected error in kill_flappy_judoka()', exception=e)
+        logger.error("Unexpected error in kill_flappy_judoka()", exception=e)
 
 
 def bring_flappy_judoka_to_front():
@@ -146,7 +146,7 @@ def bring_flappy_judoka_to_front():
     try:
         os.system('pkill -USR1 -f flappy-judoka')
     except Exception as e:
-        logger.error('Unexpected error in bring_flappy_judoka_to_front()', exception=e)
+        logger.error("Unexpected error in bring_flappy_judoka_to_front()", exception=e)
 
 
 # TODO: Might be useful in kano.utils
@@ -168,13 +168,13 @@ def make_low_prio():
     pid = os.getpid()
     unused1, unused2, rc = run_cmd_log("ionice -c 3 -p {}".format(pid))
     if rc != 0:
-        logger.error('ionice command returned non-zero code: [{}]'.format(rc))
+        logger.error("ionice command returned non-zero code: [{}]".format(rc))
 
     # Set the lowest scheduling priority
     unused1, unused2, rc = run_cmd_log("schedtool -D {}".format(pid))
     if rc != 0:
         logger.error(
-            'schedtool command returned non-zero code: [{}]'.format(rc))
+            "schedtool command returned non-zero code: [{}]".format(rc))
     os.nice(19)
 
 
@@ -183,13 +183,13 @@ def make_normal_prio():
     pid = os.getpid()
     unused1, unused2, rc = run_cmd_log("ionice -c 0 -p {}".format(pid))
     if rc != 0:
-        logger.error('ionice command returned non-zero code: [{}]'.format(rc))
+        logger.error("ionice command returned non-zero code: [{}]".format(rc))
 
     # Set the lowest scheduling priority
     unused1, unused2, rc = run_cmd_log("schedtool -N {}".format(pid))
     if rc != 0:
         logger.error(
-            'schedtool command returned non-zero code: [{}]'.format(rc))
+            "schedtool command returned non-zero code: [{}]".format(rc))
     try:
         current_niceness = os.nice(0)
         os.nice(-1 * current_niceness)
@@ -201,7 +201,7 @@ def migrate_repository(apt_file, old_repo, new_repo):
     try:
         sed(old_repo, new_repo, apt_file, use_regexp=False)
     except IOError as exc:
-        logger.warn('Changing repository URL failed ({})'.format(exc))
+        logger.warn("Changing repository URL failed ({})".format(exc))
         return
 
     # TODO: track progress of this
@@ -258,7 +258,7 @@ def install(pkgs, die_on_err=True):
     if isinstance(pkgs, list):
         pkgs = ' '.join(pkgs)
 
-    cmd = 'apt-get install --no-install-recommends -o Dpkg::Options::="--force-confdef" ' + \
+    cmd = 'apt-get install --no-install-recommends -o Dpkg::Options::="--force-confdef" ' \
           '-o Dpkg::Options::="--force-confold" -y --force-yes ' + str(pkgs)
     _, _, rv = run_cmd_log(cmd)
 
@@ -293,9 +293,9 @@ def update_failed(err):
 
     logger.error("Update failed: {}".format(err))
 
-    msg = _("We had a problem with the Update. "
-          "Make sure you are connected to the Internet, and give it another go.\n\n"
-          "If you still have problems, we can help at http://help.kano.me")
+    msg = _("We had a problem with the Update. " \
+            "Make sure you are connected to the Internet, and give it another go.\n\n" \
+            "If you still have problems, we can help at http://help.kano.me")
 
     kill_flappy_judoka()
     kdialog = kano_dialog.KanoDialog(_("Update error"), msg)
@@ -341,11 +341,11 @@ def fix_broken(msg):
 
     if reinstall:
         logger.error("Reinstalling broken packages: {}".format(" ".join(reinstall)))
-        cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
+        cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' \
           '-o Dpkg::Options::="--force-confold" install --reinstall {}'.format(" ".join(reinstall))
         run_cmd_log(cmd)
 
-    cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' + \
+    cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' \
           '-o Dpkg::Options::="--force-confold" install -f'
     run_cmd_log(cmd)
 
@@ -364,7 +364,7 @@ def get_installed_version(pkg):
 def get_update_status():
     status = {"last_update": 0, "update_available": 0, "last_check": 0, "last_check_urgent": 0}
     if os.path.exists(STATUS_FILE):
-        with open(STATUS_FILE, "r") as sf:
+        with open(STATUS_FILE, 'r') as sf:
             for line in sf:
                 name, value = line.strip().split("=")
                 status[name] = int(value)
@@ -381,7 +381,7 @@ def set_update_status(status):
         else:
             raise
 
-    with open(STATUS_FILE, "w") as sf:
+    with open(STATUS_FILE, 'w') as sf:
         for name, value in status.iteritems():
             sf.write("{}={}\n".format(name, value))
 
@@ -402,17 +402,17 @@ def reboot(title, description):
 
 
 def remove_user_files(files):
-    logger.info('utils / remove_user_files files:{}'.format(files))
+    logger.info("utils / remove_user_files files:{}".format(files))
     for d in os.listdir("/home/"):
         if os.path.isdir("/home/{}/".format(d)):
             for f in files:
                 file_path = "/home/{}/{}".format(d, f)
                 if os.path.exists(file_path):
-                    logger.info('trying to delete file: {}'.format(file_path))
+                    logger.info("trying to delete file: {}".format(file_path))
                     try:
                         os.remove(file_path)
                     except:
-                        logger.info('could not delete file: {}'.format(file_path))
+                        logger.info("could not delete file: {}".format(file_path))
 
 
 def launch_gui():
@@ -451,7 +451,7 @@ def update_home_folders_from_skel():
                 grp.getgrnam(user_name)
                 update_folder_from_skel(user_name)
             except:
-                msg = 'Home folder: {} doesn\'t match user: {}!'.format(
+                msg = "Home folder: {} doesn't match user: {}!".format(
                     full_path,
                     user_name
                 )
@@ -459,7 +459,7 @@ def update_home_folders_from_skel():
 
 
 def update_folder_from_skel(user_name):
-    logger.info('Updating home folder of user: {}'.format(user_name))
+    logger.info("Updating home folder of user: {}".format(user_name))
     src_dir = '/etc/skel'
     dst_dir = os.path.join('/home', user_name)
 
@@ -496,15 +496,15 @@ def update_folder_from_skel(user_name):
 
         if os.path.exists(dst_path):
             if os.path.islink(dst_path):
-                logger.info('removing link: {}'.format(dst_path))
+                logger.info("removing link: {}".format(dst_path))
                 os.unlink(dst_path)
 
             elif os.path.isdir(dst_path):
-                logger.info('removing dir: {}'.format(dst_path))
+                logger.info("removing dir: {}".format(dst_path))
                 shutil.rmtree(dst_path)
 
             elif os.path.isfile(dst_path):
-                logger.info('removing file: {}'.format(dst_path))
+                logger.info("removing file: {}".format(dst_path))
                 os.remove(dst_path)
 
         # make sure that destination directory exists
@@ -512,20 +512,20 @@ def update_folder_from_skel(user_name):
             if not os.path.isdir(dir_dst_path):
                 os.remove(dir_dst_path)
         else:
-            logger.info('making needed dir: {}'.format(dir_dst_path))
+            logger.info("making needed dir: {}".format(dir_dst_path))
             os.makedirs(dir_dst_path)
             chown_path(dir_dst_path, user=user_name, group=user_name)
 
         # creating links
         if os.path.islink(path_full):
             linkto = os.readlink(path_full)
-            msg = 'creating link {} -> {}'.format(dst_path, linkto)
+            msg = "creating link {} -> {}".format(dst_path, linkto)
             logger.info(msg)
             os.symlink(linkto, dst_path)
             chown_path(dst_path, user=user_name, group=user_name)
 
         elif os.path.isfile(path_full):
-            msg = 'copying file {} -> {}'.format(path_full, dst_path)
+            msg = "copying file {} -> {}".format(path_full, dst_path)
             logger.info(msg)
             shutil.copy(path_full, dst_path)
             chown_path(dst_path, user=user_name, group=user_name)
@@ -544,9 +544,9 @@ def check_for_multiple_instances():
     cmd = 'pgrep -f "python /usr/bin/kano-updater" -l | grep -v pgrep'
     o, _, _ = run_cmd(cmd)
     num = len(o.splitlines())
-    logger.debug('Total number of kano-updater processes: {}'.format(num))
+    logger.debug("Total number of kano-updater processes: {}".format(num))
     if num > 1:
-        logger.error('Exiting kano-updater as there is an other instance already running!')
+        logger.error("Exiting kano-updater as there is an other instance already running!")
         logger.debug(o)
         sys.exit()
 
@@ -561,8 +561,8 @@ def root_check():
 
         if is_gui():
             kdialog = kano_dialog.KanoDialog(
-                _('Error!'),
-                _('kano-updater must be executed with root privileges')
+                _("Error!"),
+                _("kano-updater must be executed with root privileges")
             )
             kdialog.run()
         sys.exit(description)

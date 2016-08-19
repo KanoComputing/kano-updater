@@ -26,7 +26,7 @@ def debugger(text, fatal=False):
     if DEBUG:
         print text
         if fatal:
-            print 'debugger: Fatal error, exiting..'
+            print "debugger: Fatal error, exiting.."
     elif sys.stdin.isatty():
         pass  # TODO: output to flappy.debug in TMP_DIR
     if fatal:
@@ -122,7 +122,7 @@ def give_focus_to_game(signal=None, frame=None):
     try:
         os.system('wmctrl -a "Flappy Judoka" &')
     except:
-        debugger('ERROR: utils: give_focus_to_game: wmctrl failed!')
+        debugger("ERROR: utils: give_focus_to_game: wmctrl failed!")
 
 
 def set_window_on_top(signal=None, frame=None):
@@ -132,4 +132,4 @@ def set_window_on_top(signal=None, frame=None):
     try:
         os.system('wmctrl -r "Flappy Judoka" -b add,above &')
     except:
-        debugger('ERROR: utils: set_window_on_top: wmctrl failed!')
+        debugger("ERROR: utils: set_window_on_top: wmctrl failed!")

@@ -8,7 +8,7 @@ class ChangesDialog(WebApp):
 
         self._index = WEBPAGE_URL
 
-        self._title = "Changes"
+        self._title = _("Changes")
         self._app_icon = ICON_PATH
 
         self._decoration = True

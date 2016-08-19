@@ -21,11 +21,11 @@ class Relaunch(Countdown):
 
         self._parent_pid = parent_pid
 
-        complete = Gtk.Label(_('Relaunching the Updater'))
+        complete = Gtk.Label(_("Relaunching the Updater"))
         complete.get_style_context().add_class('complete')
 
-        info = Gtk.Label(_('The Updater updated itself and is now '
-                           'starting again.'))
+        info = Gtk.Label(_("The Updater updated itself and is now " \
+                           "starting again."))
         info.set_justify(Gtk.Justification.CENTER)
         info.get_style_context().add_class('countdown')
 

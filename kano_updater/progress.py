@@ -88,7 +88,7 @@ class Progress(object):
     """
 
     def __init__(self):
-        root_phase = Phase('root', 'The root phase', 1)
+        root_phase = Phase('root', _("The root phase"), 1)
 
         self._phases = [root_phase]
         self._current_phase_idx = 0
@@ -197,7 +197,7 @@ class Progress(object):
             answers = ["yes", "no"]
 
         if len(answers) <= 0:
-            raise ValueError('The must be at least one answer to the question!')
+            raise ValueError("The must be at least one answer to the question!")
 
         return self._prompt(msg, question, answers)
 
@@ -206,7 +206,7 @@ class Progress(object):
         self._done(msg)
 
     def relaunch(self):
-        logger.debug('Scheduling relaunch')
+        logger.debug("Scheduling relaunch")
         self._relaunch()
 
     def abort(self, msg):
@@ -230,16 +230,16 @@ class Progress(object):
             :type msg: str
         """
 
-        raise NotImplementedError('The _change callback must be implemented')
+        raise NotImplementedError("The _change callback must be implemented")
 
     def _error(self, phase, msg):
-        raise NotImplementedError('The _error callback must be implemented')
+        raise NotImplementedError("The _error callback must be implemented")
 
     def _abort(self, phase, msg):
-        raise NotImplementedError('The _abort callback must be implemented')
+        raise NotImplementedError("The _abort callback must be implemented")
 
     def _done(self, msg):
-        raise NotImplementedError('The _done callback must be implemented')
+        raise NotImplementedError("The _done callback must be implemented")
 
     def _prompt(self, msg, question, answers):
         """
@@ -258,7 +258,7 @@ class Progress(object):
             :rtype: str
         """
 
-        raise NotImplementedError('The _prompt callback must be implemented')
+        raise NotImplementedError("The _prompt callback must be implemented")
 
     def _relaunch(self):
         """

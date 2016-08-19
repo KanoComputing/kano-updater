@@ -34,7 +34,7 @@ class GtkProgress(Progress):
 
     def _done(self, msg):
         GLib.idle_add(self._window.update_progress, 100,
-                      "Complete!", '', msg)
+                      _("Complete!"), '', msg)
 
     def _prompt(self, msg, question, answers):
         GLib.idle_add(self._window.user_prompt, msg, question, answers)

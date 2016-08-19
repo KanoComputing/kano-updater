@@ -46,15 +46,15 @@ def install(progress=None, gui=True):
     # TODO: Take this value from apt
     mb_free = get_free_space()
     if mb_free < 1024:
-        err_msg = _("Only {}MB free, at least 1GB is needed.".format(mb_free))
+        err_msg = N_("Only {}MB free, at least 1GB is needed.".format(mb_free))
         logger.warn(err_msg)
         answer = progress.prompt(
-            'Not enough space to update!',
-            'But I can make more room if you\'d like?',
-            ['OK', 'CANCEL']
+            _("Not enough space to update!"),
+            _("But I can make more room if you'd like?"),
+            [_("OK"), _("CANCEL")]
         )
 
-        if answer.lower() == 'ok':
+        if answer == _("OK"):
             run_cmd('sudo expand-rootfs')
 
             status.state = UpdaterStatus.INSTALLING_UPDATES
@@ -64,28 +64,28 @@ def install(progress=None, gui=True):
 
         else:
             logger.error(err_msg)
-            progress.fail(err_msg)
+            progress.fail(_(err_msg))
 
         return False
 
     if (status.state == UpdaterStatus.INSTALLING_UPDATES or
         status.state == UpdaterStatus.INSTALLING_INDEPENDENT):
-        msg = 'The install is already running'
+        msg = _("The install is already running")
         logger.warn(msg)
         progress.abort(_(msg))
         return False
     elif status.state != UpdaterStatus.UPDATES_DOWNLOADED:
-        logger.debug('Updates weren\'t downloaded, running download first.')
+        logger.debug("Updates weren't downloaded, running download first.")
         progress.split(
             Phase(
                 'download',
-                _('Downloading updates'),
+                _("Downloading updates"),
                 40,
                 is_main=True
             ),
             Phase(
                 'install',
-                _('Installing updates'),
+                _("Installing updates"),
                 60,
                 is_main=True
             ),
@@ -93,7 +93,7 @@ def install(progress=None, gui=True):
 
         progress.start('download')
         if not download(progress):
-            logger.error('Downloading updates failed, cannot update.')
+            logger.error("Downloading updates failed, cannot update.")
             return False
 
         progress.start('install')
@@ -103,7 +103,7 @@ def install(progress=None, gui=True):
     if status.is_urgent:
         priority = Priority.URGENT
 
-    logger.debug('Installing with priority {}'.format(priority.priority))
+    logger.debug("Installing with priority {}".format(priority.priority))
 
     try:
         return do_install(progress, status, priority=priority)
@@ -140,7 +140,7 @@ def do_install(progress, status, priority=Priority.NONE):
     status.is_scheduled = False
     status.save()
 
-    progress.finish('Update completed')
+    progress.finish(_("Update completed"))
     return True
 
 def install_ind_package(progress, package):
@@ -153,13 +153,13 @@ def install_ind_package(progress, package):
     if status.state not in [UpdaterStatus.NO_UPDATES,
                             UpdaterStatus.UPDATES_AVAILABLE,
                             UpdaterStatus.UPDATES_INSTALLED]:
-        msg = 'The install is already running'
+        msg = N_("The install is already running")
         logger.warn(msg)
         progress.abort(_(msg))
         return False
 
     if package not in status.updatable_independent_packages:
-        msg = 'tried to install non-independent package {} using update_ind_pkg'.format(package)
+        msg = N_("tried to install non-independent package {} using update_ind_pkg").format(package)
         logger.warn(msg)
         progress.abort(_(msg))
         return False
@@ -172,12 +172,12 @@ def install_ind_package(progress, package):
     progress.split(
         Phase(
             update_sources_phase,
-            _('Updating apt sources'),
+            _("Updating apt sources"),
             10
         ),
         Phase(
             installing_idp_phase,
-            _('Installing independent package'),
+            _("Installing independent package"),
             90
         )
     )
@@ -197,7 +197,7 @@ def install_ind_package(progress, package):
     status.is_scheduled = False
     status.save()
 
-    progress.finish('Update completed')
+    progress.finish(_("Update completed"))
     return True
 
 
@@ -205,12 +205,12 @@ def install_urgent(progress, status):
     progress.split(
         Phase(
             'installing-urgent',
-            _('Installing Hotfix'),
+            _("Installing Hotfix"),
             100,
             is_main=True
         )
     )
-    logger.debug('Installing urgent hotfix')
+    logger.debug("Installing urgent hotfix")
     packages_to_update = apt_handle.packages_to_be_upgraded()
     progress.start('installing-urgent')
     install_deb_packages(progress, priority=Priority.URGENT)
@@ -220,10 +220,10 @@ def install_urgent(progress, status):
         track_data('updated_hotfix', {
             'packages': packages_to_update
         })
-        logger.debug('Tracking Data: "{}"'.format(packages_to_update))
+        logger.debug("Tracking Data: '{}'".format(packages_to_update))
     except ImportError as imp_exc:
-        logger.error(("Couldn't track hotfix installation, failed to import "
-                      "tracking module: [{}]").format(imp_exc))
+        logger.error("Couldn't track hotfix installation, failed to import " \
+                     "tracking module: [{}]".format(imp_exc))
     except Exception:
         pass
 
@@ -232,43 +232,43 @@ def install_standard(progress, status):
     progress.split(
         Phase(
             'init',
-            _('Starting Update'),
+            _("Starting Update"),
             10,
             is_main=True
         ),
         Phase(
             'updating-itself',
-            _('Updating Itself'),
+            _("Updating Itself"),
             10,
             is_main=True
         ),
         Phase(
             'preupdate',
-            _('Running The Preupdate Scripts'),
+            _("Running The Preupdate Scripts"),
             10,
             is_main=True
         ),
         Phase(
             'updating-pip-packages',
-            _('Updating Pip Packages'),
+            _("Updating Pip Packages"),
             15,
             is_main=True
         ),
         Phase(
             'updating-deb-packages',
-            _('Updating Deb Packages'),
+            _("Updating Deb Packages"),
             15,
             is_main=True
         ),
         Phase(
             'postupdate',
-            _('Running The Postupdate Scripts'),
+            _("Running The Postupdate Scripts"),
             10,
             is_main=True
         ),
         Phase(
             'aux-tasks',
-            'Performing auxiliary tasks',
+            _("Performing auxiliary tasks"),
             10,
             is_main=True
         )
@@ -289,10 +289,10 @@ def install_standard(progress, status):
     preup = PreUpdate(system_version)
     postup = PostUpdate(system_version)
     if not (preup.covers_update() and postup.covers_update()):
-        title = _('Unfortunately, your version of Kano OS is too old '
-                  'to be updated through the updater.')
-        description = _('You will need to download the image of the '
-                        'OS and reflash your SD card.')
+        title = _("Unfortunately, your version of Kano OS is too old " \
+                  "to be updated through the updater.")
+        description = _("You will need to download the image of the " \
+                        "OS and reflash your SD card.")
 
         msg = "{}: {}".format(title, description)
         logger.error("Updating from a version that is no longer supported ({})"
@@ -313,7 +313,7 @@ def install_standard(progress, status):
         status.state = UpdaterStatus.UPDATES_DOWNLOADED
         status.save()
 
-        logger.info(_('The updater has been updated, relaunching.'))
+        logger.info(_("The updater has been updated, relaunching."))
         progress.relaunch()
         return False
 
@@ -321,16 +321,16 @@ def install_standard(progress, status):
     try:
         preup.run()
     except Exception as err:
-        logger.error('The pre-update scenarios failed.')
-        logger.error(str(err))
-        progress.abort(_('The pre-update tasks failed.'))
+        logger.error("The pre-update scenarios failed.")
+        logger.error(err.encode('utf-8'))
+        progress.abort(_("The pre-update tasks failed."))
         raise
 
-    logger.debug('Updating pip packages')
+    logger.debug("Updating pip packages")
     progress.start('updating-pip-packages')
     install_pip_packages(progress)
 
-    logger.debug('Updating deb packages')
+    logger.debug("Updating deb packages")
     progress.start('updating-deb-packages')
     install_deb_packages(progress)
 
@@ -338,9 +338,9 @@ def install_standard(progress, status):
     try:
         postup.run()
     except Exception as err:
-        logger.error('The post-update scenarios failed.')
-        logger.error(str(err))
-        progress.abort(_('The post-update tasks failed.'))
+        logger.error("The post-update scenarios failed.")
+        logger.error(err.encode('utf-8'))
+        progress.abort(_("The post-update tasks failed."))
         raise
 
     bump_system_version()

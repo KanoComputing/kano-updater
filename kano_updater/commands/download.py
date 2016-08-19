@@ -34,13 +34,13 @@ def download(progress=None, gui=True):
         progress.split(
             Phase(
                 'checking',
-                _('Checking for updates'),
+                _("Checking for updates"),
                 10,
                 is_main=True
             ),
             Phase(
                 'downloading',
-                _('Downloading updates'),
+                _("Downloading updates"),
                 90,
                 is_main=True
             )
@@ -48,50 +48,50 @@ def download(progress=None, gui=True):
         progress.start('checking')
         check_for_updates(progress=progress)
         if status.state == UpdaterStatus.NO_UPDATES:
-            logger.info('No updates to download')
-            progress.finish(_('No updates to download'))
+            logger.info("No updates to download")
+            progress.finish(_("No updates to download"))
             return False
 
         progress.start('downloading')
 
     elif status.state == UpdaterStatus.UPDATES_DOWNLOADED:
-        err_msg = _('Updates have been downloaded already')
+        err_msg = N_("Updates have been downloaded already")
         logger.error(err_msg)
-        progress.abort(err_msg)
+        progress.abort(_(err_msg))
         return True
 
     elif status.state == UpdaterStatus.DOWNLOADING_UPDATES:
-        err_msg = _('The download is already running')
+        err_msg = N_("The download is already running")
         logger.error(err_msg)
-        progress.abort(err_msg)
+        progress.abort(_(err_msg))
         return False
 
     elif status.state == UpdaterStatus.INSTALLING_UPDATES:
-        err_msg = _('Updates are already being installed')
+        err_msg = N_("Updates are already being installed")
         logger.error(err_msg)
-        progress.abort(err_msg)
+        progress.abort(_(err_msg))
         return False
 
     if not is_internet():
-        err_msg = _('Must have internet to download the updates')
+        err_msg = N_("Must have internet to download the updates")
         logger.error(err_msg)
-        progress.fail(err_msg)
+        progress.fail(_(err_msg))
         return False
 
     if not is_server_available():
-        err_msg = _('Could not connect to the download server')
+        err_msg = N_("Could not connect to the download server")
         logger.error(err_msg)
-        progress.fail(err_msg)
+        progress.fail(_(err_msg))
         return False
 
     # show a dialog informing the user of an automatic urgent download
     if status.is_urgent and not gui:
         # TODO: mute notifications?
-        title = "Updater"
-        description = "Kano HQ has just released a critical update that will repair" \
-                      " some important things on your system! We'll download these automatically," \
-                      " and ask you to schedule the install when they finish."
-        buttons = "OK:green:1"
+        title = _("Updater")
+        description = _("Kano HQ has just released a critical update that will repair" \
+                        " some important things on your system! We'll download these automatically," \
+                        " and ask you to schedule the install when they finish.")
+        buttons = _("OK:green:1")
         dialog_proc = show_kano_dialog(title, description, buttons, blocking=False)
 
     status.state = UpdaterStatus.DOWNLOADING_UPDATES
@@ -101,10 +101,10 @@ def download(progress=None, gui=True):
 
     if status.is_urgent:
         priority = Priority.URGENT
-        logger.info('Urgent update detected, bumping to normal priority')
+        logger.info("Urgent update detected, bumping to normal priority")
         make_normal_prio()
 
-    logger.debug('Downloading with priority {}'.format(priority.priority))
+    logger.debug("Downloading with priority {}".format(priority.priority))
 
     try:
         success = do_download(progress, status, priority=priority, dialog_proc=dialog_proc)
@@ -127,19 +127,19 @@ def do_download(progress, status, priority=Priority.NONE, dialog_proc=None):
     progress.split(
         Phase(
             'downloading-pip-pkgs',
-            'Downloading Python packages',
+            _("Downloading Python packages"),
             10,
             is_main=True
         ),
         Phase(
             'updating-sources',
-            'Updating apt sources',
+            _("Updating apt sources"),
             40,
             is_main=True
         ),
         Phase(
             'downloading-apt-packages',
-            'Downloading apt packages',
+            _("Downloading apt packages"),
             50,
             is_main=True
         )
@@ -148,7 +148,7 @@ def do_download(progress, status, priority=Priority.NONE, dialog_proc=None):
     _cache_pip_packages(progress, priority=priority)
     _cache_deb_packages(progress, priority=priority)
 
-    progress.finish('Done downloading')
+    progress.finish(_("Done downloading"))
 
     # kill the dialog if it is still on
     if dialog_proc:
@@ -177,7 +177,7 @@ def _cache_pip_packages(progress, priority=Priority.NONE):
     progress.init_steps(phase_name, len(packages))
 
     for pkg in packages:
-        progress.next_step(phase_name, "Downloading {}".format(pkg))
+        progress.next_step(phase_name, _("Downloading {}").format(pkg))
 
         # The `--no-install` parameter has been deprecated in pip. However, the
         # version of pip in wheezy doesn't yet support the new approach which

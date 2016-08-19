@@ -64,7 +64,7 @@ class NotificationWindow(Gtk.Window):
         action.connect('clicked', self._do_action)
         action.set_halign(Gtk.Align.CENTER)
 
-        later = OrangeButton(_('Later'))
+        later = OrangeButton(_("Later"))
         later.connect('clicked', self._do_later)
         later.set_halign(Gtk.Align.START)
         later.set_margin_left(40)
@@ -93,7 +93,7 @@ class NotificationWindow(Gtk.Window):
         self._action()
 
     def _action(self):
-        raise NotImplementedError(_('The action needs to be implemented'))
+        raise NotImplementedError(_("The action needs to be implemented"))
 
 
 class UpdatesAvailableWindow(NotificationWindow):
@@ -101,10 +101,10 @@ class UpdatesAvailableWindow(NotificationWindow):
     _IMAGE_WIDTH = 590
     _IMAGE_HEIGHT = 270
 
-    _TITLE = _('New Update')
-    _HEADING = _('Get new powers')
-    _BYLINE = _('Download the latest Kano OS')
-    _ACTION = _('Download')
+    _TITLE = _("New Update")
+    _HEADING = _("Get new powers")
+    _BYLINE = _("Download the latest Kano OS")
+    _ACTION = _("Download")
 
     def _action(self):
         from kano_updater.commands.download import download
@@ -123,11 +123,11 @@ class UpdatesDownloadedWindow(NotificationWindow):
     _IMAGE_WIDTH = 590
     _IMAGE_HEIGHT = 270
 
-    _TITLE = _('New Update')
-    _HEADING = _('Almost there...')
-    _BYLINE = _('Downloaded and ready to go! In a matter\n'
-                'of minutes your Kano will be fresher than ever')
-    _ACTION = _('Install')
+    _TITLE = _("New Update")
+    _HEADING = _("Almost there...")
+    _BYLINE = _("Downloaded and ready to go! In a matter\n" \
+                "of minutes your Kano will be fresher than ever")
+    _ACTION = _("Install")
 
     def _action(self):
         from kano_updater.ui.install_window import InstallWindow
@@ -141,11 +141,11 @@ class UpdateNowShutdownWindow(NotificationWindow):
     _IMAGE_WIDTH = 590
     _IMAGE_HEIGHT = 270
 
-    _TITLE = _('New Update')
-    _HEADING = _('Best time to update is now!')
-    _BYLINE = _('Latest updates and content are ready to go! We\n'
-                'will make sure to Shutdown once we finish installing!')
-    _ACTION = _('Update Now')
+    _TITLE = _("New Update")
+    _HEADING = _("Best time to update is now!")
+    _BYLINE = _("Latest updates and content are ready to go! We\n" \
+                "will make sure to Shutdown once we finish installing!")
+    _ACTION = _("Update Now")
 
     def _action(self):
         from kano_updater.ui.install_window import InstallWindow
