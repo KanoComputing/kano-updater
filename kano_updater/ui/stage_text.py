@@ -68,7 +68,7 @@ STAGE_TEXT = TextLoop([
       u"move millions of dollars in the New York Stock " \
       u"Exchange."),
 
-    _(u"The name \"Kano\" comes from Kan\u014d Jigor\u014d. He " \
+    _(u"The name \"Kano\" comes from Kan\N{LATIN SMALL LETTER O WITH MACRON} Jigor\N{LATIN SMALL LETTER O WITH MACRON}. He " \
       u"was a Japanese schoolteacher, inventor of the art of judo. " \
       u"His motto: Maximum efficiency, minimum effort. In " \
       u"Greek, Kano means \"I make\". (Kano is also the largest " \
