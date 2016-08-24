@@ -7,8 +7,6 @@
 # A looping info text
 #
 
-# -*- coding: utf-8 -*-
-
 class TextLoop(list):
 
     def __init__(self, init_list=None):
@@ -32,7 +30,7 @@ class TextLoop(list):
 
 STAGE_TEXT = TextLoop([
     _(u"In 1978, the fastest computer in the world was the " \
-      u"Cray 1 — it cost $7 million and weighed as " \
+      u"Cray 1 \N{EM DASH} it cost $7 million and weighed as " \
       u"much as an average elephant! Your Kano is about 4 " \
       u"times faster than the Cray 1. To keep it up to speed, " \
       u"we're downloading new games, apps and projects, and " \
@@ -50,7 +48,7 @@ STAGE_TEXT = TextLoop([
       u"connected together in clever ways. If a switch is on, " \
       u"that means \"yes\" or \"1\"; if it's off, that means " \
       u"\"no\" or \"0\". These little yes-no switches become " \
-      u"a binary code — for words, sounds, rules, " \
+      u"a binary code \N{EM DASH} for words, sounds, rules, " \
       u"and more. Your computer has over 10 million tiny " \
       u"switches, called transistors, in its brain. In your " \
       u"brain, these switches are cells called neurons. " \
@@ -77,20 +75,20 @@ STAGE_TEXT = TextLoop([
       u"city in Northern Nigeria.) What makes Kano different to " \
       u"other computers? All of the ideas in its brain are open " \
       u"for you to see. Just visit <b>github.com/KanoComputing</b> " \
-      u"to see the code. Kano can also change forms… " \
+      u"to see the code. Kano can also change forms\N{HORIZONTAL ELLIPSIS} " \
       u"You can turn it into a robot, server, radio, and more. Visit " \
       u"<b>world.kano.me/projects</b> for powerup ideas. Want a look " \
       u"inside Kano HQ? Hang with our wizards at <b>blog.kano.me</b>"),
 
     _(u"Kano OS is an operating system, which means it " \
       u"connects all the programs together. This OS is based " \
-      u"on Linux, whose code is open — that means " \
+      u"on Linux, whose code is open \N{EM DASH} that means " \
       u"that it's free for anyone to download, change or even " \
       u"sell. Its code is written by hobbyists and makers " \
       u"worldwide, not just professionals. Kano uses Debian, " \
       u"a fun and powerful \"distribution\" of Linux which " \
       u"the International Space Station also uses to run its " \
-      u"robotic systems — to keep the astronauts " \
+      u"robotic systems \N{EM DASH} to keep the astronauts " \
       u"from losing their lunch!"),
 
     _(u"We're almost done! With your Kano computer, you'll " \
@@ -102,5 +100,5 @@ STAGE_TEXT = TextLoop([
 
     _(u"Your Kano will now reboot!\n" \
       u"\n" \
-      u"See you in a while…")
+      u"See you in a while\N{HORIZONTAL ELLIPSIS}")
 ])
