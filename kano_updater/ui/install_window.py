@@ -78,7 +78,7 @@ class InstallWindow(Gtk.Window):
             _("The install quit unexpectedly"),
             _("Please try again later"),
             {
-                'OK': {
+                _("OK"): {
                     'return_value': True,
                     'color': 'red'
                 }
@@ -110,7 +110,7 @@ class InstallWindow(Gtk.Window):
             _("No updates available"),
             _("Your system is already up to date"),
             {
-                'OK': {
+                _("OK"): {
                     'return_value': True,
                     'color': 'green'
                 }
@@ -160,7 +160,7 @@ class InstallWindow(Gtk.Window):
         error = KanoDialog(
             _("Error updating"), msg,
             {
-                'CLOSE': {
+                _("CLOSE"): {
                     'return_value': True,
                     'color': 'red'
                 }

@@ -194,7 +194,7 @@ class Progress(object):
 
     def prompt(self, msg, question, answers=None):
         if not answers:
-            answers = ["yes", "no"]
+            answers = [_("yes"), _("no")]
 
         if len(answers) <= 0:
             raise ValueError("The must be at least one answer to the question!")
