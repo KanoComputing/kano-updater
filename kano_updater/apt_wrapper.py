@@ -61,8 +61,10 @@ class AptWrapper(object):
             progress.fail(_(err_msg))
 
         progress.start(cache_init)
-        ops = [_("Reading package lists"), _("Building dependency tree"),
-               _("Reading state information"), _("Building data structures")]
+        ops = [("reading-package-lists", _("Reading package lists")),
+               ("building-dependency-tree", _("Building dependency tree")),
+               ("reading-state-information", _("Reading state information")),
+               ("building-data-structures", _("Building data structures"))]
         op_progress = AptOpProgress(progress, ops)
         self._cache.open(op_progress)
 

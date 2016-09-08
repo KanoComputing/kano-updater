@@ -110,9 +110,9 @@ class Progress(object):
               "Starting '{}' ({}) [main phase '{}' ({})]".format(
                   phase.global_percent,
                   phase.percent,
-                  phase.label,
+                  phase.label.encode('utf-8'),
                   phase.name,
-                  phase.get_main_phase().label,
+                  phase.get_main_phase().label.encode('utf-8'),
                   phase.get_main_phase().name
               )
         logger.debug(log)
@@ -166,9 +166,9 @@ class Progress(object):
               "Next step in '{}' ({})  [main phase '{}' ({})]: {}".format(
                   phase.global_percent,
                   phase.percent,
-                  phase.label,
+                  phase.label.encode('utf-8'),
                   phase.name,
-                  phase.get_main_phase().label,
+                  phase.get_main_phase().label.encode('utf-8'),
                   phase.get_main_phase().name,
                   msg
               )
@@ -189,7 +189,7 @@ class Progress(object):
 
     def fail(self, msg):
         phase = self._phases[self._current_phase_idx]
-        logger.debug("Error {}: {}".format(phase.label, msg))
+        logger.debug("Error {}: {}".format(phase.label.encode('utf-8'), msg.encode('utf-8')))
         self._error(phase, msg)
 
     def prompt(self, msg, question, answers=None):
@@ -302,34 +302,34 @@ class DummyProgress(Progress):
 
 class CLIProgress(Progress):
     def _change(self, phase, msg):
-        print "{}%: {}".format(phase.global_percent, msg)
+        print u"{}%: {}".format(phase.global_percent, msg).encode('utf-8')
 
     def _error(self, phase, msg):
-        print "ERROR: {}".format(msg)
+        print _("ERROR: {}").format(msg).encode('utf-8')
 
     def _abort(self, phase, msg):
-        print "Aborting {}, {}".format(phase.label, msg)
+        print _("Aborting {}, {}").format(phase.label, msg).encode('utf-8')
 
     def _done(self, msg):
-        print msg
+        print msg.encode('utf-8')
 
     def _relaunch(self):
         raise Relaunch()
 
     def _prompt(self, msg, question, answers):
         if not os.isatty(sys.stdin.fileno()):
-            warn = "No tty, selecting the default answer for " + \
-                   "'{}' which is: {}".format(question, answers[0])
+            warn = "No tty, selecting the default answer for " \
+                   "'{}' which is: {}".format(question.encode('utf-8'), answers[0].encode('utf-8'))
             logger.warn(warn)
             return answers[0]
         else:
-            print msg
+            print msg.encode('utf-8')
             norm_answers = [answer.strip().lower() for answer in answers]
-            q_str = "{} [{}]: ".format(question, "/".join(norm_answers))
+            q_str = u"{} [{}]: ".format(question, "/".join(norm_answers))
 
             answer = raw_input(q_str)
             while answer.strip().lower() not in norm_answers:
-                print "Type one of these:  {}".format(" ".join(norm_answers))
+                print _("Type one of these:  {}").format(u" ".join(norm_answers)).encode('utf-8')
                 answer = raw_input(q_str)
 
         return answer

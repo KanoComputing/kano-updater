@@ -62,18 +62,16 @@ class AptOpProgress(apt.progress.base.OpProgress):
         self._updater_progress = updater_progress
         self._phase_name = updater_progress.get_current_phase().name
 
-        ops = [self._get_op_key(op) for op in ops]
+        ops = [self._get_op_key(op[0]) for op in ops]
 
-        phases = [Phase(op, op) for op in ops]
+        phases = [Phase(op[0], op[1]) for op in ops]
         self._updater_progress.split(*phases)
 
         for op in ops:
-            self._updater_progress.init_steps(op, 100)
+            self._updater_progress.init_steps(op[0], 100)
 
     def _get_op_key(self, op_name):
-        template = "{prefix}-{{}}".format(prefix=self._phase_name)
-
-        return template.format(op_name).lower().replace(' ', '-')
+        return self._phase_name + '-' + op_name
 
     def _next_phase(self):
         if len(self._ops) <= 1:
