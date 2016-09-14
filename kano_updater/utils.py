@@ -67,10 +67,10 @@ class pidData:
             return int(self.fh.read(16).split("\n", 1)[0].strip())
         except:
             # if the pid file is corrupted, this is a big problem,
-            # but the the only chance of fixing the system is for
+            # but the only chance of fixing the system is for
             # the updater to update
             # itself, so allow updates to go ahead.
-            return ''
+            return None
 
 
 def is_running():
