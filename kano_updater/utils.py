@@ -17,7 +17,7 @@ import signal
 
 from kano.logging import logger
 from kano.utils import run_print_output_error, run_cmd, run_bg, run_cmd_log, \
-    chown_path, is_gui, sed, get_user_unsudoed
+    chown_path, is_gui, sed, get_user_unsudoed, open_locked
 from kano.network import is_internet
 import kano.notifications as notifications
 from kano.timeout import timeout, TimeoutError
@@ -34,18 +34,56 @@ STATUS_FILE = UPDATER_CACHE_DIR + "status"
 REPO_SERVER = 'repo.kano.me'
 PID_FILE = '/var/run/kano-updater.pid'
 
+# Pidfile handling taken from https://pypi.python.org/pypi/pid
+# By trbs and Naveen Nathan (Apache licence)
+# but we don't want to install a pip
+# dependency here so I have just taken the relevent lines.
+
+
+def pid_exists(pid):
+    try:
+        os.kill(int(pid), 0)
+    except OSError as exc:
+        if exc.errno == errno.ESRCH:
+            # this pid is not running
+            return False
+    return True
+
+
+class pidData:
+    # Read and write a pid in a read/write file
+    def __init__(self, fh):
+        self.fh = fh
+
+    def write(self):
+        # Clear any existing data
+        self.fh.seek(0)
+        self.fh.truncate()
+        self.fh.write(str(os.getpid()) + '\n')
+
+    def read(self):
+        self.fh.seek(0)
+        try:
+            return int(self.fh.read(16).split("\n", 1)[0].strip())
+        except:
+            # if the pid file is corrupted, this is a big problem,
+            # but the only chance of fixing the system is for
+            # the updater to update
+            # itself, so allow updates to go ahead.
+            return None
+
 
 def is_running():
-    if os.path.exists(PID_FILE):
-        with open(PID_FILE, 'r') as pid_file:
-            old_pid = pid_file.read()
+    try:
+        with open_locked(PID_FILE, 'a+', nonblock=True) as pid_file:
+            pd = pidData(pid_file)
+            old_pid = pd.read()
+            if old_pid and pid_exists(old_pid):
+                return True
+            pd.write()
 
-        if os.path.exists(os.path.join('/proc', old_pid)):
-            return True
-
-    with open(PID_FILE, 'w') as pid_file:
-        pid_file.write(str(os.getpid()))
-
+    except IOError:  # file was locked by another process
+        return True
     return False
 
 
