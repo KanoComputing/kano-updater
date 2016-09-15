@@ -162,6 +162,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.4.0", "Kanux-Beta-3.5.0",
                           self.beta_340_to_beta_350)
 
+        self.add_scenario("Kanux-Beta-3.5.0", "Kanux-Beta-3.6.0",
+                          self.beta_350_to_beta_360)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -253,6 +256,9 @@ class PreUpdate(Scenarios):
     def beta_340_to_beta_350(self):
         pass
 
+    def beta_350_to_beta_360(self):
+        pass
+
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
         # Get around this by installing it first
@@ -341,6 +347,9 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.4.0", "Kanux-Beta-3.5.0",
                           self.beta_340_to_beta_350)
 
+        self.add_scenario("Kanux-Beta-3.5.0", "Kanux-Beta-3.6.0",
+                          self.beta_350_to_beta_360)
+
     def beta_103_to_beta_110(self):
         rclocal_executable()
         remove_user_files(['.kdeskrc'])
@@ -357,7 +366,7 @@ class PostUpdate(Scenarios):
             pass
 
     def beta_111_to_beta_120(self):
-        run_cmd_log("kano-apps install --no-gui painter epdfview geany " \
+        run_cmd_log("kano-apps install --no-gui painter epdfview geany "
                     "codecademy calculator leafpad vnc")
 
     def beta_120_to_beta_121(self):
@@ -367,7 +376,7 @@ class PostUpdate(Scenarios):
         run_cmd_log("kano-apps install --no-gui --icon-only xbmc")
 
         if not os.path.exists("/etc/apt/sources.list.d/kano-xbmc.list"):
-            run_cmd_log("apt-key adv --keyserver keyserver.ubuntu.com " \
+            run_cmd_log("apt-key adv --keyserver keyserver.ubuntu.com "
                         "--recv-key 5243CDED")
             with open("/etc/apt/sources.list.d/kano-xbmc.list", "w") as f:
                 f.write("deb http://repo.kano.me/xbmc/ wheezy contrib\n")
@@ -594,4 +603,7 @@ class PostUpdate(Scenarios):
         run_cmd_log('locale-gen')
 
     def beta_340_to_beta_350(self):
+        pass
+
+    def beta_350_to_beta_360(self):
         pass
