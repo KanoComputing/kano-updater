@@ -70,9 +70,9 @@ def install(progress=None, gui=True):
 
     if (status.state == UpdaterStatus.INSTALLING_UPDATES or
         status.state == UpdaterStatus.INSTALLING_INDEPENDENT):
-        msg = _("The install is already running")
+        msg = "The install is already running"
         logger.warn(msg)
-        progress.abort(_(msg))
+        progress.abort(msg)
         return False
     elif status.state != UpdaterStatus.UPDATES_DOWNLOADED:
         logger.debug("Updates weren't downloaded, running download first.")
@@ -153,15 +153,15 @@ def install_ind_package(progress, package):
     if status.state not in [UpdaterStatus.NO_UPDATES,
                             UpdaterStatus.UPDATES_AVAILABLE,
                             UpdaterStatus.UPDATES_INSTALLED]:
-        msg = N_("The install is already running")
+        msg = "The install is already running"
         logger.warn(msg)
-        progress.abort(_(msg))
+        progress.abort(msg)
         return False
 
     if package not in status.updatable_independent_packages:
-        msg = N_("tried to install non-independent package {} using update_ind_pkg").format(package)
+        msg = "tried to install non-independent package {} using update_ind_pkg".format(package)
         logger.warn(msg)
-        progress.abort(_(msg))
+        progress.abort(msg)
         return False
 
     status.state = UpdaterStatus.INSTALLING_INDEPENDENT
@@ -313,7 +313,7 @@ def install_standard(progress, status):
         status.state = UpdaterStatus.UPDATES_DOWNLOADED
         status.save()
 
-        logger.info(_("The updater has been updated, relaunching."))
+        logger.info("The updater has been updated, relaunching.")
         progress.relaunch()
         return False
 
@@ -323,7 +323,7 @@ def install_standard(progress, status):
     except Exception as err:
         logger.error("The pre-update scenarios failed.")
         logger.error(err.encode('utf-8'))
-        progress.abort(_("The pre-update tasks failed."))
+        progress.abort("The pre-update tasks failed.")
         raise
 
     logger.debug("Updating pip packages")
@@ -340,7 +340,7 @@ def install_standard(progress, status):
     except Exception as err:
         logger.error("The post-update scenarios failed.")
         logger.error(err.encode('utf-8'))
-        progress.abort(_("The post-update tasks failed."))
+        progress.abort("The post-update tasks failed.")
         raise
 
     bump_system_version()
