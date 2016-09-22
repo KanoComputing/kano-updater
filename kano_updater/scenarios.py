@@ -168,6 +168,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.6.0", "Kanux-Beta-3.6.1",
                           self.beta_360_to_beta_361)
 
+        self.add_scenario("Kanux-Beta-3.6.1", "Kanux-Beta-3.7.0",
+                          self.beta_361_to_beta_370)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -265,6 +268,9 @@ class PreUpdate(Scenarios):
     def beta_360_to_beta_361(self):
         pass
 
+    def beta_361_to_beta_370(self):
+        pass
+
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
         # Get around this by installing it first
@@ -358,6 +364,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-3.6.0", "Kanux-Beta-3.6.1",
                           self.beta_360_to_beta_361)
+
+        self.add_scenario("Kanux-Beta-3.6.1", "Kanux-Beta-3.7.0",
+                          self.beta_361_to_beta_370)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -618,4 +627,7 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_360_to_beta_361(self):
+        pass
+
+    def beta_361_to_beta_370(self):
         pass

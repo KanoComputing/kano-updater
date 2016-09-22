@@ -6,4 +6,4 @@
 # The version of the updater
 
 
-VERSION = "Kanux-Beta-3.6.1"
+VERSION = "Kanux-Beta-3.7.0"
