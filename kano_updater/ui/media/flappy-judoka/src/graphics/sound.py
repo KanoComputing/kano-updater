@@ -44,13 +44,13 @@ class Sound(object):
         # if it doesn't, then it won't implement any listeners
         initialised = pygame.mixer.get_init()
         if initialised:
-            debugger('Sound: __init__: Mixer is available and is initialised:'
-                     ' frequency = {}, format = {}, channels = {}'
+            debugger("Sound: __init__: Mixer is available and is initialised:" \
+                     " frequency = {}, format = {}, channels = {}"
                      .format(initialised[0], initialised[1], initialised[2]))
 
             Gamestate.get().add_gamestate_change_listener(self.mGamestateChangeListener(self))
         else:
-            debugger('Sound: __init__: Mixer is not available! Game will not have sounds!')
+            debugger("Sound: __init__: Mixer is not available! Game will not have sounds!")
 
     # Implements
     class mGamestateChangeListener(Gamestate.GamestateChangeListener):
@@ -58,19 +58,19 @@ class Sound(object):
             self.parent = parent
 
         def on_intro(self):
-            debugger('Sound: mGamestateChangeListener: on_intro: Playing start_game_sound')
+            debugger("Sound: mGamestateChangeListener: on_intro: Playing start_game_sound")
             self.parent.start_game_sound.play()
 
         def on_new_game(self):
             pass
 
         def on_flappy_flying(self):
-            debugger('Sound: mGamestateChangeListener: on_flappy_flying: Setting ScoreChangedListener and FlappyFlapListener')
+            debugger("Sound: mGamestateChangeListener: on_flappy_flying: Setting ScoreChangedListener and FlappyFlapListener")
             Gamestate.get().current_state.flappy.add_flappy_flap_listener(self.parent.mFlappyFlapListener(self.parent))
             Gamestate.get().current_state.add_score_changed_listener(self.parent.mScoreChangedListener(self.parent))
 
         def on_game_over(self, score):
-            debugger('Sound: mGamestateChangeListener: on_game_over: Playing game_over_sound')
+            debugger("Sound: mGamestateChangeListener: on_game_over: Playing game_over_sound")
             self.parent.game_over_sound.play()
 
     # Implements
@@ -79,7 +79,7 @@ class Sound(object):
             self.parent = parent
 
         def on_score_changed(self, score):
-            debugger('Sound: mScoreChangedListener: on_score_changed: Playing gained_point_sound')
+            debugger("Sound: mScoreChangedListener: on_score_changed: Playing gained_point_sound")
             self.parent.gained_point_sound.play()
 
     # Implements
@@ -88,5 +88,5 @@ class Sound(object):
             self.parent = parent
 
         def on_flappy_flap(self):
-            debugger('Sound: mFlappyFlapListener: on_flappy_flap: Playing flappy_flap_sound')
+            debugger("Sound: mFlappyFlapListener: on_flappy_flap: Playing flappy_flap_sound")
             self.parent.flappy_flap_sound.play()

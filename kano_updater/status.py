@@ -43,16 +43,16 @@ class UpdaterStatus(object):
 
     @staticmethod
     def get_instance():
-        logger.debug('Getting status instance')
+        logger.debug("Getting status instance")
         if not UpdaterStatus._singleton_instance:
             UpdaterStatus()
 
         return UpdaterStatus._singleton_instance
 
     def __init__(self):
-        logger.debug('Creating new status instance')
+        logger.debug("Creating new status instance")
         if UpdaterStatus._singleton_instance:
-            raise Exception('This class is a singleton!')
+            raise Exception("This class is a singleton!")
         else:
             UpdaterStatus._singleton_instance = self
 
@@ -74,7 +74,7 @@ class UpdaterStatus(object):
             self.load()
 
     def load(self):
-        logger.debug('Loading status instance from file')
+        logger.debug("Loading status instance from file")
         with open(self._status_file, 'r') as status_file:
             try:
                 data = json.load(status_file)
@@ -108,7 +108,7 @@ class UpdaterStatus(object):
                 self._notifications_muted = (data['notifications_muted'] == 1)
 
     def save(self):
-        logger.debug('Saving status instance')
+        logger.debug("Saving status instance")
         data = {
             'state': self._state,
             'last_update': self._last_update,

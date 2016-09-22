@@ -52,7 +52,7 @@ class Flappy(pygame.sprite.Sprite):
 
         self.default_position = (int(scale_pos_x * self.display_width),
                                  int(scale_pos_y * self.display_height))
-        debugger('Flappy: __init__: default_position = {}'.format(self.default_position))
+        debugger("Flappy: __init__: default_position = {}".format(self.default_position))
 
         # scaling physics with display resolution
         self.ACCELERATION *= self.display_height
@@ -158,8 +158,8 @@ class Flappy(pygame.sprite.Sprite):
 
     def add_flappy_flap_listener(self, listener):
         if not isinstance(listener, self.FlappyFlapListener):
-            debugger('FATAL ERROR: Flappy: add_flappy_flap_listener:'
-                     ' Given listener is not an instance of FlappyFlapListener!', fatal=True)
+            debugger("FATAL ERROR: Flappy: add_flappy_flap_listener:" \
+                     " Given listener is not an instance of FlappyFlapListener!", fatal=True)
         self.flappy_flap_listeners.append(listener)
 
     def call_flappy_flap_listeners(self):

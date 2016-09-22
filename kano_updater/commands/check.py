@@ -41,7 +41,7 @@ def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
         return False
 
     if status.state != UpdaterStatus.NO_UPDATES:
-        msg = _('No need to check for updates')
+        msg = "No need to check for updates"
         logger.info(msg)
 
         # This was a successful check, so we need to update the timestamp.
@@ -54,17 +54,17 @@ def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
         return status.state != UpdaterStatus.UPDATES_INSTALLED
 
     if not is_internet():
-        err_msg = _('Must have internet to check for updates')
+        err_msg = N_("Must have internet to check for updates")
         logger.error(err_msg)
-        progress.fail(err_msg)
+        progress.fail(_(err_msg))
 
         # Not updating the timestamp. The check failed.
         return False
 
     if not is_server_available():
-        err_msg = _('Could not connect to the download server')
+        err_msg = N_("Could not connect to the download server")
         logger.error(err_msg)
-        progress.fail(err_msg)
+        progress.fail(_(err_msg))
 
         # Not updating the timestamp. The check failed.
         return False
@@ -73,7 +73,7 @@ def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
     update_type = _do_check(progress, priority=priority)
     if update_type == Priority.NONE:
         status.state = UpdaterStatus.NO_UPDATES
-        logger.debug('No updates available')
+        logger.debug("No updates available")
         rv = False
     else:
         if update_type == Priority.URGENT:
@@ -81,8 +81,8 @@ def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
             status.is_urgent = True
 
         status.state = UpdaterStatus.UPDATES_AVAILABLE
-        logger.debug('Updates available')
-        logger.debug('Found update of priority: {}'.format(priority.priority))
+        logger.debug("Updates available")
+        logger.debug("Found update of priority: {}".format(priority.priority))
         rv = True
 
     if priority <= Priority.STANDARD:
@@ -105,8 +105,8 @@ def _do_check(progress, priority=Priority.NONE):
     '''
 
     apt_handle.update(progress, sources_list=KANO_SOURCES_LIST)
-    logger.debug('Checking urgent: {}'.format(priority <= Priority.URGENT))
-    logger.debug('Checking standard: {}'.format(priority <= Priority.STANDARD))
+    logger.debug("Checking urgent: {}".format(priority <= Priority.URGENT))
+    logger.debug("Checking standard: {}".format(priority <= Priority.STANDARD))
 
     if (
             priority <= Priority.URGENT

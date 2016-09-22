@@ -22,7 +22,7 @@ def show_results(msg_upgraded, msg_added, msg_removed, debian_err_packages,
     text_view.set_margin_left(20)
     text_view.set_margin_right(20)
     text_buffer = text_view.get_buffer()
-    bold_tag = text_buffer.create_tag("bold", weight=Pango.Weight.BOLD)
+    bold_tag = text_buffer.create_tag('bold', weight=Pango.Weight.BOLD)
 
     scrolled_window = ScrolledWindow()
     scrolled_window.apply_styling_to_widget()
@@ -30,35 +30,35 @@ def show_results(msg_upgraded, msg_added, msg_removed, debian_err_packages,
     scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
     scrolled_window.set_size_request(400, 200)
 
-    result_dialog = kano_dialog.KanoDialog("Update result", "",
+    result_dialog = kano_dialog.KanoDialog(_("Update result"), "",
                                            widget=scrolled_window,
                                            global_style=True)
-    result_dialog.dialog.set_icon_name("kano-updater")
-    result_dialog.dialog.set_title("Kano Updater")
+    result_dialog.dialog.set_icon_name('kano-updater')
+    result_dialog.dialog.set_title(_("Kano Updater"))
 
     if msg_upgraded:
-        text = "\nApps upgraded:\n"
+        text = _("\nApps upgraded:\n")
         add_text_to_end(text_buffer, text, bold_tag)
         add_text_to_end(text_buffer, msg_upgraded)
 
     if msg_added:
-        text = "\nApps added:\n"
+        text = _("\nApps added:\n")
         add_text_to_end(text_buffer, text, bold_tag)
         add_text_to_end(text_buffer, msg_added)
 
     if msg_removed:
-        text = "\nApps removed:\n"
+        text = _("\nApps removed:\n")
         add_text_to_end(text_buffer, text, bold_tag)
         add_text_to_end(text_buffer, msg_removed)
 
     if debian_err_packages:
-        text = "\nApps with errors:\n"
+        text = _("\nApps with errors:\n")
         add_text_to_end(text_buffer, text, bold_tag)
         msg_error = "{}\n".format('\n'.join(debian_err_packages))
         add_text_to_end(text_buffer, msg_error)
 
     if appstate_after_nonclean:
-        text = "\nApps with non-clean state:\n"
+        text = _("\nApps with non-clean state:\n")
         add_text_to_end(text_buffer, text, bold_tag)
 
         non_clean_list = '\n'.join(appstate_after_nonclean.iterkeys())
@@ -66,14 +66,14 @@ def show_results(msg_upgraded, msg_added, msg_removed, debian_err_packages,
         add_text_to_end(text_buffer, msg_non_clean_list)
 
     if python_ok:
-        text = "\nPython modules upgraded:\n"
+        text = _("\nPython modules upgraded:\n")
         add_text_to_end(text_buffer, text, bold_tag)
 
         python_modules = "{}\n".format('\n'.join(python_ok))
         add_text_to_end(text_buffer, python_modules)
 
     if python_err:
-        text = "\nPython modules with error:\n"
+        text = _("\nPython modules with error:\n")
         add_text_to_end(text_buffer, text, bold_tag)
 
         err_list = '\n'.join(python_err)
@@ -82,7 +82,7 @@ def show_results(msg_upgraded, msg_added, msg_removed, debian_err_packages,
 
     if not (msg_upgraded or msg_added or msg_removed or debian_err_packages or
             appstate_after_nonclean or python_ok or python_err):
-        add_text_to_end(text_buffer, "No updates needed this time.", bold_tag)
+        add_text_to_end(text_buffer, _("No updates needed this time."), bold_tag)
 
     result_dialog.run()
     while Gtk.events_pending():
@@ -90,8 +90,8 @@ def show_results(msg_upgraded, msg_added, msg_removed, debian_err_packages,
 
 
 def show_reboot_dialog():
-    rd_title = "Update successful!"
-    rd_desc = "Now we just need to do a quick reboot. See you in a minute!"
+    rd_title = _("Update successful!")
+    rd_desc = _("Now we just need to do a quick reboot. See you in a minute!")
     reboot_dialog = kano_dialog.KanoDialog(rd_title, rd_desc)
 
     reboot_dialog.run()

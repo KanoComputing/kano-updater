@@ -28,7 +28,7 @@ def upgrade_debian(gui_process):
     os.environ['DEBIAN_FRONTEND'] = 'noninteractive'
 
     # Try to fix any broken packages prior to the upgrade
-    fix_broken("Preparing packages to be upgraded")
+    fix_broken(_("Preparing packages to be upgraded"))
 
     # apt upgrade
     gui_process = launch_gui_if_not_running(gui_process)
@@ -61,7 +61,7 @@ def upgrade_debian(gui_process):
     run_cmd_log(cmd)
 
     # Try to fix any broken packages after the upgrade
-    fix_broken("Finalising package upgrade")
+    fix_broken(_("Finalising package upgrade"))
 
     # parsing debian error log
     if debian_err:
@@ -99,7 +99,7 @@ def upgrade_python(appstate_before, visible=False):
 
     if not os.path.exists(python_modules_file):
         if visible:
-            print 'python module file doesn\'t exists'
+            print "python module file doesn't exists"
         return [], []
 
     if 'python-pip' in appstate_before or \

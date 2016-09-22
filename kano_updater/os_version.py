@@ -24,11 +24,11 @@ class OSVersion(object):
 
     @staticmethod
     def from_version_file(vfile_path):
-        with open(vfile_path, "r") as vfile:
+        with open(vfile_path, 'r') as vfile:
             vstr = vfile.read().strip()
             return OSVersion.from_version_string(vstr)
 
-    def __init__(self, os="Kanux", codename=None, version=None):
+    def __init__(self, os='Kanux', codename=None, version=None):
         self._os = os
         self._codename = codename
         self._number = version

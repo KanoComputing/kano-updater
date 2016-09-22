@@ -36,7 +36,7 @@ class AptDownloadProgress(apt.progress.base.AcquireProgress):
 
     def done(self, item_desc):
         super(AptDownloadProgress, self).done(item_desc)
-        msg = "Downloading {}".format(item_desc.shortdesc)
+        msg = _("Downloading {}").format(item_desc.shortdesc)
 
         # Show the long description too if it's not too long
         if len(item_desc.description) < 40:
@@ -62,18 +62,16 @@ class AptOpProgress(apt.progress.base.OpProgress):
         self._updater_progress = updater_progress
         self._phase_name = updater_progress.get_current_phase().name
 
-        ops = [self._get_op_key(op) for op in ops]
+        ops = [self._get_op_key(op[0]) for op in ops]
 
-        phases = [Phase(op, op) for op in ops]
+        phases = [Phase(op[0], op[1]) for op in ops]
         self._updater_progress.split(*phases)
 
         for op in ops:
-            self._updater_progress.init_steps(op, 100)
+            self._updater_progress.init_steps(op[0], 100)
 
     def _get_op_key(self, op_name):
-        template = "{prefix}-{{}}".format(prefix=self._phase_name)
-
-        return template.format(op_name).lower().replace(' ', '-')
+        return self._phase_name + '-' + op_name
 
     def _next_phase(self):
         if len(self._ops) <= 1:
@@ -103,25 +101,25 @@ class AptInstallProgress(apt.progress.base.InstallProgress):
         updater_progress.init_steps(self._phase_name, 100)
 
     def conffile(self, current, new):
-        print 'conffile', current, new
+        print "conffile", current, new
 
     def error(self, pkg, errormsg):
         self._updater_progress.fail("{}: {}".format(pkg, errormsg))
 
     def processing(self, pkg, stage):
-        print 'processing', pkg, stage
+        print "processing", pkg, stage
 
     def dpkg_status_change(self, pkg, status):
-        print 'dpkg_status_change', pkg, status
+        print "dpkg_status_change", pkg, status
 
     def status_change(self, pkg, percent, status):
         self._updater_progress.set_step(self._phase_name, percent, status)
 
     #def start_update(self):
-    #    print 'start_update'
+    #    print "start_update"
 
     #def finish_update(self):
-    #    #print 'finish_update'
+    #    #print "finish_update"
 
     def fork(self):
         """Fork."""

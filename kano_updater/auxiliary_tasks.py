@@ -18,17 +18,17 @@ from kano_updater.progress import Phase
 def run_aux_tasks(progress):
     progress.split(
         Phase('updating-home-folders',
-              _('Updating home folders from template')),
+              _("Updating home folders from template")),
         Phase('checking-for-app-updates',
-              _('Refreshing Kano Apps')),
+              _("Refreshing Kano Apps")),
         Phase('refreshing-kdesk',
-              _('Refreshing the desktop')),
+              _("Refreshing the desktop")),
         Phase('expanding-rootfs',
-              _('Expanding filesystem partitions')),
+              _("Expanding filesystem partitions")),
         Phase('prune-kano-content',
-              _('Removing unnecessary kano-content entries')),
+              _("Removing unnecessary kano-content entries")),
         Phase('syncing',
-              _('Syncing'))
+              _("Syncing"))
     )
 
     progress.start('updating-home-folders')
