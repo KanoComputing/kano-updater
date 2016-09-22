@@ -1,3 +1,10 @@
+kano-updater (3.6.0-1) unstable; urgency=low
+
+  * Fixed a race condition to prevent multiple instances
+  * Bump version
+
+ -- Team Kano <dev@kano.me>  Thu, 15 Sep 2016 10:53:00 +0100
+
 kano-updater (3.5.0-1) unstable; urgency=low
 
   * Bump version
