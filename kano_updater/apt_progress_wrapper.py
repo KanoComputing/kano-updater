@@ -62,12 +62,12 @@ class AptOpProgress(apt.progress.base.OpProgress):
         self._updater_progress = updater_progress
         self._phase_name = updater_progress.get_current_phase().name
 
-        ops = [self._get_op_key(op[0]) for op in ops]
+        self.ops = [(self._get_op_key(op[0]), op[1]) for op in ops]
 
-        phases = [Phase(op[0], op[1]) for op in ops]
+        phases = [Phase(op[0], op[1]) for op in self.ops]
         self._updater_progress.split(*phases)
 
-        for op in ops:
+        for op in self.ops:
             self._updater_progress.init_steps(op[0], 100)
 
     def _get_op_key(self, op_name):
@@ -87,7 +87,13 @@ class AptOpProgress(apt.progress.base.OpProgress):
     def update(self, percent=None):
         super(AptOpProgress, self).update(percent)
 
-        self._updater_progress.set_step(self._get_op_key(self.op),
+        # Find the code string for op
+        for op in self.ops:
+          if op[1] == self.op:
+            code_op = op[0]
+            break
+
+        self._updater_progress.set_step(code_op,
                                         self.percent, self.op)
 
 
