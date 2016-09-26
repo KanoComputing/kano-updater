@@ -170,7 +170,7 @@ class Progress(object):
                   phase.name,
                   phase.get_main_phase().label.encode('utf-8'),
                   phase.get_main_phase().name,
-                  msg
+                  msg.encode('utf-8')
               )
         logger.debug(log)
         self._change(phase, msg)

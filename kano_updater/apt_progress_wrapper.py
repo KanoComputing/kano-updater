@@ -8,6 +8,7 @@
 import os
 import sys
 import apt
+import re
 
 from kano_updater.progress import Phase
 
@@ -87,14 +88,15 @@ class AptOpProgress(apt.progress.base.OpProgress):
     def update(self, percent=None):
         super(AptOpProgress, self).update(percent)
 
-        # Find the code string for op
+        code_op = self._get_op_key(re.sub(' ', '-', self.op.lower()))
+        # Find the UI version for the operation
         for op in self.ops:
-          if op[1] == self.op:
-            code_op = op[0]
-            break
+            if op[0] == code_op:
+                ui_op = op[1]
+                break
 
         self._updater_progress.set_step(code_op,
-                                        self.percent, self.op)
+                                        self.percent, ui_op)
 
 
 class AptInstallProgress(apt.progress.base.InstallProgress):
