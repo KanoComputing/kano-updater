@@ -88,15 +88,17 @@ class AptOpProgress(apt.progress.base.OpProgress):
     def update(self, percent=None):
         super(AptOpProgress, self).update(percent)
 
-        code_op = self._get_op_key(re.sub(' ', '-', self.op.lower()))
-        # Find the UI version for the operation
+        phase_label = self.op.decode('utf-8')
+
+        # Find the phase name for the operation
+        phase_name = None
         for op in self.ops:
-            if op[0] == code_op:
-                ui_op = op[1]
+            if op[1] == phase_label:
+                phase_name = op[0]
                 break
 
-        self._updater_progress.set_step(code_op,
-                                        self.percent, ui_op)
+        self._updater_progress.set_step(phase_name,
+                                        self.percent, phase_label)
 
 
 class AptInstallProgress(apt.progress.base.InstallProgress):
