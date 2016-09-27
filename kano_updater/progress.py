@@ -10,6 +10,9 @@ import sys
 
 from kano.logging import logger
 
+# Placeholder function to translate encoding only when necessary
+def encode(x): return x.encode('utf-8') if isinstance(x,unicode) else x
+
 
 class ProgressError(Exception):
     pass
@@ -170,7 +173,7 @@ class Progress(object):
                   phase.name,
                   phase.get_main_phase().label.encode('utf-8'),
                   phase.get_main_phase().name,
-                  msg.encode('utf-8')
+                  encode(msg)
               )
         logger.debug(log)
         self._change(phase, msg)
@@ -189,7 +192,7 @@ class Progress(object):
 
     def fail(self, msg):
         phase = self._phases[self._current_phase_idx]
-        logger.debug("Error {}: {}".format(phase.label.encode('utf-8'), msg.encode('utf-8')))
+        logger.debug("Error {}: {}".format(phase.label.encode('utf-8'), encode(msg)))
         self._error(phase, msg)
 
     def prompt(self, msg, question, answers=None):
@@ -302,16 +305,16 @@ class DummyProgress(Progress):
 
 class CLIProgress(Progress):
     def _change(self, phase, msg):
-        print u"{}%: {}".format(phase.global_percent, msg).encode('utf-8')
+        print encode("{}%: {}".format(phase.global_percent, encode(msg)))
 
     def _error(self, phase, msg):
-        print _("ERROR: {}").format(msg).encode('utf-8')
+        print _("ERROR: {}").format(encode(msg))
 
     def _abort(self, phase, msg):
-        print _("Aborting {}, {}").format(phase.label, msg).encode('utf-8')
+        print _("Aborting {}, {}").format(phase.label, encode(msg))
 
     def _done(self, msg):
-        print msg.encode('utf-8')
+        print encode(msg)
 
     def _relaunch(self):
         raise Relaunch()
@@ -323,7 +326,7 @@ class CLIProgress(Progress):
             logger.warn(warn)
             return answers[0]
         else:
-            print msg.encode('utf-8')
+            print encode(msg)
             norm_answers = [answer.strip().lower() for answer in answers]
             q_str = u"{} [{}]: ".format(question, "/".join(norm_answers))
 
