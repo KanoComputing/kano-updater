@@ -29,7 +29,7 @@ class RelaunchWindow(Gtk.Window):
         self.set_keep_above(True)
 
         self.set_icon_name('kano-updater')
-        self.set_title(_('Updater Splash'))
+        self.set_title(_("Updater Splash"))
 
         self._relaunch_screen = Relaunch(parent_pid)
         self.add(self._relaunch_screen)

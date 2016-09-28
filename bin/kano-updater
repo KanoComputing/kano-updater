@@ -151,7 +151,7 @@ def run_install_ind_pkg(package):
 
 def main():
     msg = _('Administrator priviledges are required to perform this operation')
-    enforce_root("{}: {}".format(_('ERROR'), msg))
+    enforce_root(u"{}: {}".format(_('ERROR'), msg))
 
     # docopt wasn't installed by default prior Kano OS 1.3.3
     # It needs to be installed to make sure the updater runs

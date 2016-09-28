@@ -50,7 +50,7 @@ class Install(Gtk.Overlay):
 
     def _create_play_game_label(self):
         play_game_label = Gtk.Label()
-        play_game_label.set_text(_('Do you want to play a cool game instead? PRESS [J] TO LAUNCH!'))
+        play_game_label.set_text(_("Do you want to play a cool game instead? PRESS [J] TO LAUNCH!"))
         play_game_label.set_size_request(825, 300)
         play_game_label.set_halign(Gtk.Align.CENTER)
         play_game_label.set_valign(Gtk.Align.START)
@@ -131,7 +131,7 @@ class Install(Gtk.Overlay):
 
         self._progress_subphase.set_text(sub_msg)
         self._percent_display.set_text(
-            "Time flies - {}% already!".format(percent))
+            _("Time flies - {}% already!").format(percent))
 
     def hide_game_play_label(self):
         # this method needs to be called after show_all
@@ -144,5 +144,5 @@ class Install(Gtk.Overlay):
                 os.system('{} &'.format(FLAPPY_PATH))
 
         except:
-            logger.error('Unexpected error in _launch_game()\n{}'
+            logger.error("Unexpected error in _launch_game()\n{}"
                          .format(traceback.format_exc))

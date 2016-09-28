@@ -55,7 +55,7 @@ class Scenarios(object):
         self._scenarios[(str(from_v), str(to_v))] = func
 
     def run(self):
-        log = 'Running the {}-update scripts...'.format(self._type)
+        log = "Running the {}-update scripts...".format(self._type)
         logger.info(log)
 
         current_v = str(self._old)

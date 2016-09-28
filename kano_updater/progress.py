@@ -10,6 +10,9 @@ import sys
 
 from kano.logging import logger
 
+# Placeholder function to translate encoding only when necessary
+def encode(x): return x.encode('utf-8') if isinstance(x,unicode) else x
+
 
 class ProgressError(Exception):
     pass
@@ -88,7 +91,7 @@ class Progress(object):
     """
 
     def __init__(self):
-        root_phase = Phase('root', 'The root phase', 1)
+        root_phase = Phase('root', _("The root phase"), 1)
 
         self._phases = [root_phase]
         self._current_phase_idx = 0
@@ -110,9 +113,9 @@ class Progress(object):
               "Starting '{}' ({}) [main phase '{}' ({})]".format(
                   phase.global_percent,
                   phase.percent,
-                  phase.label,
+                  phase.label.encode('utf-8'),
                   phase.name,
-                  phase.get_main_phase().label,
+                  phase.get_main_phase().label.encode('utf-8'),
                   phase.get_main_phase().name
               )
         logger.debug(log)
@@ -166,11 +169,11 @@ class Progress(object):
               "Next step in '{}' ({})  [main phase '{}' ({})]: {}".format(
                   phase.global_percent,
                   phase.percent,
-                  phase.label,
+                  phase.label.encode('utf-8'),
                   phase.name,
-                  phase.get_main_phase().label,
+                  phase.get_main_phase().label.encode('utf-8'),
                   phase.get_main_phase().name,
-                  msg
+                  encode(msg)
               )
         logger.debug(log)
         self._change(phase, msg)
@@ -189,15 +192,15 @@ class Progress(object):
 
     def fail(self, msg):
         phase = self._phases[self._current_phase_idx]
-        logger.debug("Error {}: {}".format(phase.label, msg))
+        logger.debug("Error {}: {}".format(phase.label.encode('utf-8'), encode(msg)))
         self._error(phase, msg)
 
     def prompt(self, msg, question, answers=None):
         if not answers:
-            answers = ["yes", "no"]
+            answers = [_("yes"), _("no")]
 
         if len(answers) <= 0:
-            raise ValueError('The must be at least one answer to the question!')
+            raise ValueError("The must be at least one answer to the question!")
 
         return self._prompt(msg, question, answers)
 
@@ -206,7 +209,7 @@ class Progress(object):
         self._done(msg)
 
     def relaunch(self):
-        logger.debug('Scheduling relaunch')
+        logger.debug("Scheduling relaunch")
         self._relaunch()
 
     def abort(self, msg):
@@ -230,16 +233,16 @@ class Progress(object):
             :type msg: str
         """
 
-        raise NotImplementedError('The _change callback must be implemented')
+        raise NotImplementedError("The _change callback must be implemented")
 
     def _error(self, phase, msg):
-        raise NotImplementedError('The _error callback must be implemented')
+        raise NotImplementedError("The _error callback must be implemented")
 
     def _abort(self, phase, msg):
-        raise NotImplementedError('The _abort callback must be implemented')
+        raise NotImplementedError("The _abort callback must be implemented")
 
     def _done(self, msg):
-        raise NotImplementedError('The _done callback must be implemented')
+        raise NotImplementedError("The _done callback must be implemented")
 
     def _prompt(self, msg, question, answers):
         """
@@ -258,7 +261,7 @@ class Progress(object):
             :rtype: str
         """
 
-        raise NotImplementedError('The _prompt callback must be implemented')
+        raise NotImplementedError("The _prompt callback must be implemented")
 
     def _relaunch(self):
         """
@@ -302,34 +305,34 @@ class DummyProgress(Progress):
 
 class CLIProgress(Progress):
     def _change(self, phase, msg):
-        print "{}%: {}".format(phase.global_percent, msg)
+        print encode("{}%: {}".format(phase.global_percent, encode(msg)))
 
     def _error(self, phase, msg):
-        print "ERROR: {}".format(msg)
+        print _("ERROR: {}").format(encode(msg))
 
     def _abort(self, phase, msg):
-        print "Aborting {}, {}".format(phase.label, msg)
+        print _("Aborting {}, {}").format(phase.label, encode(msg))
 
     def _done(self, msg):
-        print msg
+        print encode(msg)
 
     def _relaunch(self):
         raise Relaunch()
 
     def _prompt(self, msg, question, answers):
         if not os.isatty(sys.stdin.fileno()):
-            warn = "No tty, selecting the default answer for " + \
-                   "'{}' which is: {}".format(question, answers[0])
+            warn = "No tty, selecting the default answer for " \
+                   "'{}' which is: {}".format(question.encode('utf-8'), answers[0].encode('utf-8'))
             logger.warn(warn)
             return answers[0]
         else:
-            print msg
+            print encode(msg)
             norm_answers = [answer.strip().lower() for answer in answers]
-            q_str = "{} [{}]: ".format(question, "/".join(norm_answers))
+            q_str = u"{} [{}]: ".format(question, "/".join(norm_answers))
 
             answer = raw_input(q_str)
             while answer.strip().lower() not in norm_answers:
-                print "Type one of these:  {}".format(" ".join(norm_answers))
+                print _("Type one of these:  {}").format(u" ".join(norm_answers)).encode('utf-8')
                 answer = raw_input(q_str)
 
         return answer

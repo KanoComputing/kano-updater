@@ -41,6 +41,9 @@ if __name__ == '__main__' and __package__ is None:
     else:
         LOCALE_PATH = None
 
+import kano_i18n.init
+kano_i18n.init.install('kano-updater', LOCALE_PATH)
+
 from src.core.gameloop import Gameloop
 from src.utils import debugger, is_running
 

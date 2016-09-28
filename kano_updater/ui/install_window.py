@@ -34,7 +34,7 @@ class InstallWindow(Gtk.Window):
         self.set_keep_above(True)
 
         self.set_icon_name('kano-updater')
-        self.set_title(_('Updater'))
+        self.set_title(_("Updater"))
 
         self._install_screen = Install()
         self.add(self._install_screen)
@@ -75,10 +75,10 @@ class InstallWindow(Gtk.Window):
 
         kill_flappy_judoka()
         unexpected_quit = KanoDialog(
-            _('The install quit unexpectedly'),
-            _('Please try again later'),
+            _("The install quit unexpectedly"),
+            _("Please try again later"),
             {
-                'OK': {
+                _("OK"): {
                     'return_value': True,
                     'color': 'red'
                 }
@@ -107,10 +107,10 @@ class InstallWindow(Gtk.Window):
 
         kill_flappy_judoka()
         no_updates = KanoDialog(
-            _('No updates available'),
-            _('Your system is already up to date'),
+            _("No updates available"),
+            _("Your system is already up to date"),
             {
-                'OK': {
+                _("OK"): {
                     'return_value': True,
                     'color': 'green'
                 }
@@ -127,9 +127,9 @@ class InstallWindow(Gtk.Window):
 
         # FIXME Progress to next with the done
         if percent == 100:
-            if sub_msg == _('Update completed'):
+            if sub_msg == _("Update completed"):
                 self._done_install()
-            elif sub_msg == _('No updates to download'):
+            elif sub_msg == _("No updates to download"):
                 self._no_updates()
 
     def user_prompt(self, msg, question, answers):
@@ -158,9 +158,9 @@ class InstallWindow(Gtk.Window):
     def error(self, msg):
         kill_flappy_judoka()
         error = KanoDialog(
-            _('Error updating'), msg,
+            _("Error updating"), msg,
             {
-                'CLOSE': {
+                _("CLOSE"): {
                     'return_value': True,
                     'color': 'red'
                 }
@@ -175,7 +175,7 @@ class InstallWindow(Gtk.Window):
     def reset_user_input(self):
         self.user_input = None
         if not self.user_input_lock.acquire(False):
-            raise Exception("Reset called on locked user_input!")
+            raise Exception(_("Reset called on locked user_input!"))
 
         return False
 

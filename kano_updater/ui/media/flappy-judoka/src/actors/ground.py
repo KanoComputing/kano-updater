@@ -70,14 +70,14 @@ class GroundManager(object):
 
         # scaling ground position with display resolution
         self.GROUND_Y *= self.display_height
-        debugger('GroundManager: __init__: GROUND_Y = {}'.format(self.GROUND_Y))
+        debugger("GroundManager: __init__: GROUND_Y = {}".format(self.GROUND_Y))
 
         self.ground_width = Assets.get().GROUND_IMAGE.get_width()
-        debugger('GroundManager: __init__: ground_width = {}'.format(self.ground_width))
+        debugger("GroundManager: __init__: ground_width = {}".format(self.ground_width))
 
         # calculate the number of ground sprites needed and generate them
         self.no_of_grounds = self.display_width / self.ground_width + 2
-        debugger('GroundManager: __init__: no_of_grounds = {}'.format(self.no_of_grounds))
+        debugger("GroundManager: __init__: no_of_grounds = {}".format(self.no_of_grounds))
         self.ground_list = self.generate_ground()
         self.ground_group = pygame.sprite.RenderUpdates(self.ground_list)
 
@@ -134,5 +134,5 @@ class GroundManager(object):
             # TODO: better way of using flappy's position (.. > s.d_w * 0.2)
             if ground.position[0] + Assets.get().GROUND_IMAGE.get_width() / 2.0 > self.display_width * 0.2:
                 return ground
-        debugger('FATAL ERROR: GroundManager: get_ground_under_flappy:'
-                 ' Did not find any ground under Flappy!', fatal=True)
+        debugger("FATAL ERROR: GroundManager: get_ground_under_flappy:" \
+                 " Did not find any ground under Flappy!", fatal=True)

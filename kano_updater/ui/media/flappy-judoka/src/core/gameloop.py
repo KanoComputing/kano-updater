@@ -49,7 +49,7 @@ class Gameloop(object):
         self.gamestate.setup()
 
     def run(self):
-        debugger('Gameloop: run: Starting gameloop')
+        debugger("Gameloop: run: Starting gameloop")
 
         while self.gamestate.is_running:
             # get the elapsed time since last tick and cap the fps
@@ -60,4 +60,4 @@ class Gameloop(object):
             drawables = self.gamestate.update(delta_t_sec)
             self.display.update(drawables, fps)
 
-        debugger('Gameloop: run: Exiting gameloop')
+        debugger("Gameloop: run: Exiting gameloop")

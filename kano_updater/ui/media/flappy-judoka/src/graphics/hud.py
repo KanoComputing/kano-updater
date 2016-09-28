@@ -52,11 +52,11 @@ class TemplateHUD(object):
         self.font_path = os.path.join(fonts_path, 'zx_spectrum-7_bold.ttf')
         self.setup_fonts()
 
-        self.controls_hint_text = self.hint_renderer.render('[SPACE] or [UP] to Jump', 1, self.WHITE)
+        self.controls_hint_text = self.hint_renderer.render(_("[SPACE] or [UP] to Jump"), 1, self.WHITE)
         self.controls_hint_text_x = self.display_width * self.CONTROLS_HINT_X
         self.controls_hint_text_y = self.display_height * self.CONTROLS_HINT_Y
 
-        self.quit_hint_text = self.hint_renderer.render('[ESC] or [Q] to Quit', 1, self.WHITE)
+        self.quit_hint_text = self.hint_renderer.render(_("[ESC] or [Q] to Quit"), 1, self.WHITE)
         self.quit_hint_text_x = self.display_width * self.CONTROLS_HINT_X
         self.quit_hint_text_y = self.display_height * self.CONTROLS_HINT_Y + 20
 
@@ -105,8 +105,8 @@ class IntroHUD(TemplateHUD):
     def __init__(self, display):
         super(IntroHUD, self).__init__(display)
 
-        self.banner_text = self.banner_renderer.render('FlappyJudoka', 1, self.ORANGE)
-        self.hint_text = self.hint_renderer.render('Press [SPACE] to start!', 1, self.GRAY)
+        self.banner_text = self.banner_renderer.render(_("FlappyJudoka"), 1, self.ORANGE)
+        self.hint_text = self.hint_renderer.render(_("Press [SPACE] to start!"), 1, self.GRAY)
 
         self.banner_text_x = self.display_width / 2.0 - self.banner_text.get_width() / 2.0  # centered
         self.banner_text_y = self.display_height * self.BANNER_Y
@@ -135,8 +135,8 @@ class NewGameHUD(TemplateHUD):
     def __init__(self, display):
         super(NewGameHUD, self).__init__(display)
 
-        self.title_text = self.title_renderer.render('New Game', 1, self.WHITE)
-        self.hint_text = self.hint_renderer.render('Press [SPACE] to start!', 1, self.GRAY)
+        self.title_text = self.title_renderer.render(_("New Game"), 1, self.WHITE)
+        self.hint_text = self.hint_renderer.render(_("Press [SPACE] to start!"), 1, self.GRAY)
 
         self.title_text_x = self.display_width / 2.0 - self.title_text.get_width() / 2.0  # centered
         self.title_text_y = self.display_height * self.TITLE_Y
@@ -217,9 +217,9 @@ class GameOverHUD(TemplateHUD):
     def __init__(self, display, score):
         super(GameOverHUD, self).__init__(display)
 
-        self.title_text = self.title_renderer.render('Game Over', 1, self.ORANGE)
-        self.score_text = self.title_renderer.render('Score {}'.format(score), 1, self.WHITE)
-        self.hint_text = self.hint_renderer.render('Press [SPACE] to play again!', 1, self.GRAY)
+        self.title_text = self.title_renderer.render(_("Game Over"), 1, self.ORANGE)
+        self.score_text = self.title_renderer.render(_("Score {}").format(score), 1, self.WHITE)
+        self.hint_text = self.hint_renderer.render(_("Press [SPACE] to play again!"), 1, self.GRAY)
 
         self.title_text_x = self.display_width / 2.0 - self.title_text.get_width() / 2.0  # centered
         self.title_text_y = self.display_height * self.TITLE_Y
