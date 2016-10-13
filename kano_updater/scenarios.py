@@ -642,4 +642,7 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_370_to_beta_380(self):
-        pass
+        # linux kernel 4.4.21 shipped with Kano 3.8.0 emits systemd boot messages.
+        # fix by telling the kernel to enable an empty splash screen.
+        command="sed -i 's/systemd.show_status=0/splash/' {}".format('/boot/cmdline.txt')
+        run_cmd_log(command)
