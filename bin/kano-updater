@@ -78,14 +78,14 @@ def sigterm_on_download(signo, frame):
 
 
 def clean_up():
-    remove_pid_file()
-
     status = UpdaterStatus.get_instance()
     status.notifications_muted = False
     status.save()
 
     resume_notifications()
     logger.flush()
+
+    remove_pid_file()
 
 
 def schedule_install(gui=False, confirm=True, splash_pid=None):
@@ -248,7 +248,7 @@ def main():
         elif args['update-ind-pkg']:
             package = args['<package>']
             run_install_ind_pkg(package)
-            
+
         elif args['avail-ind-pkgs']:
             print status.updatable_independent_packages
             sys.exit(0)
