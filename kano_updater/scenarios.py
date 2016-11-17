@@ -641,8 +641,20 @@ class PostUpdate(Scenarios):
     def beta_361_to_beta_370(self):
         pass
 
+    def _bootconfig_set_value_helper(self, setting, value):
+        # Set a value in boot config; include compatibility with old API
+        from kano_settings.boot_config import set_config_value
+        set_config_value(setting, value)
+        try:
+            from kano_settings.boot_config import end_config_transaction
+            end_config_transaction()
+        except ImportError:
+            logger.error("end_config_transaciton not present - update to kano-settings failed?")
+
     def beta_370_to_beta_380(self):
         # linux kernel 4.4.21 shipped with Kano 3.8.0 emits systemd boot messages.
         # fix by telling the kernel to enable an empty splash screen.
         command="sed -i 's/\bsystemd.show_status=0\b/splash/' {}".format('/boot/cmdline.txt')
         run_cmd_log(command)
+
+        self._bootconfig_set_value_helper("gpu_mem", "256")
