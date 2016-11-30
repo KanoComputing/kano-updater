@@ -658,3 +658,18 @@ class PostUpdate(Scenarios):
         run_cmd_log(command)
 
         self._bootconfig_set_value_helper("gpu_mem", "256")
+
+        new_apps = [
+            'openttd',
+            'tux-paint',
+            'tux-typing',
+            'libreoffice',
+            'gmail',
+            'google-drive',
+            'google-maps',
+            'wikipedia',
+            'whatsapp'
+        ]
+
+        for app in new_apps:
+            run_cmd_log('kano-apps install --no-gui {app}'.format(app=app))
