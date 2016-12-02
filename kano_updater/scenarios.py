@@ -660,10 +660,12 @@ class PostUpdate(Scenarios):
         self._bootconfig_set_value_helper("gpu_mem", "256")
 
         new_apps = [
+            'adventure',
             'openttd',
             'tux-paint',
             'tux-typing',
             'libreoffice',
+            'numpty-physics',
             'gmail',
             'google-drive',
             'google-maps',
