@@ -63,41 +63,9 @@ p
 w
 EOF
 
-    # now set up an init.d script
-    # which will resize the filesystem on boot
-cat <<\EOF > /etc/init.d/resize2fs_once &&
-#!/bin/sh
-### BEGIN INIT INFO
-# Provides:          resize2fs_once
-# Required-Start:    $local_fs
-# Required-Stop:
-# Default-Start: 2 3 4 5 S
-# Default-Stop:
-# Short-Description: Resize the root filesystem to fill partition
-# Description:
-### END INIT INFO
-
-. /lib/lsb/init-functions
-
-case "$1" in
-  start)
-    log_daemon_msg "Starting resize2fs_once" &&
-    resize2fs /dev/disk/by-label/rootfs &&
-    rm /etc/init.d/resize2fs_once &&
-    date > /etc/root_has_been_expanded &&
-    update-rc.d resize2fs_once remove &&
-    log_end_msg $?
-    ;;
-  *)
-    echo "Usage: $0 start" >&2
-    exit 3
-    ;;
-esac
-EOF
-
-  logger -i "registering a file system resize for next boot sequence"
-  chmod +x /etc/init.d/resize2fs_once &&
-  update-rc.d resize2fs_once defaults
+  partprobe /dev/mmcblk0 &&
+  resize2fs /dev/disk/by-label/rootfs &&
+  date > /etc/root_has_been_expanded &&
   return 0
 
 }
