@@ -175,6 +175,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.7.0", "Kanux-Beta-3.8.0",
                           self.beta_370_to_beta_380)
 
+        self.add_scenario("Kanux-Beta-3.8.0", "Kanux-Beta-3.9.0",
+                          self.beta_380_to_beta_390)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -278,6 +281,9 @@ class PreUpdate(Scenarios):
     def beta_370_to_beta_380(self):
         pass
 
+    def beta_380_to_beta_390(self):
+        pass
+
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
         # Get around this by installing it first
@@ -377,6 +383,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-3.7.0", "Kanux-Beta-3.8.0",
                           self.beta_370_to_beta_380)
+
+        self.add_scenario("Kanux-Beta-3.8.0", "Kanux-Beta-3.9.0",
+                          self.beta_380_to_beta_390)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -655,7 +664,7 @@ class PostUpdate(Scenarios):
     def beta_370_to_beta_380(self):
         # linux kernel 4.4.21 shipped with Kano 3.8.0 emits systemd boot messages.
         # fix by telling the kernel to enable an empty splash screen.
-        command="sed -i 's/\\bsystemd.show_status=0\\b/splash/' {}".format('/boot/cmdline.txt')
+        command = "sed -i 's/\\bsystemd.show_status=0\\b/splash/' {}".format('/boot/cmdline.txt')
         run_cmd_log(command)
 
         self._bootconfig_set_value_helper("gpu_mem", "256")
@@ -679,3 +688,6 @@ class PostUpdate(Scenarios):
 
         # Tell kano-init to put the automatic logins up-to-date
         reconfigure_autostart_policy()
+
+    def beta_380_to_beta_390(self):
+        pass
