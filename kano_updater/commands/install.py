@@ -45,8 +45,8 @@ def install(progress=None, gui=True):
     # We require at least 1GB of space for the update to proceed
     # TODO: Take this value from apt
     mb_free = get_free_space()
-    if mb_free < 1024:
-        err_msg = N_("Only {}MB free, at least 1GB is needed.".format(mb_free))
+    if mb_free < 1536:
+        err_msg = N_("Only {}MB free, at least 1.5GB is needed.".format(mb_free))
         logger.warn(err_msg)
         answer = progress.prompt(
             _("Not enough space to update!"),
