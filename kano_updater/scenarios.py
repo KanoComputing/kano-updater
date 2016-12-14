@@ -678,4 +678,4 @@ class PostUpdate(Scenarios):
             run_cmd_log('kano-apps install --no-gui {app}'.format(app=app))
 
         # Tell kano-init to put the automatic logins up-to-date
-        reconfigure_autostart_policy
+        reconfigure_autostart_policy()
