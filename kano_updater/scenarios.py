@@ -14,6 +14,7 @@ from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable, migrate_repository, get_users, run_for_every_user
 from kano.utils import run_cmd_log, get_user_unsudoed, write_file_contents, \
     is_installed
+from kano_init.utils import reconfigure_autostart_policy
 
 
 class Scenarios(object):
@@ -675,3 +676,6 @@ class PostUpdate(Scenarios):
 
         for app in new_apps:
             run_cmd_log('kano-apps install --no-gui {app}'.format(app=app))
+
+        # Tell kano-init to put the automatic logins up-to-date
+        reconfigure_autostart_policy
