@@ -8,9 +8,9 @@ Build-Depends: debhelper (>= 9), build-essential, pkg-config, libgtk2.0-dev,
 
 Package: kano-updater
 Architecture: any
-Depends: ${misc:Depends}, kano-toolset (>= 2.4.0-1), python, libkdesk-dev,
+Depends: ${misc:Depends}, kano-toolset (>= 3.7.0-1), python, libkdesk-dev,
  gir1.2-gtk-3.0 (>= 3.10.2), kano-settings (>= 1.3-1), python-apt, schedtool,
- python-pip, kano-i18n, jq
+ python-pip, kano-i18n (>= 3.5-1), jq
 Suggests: kano-profile
 Description: Tool to update Kanux
  A tool written in Python to upgrade Debian packages, upgrade Python modules and extend filesystem.
