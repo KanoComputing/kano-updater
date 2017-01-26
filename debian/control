@@ -14,3 +14,8 @@ Depends: ${misc:Depends}, kano-toolset (>= 3.7.0-1), python, libkdesk-dev,
 Suggests: kano-profile
 Description: Tool to update Kanux
  A tool written in Python to upgrade Debian packages, upgrade Python modules and extend filesystem.
+
+Package: kano-updater-i18n-orig
+Architecture: all
+Description: Data for working on translations of kano-updater
+Multi-Arch: foreign
