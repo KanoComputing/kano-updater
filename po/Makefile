@@ -27,6 +27,8 @@ xgettext -f PYPOTFILES -L Python --force-po --from-code=utf-8 -o messages.pot \
     --package-name=$(APPNAME) --copyright-holder=$(ORG)
 xgettext -f CPOTFILES -L C -k_ -kN_ -j -o messages.pot \
     --package-name=$(APPNAME) --copyright-holder=$(ORG)
+xgettext -o messages.pot -j -L C --keyword=Q_ --keyword=N_ ../lxpanel-plugin/*.c  \
+    --package-name=$(APPNAME) --copyright-holder=$(ORG)
 endef
 
 messages:
