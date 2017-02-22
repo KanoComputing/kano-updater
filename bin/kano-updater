@@ -2,7 +2,7 @@
 #
 # kano-updater
 #
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015 - 2017 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
@@ -50,11 +50,12 @@ if __name__ == '__main__' and __package__ is None:
 import kano_i18n.init
 kano_i18n.init.install('kano-updater', LOCALE_PATH)
 
+from kano_profile.tracker import track_data
 from kano.utils import enforce_root
 from kano.logging import logger
 from kano.gtk3.kano_dialog import KanoDialog
 
-from kano_updater.os_version import TARGET_VERSION
+from kano_updater.os_version import SYSTEM_VERSION, TARGET_VERSION
 from kano_updater.commands.download import download
 from kano_updater.commands.install import install, install_ind_package
 from kano_updater.commands.check import check_for_updates
@@ -213,6 +214,11 @@ def main():
             from kano_updater.ui.main import launch_shutdown_gui
             launch_shutdown_gui()
     elif args['first-boot']:
+        # Emit an event about the type of OS image booted for the first time.
+        track_data('first-boot', {
+            'language': (os.getenv('LANG') or '').split('.', 1)[0],
+            'variant': SYSTEM_VERSION.variant
+        })
         # spoof the last_check timestamp to four days ago so the user won't
         # be prompted to update in the first three days after boot
         status = UpdaterStatus.get_instance()
