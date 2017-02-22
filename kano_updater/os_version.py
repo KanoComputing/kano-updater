@@ -5,6 +5,8 @@
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
+from distutils.version import LooseVersion
+
 from kano.logging import logger
 
 from kano_updater.paths import SYSTEM_ISSUE_FILE, SYSTEM_VERSION_FILE
@@ -66,6 +68,10 @@ class OSVersion(object):
         return self._major_version
 
     @property
+    def version(self):
+        return self._number
+
+    @property
     def name(self):
         return self._name
 
@@ -76,17 +82,16 @@ class OSVersion(object):
     def __str__(self):
         return self.to_version_string()
 
-    def __eq__(self, other):
-        return str(self) == str(other)
-
-    def __lt__(self, other):
-        return str(self) < str(other)
-
-    def __gt__(self, other):
-        return str(self) > str(other)
-
     def __cmp__(self, other):
-        return cmp(str(self), str(other))
+        this_version = LooseVersion(self.version)
+        other_version = LooseVersion(other.version)
+
+        if this_version < other_version:
+            return -1
+        elif this_version == other_version:
+            return 0
+        else:
+            return 1
 
 
 TARGET_VERSION = OSVersion.from_version_string(VERSION)
