@@ -51,15 +51,16 @@ import kano_i18n.init
 kano_i18n.init.install('kano-updater', LOCALE_PATH)
 
 from kano_profile.tracker import track_data
-from kano.utils import enforce_root
+from kano.utils import enforce_root, read_file_contents
 from kano.logging import logger
 from kano.gtk3.kano_dialog import KanoDialog
 
-from kano_updater.os_version import SYSTEM_VERSION, TARGET_VERSION
+from kano_updater.os_version import TARGET_VERSION
 from kano_updater.commands.download import download
 from kano_updater.commands.install import install, install_ind_package
 from kano_updater.commands.check import check_for_updates
 from kano_updater.commands.clean import clean
+from kano_updater.paths import SYSTEM_VERSION_VARIANT_FILE
 from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
 from kano_updater.utils import make_low_prio, install_docopt, is_running, \
@@ -217,7 +218,7 @@ def main():
         # Emit an event about the type of OS image booted for the first time.
         track_data('first-boot', {
             'language': (os.getenv('LANG') or '').split('.', 1)[0],
-            'variant': SYSTEM_VERSION.variant
+            'variant': read_file_contents(SYSTEM_VERSION_VARIANT_FILE)
         })
         # spoof the last_check timestamp to four days ago so the user won't
         # be prompted to update in the first three days after boot

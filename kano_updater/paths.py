@@ -12,5 +12,6 @@ PIP_CACHE_DIR = '/var/cache/kano-updater/pkg_cache'
 
 SYSTEM_ISSUE_FILE = '/etc/issue'
 SYSTEM_VERSION_FILE = '/etc/kanux_version'
+SYSTEM_VERSION_VARIANT_FILE = '/etc/kanux_version_variant'
 
 STATUS_FILE_PATH = '/var/cache/kano-updater/status.json'
