@@ -15,20 +15,20 @@ from kano_updater.version import VERSION
 
 class OSVersion(object):
     @staticmethod
-    def _split_helper(os, devstage, number, name=None, variant=None, *args):
+    def _split_helper(os, devstage, number, name=None, *args):
         if args:
             logger.error("DEV ERROR: Too many values in version string!")
-        return os, devstage, number, name, variant
+        return os, devstage, number, name
 
     @staticmethod
     def from_version_string(vstr):
         try:
-            os, devstage, number, name, variant = OSVersion._split_helper(*vstr.split("-"))
+            os, devstage, number, name = OSVersion._split_helper(*vstr.split("-"))
         except:
             msg = "Unknown version string format '{}'".format(vstr)
             raise Exception(msg)
 
-        return OSVersion(os, devstage, number, name, variant)
+        return OSVersion(os, devstage, number, name)
 
     @staticmethod
     def from_version_file(vfile_path):
@@ -36,12 +36,11 @@ class OSVersion(object):
             vstr = vfile.read().strip()
             return OSVersion.from_version_string(vstr)
 
-    def __init__(self, os='Kanux', devstage=None, version=None, name=None, variant=None):
+    def __init__(self, os='Kanux', devstage=None, version=None, name=None):
         self._os = os
         self._devstage = devstage
         self._number = version
         self._name = name
-        self._variant = variant
 
         try:
             self._major_version = '.'.join(version.split('.')[0:2])
@@ -50,17 +49,15 @@ class OSVersion(object):
 
     def to_issue(self):
         vstr = "{} {} {}".format(self._os, self._devstage, self._number)
-        # Add the name and variant to the string only if they exist.
+        # Add the name to the string only if is exists (backwards compat).
         vstr += ' ' + self._name if self._name else ''
-        vstr += ' ' + self._variant if self._variant else ''
         vstr += ' \\l'
         return vstr
 
     def to_version_string(self):
         vstr = "{}-{}-{}".format(self._os, self._devstage, self._number)
-        # Add the name and variant to the string only if they exist.
+        # Add the name to the string only if is exists (backwards compat).
         vstr += '-' + self._name if self._name else ''
-        vstr += '-' + self._variant if self._variant else ''
         return vstr
 
     @property
@@ -74,10 +71,6 @@ class OSVersion(object):
     @property
     def name(self):
         return self._name
-
-    @property
-    def variant(self):
-        return self._variant
 
     def __str__(self):
         return self.to_version_string()
