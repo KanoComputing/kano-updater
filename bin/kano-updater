@@ -64,7 +64,7 @@ from kano_updater.paths import SYSTEM_VERSION_VARIANT_FILE
 from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
 from kano_updater.utils import make_low_prio, install_docopt, is_running, \
-    remove_pid_file, pause_notifications, resume_notifications, show_kano_dialog
+    remove_pid_file, pause_notifications, resume_notifications, show_kano_dialog, run_bg
 import kano_updater.priority as Priority
 
 
@@ -88,6 +88,8 @@ def clean_up():
     logger.flush()
 
     remove_pid_file()
+
+    run_bg('/usr/bin/kano-home-button-visible yes')
 
 
 def schedule_install(gui=False, confirm=True, splash_pid=None):
@@ -128,6 +130,8 @@ def run_install(gui=False, confirm=True, splash_pid=None):
         status.save()
 
         from kano_updater.ui.main import launch_install_gui
+
+        run_bg('/usr/bin/kano-home-button-visible no')
 
         try:
             launch_install_gui(confirm=confirm, splash_pid=splash_pid)
