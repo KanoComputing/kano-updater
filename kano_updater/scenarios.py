@@ -178,6 +178,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.8.0", "Kanux-Beta-3.9.0-Lovelace",
                           self.beta_380_to_beta_390)
 
+        self.add_scenario("Kanux-Beta-3.9.0-Lovelace", "Kanux-Beta-3.10.0-Lovelace",
+                          self.beta_390_to_beta_3100)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -284,6 +287,9 @@ class PreUpdate(Scenarios):
     def beta_380_to_beta_390(self):
         pass
 
+    def beta_390_to_beta_3100(self):
+        pass
+
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
         # Get around this by installing it first
@@ -387,6 +393,9 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.8.0", "Kanux-Beta-3.9.0-Lovelace",
                           self.beta_380_to_beta_390)
 
+        self.add_scenario("Kanux-Beta-3.9.0-Lovelace", "Kanux-Beta-3.10.0-Lovelace",
+                          self.beta_390_to_beta_3100)
+
     def beta_103_to_beta_110(self):
         rclocal_executable()
         remove_user_files(['.kdeskrc'])
@@ -451,8 +460,8 @@ class PostUpdate(Scenarios):
     def beta_134_to_beta_200(self):
         if not is_installed('kano-character-cli'):
             logger.info(
-                "kano-character-cli not installed, "\
-                "attempt to install kano-profile"
+                "kano-character-cli not installed,"
+                " attempt to install kano-profile"
             )
             install('kano-profile')
         run_cmd_log(
@@ -690,4 +699,7 @@ class PostUpdate(Scenarios):
         reconfigure_autostart_policy()
 
     def beta_380_to_beta_390(self):
+        pass
+
+    def beta_390_to_beta_3100(self):
         pass
