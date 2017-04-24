@@ -288,7 +288,8 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_390_to_beta_3100(self):
-        pass
+        # The new Overture onboarding needs to be enabled - disabling old tty-based kano-init
+        run_cmd_log('kano-init finalise --force')
 
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
