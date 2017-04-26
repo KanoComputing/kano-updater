@@ -89,7 +89,8 @@ def clean_up():
 
     remove_pid_file()
 
-    run_bg('/usr/bin/kano-home-button-visible yes')
+    # Restore the home button only if we are on Desktop mode
+    run_bg('systemctl --user status kano-desktop && /usr/bin/kano-home-button-visible yes')
 
 
 def schedule_install(gui=False, confirm=True, splash_pid=None):
