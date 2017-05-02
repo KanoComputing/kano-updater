@@ -15,6 +15,7 @@ import pwd
 import grp
 import signal
 
+from kano_peripherals.pi_hat.driver.high_level import get_pihat_interface
 from kano.logging import logger
 from kano.utils import run_print_output_error, run_cmd, run_bg, run_cmd_log, \
     chown_path, is_gui, sed, get_user_unsudoed, open_locked
@@ -634,3 +635,20 @@ def show_kano_dialog(title, description, buttons, blocking=True):
         retval = run_bg('exec ' + cmd)
 
     return retval
+
+
+def enable_power_button():
+    """
+    Enables any power button that might be attached via a Kano hat.
+    This is for when we return to the OS and not reboot / shutdown.
+    """
+    pihat_iface = get_pihat_interface()
+    if pihat_iface:
+        pihat_iface.set_power_button_enabled(True)
+
+
+def disable_power_button():
+    """ Disables any power button that might be attached via a Kano hat """
+    pihat_iface = get_pihat_interface()
+    if pihat_iface:
+        pihat_iface.set_power_button_enabled(False)

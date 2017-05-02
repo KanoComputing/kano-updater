@@ -64,7 +64,8 @@ from kano_updater.paths import SYSTEM_VERSION_VARIANT_FILE
 from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
 from kano_updater.utils import make_low_prio, install_docopt, is_running, \
-    remove_pid_file, pause_notifications, resume_notifications, show_kano_dialog, run_bg
+    remove_pid_file, pause_notifications, resume_notifications, show_kano_dialog, \
+    run_bg, enable_power_button, disable_power_button
 import kano_updater.priority as Priority
 
 
@@ -91,6 +92,9 @@ def clean_up():
 
     # Restore the home button only if we are on Desktop mode
     run_bg('systemctl --user status kano-desktop && /usr/bin/kano-home-button-visible yes')
+
+    # Enable any hardware power button.
+    enable_power_button()
 
 
 def schedule_install(gui=False, confirm=True, splash_pid=None):
@@ -159,6 +163,9 @@ def run_install_ind_pkg(package):
 def main():
     msg = _('Administrator priviledges are required to perform this operation')
     enforce_root(u"{}: {}".format(_('ERROR'), msg))
+
+    # Disable any hardware power button.
+    disable_power_button()
 
     # docopt wasn't installed by default prior Kano OS 1.3.3
     # It needs to be installed to make sure the updater runs
