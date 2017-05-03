@@ -703,4 +703,4 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_390_to_beta_3100(self):
-        pass
+        install('kano2-app')
