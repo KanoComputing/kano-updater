@@ -15,7 +15,6 @@ import pwd
 import grp
 import signal
 
-from kano_peripherals.pi_hat.driver.high_level import get_pihat_interface
 from kano.logging import logger
 from kano.utils import run_print_output_error, run_cmd, run_bg, run_cmd_log, \
     chown_path, is_gui, sed, get_user_unsudoed, open_locked
@@ -23,6 +22,16 @@ from kano.network import is_internet
 import kano.notifications as notifications
 from kano.timeout import timeout, TimeoutError
 # WARNING do not import GUI modules here (like KanoDialog)
+
+try:
+    from kano_peripherals.pi_hat.driver.high_level import get_pihat_interface, \
+        get_ck2_pro_interface
+except ImportError:
+    '''
+    Peripherals might not have been updated to a version which supports the
+    interfaces so play it safe and wrap this
+    '''
+    pass
 
 from kano_updater.paths import PIP_LOG_FILE
 from kano_updater.apt_wrapper import apt_handle
@@ -642,13 +651,29 @@ def enable_power_button():
     Enables any power button that might be attached via a Kano hat.
     This is for when we return to the OS and not reboot / shutdown.
     """
-    pihat_iface = get_pihat_interface()
-    if pihat_iface:
-        pihat_iface.set_power_button_enabled(True)
+    try:
+        pihat_iface = get_pihat_interface()
+        if pihat_iface:
+            pihat_iface.set_power_button_enabled(True)
+
+        pro_hat_iface = get_ck2_pro_interface()
+        if pro_hat_iface:
+            pro_hat_iface.set_power_button_enabled(True)
+    except Exception:
+        # Kano Peripherals doesn't support this function
+        pass
 
 
 def disable_power_button():
     """ Disables any power button that might be attached via a Kano hat """
-    pihat_iface = get_pihat_interface()
-    if pihat_iface:
-        pihat_iface.set_power_button_enabled(False)
+    try:
+        pihat_iface = get_pihat_interface()
+        if pihat_iface:
+            pihat_iface.set_power_button_enabled(False)
+
+        pro_hat_iface = get_ck2_pro_interface()
+        if pro_hat_iface:
+            pro_hat_iface.set_power_button_enabled(False)
+    except Exception:
+        # Kano Peripherals doesn't support this function
+        pass
