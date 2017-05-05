@@ -14,10 +14,12 @@ import shutil
 import pwd
 import grp
 import signal
+import traceback
 
 from kano.logging import logger
 from kano.utils import run_print_output_error, run_cmd, run_bg, run_cmd_log, \
     chown_path, is_gui, sed, get_user_unsudoed, open_locked
+from kano.gtk3.kano_dialog import KanoDialog
 from kano.network import is_internet
 import kano.notifications as notifications
 from kano.timeout import timeout, TimeoutError
@@ -677,3 +679,47 @@ def disable_power_button():
     except Exception:
         # Kano Peripherals doesn't support this function
         pass
+
+
+def verify_kit_is_plugged():
+    """
+    On Computer Kit 2 Pro, verify that the battery is plugged in and not depleting.
+    For now, we rely on the user to tell us.
+
+    Returns:
+        is_plugged - bool whether the kit is plugged in or not.
+    """
+    ck2_pro = False
+    is_plugged = True
+
+    try:
+        from kano_peripherals.wrappers.detection import is_ck2_pro
+        ck2_pro = is_ck2_pro()
+    except:
+        # Kano Peripherals doesn't support this function
+        pass
+
+    if ck2_pro:
+        # Run the first dialog asking the user a question.
+        dialog = KanoDialog(
+            title_text=_('Power Required'),
+            description_text=_('Is your kit plugged in?'),
+            button_dict={
+                _('Yes'): {'color': 'green', 'return_value': True},
+                _('No'): {'color': 'red', 'return_value': False}
+            }
+        )
+        is_plugged = dialog.run()
+
+        # If the answer was negative, show another message.
+        if not is_plugged:
+            KanoDialog(
+                title_text=_('Power Required'),
+                description_text=_('Sorry! You cannot update while connected to a battery.'
+                                   ' Please plug in your kit.'),
+                button_dict={
+                    _('Continue'): {'color': 'green'}
+                }
+            ).run()
+
+    return is_plugged

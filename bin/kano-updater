@@ -39,6 +39,7 @@ import atexit
 import time
 import signal
 
+
 if __name__ == '__main__' and __package__ is None:
     DIR_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     if DIR_PATH != '/usr':
@@ -65,7 +66,7 @@ from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
 from kano_updater.utils import make_low_prio, install_docopt, is_running, \
     remove_pid_file, pause_notifications, resume_notifications, show_kano_dialog, \
-    run_bg, enable_power_button, disable_power_button
+    run_bg, enable_power_button, disable_power_button, verify_kit_is_plugged
 import kano_updater.priority as Priority
 
 
@@ -246,6 +247,11 @@ def main():
         status.last_check_urgent = one_day_ago
         status.save()
     else:
+
+        # In fullscreen mode, make sure kit is plugged in before continuing.
+        if args['--gui'] and not verify_kit_is_plugged():
+            return 0
+
         clean()
 
         progress = CLIProgress()
