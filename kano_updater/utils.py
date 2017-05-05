@@ -690,11 +690,16 @@ def verify_kit_is_plugged():
         is_plugged - bool whether the kit is plugged in or not.
     """
     ck2_pro = False
+    is_battery_low = False
     is_plugged = True
 
     try:
         from kano_peripherals.wrappers.detection import is_ck2_pro
         ck2_pro = is_ck2_pro()
+
+        from kano_peripherals.ck2_pro_hat.driver.high_level import get_ck2_pro_hat_interface
+        ck2pro_iface = get_ck2_pro_hat_interface()
+        is_battery_low = (ck2pro_iface and ck2pro_iface.is_battery_low())
     except:
         # Kano Peripherals doesn't support this function
         pass
@@ -702,23 +707,29 @@ def verify_kit_is_plugged():
     if ck2_pro:
         # Run the first dialog asking the user a question.
         dialog = KanoDialog(
-            title_text=_('Power Required'),
-            description_text=_('Is your kit plugged in?'),
+            title_text=_("Power Required"),
+            description_text=_("Is your computer plugged in?"),
             button_dict={
-                _('Yes'): {'color': 'green', 'return_value': True},
-                _('No'): {'color': 'red', 'return_value': False}
+                _("Yes"): {'color': 'green', 'return_value': True},
+                _("No"): {'color': 'red', 'return_value': False}
             }
         )
         is_plugged = dialog.run()
 
+        header = ""
+        if is_battery_low:
+            header = _("Low Battery")
+        else:
+            header = _("Power Required")
+
         # If the answer was negative, show another message.
         if not is_plugged:
             KanoDialog(
-                title_text=_('Power Required'),
-                description_text=_('Sorry! You cannot update while connected to a battery.'
-                                   ' Please plug in your kit.'),
+                title_text=header,
+                description_text=_("Sorry! You cannot update unless your computer is"
+                                   " plugged in.\nPlug it in and try again!"),
                 button_dict={
-                    _('Continue'): {'color': 'green'}
+                    _("Continue"): {'color': 'green'}
                 }
             ).run()
 
