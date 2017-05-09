@@ -29,7 +29,7 @@ Depends:
     jq,
     kano-init,
     kano-profile (>= 3.9.0),
-    kano-peripherals
+    kano-peripherals (>= 3.10.0)
 Suggests: kano-profile
 Description: Tool to update Kanux
  A tool written in Python to upgrade Debian packages, upgrade Python modules and extend filesystem.
