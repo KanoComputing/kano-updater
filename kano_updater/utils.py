@@ -687,7 +687,7 @@ def verify_kit_is_plugged():
     For now, we rely on the user to tell us.
 
     Returns:
-        is_plugged - bool whether the kit is plugged in or not.
+        is_plugged - bool whether the kit is plugged in (and battery isn't low) or not.
     """
     ck2_pro = False
     is_battery_low = False
@@ -696,10 +696,6 @@ def verify_kit_is_plugged():
     try:
         from kano_peripherals.wrappers.detection import is_ck2_pro
         ck2_pro = is_ck2_pro()
-
-        from kano_peripherals.ck2_pro_hat.driver.high_level import get_ck2_pro_hat_interface
-        ck2pro_iface = get_ck2_pro_hat_interface()
-        is_battery_low = (ck2pro_iface and ck2pro_iface.is_battery_low())
     except:
         # Kano Peripherals doesn't support this function
         pass
@@ -716,6 +712,14 @@ def verify_kit_is_plugged():
         )
         is_plugged = dialog.run()
 
+        try:
+            from kano_peripherals.ck2_pro_hat.driver.high_level import get_ck2_pro_hat_interface
+            ck2pro_iface = get_ck2_pro_hat_interface()
+            is_battery_low = (ck2pro_iface and ck2pro_iface.is_battery_low())
+        except:
+            # Kano Peripherals doesn't support this function
+            pass
+
         header = ""
         if is_battery_low:
             header = _("Low Battery")
@@ -723,7 +727,7 @@ def verify_kit_is_plugged():
             header = _("Power Required")
 
         # If the answer was negative, show another message.
-        if not is_plugged:
+        if not is_plugged or is_battery_low:
             KanoDialog(
                 title_text=header,
                 description_text=_("Sorry! You cannot update unless your computer is"
@@ -733,4 +737,4 @@ def verify_kit_is_plugged():
                 }
             ).run()
 
-    return is_plugged
+    return is_plugged and not is_battery_low
