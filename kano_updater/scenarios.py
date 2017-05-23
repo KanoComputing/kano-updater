@@ -593,6 +593,9 @@ class PostUpdate(Scenarios):
         # tell dashboard to skip Overworld and kit setup onboarding phase
         run_for_every_user('touch ~/.dashboard-click-onboarding-done')
 
+        # tell kano-init to setup to kit to go Dashboard the systemd way
+        run_cmd_log('kano-init finalise --force')
+
     def beta_300_to_beta_310(self):
         pass
 
