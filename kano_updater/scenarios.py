@@ -704,4 +704,6 @@ class PostUpdate(Scenarios):
     def beta_390_to_beta_3100(self):
         # The new Overture onboarding needs to be enabled - disabling old tty-based kano-init
         run_cmd_log('kano-init finalise --force')
-        install('kano2-app')
+
+        # Install the kano-os metapackage for top level OS packages.
+        install('kano-os')
