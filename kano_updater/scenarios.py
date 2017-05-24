@@ -20,13 +20,13 @@ from kano_init.utils import reconfigure_autostart_policy
 class Scenarios(object):
     _type = ""
 
-    def __init__(self, old):
+    def __init__(self, old_version):
         self._scenarios = {}
 
-        if isinstance(old, OSVersion):
-            self._old = old
+        if isinstance(old_version, OSVersion):
+            self._old_version = old_version
         else:
-            self._old = OSVersion.from_version_string(old)
+            self._old_version = OSVersion.from_version_string(old_version)
 
         self._mapping()
 
@@ -34,44 +34,48 @@ class Scenarios(object):
         pass
 
     def covers_update(self):
-        min_v = str(self._old)
-        max_v = str(TARGET_VERSION)
+        min_version = self._old_version
+        max_version = TARGET_VERSION
+        current_version = min_version
 
-        current_v = min_v
-        while current_v < max_v:
+        while current_version < max_version:
             next_step = None
-            for from_v, to_v in self._scenarios.iterkeys():
-                if current_v == from_v:
-                    next_step = to_v
+            for from_version, to_version in self._scenarios.iterkeys():
+                if current_version == from_version:
+                    next_step = to_version
                     break
 
             if next_step is None:
                 return False
             else:
-                current_v = next_step
+                current_version = next_step
 
         return True
 
-    def add_scenario(self, from_v, to_v, func):
-        self._scenarios[(str(from_v), str(to_v))] = func
+    def add_scenario(self, from_version, to_version, func):
+        from_version = OSVersion.from_version_string(from_version)
+        to_version = OSVersion.from_version_string(to_version)
+        self._scenarios[(from_version, to_version)] = func
 
     def run(self):
         log = "Running the {}-update scripts...".format(self._type)
         logger.info(log)
 
-        current_v = str(self._old)
-        while current_v < str(TARGET_VERSION):
+        current_version = self._old_version
+        target_version = TARGET_VERSION
+
+        while current_version < target_version:
             step_found = False
-            for (from_v, to_v), func in self._scenarios.iteritems():
-                if current_v == from_v:
+            for (from_version, to_version), func in self._scenarios.iteritems():
+                if current_version == from_version:
                     msg = "Running {}-update from {} to {}.".format(
                         self._type,
-                        from_v,
-                        to_v
+                        from_version,
+                        to_version
                     )
                     logger.info(msg)
                     func()
-                    current_v = to_v
+                    current_version = to_version
                     step_found = True
                     break
 
