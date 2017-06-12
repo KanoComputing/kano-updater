@@ -14,20 +14,21 @@ import shutil
 import pwd
 import grp
 import signal
-import traceback
 
 from kano.logging import logger
 from kano.utils import run_print_output_error, run_cmd, run_bg, run_cmd_log, \
     chown_path, is_gui, sed, get_user_unsudoed, open_locked
-from kano.gtk3.kano_dialog import KanoDialog
 from kano.network import is_internet
 import kano.notifications as notifications
 from kano.timeout import timeout, TimeoutError
+
+#
 # WARNING do not import GUI modules here (like KanoDialog)
+#
 
 try:
-    from kano_peripherals.pi_hat.driver.high_level import get_pihat_interface, \
-        get_ck2_pro_interface
+    from kano_peripherals.pi_hat.driver.high_level import get_pihat_interface
+    from kano_peripherals.ck2_pro_hat.driver.high_level import get_ck2_pro_hat_interface
 except ImportError:
     '''
     Peripherals might not have been updated to a version which supports the
@@ -658,7 +659,7 @@ def enable_power_button():
         if pihat_iface:
             pihat_iface.set_power_button_enabled(True)
 
-        pro_hat_iface = get_ck2_pro_interface()
+        pro_hat_iface = get_ck2_pro_hat_interface()
         if pro_hat_iface:
             pro_hat_iface.set_power_button_enabled(True)
     except Exception:
@@ -673,7 +674,7 @@ def disable_power_button():
         if pihat_iface:
             pihat_iface.set_power_button_enabled(False)
 
-        pro_hat_iface = get_ck2_pro_interface()
+        pro_hat_iface = get_ck2_pro_hat_interface()
         if pro_hat_iface:
             pro_hat_iface.set_power_button_enabled(False)
     except Exception:
@@ -701,6 +702,7 @@ def verify_kit_is_plugged():
         pass
 
     if ck2_pro:
+        from kano.gtk3.kano_dialog import KanoDialog
         # Run the first dialog asking the user a question.
         dialog = KanoDialog(
             title_text=_("Power Required"),
