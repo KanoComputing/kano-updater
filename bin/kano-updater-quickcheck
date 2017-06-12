@@ -26,6 +26,6 @@ if [ $? == 1 ]; then
    if [ "$dry_run" == "--dry-run" ]; then
        exit 1
    else
-       echo "/usr/bin/kano-updater ui boot-window"
+       /usr/bin/kano-updater ui boot-window
    fi
 fi
