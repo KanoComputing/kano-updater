@@ -70,6 +70,10 @@ from kano_updater.utils import make_low_prio, install_docopt, is_running, \
 import kano_updater.priority as Priority
 
 
+# Keep a global status of wether we are working in GUI or console mode
+gui_mode=False
+
+
 def sigterm_on_download(signo, frame):
     status = UpdaterStatus.get_instance()
     if status.state == UpdaterStatus.DOWNLOADING_UPDATES:
@@ -82,6 +86,8 @@ def sigterm_on_download(signo, frame):
 
 
 def clean_up():
+    global gui_mode
+
     status = UpdaterStatus.get_instance()
     status.notifications_muted = False
     status.save()
@@ -91,11 +97,12 @@ def clean_up():
 
     remove_pid_file()
 
-    # Restore the home button only if we are on Desktop mode
-    run_bg('systemctl --user status kano-desktop && /usr/bin/kano-home-button-visible yes')
+    if gui_mode:
+        # Restore the home button only if we are on Desktop mode
+        run_bg('systemctl --user status kano-desktop && /usr/bin/kano-home-button-visible yes')
 
-    # Enable any hardware power button.
-    enable_power_button()
+        # Enable any hardware power button.
+        enable_power_button()
 
 
 def schedule_install(gui=False, confirm=True, splash_pid=None):
@@ -162,11 +169,11 @@ def run_install_ind_pkg(package):
 
 
 def main():
+
+    global gui_mode
+
     msg = _('Administrator priviledges are required to perform this operation')
     enforce_root(u"{}: {}".format(_('ERROR'), msg))
-
-    # Disable any hardware power button.
-    disable_power_button()
 
     # docopt wasn't installed by default prior Kano OS 1.3.3
     # It needs to be installed to make sure the updater runs
@@ -174,6 +181,15 @@ def main():
     import docopt
 
     args = docopt.docopt(__doc__, version=str(TARGET_VERSION))
+
+    gui_mode = args['--gui']
+
+    if gui_mode:
+        # Hide the home button only if we are on Desktop mode
+        run_bg('systemctl --user status kano-desktop && /usr/bin/kano-home-button-visible no')
+
+        # Disable any hardware power button.
+        disable_power_button()
 
     # We always want to keep the logs from updates
     logger.force_log_level('info')
