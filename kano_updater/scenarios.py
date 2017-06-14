@@ -185,6 +185,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.9.0-Lovelace", "Kanux-Beta-3.10.0-Lovelace",
                           self.beta_390_to_beta_3100)
 
+        self.add_scenario("Kanux-Beta-3.10.0-Lovelace", "Kanux-Beta-3.10.1-Lovelace",
+                          self.beta_3100_to_beta_3101)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -294,6 +297,9 @@ class PreUpdate(Scenarios):
     def beta_390_to_beta_3100(self):
         pass
 
+    def beta_3100_to_beta_3101(self):
+        pass
+
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
         # Get around this by installing it first
@@ -399,6 +405,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-3.9.0-Lovelace", "Kanux-Beta-3.10.0-Lovelace",
                           self.beta_390_to_beta_3100)
+
+        self.add_scenario("Kanux-Beta-3.10.0-Lovelace", "Kanux-Beta-3.10.1-Lovelace",
+                          self.beta_3100_to_beta_3101)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -711,3 +720,6 @@ class PostUpdate(Scenarios):
 
         # Install the kano-os metapackage for top level OS packages.
         install('kano-os')
+
+    def beta_3100_to_beta_3101(self):
+        pass

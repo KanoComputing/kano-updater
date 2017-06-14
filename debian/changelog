@@ -1,3 +1,9 @@
+kano-updater (3.10.2-1) unstable; urgency=low
+
+  * Bump version for Kanux Beta v3.10.1
+
+ -- Team Kano <dev@kano.me>  Wed, 14 Jun 2017 18:49:00 +0100
+
 kano-updater (3.10.1-0) unstable; urgency=low
 
   * Added dry-run to kano-updarer-quickcheck
