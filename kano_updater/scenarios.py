@@ -663,24 +663,7 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_310_to_beta_320(self):
-        config_path = '/boot/config.txt'
-        use_transactions = False
-        # if we can't use transactions, fall back to editting the file directly
-        tmp_path = config_path
-
         try:
-            try:
-                # append uart config to config.txt
-                from kano_settings.boot_config import _trans, \
-                    end_config_transaction
-
-                use_transactions = True
-                tmp_path = '/tmp/config.tmp'
-                _trans().copy_to(tmp_path)
-
-            except ImportError:
-                pass
-
             from textwrap import dedent
             extra_config = dedent("""
             [pi3]
@@ -688,16 +671,10 @@ class PostUpdate(Scenarios):
             enable_uart=1
             [all]
             """)
+            self._add_boot_config_options(extra_config)
 
-            with open(tmp_path, 'a') as tmp_config:
-                tmp_config.write(extra_config)
-
-            if use_transactions:
-                _trans().copy_from(tmp_path)
-
-                end_config_transaction()
-        except:
-            logger.error("failed to update config")
+        except Exception as e:
+            logger.error("Failed to update config: {}".format(e))
 
     def beta_320_to_beta_330(self):
         def disable_audio_dither():
@@ -795,4 +772,50 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_3_10_4_to_beta_3_11_0(self):
-        pass
+        try:
+            from textwrap import dedent
+            extra_config = dedent("""
+            [pi2]
+            # Give more current to the USB ports for the Pixel Kit.
+            max_usb_current=1
+            [all]
+            """)
+            self._add_boot_config_options(extra_config)
+
+        except Exception as e:
+            logger.error("Failed to update config: {}".format(e))
+
+    def _add_boot_config_options(self, extra_config):
+        """
+        Helper function to add a block of options (text) to the boot/config.txt
+
+        Args:
+            extra_config - unindedted multiline or not str as it would go into the .txt
+        """
+
+        config_path = '/boot/config.txt'
+        use_transactions = False
+        # if we can't use transactions, fall back to editting the file directly
+        tmp_path = config_path
+
+        try:
+            try:
+                # append uart config to config.txt
+                from kano_settings.boot_config import _trans, \
+                    end_config_transaction
+
+                use_transactions = True
+                tmp_path = '/tmp/config.tmp'
+                _trans().copy_to(tmp_path)
+
+            except ImportError:
+                pass
+
+            with open(tmp_path, 'a') as tmp_config:
+                tmp_config.write(extra_config)
+
+            if use_transactions:
+                _trans().copy_from(tmp_path)
+                end_config_transaction()
+        except:
+            logger.error("failed to update config")
