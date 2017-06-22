@@ -746,4 +746,5 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_3_10_2_to_beta_3_10_3(self):
-        pass
+        # Attempt to fix overture starting after the update.
+        run_cmd_log('kano-init finalise --force')

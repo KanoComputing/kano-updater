@@ -27,7 +27,7 @@ Depends:
     python-pip,
     kano-i18n (>= 3.5-1),
     jq,
-    kano-init,
+    kano-init (>= 3.10.2-1),
     kano-profile (>= 3.9.0),
     kano-peripherals (>= 3.10.0)
 Suggests: kano-profile

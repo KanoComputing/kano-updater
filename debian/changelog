@@ -6,6 +6,7 @@ kano-updater (3.10.3-2) unstable; urgency=low
 
 kano-updater (3.10.3-1) unstable; urgency=low
 
+  * Ensure overture finalises after the update
   * Bump version for Kanux Beta v3.10.2
 
  -- Team Kano <dev@kano.me>  Mon, 19 Jun 2017 10:49:00 +0100
