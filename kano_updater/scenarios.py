@@ -182,14 +182,17 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.8.0", "Kanux-Beta-3.9.0-Lovelace",
                           self.beta_380_to_beta_390)
 
-        self.add_scenario("Kanux-Beta-3.9.0-Lovelace", "Kanux-Beta-3.10.0-Lovelace",
-                          self.beta_390_to_beta_3100)
+        self.add_scenario("Kanux-Beta-3.9.0-Lovelace", "Kanux-Beta-3.9.1-Lovelace",
+                          self.beta_3_9_0_to_beta_3_9_1)
+
+        self.add_scenario("Kanux-Beta-3.9.1-Lovelace", "Kanux-Beta-3.10.0-Lovelace",
+                          self.beta_3_9_1_to_beta_3_10_0)
 
         self.add_scenario("Kanux-Beta-3.10.0-Lovelace", "Kanux-Beta-3.10.1-Lovelace",
-                          self.beta_3100_to_beta_3101)
+                          self.beta_3_10_0_to_beta_3_10_1)
 
         self.add_scenario("Kanux-Beta-3.10.1-Lovelace", "Kanux-Beta-3.10.2-Lovelace",
-                          self.beta_3101_to_beta_3102)
+                          self.beta_3_10_1_to_beta_3_10_2)
 
         self.add_scenario("Kanux-Beta-3.10.2-Lovelace", "Kanux-Beta-3.10.3-Lovelace",
                           self.beta_3_10_2_to_beta_3_10_3)
@@ -306,13 +309,16 @@ class PreUpdate(Scenarios):
     def beta_380_to_beta_390(self):
         pass
 
-    def beta_390_to_beta_3100(self):
+    def beta_3_9_0_to_beta_3_9_1(self):
         pass
 
-    def beta_3100_to_beta_3101(self):
+    def beta_3_9_1_to_beta_3_10_0(self):
         pass
 
-    def beta_3101_to_beta_3102(self):
+    def beta_3_10_0_to_beta_3_10_1(self):
+        pass
+
+    def beta_3_10_1_to_beta_3_10_2(self):
         pass
 
     def beta_3_10_2_to_beta_3_10_3(self):
@@ -427,14 +433,17 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.8.0", "Kanux-Beta-3.9.0-Lovelace",
                           self.beta_380_to_beta_390)
 
-        self.add_scenario("Kanux-Beta-3.9.0-Lovelace", "Kanux-Beta-3.10.0-Lovelace",
-                          self.beta_390_to_beta_3100)
+        self.add_scenario("Kanux-Beta-3.9.0-Lovelace", "Kanux-Beta-3.9.1-Lovelace",
+                          self.beta_3_9_0_to_beta_3_9_1)
+
+        self.add_scenario("Kanux-Beta-3.9.1-Lovelace", "Kanux-Beta-3.10.0-Lovelace",
+                          self.beta_3_9_1_to_beta_3_10_0)
 
         self.add_scenario("Kanux-Beta-3.10.0-Lovelace", "Kanux-Beta-3.10.1-Lovelace",
-                          self.beta_3100_to_beta_3101)
+                          self.beta_3_10_0_to_beta_3_10_1)
 
         self.add_scenario("Kanux-Beta-3.10.1-Lovelace", "Kanux-Beta-3.10.2-Lovelace",
-                          self.beta_3101_to_beta_3102)
+                          self.beta_3_10_1_to_beta_3_10_2)
 
         self.add_scenario("Kanux-Beta-3.10.2-Lovelace", "Kanux-Beta-3.10.3-Lovelace",
                           self.beta_3_10_2_to_beta_3_10_3)
@@ -750,17 +759,20 @@ class PostUpdate(Scenarios):
     def beta_380_to_beta_390(self):
         pass
 
-    def beta_390_to_beta_3100(self):
+    def beta_3_9_0_to_beta_3_9_1(self):
+        pass
+
+    def beta_3_9_1_to_beta_3_10_0(self):
         # The new Overture onboarding needs to be enabled - disabling old tty-based kano-init
         run_cmd_log('kano-init finalise --force')
 
         # Install the kano-os metapackage for top level OS packages.
         install('kano-os')
 
-    def beta_3100_to_beta_3101(self):
+    def beta_3_10_0_to_beta_3_10_1(self):
         pass
 
-    def beta_3101_to_beta_3102(self):
+    def beta_3_10_1_to_beta_3_10_2(self):
         pass
 
     def beta_3_10_2_to_beta_3_10_3(self):

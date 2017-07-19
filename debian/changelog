@@ -41,6 +41,12 @@ kano-updater (3.10.0-1) unstable; urgency=low
 
  -- Team Kano <dev@kano.me>  Tue, 21 Mar 2017 15:52:00 +0000
 
+kano-updater (3.9.1-1) unstable; urgency=low
+
+  * Bump version
+
+ -- Team Kano <dev@kano.me>  Wed, 19 Jul 2017 16:50:00 +0000
+
 kano-updater (3.9.0-1) unstable; urgency=low
 
   * Bump version
