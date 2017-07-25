@@ -185,8 +185,11 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.9.0-Lovelace", "Kanux-Beta-3.9.1-Lovelace",
                           self.beta_3_9_0_to_beta_3_9_1)
 
-        self.add_scenario("Kanux-Beta-3.9.1-Lovelace", "Kanux-Beta-3.10.0-Lovelace",
-                          self.beta_3_9_1_to_beta_3_10_0)
+        self.add_scenario("Kanux-Beta-3.9.1-Lovelace", "Kanux-Beta-3.9.2-Lovelace",
+                          self.beta_3_9_1_to_beta_3_9_2)
+
+        self.add_scenario("Kanux-Beta-3.9.2-Lovelace", "Kanux-Beta-3.10.0-Lovelace",
+                          self.beta_3_9_2_to_beta_3_10_0)
 
         self.add_scenario("Kanux-Beta-3.10.0-Lovelace", "Kanux-Beta-3.10.1-Lovelace",
                           self.beta_3_10_0_to_beta_3_10_1)
@@ -312,7 +315,10 @@ class PreUpdate(Scenarios):
     def beta_3_9_0_to_beta_3_9_1(self):
         pass
 
-    def beta_3_9_1_to_beta_3_10_0(self):
+    def beta_3_9_1_to_beta_3_9_2(self):
+        pass
+
+    def beta_3_9_2_to_beta_3_10_0(self):
         pass
 
     def beta_3_10_0_to_beta_3_10_1(self):
@@ -436,8 +442,11 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.9.0-Lovelace", "Kanux-Beta-3.9.1-Lovelace",
                           self.beta_3_9_0_to_beta_3_9_1)
 
-        self.add_scenario("Kanux-Beta-3.9.1-Lovelace", "Kanux-Beta-3.10.0-Lovelace",
-                          self.beta_3_9_1_to_beta_3_10_0)
+        self.add_scenario("Kanux-Beta-3.9.1-Lovelace", "Kanux-Beta-3.9.2-Lovelace",
+                          self.beta_3_9_1_to_beta_3_9_2)
+
+        self.add_scenario("Kanux-Beta-3.9.2-Lovelace", "Kanux-Beta-3.10.0-Lovelace",
+                          self.beta_3_9_2_to_beta_3_10_0)
 
         self.add_scenario("Kanux-Beta-3.10.0-Lovelace", "Kanux-Beta-3.10.1-Lovelace",
                           self.beta_3_10_0_to_beta_3_10_1)
@@ -762,7 +771,10 @@ class PostUpdate(Scenarios):
     def beta_3_9_0_to_beta_3_9_1(self):
         pass
 
-    def beta_3_9_1_to_beta_3_10_0(self):
+    def beta_3_9_1_to_beta_3_9_2(self):
+        pass
+
+    def beta_3_9_2_to_beta_3_10_0(self):
         # The new Overture onboarding needs to be enabled - disabling old tty-based kano-init
         run_cmd_log('kano-init finalise --force')
 
