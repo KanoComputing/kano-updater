@@ -10,6 +10,7 @@
 
 from gi.repository import Gtk
 import os
+import time
 from threading import Timer
 
 from kano_updater.status import UpdaterStatus
@@ -62,3 +63,9 @@ class Finish(Countdown):
             os.system('systemctl poweroff')
         else:
             os.system('systemctl reboot')
+
+        # Terminate the updater to allow for automated tests
+        # Note that sys.exit() does not work, and os._exit() does work
+        # but its does not call signal handlers.
+        time.sleep(10)
+        os._exit(0)
