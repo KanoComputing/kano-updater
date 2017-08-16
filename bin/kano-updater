@@ -265,7 +265,7 @@ def main():
     else:
 
         # In fullscreen mode, make sure kit is plugged in before continuing.
-        if args['--gui'] and not verify_kit_is_plugged():
+        if args['--gui'] and not args['--splash-pid'] and not verify_kit_is_plugged():
             return 0
 
         clean()
