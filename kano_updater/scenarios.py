@@ -203,8 +203,11 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.10.3-Lovelace", "Kanux-Beta-3.10.4-Lovelace",
                           self.beta_3_10_3_to_beta_3_10_4)
 
-        self.add_scenario("Kanux-Beta-3.10.4-Lovelace", "Kanux-Beta-3.11.0-Lovelace",
-                          self.beta_3_10_4_to_beta_3_11_0)
+        self.add_scenario("Kanux-Beta-3.10.4-Lovelace", "Kanux-Beta-3.10.5-Lovelace",
+                          self.beta_3_10_4_to_beta_3_10_5)
+
+        self.add_scenario("Kanux-Beta-3.10.5-Lovelace", "Kanux-Beta-3.11.0-Lovelace",
+                          self.beta_3_10_5_to_beta_3_11_0)
 
     def beta_103_to_beta_110(self):
         pass
@@ -333,7 +336,10 @@ class PreUpdate(Scenarios):
     def beta_3_10_3_to_beta_3_10_4(self):
         pass
 
-    def beta_3_10_4_to_beta_3_11_0(self):
+    def beta_3_10_4_to_beta_3_10_5(self):
+        pass
+
+    def beta_3_10_5_to_beta_3_11_0(self):
         pass
 
     def _finalise(self):
@@ -460,8 +466,11 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.10.3-Lovelace", "Kanux-Beta-3.10.4-Lovelace",
                           self.beta_3_10_3_to_beta_3_10_4)
 
-        self.add_scenario("Kanux-Beta-3.10.4-Lovelace", "Kanux-Beta-3.11.0-Lovelace",
-                          self.beta_3_10_4_to_beta_3_11_0)
+        self.add_scenario("Kanux-Beta-3.10.4-Lovelace", "Kanux-Beta-3.10.5-Lovelace",
+                          self.beta_3_10_4_to_beta_3_10_5)
+
+        self.add_scenario("Kanux-Beta-3.10.5-Lovelace", "Kanux-Beta-3.11.0-Lovelace",
+                          self.beta_3_10_5_to_beta_3_11_0)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -771,7 +780,10 @@ class PostUpdate(Scenarios):
     def beta_3_10_3_to_beta_3_10_4(self):
         pass
 
-    def beta_3_10_4_to_beta_3_11_0(self):
+    def beta_3_10_4_to_beta_3_10_5(self):
+        pass
+
+    def beta_3_10_5_to_beta_3_11_0(self):
         try:
             from textwrap import dedent
             extra_config = dedent("""
