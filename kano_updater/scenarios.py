@@ -791,6 +791,11 @@ class PostUpdate(Scenarios):
             # Give more current to the USB ports for the Pixel Kit.
             max_usb_current=1
             [all]
+
+            [pi3]
+            # Disable temperature and low voltage overlay warnings only, safety is still ON.
+            avoid_warnings=1
+            [all]
             """)
             self._add_boot_config_options(extra_config)
 
