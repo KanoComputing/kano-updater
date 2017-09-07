@@ -847,4 +847,5 @@ class PostUpdate(Scenarios):
             logger.error("failed to update config")
 
     def beta_3_11_0_to_beta_3_12_0(self):
-        pass
+        # Remove .asoundrc files from all users (see kano-desktop & kano-settings).
+        remove_user_files(['.asoundrc'])

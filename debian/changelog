@@ -1,8 +1,9 @@
 kano-updater (3.12.0-0) unstable; urgency=low
 
   * Bump version for Kanux Beta v3.12.0
+  * Removed local ALSA config files from all users
 
- -- Team Kano <dev@kano.me>  Mon, 4 Sep 2017 11:20:00 +0100
+ -- Team Kano <dev@kano.me>  Fri, 8 Sep 2017 10:48:00 +0100
 
 kano-updater (3.11.0-0) unstable; urgency=low
 
