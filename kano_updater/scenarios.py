@@ -888,4 +888,33 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_3_12_1_to_beta_3_13_0(self):
-        pass
+        was_audio_hdmi = False
+
+        # Get the currently set audio output channel.
+        try:
+            from kano_settings.system.audio import is_HDMI
+            was_audio_hdmi = is_HDMI()
+        except:
+            logger.error("beta_3_12_1_to_beta_3_13_0: Failed to get audio output channel")
+
+        # Replace the config.txt after numerous changes there (see kano-settings).
+        try:
+            import shutil
+            shutil.copyfile(
+                '/boot/config.txt',
+                '/boot/beta_3_12_1_to_beta_3_13_0_bck_config.txt'
+            )
+            shutil.copyfile(
+                '/usr/share/kano-settings/boot_default/config.txt',
+                '/boot/config.txt'
+            )
+        except:
+            logger.error("beta_3_12_1_to_beta_3_13_0: Failed to replace config.txt")
+
+        # Set the audio output channel back to HDMI if it was set.
+        try:
+            from kano_settings.system.audio import set_to_HDMI
+            if was_audio_hdmi:
+                set_to_HDMI(True, force=True)
+        except:
+            logger.error("beta_3_12_1_to_beta_3_13_0: Failed to set HDMI audio back")
