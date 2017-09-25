@@ -860,4 +860,18 @@ class PostUpdate(Scenarios):
         remove_user_files(['.asoundrc'])
 
     def beta_3_12_0_to_beta_3_12_1(self):
-        pass
+        try:
+            '''
+            Any CKC user passing through this function must have updated and
+            hence must be a v1.0 user (CKC v1.1 ships with a higher version
+            number and has logic to determine the version by the hardware).
+
+            Add flag for these users to show a free speaker upgrade message.
+            '''
+
+            from kano_peripherals.wrappers.detection import is_ck2_pro
+            if is_ck2_pro():
+                speaker_warning_file = '~/.show_speaker_warning'
+                run_for_every_user('touch {}'.format(speaker_warning_file))
+        except Exception:
+            logger.error('Failed to check for CKC v1.0 Speaker')
