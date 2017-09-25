@@ -215,6 +215,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.12.0-Lovelace", "Kanux-Beta-3.12.1-Lovelace",
                           self.beta_3_12_0_to_beta_3_12_1)
 
+        self.add_scenario("Kanux-Beta-3.12.1-Lovelace", "Kanux-Beta-3.13.0-Lovelace",
+                          self.beta_3_12_1_to_beta_3_13_0)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -354,6 +357,9 @@ class PreUpdate(Scenarios):
     def beta_3_12_0_to_beta_3_12_1(self):
         pass
 
+    def beta_3_12_1_to_beta_3_13_0(self):
+        pass
+
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
         # Get around this by installing it first
@@ -489,6 +495,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-3.12.0-Lovelace", "Kanux-Beta-3.12.1-Lovelace",
                           self.beta_3_12_0_to_beta_3_12_1)
+
+        self.add_scenario("Kanux-Beta-3.12.1-Lovelace", "Kanux-Beta-3.13.0-Lovelace",
+                          self.beta_3_12_1_to_beta_3_13_0)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -868,10 +877,12 @@ class PostUpdate(Scenarios):
 
             Add flag for these users to show a free speaker upgrade message.
             '''
-
             from kano_peripherals.wrappers.detection import is_ck2_pro
             if is_ck2_pro():
                 speaker_warning_file = '~/.show_speaker_warning'
                 run_for_every_user('touch {}'.format(speaker_warning_file))
         except Exception:
             logger.error('Failed to check for CKC v1.0 Speaker')
+
+    def beta_3_12_1_to_beta_3_13_0(self):
+        pass

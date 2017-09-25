@@ -6,4 +6,4 @@
 # The version of the updater
 
 
-VERSION = "Kanux-Beta-3.12.1-Lovelace"
+VERSION = "Kanux-Beta-3.13.0-Lovelace"
