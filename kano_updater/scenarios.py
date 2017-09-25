@@ -212,6 +212,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.11.0-Lovelace", "Kanux-Beta-3.12.0-Lovelace",
                           self.beta_3_11_0_to_beta_3_12_0)
 
+        self.add_scenario("Kanux-Beta-3.12.0-Lovelace", "Kanux-Beta-3.12.1-Lovelace",
+                          self.beta_3_12_0_to_beta_3_12_1)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -348,6 +351,9 @@ class PreUpdate(Scenarios):
     def beta_3_11_0_to_beta_3_12_0(self):
         pass
 
+    def beta_3_12_0_to_beta_3_12_1(self):
+        pass
+
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
         # Get around this by installing it first
@@ -480,6 +486,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-3.11.0-Lovelace", "Kanux-Beta-3.12.0-Lovelace",
                           self.beta_3_11_0_to_beta_3_12_0)
+
+        self.add_scenario("Kanux-Beta-3.12.0-Lovelace", "Kanux-Beta-3.12.1-Lovelace",
+                          self.beta_3_12_0_to_beta_3_12_1)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -849,3 +858,6 @@ class PostUpdate(Scenarios):
     def beta_3_11_0_to_beta_3_12_0(self):
         # Remove .asoundrc files from all users (see kano-desktop & kano-settings).
         remove_user_files(['.asoundrc'])
+
+    def beta_3_12_0_to_beta_3_12_1(self):
+        pass
