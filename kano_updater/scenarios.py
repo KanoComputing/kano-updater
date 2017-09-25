@@ -886,3 +886,6 @@ class PostUpdate(Scenarios):
 
     def beta_3_12_1_to_beta_3_13_0(self):
         pass
+
+    def beta_3_12_1_to_beta_3_13_0(self):
+        pass
