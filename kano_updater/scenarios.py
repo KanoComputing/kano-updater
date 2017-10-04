@@ -918,3 +918,6 @@ class PostUpdate(Scenarios):
                 set_to_HDMI(True, force=True)
         except:
             logger.error("beta_3_12_1_to_beta_3_13_0: Failed to set HDMI audio back")
+
+        # Remove the orphan udhcpc client, it is now obsoleted by dhcpcd5
+        run_cmd_log('apt-get -y purge udhcpc')
