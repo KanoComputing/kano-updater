@@ -1,3 +1,9 @@
+kano-updater (3.14.0-0) unstable; urgency=low
+
+  * Bump version for Kanux Beta v3.14.0
+
+ -- Team Kano <dev@kano.me>  Mon, 16 Oct 2017 16:00:00 +0100
+
 kano-updater (3.13.0-0) unstable; urgency=low
 
   * Bump version for Kanux Beta v3.13.0
