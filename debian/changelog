@@ -1,6 +1,7 @@
 kano-updater (3.14.0-0) unstable; urgency=low
 
   * Bump version for Kanux Beta v3.14.0
+  * Applied changes from v3.9.2 es_AR backports to latest
 
  -- Team Kano <dev@kano.me>  Mon, 16 Oct 2017 16:00:00 +0100
 
