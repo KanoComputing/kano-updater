@@ -1,11 +1,10 @@
-#
 # relaunch.py
 #
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2017 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Restart computer widget
-#
+
 
 import os
 import signal
@@ -21,13 +20,12 @@ class Relaunch(Countdown):
 
         self._parent_pid = parent_pid
 
-        complete = Gtk.Label(_("Relaunching the Updater"))
-        complete.get_style_context().add_class('complete')
+        complete = Gtk.Label(_("Updater updated!"))
+        complete.get_style_context().add_class('H1')
 
-        info = Gtk.Label(_("The Updater updated itself and is now " \
-                           "starting again."))
+        info = Gtk.Label(_("Relaunching..."))
         info.set_justify(Gtk.Justification.CENTER)
-        info.get_style_context().add_class('countdown')
+        info.get_style_context().add_class('H2')
 
         self._main_grid.attach(complete, 0, 1, 1, 1)
         self._main_grid.attach(info, 0, 2, 1, 1)

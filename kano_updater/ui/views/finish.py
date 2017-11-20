@@ -1,11 +1,9 @@
-
 # finish.py
 #
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2017 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Restart computer widget
-#
 
 
 from gi.repository import Gtk
@@ -22,23 +20,27 @@ class Finish(Countdown):
         Countdown.__init__(self)
 
         complete = Gtk.Label(_('Update complete!'))
-        complete.get_style_context().add_class('complete')
+        complete.get_style_context().add_class('H1')
 
         status = UpdaterStatus.get_instance()
         self._shutdown_scheduled = status.is_shutdown
 
         if self._shutdown_scheduled:
-            finish_method = 'shutdown'
+            finish_method = _("shutdown")
         else:
-            finish_method = 'restart'
+            finish_method = _("restart")
 
-        info = Gtk.Label(_("Your Kano is up to date and \n" \
-                           "will automatically {} in 10 seconds".format(finish_method)))
+        info = Gtk.Label(_(
+            "Your Kano is up to date and \n"
+            "will automatically {} in 10 seconds"
+            .format(finish_method))
+        )
         info.set_justify(Gtk.Justification.CENTER)
-        info.get_style_context().add_class('countdown')
+        info.get_style_context().add_class('H2')
 
         instructions = Gtk.Label(_("Press ENTER to {} now".format(finish_method)))
-        instructions.get_style_context().add_class('finish-now')
+        instructions.get_style_context().add_class('H3')
+        instructions.set_margin_top(50)
 
         self._main_grid.attach(complete, 0, 1, 1, 1)
         self._main_grid.attach(info, 0, 2, 1, 1)

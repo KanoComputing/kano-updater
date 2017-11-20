@@ -4,8 +4,10 @@ kano-updater (3.14.0-0) unstable; urgency=low
   * Applied changes from v3.9.2 es_AR backports to latest
   * Moved 'first-boot' tracking event to kano-tracker-ctl generate
   * Add scenario to install scratch2
+  * Redesigned application views and included a spinner animation
+  * Added note to not unplug kit from power during update
 
- -- Team Kano <dev@kano.me>  Tue, 24 Oct 2017 12:29:00 +0100
+ -- Team Kano <dev@kano.me>  Wed, 22 Nov 2017 17:58:00 +0100
 
 kano-updater (3.13.0-0) unstable; urgency=low
 

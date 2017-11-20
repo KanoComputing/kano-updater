@@ -1,5 +1,5 @@
 GtkWindow {
-    background: #323232
+    background: #41464A;
 }
 
 GtkProgressBar {
@@ -23,7 +23,7 @@ GtkProgressBar.progressbar {
 GtkLabel {
     font-family: Bariol;
     font-weight: normal;
-    color: #e4e4e4;
+    color: #FFFFFF;
 }
 
 .phase,
@@ -41,17 +41,26 @@ GtkLabel {
     font-size: 16px;
 }
 
-.subphase,
 .percent {
-    font-size: 14px;
+    color: #D5E2EB;
+    font-size: 15px;
 }
 
 .finish-now {
     padding-top: 20px;
 }
 
-.play-game {
-    padding-top: 100px;
-    font: Bariol Bold 22px;
-    color: white;
+.H1 {
+    font-weight: bold;
+    font-size: 21px;
+}
+
+.H2 {
+    font-size: 15px;
+    color: #D5E2EB;
+}
+
+.H3 {
+    font-size: 13px;
+    color: #858B8F;
 }
