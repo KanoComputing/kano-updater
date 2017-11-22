@@ -932,4 +932,15 @@ class PostUpdate(Scenarios):
         run_cmd_log('apt-get -y purge udhcpc')
 
     def beta_3_13_0_to_beta_3_14_0(self):
-        pass
+        try:
+            import apt.cache
+            c = apt.cache.Cache()
+            if c['rpi-chromium-mods-kano'].installed >= '20170809':
+                install('scratch2')
+            else:
+                logger.error("beta_3_13_0_to_beta_3_14_0: wrong version of rpi-chomium-mods-kano installed: {}".format(
+                             c['rpi-chromium-mods-kano'].installed.version)
+                )
+        except:
+            logger.error("beta_3_13_0_to_beta_3_14_0: Failed to install scratch2")
+
