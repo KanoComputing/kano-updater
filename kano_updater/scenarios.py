@@ -941,6 +941,6 @@ class PostUpdate(Scenarios):
                 logger.error("beta_3_13_0_to_beta_3_14_0: wrong version of rpi-chomium-mods-kano installed: {}".format(
                              c['rpi-chromium-mods-kano'].installed.version)
                 )
-        except:
-            logger.error("beta_3_13_0_to_beta_3_14_0: Failed to install scratch2")
+        except Exception as e:
+            logger.error("beta_3_13_0_to_beta_3_14_0: Failed to install scratch2", exception=e)
 
