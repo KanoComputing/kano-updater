@@ -220,8 +220,12 @@ class PreUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-3.13.0-Lovelace", "Kanux-Beta-3.14.0-Lovelace",
                           self.beta_3_13_0_to_beta_3_14_0)
+
         self.add_scenario("Kanux-Beta-3.14.0-Lovelace", "Kanux-Beta-3.14.1-Lovelace",
                           self.beta_3_14_0_to_beta_3_14_1)
+
+        self.add_scenario("Kanux-Beta-3.14.1-Lovelace", "Kanux-Beta-3.15.0-Lovelace",
+                          self.beta_3_14_1_to_beta_3_15_0)
 
     def beta_103_to_beta_110(self):
         pass
@@ -371,6 +375,9 @@ class PreUpdate(Scenarios):
     def beta_3_14_0_to_beta_3_14_1(self):
         pass
 
+    def beta_3_14_1_to_beta_3_15_0(self):
+        pass
+
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
         # Get around this by installing it first
@@ -512,8 +519,12 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-3.13.0-Lovelace", "Kanux-Beta-3.14.0-Lovelace",
                           self.beta_3_13_0_to_beta_3_14_0)
+
         self.add_scenario("Kanux-Beta-3.14.0-Lovelace", "Kanux-Beta-3.14.1-Lovelace",
                           self.beta_3_14_0_to_beta_3_14_1)
+
+        self.add_scenario("Kanux-Beta-3.14.1-Lovelace", "Kanux-Beta-3.15.0-Lovelace",
+                          self.beta_3_14_1_to_beta_3_15_0)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -952,4 +963,7 @@ class PostUpdate(Scenarios):
             logger.error("beta_3_13_0_to_beta_3_14_0: Failed to install scratch2", exception=e)
 
     def beta_3_14_0_to_beta_3_14_1(self):
+        pass
+
+    def beta_3_14_1_to_beta_3_15_0(self):
         pass
