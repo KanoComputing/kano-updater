@@ -688,7 +688,7 @@ def verify_kit_is_plugged():
 
     try:
         from kano_peripherals.wrappers.detection import is_ck2_pro
-        ck2_pro = is_ck2_pro()
+        ck2_pro = is_ck2_pro(retry_count=0)
     except:
         # Kano Peripherals doesn't support this function
         pass
