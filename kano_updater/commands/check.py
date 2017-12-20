@@ -41,9 +41,9 @@ def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
     if (countdown > 0) and (priority is not Priority.URGENT) and (not is_gui):
         return False
 
-    if status.state != UpdaterStatus.NO_UPDATES:
+    if status.state not in [UpdaterStatus.NO_UPDATES, UpdaterStatus.UPDATES_DOWNLOADED]:
         msg = "No need to check for updates"
-        logger.info(msg)
+        logger.debug(msg)
 
         # This was a successful check, so we need to update the timestamp.
         status.last_check = int(time.time())
@@ -69,7 +69,6 @@ def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
 
         # Not updating the timestamp. The check failed.
         return False
-
 
     update_type = _do_check(progress, priority=priority)
     if update_type == Priority.NONE:
@@ -123,6 +122,7 @@ def _do_check(progress, priority=Priority.NONE):
         return Priority.STANDARD
 
     return Priority.NONE
+
 
 def get_ind_packages(priority=Priority.NONE):
     apt_handle = AptWrapper.get_instance()

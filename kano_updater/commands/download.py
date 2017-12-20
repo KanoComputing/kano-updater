@@ -31,7 +31,7 @@ def download(progress=None, gui=True):
     if not progress:
         progress = DummyProgress()
 
-    if status.state == UpdaterStatus.NO_UPDATES:
+    if status.state in [UpdaterStatus.NO_UPDATES, UpdaterStatus.UPDATES_DOWNLOADED]:
         progress.split(
             Phase(
                 'checking',
@@ -46,20 +46,23 @@ def download(progress=None, gui=True):
                 is_main=True
             )
         )
+        pre_check_state = status.state
         progress.start('checking')
         check_for_updates(progress=progress)
+
         if status.state == UpdaterStatus.NO_UPDATES:
-            logger.info("No updates to download")
-            progress.finish(_("No updates to download"))
-            return False
+            if pre_check_state == UpdaterStatus.NO_UPDATES:
+                msg = N_("No updates to download")
+                logger.info(msg)
+                progress.finish(_(msg))
+                return False
+            elif pre_check_state == UpdaterStatus.UPDATES_DOWNLOADED:
+                err_msg = N_("Latest updates have been downloaded already")
+                logger.info(err_msg)
+                progress.abort(_(err_msg))
+                return True
 
         progress.start('downloading')
-
-    elif status.state == UpdaterStatus.UPDATES_DOWNLOADED:
-        err_msg = N_("Updates have been downloaded already")
-        logger.error(err_msg)
-        progress.abort(_(err_msg))
-        return True
 
     elif status.state == UpdaterStatus.DOWNLOADING_UPDATES:
         err_msg = N_("The download is already running")
