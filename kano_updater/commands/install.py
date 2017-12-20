@@ -75,29 +75,29 @@ def install(progress=None, gui=True):
         logger.warn(msg)
         progress.abort(msg)
         return False
-    elif status.state != UpdaterStatus.UPDATES_DOWNLOADED:
-        logger.debug("Updates weren't downloaded, running download first.")
-        progress.split(
-            Phase(
-                'download',
-                _("Downloading updates"),
-                40,
-                is_main=True
-            ),
-            Phase(
-                'install',
-                _("Installing updates"),
-                60,
-                is_main=True
-            ),
-        )
 
-        progress.start('download')
-        if not download(progress):
-            logger.error("Downloading updates failed, cannot update.")
-            return False
+    logger.debug("Downloading any new updates that might be available.")
+    progress.split(
+        Phase(
+            'download',
+            _("Downloading updates"),
+            40,
+            is_main=True
+        ),
+        Phase(
+            'install',
+            _("Installing updates"),
+            60,
+            is_main=True
+        ),
+    )
 
-        progress.start('install')
+    progress.start('download')
+    if not download(progress):
+        logger.error("Downloading updates failed, cannot update.")
+        return False
+
+    progress.start('install')
 
     priority = Priority.NONE
 
