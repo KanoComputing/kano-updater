@@ -4,6 +4,13 @@
 import build_deb_pkg
 
 
+def repo_name = 'kano-updater'
+
+
 stage ('Build') {
-    autobuild_repo_pkg 'kano-updater'
+    autobuild_repo_pkg "$repo_name"
+}
+
+stage ('Docs') {
+    build_docs "$repo_name"
 }
