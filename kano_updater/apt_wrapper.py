@@ -1,26 +1,44 @@
+# apt_wrapper.py
 #
-# Interfacing with apt via python-apt
-#
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
+# Interfacing with apt via python-apt
+
 
 import apt
 import aptsources.sourceslist
-import apt_pkg
 
 from kano.logging import logger
 from kano.utils import run_cmd_log
 
 from kano_updater.apt_progress_wrapper import AptDownloadProgress, \
     AptOpProgress, AptInstallProgress
-from kano_updater.os_version import SYSTEM_VERSION
+from kano_updater.os_version import get_system_version
 from kano_updater.progress import Phase
 import kano_updater.priority as Priority
 from kano_updater.special_packages import independent_install_list
 
+
 class AptWrapper(object):
+
+    _singleton_instance = None
+
+    @staticmethod
+    def get_instance():
+        logger.debug("Getting AptWrapper instance")
+        if not AptWrapper._singleton_instance:
+            AptWrapper()
+
+        return AptWrapper._singleton_instance
+
     def __init__(self):
+        logger.debug("Creating new status instance")
+        if AptWrapper._singleton_instance:
+            raise Exception("This class is a singleton!")
+        else:
+            AptWrapper._singleton_instance = self
+
         apt.apt_pkg.init_config()
 
         # We disable downloading translations, because we don't have them
@@ -192,7 +210,7 @@ class AptWrapper(object):
         if (
                 priority.os_match_required and
                 not pkg.candidate.version.startswith(
-                    SYSTEM_VERSION.major_version
+                    get_system_version().major_version
                 )
             ):
             return False
@@ -247,6 +265,3 @@ class AptWrapper(object):
 
             self._cache.clear()
             self._cache.open()
-
-
-apt_handle = AptWrapper()

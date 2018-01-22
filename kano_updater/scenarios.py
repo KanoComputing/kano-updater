@@ -1,4 +1,3 @@
-
 # scenarios.py
 #
 # Copyright (C) 2014-2018 Kano Computing Ltd.
@@ -9,7 +8,7 @@ import os
 
 from kano.logging import logger
 
-from kano_updater.os_version import OSVersion, TARGET_VERSION
+from kano_updater.os_version import OSVersion, get_target_version
 from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable, migrate_repository, get_users, run_for_every_user
 from kano.utils import run_cmd_log, get_user_unsudoed, write_file_contents, \
@@ -35,7 +34,7 @@ class Scenarios(object):
 
     def covers_update(self):
         min_version = self._old_version
-        max_version = TARGET_VERSION
+        max_version = get_target_version()
         current_version = min_version
 
         while current_version < max_version:
@@ -62,7 +61,7 @@ class Scenarios(object):
         logger.info(log)
 
         current_version = self._old_version
-        target_version = TARGET_VERSION
+        target_version = get_target_version()
 
         while current_version < target_version:
             step_found = False

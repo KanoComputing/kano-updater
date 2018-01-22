@@ -2,7 +2,7 @@
 #
 # kano-updater
 #
-# Copyright (C) 2015 - 2017 Kano Computing Ltd.
+# Copyright (C) 2015-2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
@@ -56,7 +56,7 @@ from kano.utils import enforce_root, read_file_contents
 from kano.logging import logger
 from kano.gtk3.kano_dialog import KanoDialog
 
-from kano_updater.os_version import TARGET_VERSION
+from kano_updater.os_version import get_target_version
 from kano_updater.commands.download import download
 from kano_updater.commands.install import install, install_ind_package
 from kano_updater.commands.check import check_for_updates
@@ -179,7 +179,7 @@ def main():
     install_docopt()
     import docopt
 
-    args = docopt.docopt(__doc__, version=str(TARGET_VERSION))
+    args = docopt.docopt(__doc__, version=str(get_target_version()))
 
     gui_mode = args['--gui']
 

@@ -1,16 +1,17 @@
+# check.py
 #
-# Checking to see if updates exist
-#
-# Copyright (C) 2014-2015 Kano Computing Ltd.
+# Copyright (C) 2014-2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
+# Checking to see if updates exist
+
 
 import time
 
 from kano.network import is_internet
 from kano.logging import logger
 
-from kano_updater.apt_wrapper import apt_handle
+from kano_updater.apt_wrapper import AptWrapper
 from kano_updater.status import UpdaterStatus
 from kano_updater.progress import DummyProgress
 from kano_updater.utils import is_server_available
@@ -103,6 +104,7 @@ def _do_check(progress, priority=Priority.NONE):
     '''
     Perform checks for all priorities greater than the one provided.
     '''
+    apt_handle = AptWrapper.get_instance()
 
     apt_handle.update(progress, sources_list=KANO_SOURCES_LIST)
     logger.debug("Checking urgent: {}".format(priority <= Priority.URGENT))
@@ -123,5 +125,5 @@ def _do_check(progress, priority=Priority.NONE):
     return Priority.NONE
 
 def get_ind_packages(priority=Priority.NONE):
+    apt_handle = AptWrapper.get_instance()
     return apt_handle.independent_packages_available(priority)
-    

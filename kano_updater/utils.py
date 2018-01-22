@@ -1,6 +1,6 @@
 # utils.py
 #
-# Copyright (C) 2014-2016 Kano Computing Ltd.
+# Copyright (C) 2014-2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Utilities for the updater and the pre and post update scripts
@@ -37,7 +37,7 @@ except ImportError:
     pass
 
 from kano_updater.paths import PIP_LOG_FILE
-from kano_updater.apt_wrapper import apt_handle
+from kano_updater.apt_wrapper import AptWrapper
 from kano_updater.progress import DummyProgress
 
 
@@ -256,6 +256,7 @@ def migrate_repository(apt_file, old_repo, new_repo):
         return
 
     # TODO: track progress of this
+    apt_handle = AptWrapper.get_instance()
     apt_handle.clear_cache()
     apt_handle.update(DummyProgress())
 

@@ -1,9 +1,10 @@
+# install.py
 #
-# Managing the upgrade procedure
-#
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
+# Managing the upgrade procedure
+
 
 import time
 import os
@@ -16,9 +17,9 @@ from kano_updater.paths import PIP_PACKAGES_LIST, SYSTEM_VERSION_FILE, \
     PIP_CACHE_DIR
 from kano_updater.status import UpdaterStatus
 from kano_updater.os_version import OSVersion, bump_system_version, \
-    TARGET_VERSION
+    get_target_version, get_system_version
 from kano_updater.scenarios import PreUpdate, PostUpdate
-from kano_updater.apt_wrapper import apt_handle
+from kano_updater.apt_wrapper import AptWrapper
 from kano_updater.auxiliary_tasks import run_aux_tasks
 from kano_updater.progress import DummyProgress, Phase, Relaunch
 from kano_updater.utils import run_pip_command
@@ -182,6 +183,8 @@ def install_ind_package(progress, package):
         )
     )
 
+    apt_handle = AptWrapper.get_instance()
+
     progress.start(update_sources_phase)
     apt_handle.update(progress)
 
@@ -211,6 +214,7 @@ def install_urgent(progress, status):
         )
     )
     logger.debug("Installing urgent hotfix")
+    apt_handle = AptWrapper.get_instance()
     packages_to_update = apt_handle.packages_to_be_upgraded()
     progress.start('installing-urgent')
     install_deb_packages(progress, priority=Priority.URGENT)
@@ -275,13 +279,15 @@ def install_standard(progress, status):
     )
 
     progress.start('init')
+    apt_handle = AptWrapper.get_instance()
     apt_handle.clear_cache()
     apt_handle.fix_broken(progress)
 
     # determine the versions (from and to)
-    system_version = OSVersion.from_version_file(SYSTEM_VERSION_FILE)
+    system_version = get_system_version()
+    target_version = get_target_version()
 
-    msg = "Upgrading from {} to {}".format(system_version, TARGET_VERSION)
+    msg = "Upgrading from {} to {}".format(system_version, target_version)
     logger.info(msg)
 
     # set up the scenarios and check whether they cover updating
@@ -351,6 +357,7 @@ def install_standard(progress, status):
 
 
 def install_deb_packages(progress, priority=Priority.NONE):
+    apt_handle = AptWrapper.get_instance()
     apt_handle.upgrade_all(progress, priority=priority)
 
 

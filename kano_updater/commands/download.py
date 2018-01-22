@@ -1,9 +1,10 @@
+# download.py
 #
-# Managing downloads of apt and pip packages for the upgrade
-#
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
+# Managing downloads of apt and pip packages for the upgrade
+
 
 from kano.network import is_internet
 from kano.logging import logger
@@ -11,7 +12,7 @@ from kano.utils import read_file_contents_as_lines, ensure_dir
 
 from kano_updater.paths import PIP_PACKAGES_LIST, PIP_CACHE_DIR
 from kano_updater.status import UpdaterStatus
-from kano_updater.apt_wrapper import apt_handle
+from kano_updater.apt_wrapper import AptWrapper
 from kano_updater.progress import DummyProgress, Phase
 from kano_updater.utils import run_pip_command, is_server_available,\
         show_kano_dialog, make_normal_prio
@@ -192,6 +193,8 @@ def _cache_pip_packages(progress, priority=Priority.NONE):
 
 
 def _cache_deb_packages(progress, priority=Priority.NONE):
+    apt_handle = AptWrapper.get_instance()
+
     progress.start('updating-sources')
     apt_handle.update(progress=progress)
 

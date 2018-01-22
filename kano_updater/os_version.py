@@ -1,9 +1,10 @@
+# os_version.py
 #
-# Contains the OSVersion object for versioning the OS
-#
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
+# Contains the OSVersion object for versioning the OS
+
 
 from distutils.version import LooseVersion
 
@@ -11,6 +12,10 @@ from kano.logging import logger
 
 from kano_updater.paths import SYSTEM_ISSUE_FILE, SYSTEM_VERSION_FILE
 from kano_updater.version import VERSION
+
+
+_g_target_version = None
+_g_system_version = None
 
 
 class OSVersion(object):
@@ -87,22 +92,37 @@ class OSVersion(object):
             return 1
 
 
-TARGET_VERSION = OSVersion.from_version_string(VERSION)
-SYSTEM_VERSION = OSVersion.from_version_file(SYSTEM_VERSION_FILE)
+def get_target_version():
+    global _g_target_version
+
+    if not _g_target_version:
+        _g_target_version = OSVersion.from_version_string(VERSION)
+
+    return _g_target_version
+
+
+def get_system_version():
+    global _g_system_version
+
+    if not _g_system_version:
+        _g_system_version = OSVersion.from_version_file(SYSTEM_VERSION_FILE)
+
+    return _g_system_version
 
 
 def bump_system_version():
-    # Store the version change
-    with open(SYSTEM_VERSION_FILE, 'r') as v_file:
-        system_version = v_file.read().strip()
+    system_version = get_system_version()
+    target_version = get_target_version()
 
     logger.info("Changed the version of the OS from {} to {}".format(
-        system_version, TARGET_VERSION.to_version_string()))
+        system_version.to_version_string(),
+        target_version.to_version_string())
+    )
 
     try:
         from kano_profile.tracker import track_data
         track_data('updated', {
-            'from': system_version,
+            'from': system_version.to_version_string(),
             'to': VERSION
         })
     except Exception:
@@ -110,7 +130,7 @@ def bump_system_version():
 
     # Update stored version
     with open(SYSTEM_VERSION_FILE, 'w') as vfile:
-        vfile.write(TARGET_VERSION.to_version_string() + "\n")
+        vfile.write(target_version.to_version_string() + "\n")
 
     with open(SYSTEM_ISSUE_FILE, 'w') as ifile:
-        ifile.write(TARGET_VERSION.to_issue() + "\n")
+        ifile.write(target_version.to_issue() + "\n")
