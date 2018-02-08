@@ -1,15 +1,13 @@
-
 # paths.py
 #
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Paths to UI assets
-#
+
 
 import os
-import urlparse
-import httplib
+
 
 PACKAGE_PATH = os.path.dirname(__file__)
 MEDIA_PATH = os.path.join(PACKAGE_PATH, 'media')

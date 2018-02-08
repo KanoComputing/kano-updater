@@ -1,16 +1,14 @@
-
 # main.py
 #
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Initialisation of the UI
-#
+
 
 import os
 import signal
 
-from kano.utils import run_cmd
 from kano.logging import logger
 
 from kano_updater.commands.check import check_for_updates

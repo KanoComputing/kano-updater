@@ -13,11 +13,10 @@ from kano.logging import logger
 from kano.utils import read_file_contents_as_lines, get_free_space, run_cmd
 from kano.network import is_internet
 
-from kano_updater.paths import PIP_PACKAGES_LIST, SYSTEM_VERSION_FILE, \
-    PIP_CACHE_DIR
+from kano_updater.paths import PIP_PACKAGES_LIST, PIP_CACHE_DIR
 from kano_updater.status import UpdaterStatus
-from kano_updater.os_version import OSVersion, bump_system_version, \
-    get_target_version, get_system_version
+from kano_updater.os_version import bump_system_version, get_target_version, \
+    get_system_version
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.apt_wrapper import AptWrapper
 from kano_updater.auxiliary_tasks import run_aux_tasks

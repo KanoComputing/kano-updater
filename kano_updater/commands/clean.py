@@ -1,14 +1,14 @@
+# clean.py
 #
-# The check-in procedure of the updater that runs on every boot
-#
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
+# The check-in procedure of the updater that runs on every boot
+
 
 from kano.logging import logger
 
 from kano_updater.status import UpdaterStatus
-# from kano_updater.ui.
 
 
 def clean(dry_run=False):
