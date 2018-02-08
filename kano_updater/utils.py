@@ -655,11 +655,11 @@ def set_power_button(enabled):
     This is for when we return to the OS and not reboot / shutdown.
     """
     try:
-        pihat_iface = get_pihat_interface()
+        pihat_iface = get_pihat_interface(retry_count=0)
         if pihat_iface:
             pihat_iface.set_power_button_enabled(enabled)
 
-        pro_hat_iface = get_ck2_pro_hat_interface()
+        pro_hat_iface = get_ck2_pro_hat_interface(retry_count=0)
         if pro_hat_iface:
             pro_hat_iface.set_power_button_enabled(enabled)
     except Exception:
@@ -709,7 +709,7 @@ def verify_kit_is_plugged():
 
         try:
             from kano_peripherals.ck2_pro_hat.driver.high_level import get_ck2_pro_hat_interface
-            ck2pro_iface = get_ck2_pro_hat_interface()
+            ck2pro_iface = get_ck2_pro_hat_interface(retry_count=0)
             is_battery_low = (ck2pro_iface and ck2pro_iface.is_battery_low())
         except:
             # Kano Peripherals doesn't support this function
