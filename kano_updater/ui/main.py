@@ -92,12 +92,6 @@ def launch_boot_gui():
         except Exception:
             pass
 
-        from kano_updater.ui.changes_dialog import ChangesDialog
-        win = ChangesDialog()
-        win.run()
-
-    status.save()
-
 
 def launch_shutdown_gui():
     from gi.repository import GObject, Gtk
