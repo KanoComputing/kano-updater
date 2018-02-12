@@ -19,7 +19,6 @@ from kano.logging import logger
 from kano.utils import run_print_output_error, run_cmd, run_bg, run_cmd_log, \
     chown_path, is_gui, sed, get_user_unsudoed, open_locked
 from kano.network import is_internet
-import kano.notifications as notifications
 from kano.timeout import timeout, TimeoutError
 
 #
@@ -285,6 +284,7 @@ def show_relaunch_splash():
 def pause_notifications():
     @timeout(3)
     def _do_pause_notifications():
+        import kano.notifications as notifications
         notifications.pause()
 
     try:
@@ -296,6 +296,7 @@ def pause_notifications():
 def resume_notifications():
     @timeout(3)
     def _do_resume_notifications():
+        import kano.notifications as notifications
         notifications.resume()
 
     try:

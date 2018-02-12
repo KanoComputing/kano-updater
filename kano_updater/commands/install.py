@@ -10,7 +10,9 @@ import time
 import os
 
 from kano.logging import logger
-from kano.utils import read_file_contents_as_lines, get_free_space, run_cmd
+from kano.utils.disk import get_free_space
+from kano.utils.file_operations import read_file_contents_as_lines
+from kano.utils.shell import run_cmd
 from kano.network import is_internet
 
 from kano_updater.paths import PIP_PACKAGES_LIST, PIP_CACHE_DIR
