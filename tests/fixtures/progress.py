@@ -31,3 +31,6 @@ class PyTestProgress(CLIProgress):
 
     def _prompt(self, msg, question, answers):
         return answers[-1]
+
+    def _relaunch(self):
+        pass

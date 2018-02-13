@@ -24,40 +24,39 @@ LATEST_VERSION = VERSION_RE.match(VERSION).groups()[0]
 
 
 class Cache(object):
-    PACKAGES = {
-        'kano-updater': Package('kano-updater', [
-            Version('kano-updater', '3.14.1'),
-            Version('kano-updater', LATEST_VERSION, 12, 13),
-        ]),
-        'test-pkg-1': Package('test-pkg-1', [
-            Version('test-pkg-1', '1.0-0'),
-            Version('test-pkg-1', '1.3-4', 23, 33),
-        ]),
-        'test-pkg-2': Package('test-pkg-2', [
-            Version('test-pkg-2', '1.1-1'),
-            Version('test-pkg-2', '2.3-4', 84, 0),
-        ]),
-        'test-pkg-3': Package('test-pkg-3', [
-            Version('test-pkg-3', '3.0-0'),
-            Version('test-pkg-3', '3.3-4', 0, 46),
-        ]),
-        'test-pkg-4': Package('test-pkg-4', [
-            Version('test-pkg-4', '4.3-1'),
-            Version('test-pkg-4', '4.3-4', 99, 265, prio=2000),
-        ]),
-        'test-pkg-5': Package('test-pkg-5', [
-            Version('test-pkg-5', '5.3-4'),
-        ]),
-    }
-
     def __init__(self):
         self.__depcache = None
+        self.packages = {
+            'kano-updater': Package('kano-updater', [
+                Version('kano-updater', '3.14.1'),
+                Version('kano-updater', LATEST_VERSION, 12, 13),
+            ]),
+            'test-pkg-1': Package('test-pkg-1', [
+                Version('test-pkg-1', '1.0-0'),
+                Version('test-pkg-1', '1.3-4', 23, 33),
+            ]),
+            'test-pkg-2': Package('test-pkg-2', [
+                Version('test-pkg-2', '1.1-1'),
+                Version('test-pkg-2', '2.3-4', 84, 0),
+            ]),
+            'test-pkg-3': Package('test-pkg-3', [
+                Version('test-pkg-3', '3.0-0'),
+                Version('test-pkg-3', '3.3-4', 0, 46),
+            ]),
+            'test-pkg-4': Package('test-pkg-4', [
+                Version('test-pkg-4', '4.3-1'),
+                Version('test-pkg-4', '4.3-4', 99, 265, prio=2000),
+            ]),
+            'test-pkg-5': Package('test-pkg-5', [
+                Version('test-pkg-5', '5.3-4'),
+            ]),
+        }
 
     def __getitem__(self, key):
-        return self.PACKAGES[key]
+        return self.packages[key]
 
     def __iter__(self):
-        for pkg in self.PACKAGES.itervalues():
+        for pkg in self.packages.itervalues():
             yield pkg
 
         raise StopIteration
@@ -80,7 +79,7 @@ class Cache(object):
     @property
     def install_count(self):
         return len([
-            pkg for pkg in self.PACKAGES.itervalues() if pkg.is_upgradable
+            pkg for pkg in self.packages.itervalues() if pkg.is_upgradable
         ])
 
     @property
@@ -88,7 +87,8 @@ class Cache(object):
         sz = 0
 
         for pkg in self:
-            sz += pkg.candidate.size
+            if pkg.marked_upgrade:
+                sz += pkg.candidate.size
 
         return sz
 
@@ -97,15 +97,32 @@ class Cache(object):
         sz = 0
 
         for pkg in self:
-            sz += pkg.candidate.installed_size
+            if pkg.marked_upgrade:
+                sz += pkg.candidate.installed_size
 
         return sz
+
+    @property
+    def required_test_space(self):
+        '''
+        Property only used for tests and should not be used in production code
+
+        Reports space required in MB but note that the packages themselves
+        report in bytes.
+        '''
+
+        sz = 0
+
+        for pkg in self:
+            sz += pkg.candidate.size + pkg.candidate.installed_size
+
+        return sz / (1024. * 1024.)
 
     def fetch_archives(self, progress):
         pass
 
     def commit(self, install_progress=None):
-        for pkg in self.PACKAGES.itervalues():
+        for pkg in self.packages.itervalues():
             pkg.do_upgrade()
 
     def open(self, op_progress=None):

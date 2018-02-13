@@ -14,21 +14,48 @@ import collections
 
 class Version(object):
     def __init__(self, pkg, version, dl_sz=0, install_sz=0, prio=500):
+        '''
+        Fake implementation of the `apt.package.Version` class representing an
+        available Debian package version.
+
+        Args:
+            pkg: Name of the package
+            version: Version string of the package
+            dl_sz: Download size in MB
+            install_sz: Install size in MB
+            prio: Apt priority
+        '''
+
         self.pkg = pkg
         self.version = version
-        self.size = dl_sz
-        self.installed_size = install_sz
+        self.size = dl_sz * 1024 * 1024
+        self.installed_size = install_sz * 1024 * 1024
 
         self.policy_priority = prio
         self.architecture = 'armhf'
 
-        self.is_installed = False
+        self._is_installed = False
 
     def __str__(self):
-        return 'FakeVersion("{}")'.format(self.version)
+        installed_str = ' installed' if self.is_installed else ''
+        return 'FakeVersion("{}"{})'.format(self.version, installed_str)
 
     def __repr__(self):
         return str(self)
+
+    def __lt__(self, other):
+        return self.version < other.version
+
+    def __eq__(self, other):
+        return self.version == other.version
+
+    @property
+    def is_installed(self):
+        return self._is_installed
+
+    @is_installed.setter
+    def is_installed(self, val):
+        self._is_installed = val
 
 
 class Package(object):
@@ -36,7 +63,7 @@ class Package(object):
         self.name = name
         self.architecture = 'armhf'
 
-        self.marked_upgrade = False
+        self._marked_upgrade = False
 
         self._versions = collections.OrderedDict()
         self.versions = versions
@@ -44,13 +71,42 @@ class Package(object):
         self.shortname = name
 
     def __str__(self):
-        return 'FakePackage("{}")'.format(self.name)
+        return 'FakePackage("{}", Versions: {})'.format(
+            self.name, [v for v in self.versions.itervalues()]
+        )
 
     def __repr__(self):
         return str(self)
 
+    @property
+    def marked_upgrade(self):
+        return self._marked_upgrade
+
     def mark_upgrade(self):
-        self.marked_upgrade = True
+        self._marked_upgrade = True
+
+    def mark_keep(self):
+        self._marked_upgrade = False
+
+    @property
+    def marked_keep(self):
+        return not self.marked_upgrade
+
+    @property
+    def marked_delete(self):
+        return False
+
+    @property
+    def marked_downgrade(self):
+        return False
+
+    @property
+    def marked_reinstall(self):
+        return False
+
+    @property
+    def marked_install(self):
+        return False
 
     @property
     def versions(self):
@@ -61,19 +117,18 @@ class Package(object):
         if not isinstance(versions, list):
             versions = [versions]
 
-        versions[0].is_installed = True
+        min(versions).is_installed = True
 
         for version in versions:
             self._versions[version.version] = version
 
     @property
     def candidate(self):
-        for version in reversed([v for v in self.versions.itervalues()]):
-            return version
+        return max(self.versions.itervalues())
 
     @property
     def is_upgradable(self):
-        return len(self.versions) > 1
+        return self.installed < self.candidate
 
     @property
     def installed(self):
@@ -88,6 +143,9 @@ class Package(object):
 
         if not self.marked_upgrade:
             return
+
+        self.installed.size = self.candidate.size
+        self.installed.installed_size = self.candidate.installed_size
 
         self.installed.is_installed = False
         self.candidate.is_installed = True

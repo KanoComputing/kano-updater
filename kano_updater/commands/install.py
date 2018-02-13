@@ -7,7 +7,6 @@
 
 
 import time
-import os
 
 from kano.logging import logger
 from kano.utils.disk import get_free_space
@@ -22,6 +21,8 @@ from kano_updater.os_version import bump_system_version, get_target_version, \
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.apt_wrapper import AptWrapper
 from kano_updater.auxiliary_tasks import run_aux_tasks
+from kano_updater.disk_requirements import PIP_REQ_SPACE, SPACE_BUFFER, \
+    MIN_REQ_SPACE
 from kano_updater.progress import DummyProgress, Phase, Relaunch
 from kano_updater.utils import run_pip_command
 from kano_updater.commands.download import download
@@ -40,34 +41,16 @@ def install(progress=None, gui=True):
     if not progress:
         progress = DummyProgress()
 
-    #
+    priority = Priority.NONE
+
+    if status.is_urgent:
+        priority = Priority.URGENT
+
     run_cmd('sudo kano-empty-trash')
-
-    # Check for available disk space before updating
-    # We require at least 1GB of space for the update to proceed
-    # TODO: Take this value from apt
-    mb_free = get_free_space()
-    if mb_free < 1536:
-        err_msg = N_("Only {}MB free, at least 1.5GB is needed.".format(mb_free))
-        logger.warn(err_msg)
-        answer = progress.prompt(
-            _("Not enough space to update!"),
-            _("But I can make more room if you'd like?"),
-            [_("OK"), _("CANCEL")]
-        )
-
-        if answer == _("OK"):
-            run_cmd('sudo expand-rootfs')
-
-            status.state = UpdaterStatus.INSTALLING_UPDATES
-            status.save()
-
-            os.system('sudo systemctl reboot')
-
-        else:
-            logger.error(err_msg)
-            progress.fail(_(err_msg))
-
+    enough_space, space_msg = check_disk_space(priority)
+    if not enough_space:
+        logger.error(space_msg)
+        progress.abort(_(space_msg))
         return False
 
     if (status.state == UpdaterStatus.INSTALLING_UPDATES or
@@ -99,11 +82,6 @@ def install(progress=None, gui=True):
         return False
 
     progress.start('install')
-
-    priority = Priority.NONE
-
-    if status.is_urgent:
-        priority = Priority.URGENT
 
     logger.debug("Installing with priority {}".format(priority.priority))
 
@@ -355,6 +333,28 @@ def install_standard(progress, status):
     # We don't care too much when these fail
     progress.start('aux-tasks')
     run_aux_tasks(progress)
+
+
+def check_disk_space(priority):
+    '''
+    Check for available disk space before updating
+    '''
+
+    apt_handle = AptWrapper.get_instance()
+    mb_free = get_free_space()
+    required_space = max(
+        apt_handle.get_required_upgrade_space() + PIP_REQ_SPACE + SPACE_BUFFER,
+        MIN_REQ_SPACE
+    )
+
+    if mb_free < required_space:
+        err_msg = N_("Only {}MB free, at least {}MB is needed.").format(
+            mb_free, required_space
+        )
+
+        return False, err_msg
+
+    return True, None
 
 
 def install_deb_packages(progress, priority=Priority.NONE):

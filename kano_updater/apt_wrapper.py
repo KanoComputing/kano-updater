@@ -20,6 +20,50 @@ import kano_updater.priority as Priority
 from kano_updater.special_packages import independent_install_list
 
 
+class AptPkgState(object):
+    MARKED_DELETE = 1
+    MARKED_DOWNGRADE = 2
+    MARKED_INSTALL = 3
+    MARKED_KEEP = 4
+    MARKED_REINSTALL = 5
+    MARKED_UPGRADE = 6
+    UNKNOWN = -1
+
+    @staticmethod
+    def get_package_state(pkg):
+        if pkg.marked_delete:
+            return AptPkgState.MARKED_DELETE
+        elif pkg.marked_downgrade:
+            return AptPkgState.MARKED_DOWNGRADE
+        elif pkg.marked_install:
+            return AptPkgState.MARKED_INSTALL
+        elif pkg.marked_keep:
+            return AptPkgState.MARKED_KEEP
+        elif pkg.marked_reinstall:
+            return AptPkgState.MARKED_REINSTALL
+        elif pkg.marked_upgrade:
+            return AptPkgState.MARKED_UPGRADE
+        else:
+            return AptPkgState.UNKNOWN
+
+    @staticmethod
+    def restore_pkg_state(pkg, state):
+        if state == AptPkgState.MARKED_DELETE:
+            return pkg.mark_delete()
+        elif state == AptPkgState.MARKED_DOWNGRADE:
+            return pkg.mark_downgrade()
+        elif state == AptPkgState.MARKED_INSTALL:
+            return pkg.mark_install()
+        elif state == AptPkgState.MARKED_KEEP:
+            return pkg.mark_keep()
+        elif state == AptPkgState.MARKED_REINSTALL:
+            return pkg.mark_reinstall()
+        elif state == AptPkgState.MARKED_UPGRADE:
+            return pkg.mark_upgrade()
+        else:  # AptPkgState.UNKNOWN
+            return
+
+
 class AptWrapper(object):
 
     _singleton_instance = None
@@ -184,13 +228,17 @@ class AptWrapper(object):
                                            self._cache.install_count)
         self._cache.fetch_archives(apt_progress)
 
-    def _mark_all_for_update(self, priority=Priority.NONE):
+    def upgradable_packages(self, priority=Priority.NONE):
         for pkg in self._cache:
             if self._is_package_upgradable(pkg, priority=priority):
-                logger.debug("Marking {} ({}) for upgrade".format(
-                    pkg.shortname, pkg.candidate.version
-                ))
-                pkg.mark_upgrade()
+                yield pkg
+
+    def _mark_all_for_update(self, priority=Priority.NONE):
+        for pkg in self.upgradable_packages(priority=priority):
+            logger.debug("Marking {} ({}) for upgrade".format(
+                pkg.shortname, pkg.candidate.version
+            ))
+            pkg.mark_upgrade()
 
     def packages_to_be_upgraded(self):
         ret = {}
@@ -198,6 +246,29 @@ class AptWrapper(object):
             ret[pkg.name] = pkg.versions.keys()
 
         return ret
+
+    def get_required_upgrade_space(self, priority=Priority.NONE):
+        '''
+        Retreives the required disk space to perform the upgrade in MB.
+
+        Note: the `required_download` and `required_space` reported from `apt`
+              is in bytes
+        '''
+
+        orig_state = []
+
+        for pkg in self.upgradable_packages(priority=priority):
+            state = AptPkgState.get_package_state(pkg)
+            orig_state.append((pkg, state))
+
+            pkg.mark_upgrade()
+
+        space = self._cache.required_download + self._cache.required_space
+
+        for pkg, state in orig_state:
+            AptPkgState.restore_pkg_state(pkg, state)
+
+        return space / 1048576.  # 1024 * 1024
 
     @staticmethod
     def _is_package_upgradable(pkg, priority=Priority.NONE):

@@ -15,9 +15,12 @@ def test_install(apt, pip, state, system_version, free_space, pip_modules,
                  run_cmd, internet, server_available):
     import kano_updater.commands.install
 
+    space_available, space_required = free_space
+
     progress = PyTestProgress()
 
-    should_succeed = internet and server_available and (free_space >= 1536)
+    should_succeed = internet and server_available and \
+        (space_available >= space_required)
 
     try:
         res = kano_updater.commands.install.install(

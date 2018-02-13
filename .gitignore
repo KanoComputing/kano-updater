@@ -1,4 +1,7 @@
-# Created by https://www.gitignore.io/api/vim,emacs,python,sublimetext,visualstudiocode
+reports
+
+
+# Created by https://www.gitignore.io/api/vim,linux,macos,emacs,python,sublimetext,visualstudiocode
 
 ### Emacs ###
 # -*- mode: gitignore; -*-
@@ -65,6 +68,47 @@ company-statistics-cache.el
 
 # anaconda-mode
 anaconda-mode/
+
+### Linux ###
+
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+# .nfs files are created when an open file is removed but is still being accessed
+.nfs*
+
+### macOS ###
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
@@ -217,4 +261,4 @@ tags
 .history
 
 
-# End of https://www.gitignore.io/api/vim,emacs,python,sublimetext,visualstudiocode
+# End of https://www.gitignore.io/api/vim,linux,macos,emacs,python,sublimetext,visualstudiocode

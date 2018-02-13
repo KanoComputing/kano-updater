@@ -11,15 +11,22 @@
 import pytest
 
 
+from kano_updater.disk_requirements import PIP_REQ_SPACE, SPACE_BUFFER, \
+    MIN_REQ_SPACE
+
+
 REQUIRED_SPACE = -10000
 
 SPACES = (
     0,
-    1535,  # Limit such that 1.5 GB (1536 MB) needed to be free
+    1535,  # Limit used to be such that 1.5 GB (1536 MB) needed to be free
+    REQUIRED_SPACE,  # Exact space requred
+    REQUIRED_SPACE - 1,  # Not quite enough
+    MIN_REQ_SPACE,
     999999
 )
 
-space = 0
+space_available = 0
 
 
 @pytest.fixture(scope='function', params=SPACES)
@@ -29,16 +36,17 @@ def free_space(apt, request, monkeypatch):
     `kano.utils.disk.get_free_space()` function which retrieves free disk space
     '''
 
-    global space
+    global space_available
 
-    space = request.param
+    space_available = request.param
+    space_required = apt.required_test_space + PIP_REQ_SPACE + SPACE_BUFFER
 
-    if space < 0:
-        space += apt.required_space + apt.required_download - REQUIRED_SPACE
+    if space_available < 0:
+        space_available += space_required - REQUIRED_SPACE
 
     import kano.utils.disk
     monkeypatch.setattr(
-        kano.utils.disk, 'get_free_space', lambda: space
+        kano.utils.disk, 'get_free_space', lambda: space_available
     )
 
-    return space
+    return space_available, space_required

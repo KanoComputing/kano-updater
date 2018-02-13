@@ -43,3 +43,19 @@ def test_upgrade_all(apt):
 
     for pkg in wrapper._cache:
         assert pkg.installed == pkg.candidate
+
+
+def test_space(apt):
+    from kano_updater.apt_wrapper import AptWrapper
+
+    wrapper = AptWrapper.get_instance()
+    wrapper._mark_all_for_update()
+
+    install_req = 0
+    dl_req = 0
+
+    for pkg in wrapper._cache:
+        install_req += pkg.candidate.installed_size / (1024. * 1024.)
+        dl_req += pkg.candidate.size / (1024. * 1024.)
+
+    assert wrapper.get_required_upgrade_space() == install_req + dl_req

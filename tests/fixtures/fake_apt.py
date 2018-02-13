@@ -28,5 +28,8 @@ def apt(monkeypatch):
 
     monkeypatch.syspath_prepend(MOCK_IMPORTS_DIR)
 
+    import kano_updater.apt_wrapper
+    kano_updater.apt_wrapper.AptWrapper._singleton_instance = None
+
     import apt
     return apt.cache.Cache()
