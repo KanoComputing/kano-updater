@@ -12,7 +12,7 @@ from kano.utils import ensure_dir
 from kano.logging import logger
 
 from kano_updater.paths import STATUS_FILE_PATH
-
+from kano_updater.splash import set_splash_interrupted, clear_splash
 
 class UpdaterStatusError(Exception):
     pass
@@ -124,6 +124,13 @@ class UpdaterStatus(object):
 
         with open(self._status_file, 'w') as status_file:
             json.dump(data, status_file, indent=4)
+
+        # ensure splash is set whenever we are installing and not otherwise
+        if self._state in [self.INSTALLING_UPDATES,
+                           self.INSTALLING_INDEPENDENT]:
+            set_splash_interrupted()
+        else:
+            clear_splash()
 
     # -- state
     @property
