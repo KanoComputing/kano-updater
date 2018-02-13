@@ -1,0 +1,32 @@
+# 70-kano-updater-download
+#
+# Copyright (C) 2018 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
+#
+# Notifies the Updater to start in the background and download updates.
+
+
+logger "70-kano-updater-download: info reason=$reason iface=$interface"
+
+
+case "$reason" in
+
+    REBOOT|BOUND)
+
+        # Calculate how much time has elapsed since boot.
+        uptime_sec=`awk '{print int($1)}' /proc/uptime`
+        min_uptime_sec=180
+        delta_uptime=$((min_uptime_sec-uptime_sec))
+
+        # Ensure that the background download only happens after min_uptime_sec
+        # This prevents multiple instances clashing during boot.
+        # TODO: This could've been a queued systemd service that only ran after
+        # kano-dashboard.service
+        if [ "$delta_uptime" -gt 0 ]; then
+
+            (sleep "$delta_uptime" &&
+             systemd-run /usr/bin/kano-updater download --low-prio) &
+        fi
+        ;;
+
+esac
