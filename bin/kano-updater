@@ -12,7 +12,7 @@ kano-updater will help you keep your Kano OS up-to-date.
 Usage:
   kano-updater check [--gui] [--interval <time>] [--urgent]
   kano-updater download [--low-prio]
-  kano-updater install [--gui [--no-confirm] [--splash-pid <pid>]]
+  kano-updater install [--gui [--no-confirm] [--splash-pid <pid>] [--no-power-check]]
   kano-updater set-state <state>
   kano-updater set-scheduled (1|0)
   kano-updater first-boot
@@ -23,13 +23,14 @@ Usage:
   kano-updater [-f] [-n]
 
 Options:
-  -h, --help       Show this message.
-  -v, --version    Print the version of the updater.
-  -g, --gui        Run the install procedure with a GUI.
-  -l, --low-prio   Run the process with low shed and io priority.
-  --interval       Minimum time interval between checks (in hours)
-  --no-confirm     Don't confirm before installing
-  --urgent         Check for urgent updates
+  -h, --help        Show this message.
+  -v, --version     Print the version of the updater.
+  -g, --gui         Run the install procedure with a GUI.
+  -l, --low-prio    Run the process with low shed and io priority.
+  --interval        Minimum time interval between checks (in hours)
+  --no-confirm      Don't confirm before installing
+  --urgent          Check for urgent updates
+  --no-power-check  Skip verifying if the kit is plugged in
 """
 
 
@@ -256,7 +257,10 @@ def main():
     else:
 
         # In fullscreen mode, make sure kit is plugged in before continuing.
-        if args['--gui'] and not args['--splash-pid'] and not verify_kit_is_plugged():
+        if args['--gui'] and \
+           not args['--splash-pid'] and \
+           not args['--no-power-check'] and \
+           not verify_kit_is_plugged():
             return 0
 
         clean()

@@ -80,7 +80,10 @@ def launch_boot_gui():
 
         remove_pid_file()
 
-        cmd_args = ['kano-updater', 'install', '--gui', '--no-confirm']
+        cmd_args = [
+            'kano-updater', 'install',
+            '--gui', '--no-confirm', '--no-power-check'
+        ]
         os.execvp('kano-updater', cmd_args)
 
     elif old_status == UpdaterStatus.UPDATES_INSTALLED:
