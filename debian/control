@@ -25,7 +25,7 @@ Depends:
     python-apt,
     schedtool,
     python-pip,
-    kano-i18n (>= 3.5-1),
+    kano-i18n (>= 3.15-1),
     jq,
     kano-init (>= 3.10.2-1),
     kano-profile (>= 3.9.0),
