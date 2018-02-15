@@ -5,3 +5,4 @@ kano-updater
    :maxdepth: 4
 
    kano_updater
+   tests

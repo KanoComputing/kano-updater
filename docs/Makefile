@@ -16,13 +16,16 @@ help:
 	$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 all:
+	mkdir -p source/_static
 	# Generate the reST files from which the documentation will be built.
 	sphinx-apidoc -o source/ ../
 	$(MAKE) html
 
 # Override the clean target to get rid of all generated .rst files.
 clean:
-	-find source -name "*.rst" -type f -not -name "index.rst" -not -name "modules.rst" -delete
+	-find source -maxdepth 1 -name "*.rst" -type f \
+		-not -name "index.rst" -not -name "modules.rst" \
+		-delete
 	-$(SPHINXBUILD) -M clean "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 # Catch-all target: route all unknown targets to Sphinx using the new

@@ -25,8 +25,7 @@ def pip(monkeypatch):
 def pip_modules(fs):
     '''
     Fake the list of Python modules managed by Python pip provided by the
-    updater at
-        /usr/share/kano-updater/python_modules
+    updater at ``/usr/share/kano-updater/python_modules``
     '''
 
     fs.CreateFile(

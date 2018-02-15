@@ -23,7 +23,7 @@ class AbortError(Exception):
 class PyTestProgress(CLIProgress):
     '''
     Updater progress object tailored to run through Pytest. Can be passed in
-    place of any updater *Progress object.
+    place of any updater (any)-Progress object.
     '''
 
     def _abort(self, phase, msg):
