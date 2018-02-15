@@ -1,5 +1,6 @@
 kano-updater (3.15.0-0) unstable; urgency=low
 
+  * Implemented cache clean after an upgrade
   * Added functionality to empty-trash bin as to clean old core dumps
   * Bump version for Kanux Beta v3.15.0
   * Improve app launch time by eliminating D-Bus iface retries
@@ -10,7 +11,7 @@ kano-updater (3.15.0-0) unstable; urgency=low
   * Moved background update downloads into project through dhcpcd hook
   * Switch the boot splash to inform the user when the update was interrupted
 
- -- Team Kano <dev@kano.me>  Tue, 13 Feb 2018 10:38:00 +0100
+ -- Team Kano <dev@kano.me>  Tue, 15 Feb 2018 15:38:00 +0100
 
 kano-updater (3.14.1-0) unstable; urgency=low
 
