@@ -22,11 +22,13 @@ case "$reason" in
         # This prevents multiple instances clashing during boot.
         # TODO: This could've been a queued systemd service that only ran after
         # kano-dashboard.service
-        if [ "$delta_uptime" -gt 0 ]; then
+        (
+            if [ "$delta_uptime" -gt 0 ]; then
+                sleep "$delta_uptime"
+            fi
 
-            (sleep "$delta_uptime" &&
-             systemd-run /usr/bin/kano-updater download --low-prio) &
-        fi
+            systemd-run /usr/bin/kano-updater download --low-prio
+        ) &
         ;;
 
 esac
