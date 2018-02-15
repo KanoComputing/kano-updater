@@ -375,9 +375,7 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_3_14_1_to_beta_3_15_0(self):
-        # Kano OS recovery system will repair the kit
-        # in case of a power failure during the upgrade
-        install('kano-os-recovery')
+        pass
 
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
