@@ -14,5 +14,3 @@ SYSTEM_ISSUE_FILE = '/etc/issue'
 SYSTEM_VERSION_FILE = '/etc/kanux_version'
 
 STATUS_FILE_PATH = '/var/cache/kano-updater/status.json'
-INTERRUPTED_SPLASH_PATH = '/usr/lib/python2.7/dist-packages/kano_updater/ui/media/images/'
-INTERRUPTED_SPLASH_FILENAME = 'update_interrupted.png'
