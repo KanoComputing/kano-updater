@@ -17,12 +17,12 @@ from kano.network import is_internet
 from kano_updater.paths import PIP_PACKAGES_LIST, PIP_CACHE_DIR
 from kano_updater.status import UpdaterStatus
 from kano_updater.os_version import bump_system_version, get_target_version, \
-    get_system_version
+    get_system_version, OSVersion
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.apt_wrapper import AptWrapper
 from kano_updater.auxiliary_tasks import run_aux_tasks
 from kano_updater.disk_requirements import PIP_REQ_SPACE, SPACE_BUFFER, \
-    MIN_REQ_SPACE
+    MIN_REQ_SPACE, UPGRADE_3_8_0_SPACE
 from kano_updater.progress import DummyProgress, Phase, Relaunch
 from kano_updater.utils import run_pip_command
 from kano_updater.commands.download import download
@@ -342,8 +342,17 @@ def check_disk_space(priority):
 
     apt_handle = AptWrapper.get_instance()
     mb_free = get_free_space()
+    required_space = apt_handle.get_required_upgrade_space() + \
+        PIP_REQ_SPACE + SPACE_BUFFER
+
+    # Allowance for installing extra packages in the postupdate scenarios
+    # during the update to 3.8.0
+    system_version = get_system_version()
+    if system_version < OSVersion.from_version_string("Kanux-Beta-3.8.0"):
+        required_space += UPGRADE_3_8_0_SPACE
+
     required_space = max(
-        apt_handle.get_required_upgrade_space() + PIP_REQ_SPACE + SPACE_BUFFER,
+        required_space,
         MIN_REQ_SPACE
     )
 
