@@ -35,6 +35,28 @@ class InstallError(Exception):
 
 
 def install(progress=None, gui=True):
+    progress.split(
+        Phase(
+            'checks',
+            _('Checking system'),
+            1,
+            is_main=True
+        ),
+        Phase(
+            'download',
+            _("Downloading updates"),
+            39,
+            is_main=True
+        ),
+        Phase(
+            'install',
+            _("Installing updates"),
+            60,
+            is_main=True
+        ),
+    )
+
+    progress.start('checks')
     status = UpdaterStatus.get_instance()
     logger.debug("Installing update (updater state = {})".format(status.state))
 
@@ -61,21 +83,6 @@ def install(progress=None, gui=True):
         return False
 
     logger.debug("Downloading any new updates that might be available.")
-    progress.split(
-        Phase(
-            'download',
-            _("Downloading updates"),
-            40,
-            is_main=True
-        ),
-        Phase(
-            'install',
-            _("Installing updates"),
-            60,
-            is_main=True
-        ),
-    )
-
     progress.start('download')
     if not download(progress):
         logger.error("Downloading updates failed, cannot update.")
