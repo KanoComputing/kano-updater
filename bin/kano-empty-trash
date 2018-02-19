@@ -64,7 +64,7 @@ def clean_old_dumps(dir_, age):
     else:
         for file_ in os.listdir(dir_):
             full_path = os.path.join(dir_, file_)
-            mtime = datetime.fromtimestamp(os.path.getmtime(file_))
+            mtime = datetime.fromtimestamp(os.path.getmtime(full_path))
             if (file_.endswith('.dump') or file_.endswith('.dump.gz')) and \
             ((now - mtime) > timedelta(days=age)) and os.path.isfile(full_path):
                 try:
