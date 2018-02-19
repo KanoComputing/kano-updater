@@ -5,7 +5,7 @@
 # Copyright (C) 2015 - 2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
 #
-# When run as a user, deletes their trash. When run as root, empties the trash of each user in 
+# When run as a user, deletes their trash. When run as root, empties the trash of each user in
 # group 'kanousers' and additionaly it cleans the old core dump files.
 
 import os
@@ -35,7 +35,7 @@ def empty_all_trash():
     # Start by enumerating all users
     path = '/home'
     users = get_real_users()
-    
+
     for user in users:
         uid = user[pwd_field_id['pw_uid']]
         uname = user[pwd_field_id['pw_name']]
@@ -55,23 +55,23 @@ def clean_old_dumps(dir_, age):
 
     TODO:
         * Get the coredump_dir directly from an environment variable or through
-        the configuration file of kernel.core_pattern 
+        the configuration file of kernel.core_pattern
     '''
     now = datetime.now()
-    
+
     if not dir_:
         raise AttributeError
     else:
         for file_ in os.listdir(dir_):
             full_path = os.path.join(dir_, file_)
             mtime = datetime.fromtimestamp(os.path.getmtime(file_))
-            if (file_.endswith('.dump') or file_.endswith('.dump.gz')) and \ 
+            if (file_.endswith('.dump') or file_.endswith('.dump.gz')) and \
             ((now - mtime) > timedelta(days=age)) and os.path.isfile(full_path):
                 try:
                     os.remove(full_path)
                 except OSError, e:
                     logger.error('Cannot delete:{} . {}'.format(e.filename, e.strerror))
-        
+
 if __name__ == '__main__':
     if os.getuid():
         if os.environ.has_key('HOME'):
