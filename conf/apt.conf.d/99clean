@@ -1,7 +1,0 @@
-# Keep the post installation environment clean
-# and completely empty the cache after upgrade/update
-# for more options see: man (5) apt.conf 
-
-DPkg::Post-Invoke { "echo Kano cache cleanup...;rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };
-APT::Update::Post-Invoke { "echo Kano post cleanup...;rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };
-APT::Clean "always";

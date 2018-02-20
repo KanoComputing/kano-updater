@@ -14,4 +14,3 @@ locale/* /usr/share/locale
 
 conf/apt etc/
 conf/dhcpcd-hooks lib/dhcpcd/
-conf/apt.conf.d/* etc/apt/apt.conf.d/
