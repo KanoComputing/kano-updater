@@ -1,0 +1,12 @@
+# Responsible for archiving old cache packages
+# for long-term space issues
+# for more options see: man (5) apt.conf and the example configure apt
+
+# Perform an auto-clean every four months
+APT::Periodic::AutocleanInterval "120";
+
+# If the size is bigger than 1GB
+APT::Periodic::MaxSize "1024";
+
+# But not newer than three months
+APT::Periodic::MinAge "120";
