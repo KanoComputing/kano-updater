@@ -11,7 +11,7 @@ import time
 from kano.logging import logger
 from kano.utils.disk import get_free_space
 from kano.utils.file_operations import read_file_contents_as_lines
-from kano.utils.shell import run_cmd
+from kano.utils.shell import run_cmd, run_cmd_log
 from kano.network import is_internet
 
 from kano_updater.paths import PIP_PACKAGES_LIST, PIP_CACHE_DIR
@@ -116,6 +116,7 @@ def do_install(progress, status, priority=Priority.NONE):
         install_urgent(progress, status)
     else:
         install_standard(progress, status)
+    run_cmd_log('apt-get --yes autoremove')
 
     status.state = UpdaterStatus.UPDATES_INSTALLED
 

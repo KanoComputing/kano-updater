@@ -10,6 +10,7 @@ import time
 
 from kano.network import is_internet
 from kano.logging import logger
+from kano.utils.shell import run_cmd_log
 
 from kano_updater.apt_wrapper import AptWrapper
 from kano_updater.status import UpdaterStatus
@@ -108,6 +109,7 @@ def _do_check(progress, priority=Priority.NONE):
     apt_handle.update(progress, sources_list=KANO_SOURCES_LIST)
     logger.debug("Checking urgent: {}".format(priority <= Priority.URGENT))
     logger.debug("Checking standard: {}".format(priority <= Priority.STANDARD))
+    run_cmd_log('apt-get --yes autoclean')
 
     if (
             priority <= Priority.URGENT
