@@ -1,9 +1,10 @@
-#
-# Setting/getting the status of the updater
+# status.py
 #
 # Copyright (C) 2015-2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
+# Setting/getting the status of the updater
+
 
 import os
 import json
@@ -11,8 +12,10 @@ import json
 from kano.utils import ensure_dir
 from kano.logging import logger
 
+from kano_updater.recovery import enable_system_recovery_flow, \
+    cancel_system_recovery_flow
 from kano_updater.paths import STATUS_FILE_PATH
-from kano_updater.splash import set_splash_interrupted, clear_splash
+
 
 class UpdaterStatusError(Exception):
     pass
@@ -97,7 +100,7 @@ class UpdaterStatus(object):
             self._state = data['state']
             self._last_update = data['last_update']
             self._last_check = data['last_check']
-            self._updatable_independent_packages = data.get('ind_pkg',[])
+            self._updatable_independent_packages = data.get('ind_pkg', [])
             self._last_check_urgent = data['last_check_urgent']
             self._first_boot_countdown = data['first_boot_countdown']
             self._is_urgent = (data['is_urgent'] == 1)
@@ -125,12 +128,14 @@ class UpdaterStatus(object):
         with open(self._status_file, 'w') as status_file:
             json.dump(data, status_file, indent=4)
 
-        # ensure splash is set whenever we are installing and not otherwise
-        if self._state in [self.INSTALLING_UPDATES,
-                           self.INSTALLING_INDEPENDENT]:
-            set_splash_interrupted()
+        # When installing updates, configure the recovery stategy for the next
+        # boot in case of power failure. This sets a different splash screen
+        # during bootup and configures the system to autologin as the user in
+        # order to start the Updater immediately. See kano-ui-autostart.
+        if self._state in [self.INSTALLING_UPDATES, self.INSTALLING_INDEPENDENT]:
+            enable_system_recovery_flow()
         else:
-            clear_splash()
+            cancel_system_recovery_flow()
 
     # -- state
     @property

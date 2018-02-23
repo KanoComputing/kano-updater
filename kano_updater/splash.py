@@ -13,8 +13,7 @@ from kano_i18n import assets
 
 def set_splash_interrupted():
     # This command may not exist yet, so ignore errors
-    splash_path = assets.get_path(IMAGE_PATH,
-                                  'update_interrupted.png')
+    splash_path = assets.get_path(IMAGE_PATH, 'update_interrupted.png')
     os.system('kano-boot-splash-cli set {}'.format(splash_path))
 
 
