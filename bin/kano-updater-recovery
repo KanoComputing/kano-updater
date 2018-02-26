@@ -1,0 +1,249 @@
+#!/usr/bin/env python
+#
+# kano-updater-recovery
+#
+# Copyright (C) 2018 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
+#
+# Recovery flow for the updater
+#
+
+
+MINUTE = 60  # seconds
+HOUR = 60 * MINUTE
+PROGRESS_UPDATE_TIMEOUT = 20 * MINUTE
+SYSTEM_PROGRESS_TIMEOUT = 2 * HOUR
+
+PERMITTED_WIFI_RETRIES = 3
+NO_INTERNET_RC = 123
+
+WIFI_FAIL_FILE = '/var/cache/kano-updater-recovery'
+
+
+class RC(object):
+    '''
+    Return code constants
+    '''
+
+    SUCCESS = 0
+    UF1 = 1  # dpkg couldn't resolve problems (shouldn't be called from here)
+    UF2 = 2  # Problem launching the updater
+    UF3 = 3  # WiFi connection problems
+    UF4 = 4  # WiFi retries exceeded
+    UF5 = 5  # Progress update timeout
+    UF6 = 6  # System timeout
+
+    @staticmethod
+    def rc_to_str(rc_val):
+        '''
+        Returns an RC string for the supplied RC value corresponding to the
+        variable name as defined above.
+
+        For example, RC.rc_to_str(RC.UF1) returns 'UF1'.
+
+        Look through the RC object, ignoring all private members, checking for
+        equality, returning the string of the property found.
+        '''
+
+        for attr_name in filter(lambda x: not x.startswith('_'), dir(RC)):
+            attr = getattr(RC, attr_name)
+            if attr == rc_val:
+                return attr_name
+
+        # Not found but return gracefully
+        return ''
+
+
+def _stop_systemd_service(service):
+    '''
+    Helper function to stop SystemD services
+
+    Args:
+        service (str): Name of the SystemD service to kill
+    '''
+
+    import subprocess
+    subprocess.Popen(['systemctl', 'stop', service])
+
+
+def _start_systemd_service(service):
+    '''
+    Helper function to launch SystemD services
+
+    Args:
+        service (str): Name of the SystemD service to launch
+    '''
+
+    import subprocess
+    subprocess.Popen(['systemctl', 'start', service])
+
+
+def show_recovery_splash():
+    '''
+    Shows the main recovery splash
+    '''
+
+    _stop_systemd_service('recovery-boot-splash')
+    _start_systemd_service('recovery-running-updater-splash')
+
+
+def show_success_splash():
+    '''
+    Shows the splash for a successful recovery
+
+    Returns:
+        int: Return code. Should be one of the members of the :class:`RC` class
+    '''
+
+    _start_systemd_service('recovery-success-splash')
+
+    return RC.SUCCESS
+
+
+def show_err(err_code):
+    '''
+    Shows the error splash screen associated with the error code. Requires a
+    directory in :attr:`kano_updater.ui.paths.MEDIA_PATH`.
+
+    TODO: Prepare the system for hard shutdown
+
+    Args:
+        err_code (int): Error code to show. Should be a member of :class:`RC`
+
+    Returns:
+        int: The supplied return code
+    '''
+
+    err_str = RC.rc_to_str(err_code)
+    err_service = 'recovery-err-splash@{}'.format(err_str)
+    _start_systemd_service(err_service)
+
+    return err_code
+
+
+def get_wifi_retries():
+    '''
+    Calculates how many times the recovery mechanism has encountered the WiFi
+    connection failure screen.
+
+    Returns:
+        int: WiFi connection failure count
+    '''
+
+    try:
+        with open(WIFI_FAIL_FILE, 'r') as wifi_file:
+            return wifi_file.read()
+    except IOError:
+        return 0
+
+
+def increment_wifi_retries():
+    '''
+    Increase the count of WiFi failures
+    '''
+
+    try:
+        with open(WIFI_FAIL_FILE, 'w') as wifi_file:
+            wifi_file.write(int(wifi_file.read()) + 1)
+    except (IOError, TypeError):
+        pass
+
+
+def reset_wifi_retries():
+    '''
+    Resets the count of recovery mechanism has encountered the WiFi
+    connection failure screen.
+    '''
+
+    try:
+        import os
+        os.remove(WIFI_FAIL_FILE)
+    except (IOError, OSError):
+        pass
+
+
+def run_updater():
+    '''
+    Launch the updater recovery in the background
+
+    Returns:
+        subprocess.Popen: Launched updater process
+    '''
+
+    import subprocess
+    return subprocess.Popen(
+        ['kano-updater', 'install']
+    )
+
+
+def parse_proc_rc(rc):
+    '''
+    Parses the return code from the updater terminating to the language of the
+    UFx codes. Shows the appropriate message upon calculation and returns the
+    code itself.
+
+    Args:
+        rc (int): Return code from the updater's termination
+
+    Returns:
+        int: Return code corresponding to the updater's finished state (Member
+        of :class:`RC` class).
+    '''
+
+    if rc == 0:
+        reset_wifi_retries()
+        return show_success_splash()
+    elif rc == NO_INTERNET_RC:
+        if get_wifi_retries() > PERMITTED_WIFI_RETRIES:
+            return show_err(RC.UF4)
+        else:
+            increment_wifi_retries()
+            return show_err(RC.UF3)
+    else:
+        return show_err(RC.UF2)
+
+
+def main():
+    '''
+    '''
+
+    show_recovery_splash()
+
+    proc = run_updater()
+
+    import time
+    start_time = time.time()
+
+    duration = 0
+
+    while True:
+        ret = proc.poll()
+        if ret is not None:
+            return parse_proc_rc(ret)
+
+        now = time.time()
+        duration = now - start_time
+
+        if duration > SYSTEM_PROGRESS_TIMEOUT:
+            return show_err(RC.UF6)
+
+        # TODO: Poll stdout to timeout with RC.UF5 error
+
+
+        time.sleep(1)
+
+
+if __name__ == '__main__':
+    '''
+    Catch everything to show something in the case of catastrophic failure. To
+    ensure that this always runs no matter if some dependency is missing due to
+    having a corrupt system, do as many imports as possible within the try
+    block.
+    '''
+
+    try:
+        import sys
+        sys.exit(main())
+    except Exception, err:
+        print err
+        show_err(RC.UF2)

@@ -1,0 +1,16 @@
+#
+# recovery-running-updater-splash.service
+#
+# Runs the splash screen for the recovery mechanism when it is running the
+# updater
+#
+
+
+[Unit]
+Description=Start recovery splash screen for when the updater is running
+DefaultDependencies=no
+ConditionPathExists=/usr/lib/python2.7/dist-packages/kano_updater/ui/media/images/en_US/update-interrupted/updater-running
+
+[Service]
+Restart=no
+ExecStart=/usr/bin/kano-start-splash -t -1 /usr/lib/python2.7/dist-packages/kano_updater/ui/media/images/en_US/update-interrupted/updater-running

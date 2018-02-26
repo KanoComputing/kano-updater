@@ -1,0 +1,21 @@
+#
+# recovery-boot-splash.service
+#
+# Runs initial the splash screen for the recovery mechanism when the system is
+# trying to boot to a point where the updater can fix it
+#
+
+
+[Unit]
+Description=Start Recovery Mode Boot animation
+DefaultDependencies=no
+After=kano-os-loader.service
+OnFailure=recovery-err-splash@uf1.service
+
+[Service]
+Restart=no
+ExecStart=/usr/bin/kano-start-splash -t -1 /usr/lib/python2.7/dist-packages/kano_updater/ui/media/images/en_US/update-interrupted/dpkg-running
+WatchdogSec=300
+
+[Install]
+WantedBy=kano-os-loader.service
