@@ -9,10 +9,11 @@
 
 
 from tests.fixtures.progress import PyTestProgress, AbortError
+import tests.fixtures.autologin_checks
 
 
 def test_install(apt, pip, state, system_version, free_space, pip_modules,
-                 run_cmd, internet, server_available):
+                 run_cmd, internet, server_available, autologin_checks):
     import kano_updater.commands.install
 
     space_available, space_required = free_space
@@ -27,6 +28,9 @@ def test_install(apt, pip, state, system_version, free_space, pip_modules,
             progress=progress, gui=False
         )
 
-        assert res == should_succeed
+        assert(
+            res == should_succeed and
+            should_succeed == tests.fixtures.autologin_checks.all_checks(autologin_checks)
+        )
     except AbortError:
         assert not should_succeed
