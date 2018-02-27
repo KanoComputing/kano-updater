@@ -64,7 +64,7 @@ from kano_updater.commands.check import check_for_updates
 from kano_updater.commands.clean import clean
 from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
-from kano_updater.utils import make_low_prio, install_docopt, is_running, \
+from kano_updater.utils import make_low_prio, is_running, \
     remove_pid_file, pause_notifications, resume_notifications, show_kano_dialog, \
     run_bg, enable_power_button, disable_power_button, verify_kit_is_plugged
 import kano_updater.priority as Priority
