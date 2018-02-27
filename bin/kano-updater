@@ -39,6 +39,7 @@ import sys
 import atexit
 import time
 import signal
+import docopt
 
 
 if __name__ == '__main__' and __package__ is None:
