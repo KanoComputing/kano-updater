@@ -11,6 +11,7 @@ kano-updater (3.15.0-0) unstable; urgency=low
   * Intelligently gather disk space required for installation
   * Added functionality to empty-trash bin as to clean old core dumps
   * Automatically clean and remove unrequired deb packages
+  * Removed old code for installing docopt
 
  -- Team Kano <dev@kano.me>  Tue, 20 Feb 2018 17:58:00 +0100
 

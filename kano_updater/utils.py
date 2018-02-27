@@ -153,14 +153,6 @@ def install_ping():
         run_pip_command('install ping')
 
 
-def install_docopt():
-    try:
-        import docopt
-    except ImportError:
-        logger.info("docopt not found on the system, installing")
-        run_pip_command('install docopt')
-
-
 def kill_apps():
     # since kano-updater is run as root, need to inform
     # kanolauncher about user
