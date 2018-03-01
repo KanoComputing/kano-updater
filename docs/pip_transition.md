@@ -33,7 +33,7 @@ This must:
   * Install the new deb packages
   * Ensure the old pip packages don't override them.
   
-It turns out by deafult pip packages do override deb packages. Python load modules from `sys.path`
+It turns out by default pip packages do override deb packages. Python load modules from `sys.path`
 
 * deb installs to `/usr/lib/python2.7/dist-packages`
 * pip installs to `/usr/local/lib/python2.7/dist-packages`
@@ -57,7 +57,7 @@ This adds that path to sys.path after `/usr/lib/python2.7/dist-packages`.
 mkdir -p /usr/local/lib/python2.7/dist-packages.pip-fallback
 mv /usr/local/lib/python2.7/dist-packages{,.pip-fallback}
 ```
-##### 5 deb packages installed as part of main install step
+##### 4 deb packages installed as part of main install step
 A new package `kano-os-pip-transition-depends` which depends on the new deb packages will be added.
 
 The code in the updater which downloads/installs pip packages needs to be removed before this update.
