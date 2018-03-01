@@ -17,7 +17,9 @@ Steps
    * py2deb seems to work reasonably well. The only caveat is that it needs `pip-accel` to be manually installed first `pip install pip-accel` as otherwise you get a version of pip which pip-accel is not compatible with. Then do `pip install py2deb`.
 * Choice of packages and versions:
   * It is not necessary to install pip once we transition.
-  * Some packages also already have raspbian versions. I propose to build new ones where the pip ones we currently install are newer, but not where they are older. There are only two where the raspbian version is newer (pam and futures). If this proves to be a problem, we can build the exact version and pin in the debian control file.
+  * Some packages also already have raspbian versions. I propose to build all of them to the exact versions we used in 3.14.1, and for the next release pin those version of the deb packages. This is to reduce the QA burden of the next release. For future releases we can unpin them and unpush deb packages which have versions in Raspbian.
+  There are only two where the raspbian version is newer (pam and futures).
+  
   
   
   * Although some people may have updated and got requests 2.18.4, the last release had 2.6.0 so I still propose to use that.
@@ -56,6 +58,7 @@ This adds that path to sys.path after `/usr/lib/python2.7/dist-packages`.
 ```
 mkdir -p /usr/local/lib/python2.7/dist-packages.pip-fallback
 mv /usr/local/lib/python2.7/dist-packages{,.pip-fallback}
+mkdir -p /usr/local/lib/python2.7/dist-packages # leave empty directory (just in case)
 ```
 ##### 4 deb packages installed as part of main install step
 A new package `kano-os-pip-transition-depends` which depends on the new deb packages will be added.
