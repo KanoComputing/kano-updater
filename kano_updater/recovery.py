@@ -8,7 +8,7 @@
 
 from kano_init.utils import enable_console_autologin, set_ldm_autologin, \
     enable_ldm_autostart, reconfigure_autostart_policy
-from kano.utils import get_user_unsudoed
+from kano.utils.user import get_user_unsudoed
 from kano.logging import logger
 
 from kano_updater.splash import set_splash_interrupted, clear_splash
