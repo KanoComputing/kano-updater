@@ -123,6 +123,10 @@ def show_err(err_code):
     err_service = 'recovery-err-splash@{}'.format(err_str)
     _start_systemd_service(err_service)
 
+    import time
+    time.sleep(0.2)
+    _stop_systemd_service('recovery-running-updater-splash')
+
     return err_code
 
 
@@ -136,9 +140,9 @@ def get_wifi_retries():
     '''
 
     try:
-        with open(RECOVERY_STATUS_PATH, 'r') as wifi_file:
-            return wifi_file.read()
-    except IOError:
+        with open(RECOVERY_STATUS_PATH, 'r') as status:
+            return int(status.read())
+    except (IOError, ValueError):
         return 0
 
 
@@ -148,8 +152,10 @@ def increment_wifi_retries():
     '''
 
     try:
-        with open(RECOVERY_STATUS_PATH, 'w') as wifi_file:
-            wifi_file.write(int(wifi_file.read()) + 1)
+        retries = get_wifi_retries()
+
+        with open(RECOVERY_STATUS_PATH, 'w') as status:
+            status.write(str(retries + 1))
     except (IOError, TypeError):
         pass
 
@@ -179,17 +185,11 @@ def is_recovery_needed():
 
     from kano_updater.commands.clean import clean
     from kano_updater.status import UpdaterStatus
-    from kano_updater.utils import remove_pid_file
 
-    old_status = clean(dry_run=True)
     status = UpdaterStatus.get_instance()
 
-    if old_status == UpdaterStatus.INSTALLING_UPDATES:
-        status.notifications_muted = True
-        status.state = UpdaterStatus.UPDATES_AVAILABLE
-        status.save()
-
-        remove_pid_file()
+    if status.state == UpdaterStatus.INSTALLING_UPDATES:
+        clean()
         return True
 
     return False
@@ -280,5 +280,5 @@ if __name__ == '__main__':
         import sys
         sys.exit(main())
     except Exception, err:
-        print err
+        print 'Unexpected error:', err
         show_err(RC.UF2)

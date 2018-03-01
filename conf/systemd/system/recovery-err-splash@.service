@@ -11,8 +11,8 @@
 [Unit]
 Description=Start recovery error %i splash
 DefaultDependencies=no
-ConditionPathExists=/usr/lib/python2.7/dist-packages/kano_updater/ui/media/images/en_US/update-interrupted/%i-err
+ConditionPathExists=/usr/lib/python2.7/dist-packages/kano_updater/ui/media/images/en_US/update-interrupted/%i-err/%i.png
 
 [Service]
 Restart=no
-ExecStart=/usr/bin/kano-start-splash -t -1 /usr/lib/python2.7/dist-packages/kano_updater/ui/media/images/en_US/update-interrupted/%i-err
+ExecStart=/usr/bin/kano-start-splash -t -1 /usr/lib/python2.7/dist-packages/kano_updater/ui/media/images/en_US/update-interrupted/%i-err/%i.png
