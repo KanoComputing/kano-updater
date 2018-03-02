@@ -7,7 +7,7 @@
 
 
 [Unit]
-Description=Start recovery splash screen for when the updater is running
+Description=Update recovery splash for when the Updater is running
 DefaultDependencies=no
 ConditionPathExists=/usr/lib/python2.7/dist-packages/kano_updater/ui/media/images/en_US/update-interrupted/updater-running
 

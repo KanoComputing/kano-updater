@@ -1,29 +1,30 @@
 #!/usr/bin/env python
-#
+
 # kano-updater-recovery
 #
 # Copyright (C) 2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Recovery flow for the updater
-#
 
 
 MINUTE = 60  # seconds
 HOUR = 60 * MINUTE
-PROGRESS_UPDATE_TIMEOUT = 20 * MINUTE
 SYSTEM_PROGRESS_TIMEOUT = 2 * HOUR
 
 PERMITTED_WIFI_RETRIES = 3
+
+# TODO: Ensure these are implemented in the Updater.
 NO_INTERNET_RC = 123
+UPDATER_HANGED_RC = 124
 
 RECOVERY_STATUS_PATH = '/var/cache/kano-updater/recovery.txt'
 
 
 class RC(object):
-    '''
+    """
     Return code constants
-    '''
+    """
 
     SUCCESS = 0
     UF1 = 1  # dpkg couldn't resolve problems (shouldn't be called from here)
@@ -35,7 +36,7 @@ class RC(object):
 
     @staticmethod
     def rc_to_str(rc_val):
-        '''
+        """
         Returns an RC string for the supplied RC value corresponding to the
         variable name as defined above.
 
@@ -43,7 +44,7 @@ class RC(object):
 
         Look through the RC object, ignoring all private members, checking for
         equality, returning the string of the property found.
-        '''
+        """
 
         for attr_name in filter(lambda x: not x.startswith('_'), dir(RC)):
             attr = getattr(RC, attr_name)
@@ -55,33 +56,33 @@ class RC(object):
 
 
 def _stop_systemd_service(service):
-    '''
+    """
     Helper function to stop SystemD services
 
     Args:
         service (str): Name of the SystemD service to kill
-    '''
+    """
 
-    import subprocess
-    subprocess.Popen(['systemctl', 'stop', service])
+    import os
+    os.system('systemctl stop {}'.format(service))
 
 
 def _start_systemd_service(service):
-    '''
+    """
     Helper function to launch SystemD services
 
     Args:
         service (str): Name of the SystemD service to launch
-    '''
+    """
 
-    import subprocess
-    subprocess.Popen(['systemctl', 'start', service])
+    import os
+    os.system('systemctl start {}'.format(service))
 
 
 def show_recovery_splash():
-    '''
+    """
     Shows the main recovery splash
-    '''
+    """
 
     _start_systemd_service('recovery-running-updater-splash')
     import time
@@ -90,12 +91,12 @@ def show_recovery_splash():
 
 
 def show_success_splash():
-    '''
+    """
     Shows the splash for a successful recovery
 
     Returns:
         int: Return code. Should be one of the members of the :class:`RC` class
-    '''
+    """
 
     _start_systemd_service('recovery-success-splash')
     import time
@@ -106,7 +107,7 @@ def show_success_splash():
 
 
 def show_err(err_code):
-    '''
+    """
     Shows the error splash screen associated with the error code. Requires a
     directory in :attr:`kano_updater.ui.paths.MEDIA_PATH`.
 
@@ -117,7 +118,7 @@ def show_err(err_code):
 
     Returns:
         int: The supplied return code
-    '''
+    """
 
     err_str = RC.rc_to_str(err_code)
     err_service = 'recovery-err-splash@{}'.format(err_str)
@@ -131,13 +132,13 @@ def show_err(err_code):
 
 
 def get_wifi_retries():
-    '''
+    """
     Calculates how many times the recovery mechanism has encountered the WiFi
     connection failure screen.
 
     Returns:
         int: WiFi connection failure count
-    '''
+    """
 
     try:
         with open(RECOVERY_STATUS_PATH, 'r') as status:
@@ -147,9 +148,9 @@ def get_wifi_retries():
 
 
 def increment_wifi_retries():
-    '''
+    """
     Increase the count of WiFi failures
-    '''
+    """
 
     try:
         retries = get_wifi_retries()
@@ -161,10 +162,10 @@ def increment_wifi_retries():
 
 
 def reset_wifi_retries():
-    '''
+    """
     Resets the count of recovery mechanism has encountered the WiFi
     connection failure screen.
-    '''
+    """
 
     try:
         import os
@@ -183,34 +184,63 @@ def is_recovery_needed():
         bool: Whether the Updater was interrupted and recovery needs to start
     """
 
-    from kano_updater.commands.clean import clean
     from kano_updater.status import UpdaterStatus
 
     status = UpdaterStatus.get_instance()
 
     if status.state == UpdaterStatus.INSTALLING_UPDATES:
-        clean()
         return True
 
     return False
 
 
+def is_err_being_shown():
+    """Check if a UFx error splash is currently being shown.
+
+    Returns:
+        bool: Whether a recovery-err-splash service is active
+    """
+
+    import os
+    return (os.system('systemctl is-active -q recovery-err-splash@*.service') == 0)
+
+
 def run_updater():
-    '''
-    Launch the updater recovery in the background
+    """Launch the updater recovery in the background
+
+    Assumes the state was already checked to be INSTALLING_UPDATES.
 
     Returns:
         subprocess.Popen: Launched updater process
-    '''
+    """
 
+    import os
     import subprocess
+
+    from kano_updater.commands.clean import clean
+    clean()
+
     return subprocess.Popen(
-        ['kano-updater', 'install', '--no-power-check']
+        ['kano-updater', 'install', '--no-power-check'],
+        shell=False,
+        preexec_fn=os.setsid
     )
 
 
+def stop_updater(proc):
+    """Stops the Updater process
+
+    Args:
+        proc (subprocess.Popen): The process of the Updater
+    """
+
+    import os
+    import signal
+    os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
+
+
 def parse_proc_rc(rc):
-    '''
+    """
     Parses the return code from the updater terminating to the language of the
     UFx codes. Shows the appropriate message upon calculation and returns the
     code itself.
@@ -221,26 +251,35 @@ def parse_proc_rc(rc):
     Returns:
         int: Return code corresponding to the updater's finished state (Member
         of :class:`RC` class).
-    '''
+    """
 
     if rc == 0:
         reset_wifi_retries()
         return show_success_splash()
+
     elif rc == NO_INTERNET_RC:
         if get_wifi_retries() > PERMITTED_WIFI_RETRIES:
             return show_err(RC.UF4)
         else:
             increment_wifi_retries()
             return show_err(RC.UF3)
+
+    elif rc == UPDATER_HANGED_RC:
+        return show_err(RC.UF5)
+
     else:
         return show_err(RC.UF2)
 
 
 def main():
-    '''
-    '''
+    """Main recovery program."""
 
     if not is_recovery_needed():
+        return RC.SUCCESS
+
+    # Check if any UFx is being shown, e.g. kano-os-recovery had a timeout.
+    if is_err_being_shown():
+        # TODO: Wait for N sec and shutdown.
         return RC.SUCCESS
 
     show_recovery_splash()
@@ -261,24 +300,23 @@ def main():
         duration = now - start_time
 
         if duration > SYSTEM_PROGRESS_TIMEOUT:
+            stop_updater(proc)
             return show_err(RC.UF6)
-
-        # TODO: Poll stdout to timeout with RC.UF5 error
 
         time.sleep(1)
 
 
 if __name__ == '__main__':
-    '''
+    """
     Catch everything to show something in the case of catastrophic failure. To
     ensure that this always runs no matter if some dependency is missing due to
     having a corrupt system, do as many imports as possible within the try
     block.
-    '''
+    """
 
     try:
         import sys
         sys.exit(main())
     except Exception, err:
-        print 'Unexpected error:', err
+        print '[kano-updater-recovery] Unexpected error:', err
         show_err(RC.UF2)

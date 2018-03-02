@@ -7,10 +7,10 @@
 
 
 [Unit]
-Description=Start Recovery Mode Boot animation
+Description=Update recovery mode boot animation during kano-os-recovery
 DefaultDependencies=no
 After=kano-os-loader.service
-OnFailure=recovery-err-splash@uf1.service
+OnFailure=recovery-err-splash@UF1.service
 
 [Service]
 Restart=no

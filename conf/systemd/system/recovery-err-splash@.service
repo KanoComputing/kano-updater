@@ -1,5 +1,5 @@
 #
-# recovery-err@.service
+# recovery-err-splash@.service
 #
 # Runs the splash screen for the when recovery mechanism fails with an error
 # message. Add directories for error messages under
@@ -9,7 +9,7 @@
 
 
 [Unit]
-Description=Start recovery error %i splash
+Description=Update recovery error %i splash
 DefaultDependencies=no
 ConditionPathExists=/usr/lib/python2.7/dist-packages/kano_updater/ui/media/images/en_US/update-interrupted/%i-err/%i.png
 

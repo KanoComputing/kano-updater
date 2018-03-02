@@ -6,7 +6,7 @@
 
 
 [Unit]
-Description=Start recovery splash screen for when the system has recovered
+Description=Update recovery successfully finished splash
 DefaultDependencies=no
 ConditionPathExists=/usr/lib/python2.7/dist-packages/kano_updater/ui/media/images/en_US/update-interrupted/recovery-success
 
