@@ -5,11 +5,13 @@
 # Copyright (C) 2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
-# Recovery flow for the updater
+# Recovery flow for the updater.
+# Needs to be run with sudo.
 
 
 MINUTE = 60  # seconds
 HOUR = 60 * MINUTE
+
 SYSTEM_PROGRESS_TIMEOUT = 2 * HOUR
 
 PERMITTED_WIFI_RETRIES = 3
@@ -271,6 +273,40 @@ def parse_proc_rc(rc):
         return show_err(RC.UF2)
 
 
+def reboot(delay=0):
+    """Perform a system reboot.
+
+    Args:
+        delay (int): Time in seconds to delay the operation (same thread).
+    """
+
+    if delay:
+        import time
+        time.sleep(delay)
+
+    import os
+    os.system('systemctl reboot')
+
+
+def prepare_for_hard_shutdown():
+    """Configure the system to handle a hard poweroff gracefully."""
+
+    pass  # TODO: Insert black magic here.
+
+
+def infinite_loop():
+    """Start an infinite loop within the main thread.
+
+    Note:
+        This function is designed to be the last thing you call. It will
+        block indefinitely.
+    """
+
+    import time
+    while True:
+        time.sleep(1 * HOUR)
+
+
 def main():
     """Main recovery program."""
 
@@ -279,31 +315,48 @@ def main():
 
     # Check if any UFx is being shown, e.g. kano-os-recovery had a timeout.
     if is_err_being_shown():
-        # TODO: Wait for N sec and shutdown.
+        prepare_for_hard_shutdown()
+        infinite_loop()
         return RC.SUCCESS
 
     show_recovery_splash()
 
     proc = run_updater()
+    rc = 0
 
     import time
     start_time = time.time()
-
     duration = 0
 
+    # Poll the status of the Updater process and implement an overall timeout
+    # to prevent this from hanging and/or taking too long.
     while True:
-        ret = proc.poll()
-        if ret is not None:
-            return parse_proc_rc(ret)
+        updater_rc = proc.poll()
+
+        if updater_rc is not None:
+            rc = parse_proc_rc(updater_rc)
+
+            if rc == RC.SUCCESS:
+                return reboot(delay=10)
+            else:
+                break
 
         now = time.time()
         duration = now - start_time
 
         if duration > SYSTEM_PROGRESS_TIMEOUT:
             stop_updater(proc)
-            return show_err(RC.UF6)
+            rc = show_err(RC.UF6)
+            break
 
         time.sleep(1)
+
+    # If the script has gotten to this point, a UFx is being shown. It's
+    # expected that the recovery shows the error indefinitely until the user
+    # unplugs to power off.
+    prepare_for_hard_shutdown()
+    infinite_loop()
+    return rc
 
 
 if __name__ == '__main__':
@@ -320,3 +373,5 @@ if __name__ == '__main__':
     except Exception, err:
         print '[kano-updater-recovery] Unexpected error:', err
         show_err(RC.UF2)
+        prepare_for_hard_shutdown()
+        infinite_loop()
