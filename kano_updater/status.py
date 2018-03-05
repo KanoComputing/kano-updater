@@ -132,10 +132,25 @@ class UpdaterStatus(object):
         # boot in case of power failure. This sets a different splash screen
         # during bootup and configures the system to autologin as the user in
         # order to start the Updater immediately. See kano-ui-autostart.
-        if self._state in [self.INSTALLING_UPDATES, self.INSTALLING_INDEPENDENT]:
+        if self.is_recovery_needed():
             enable_system_recovery_flow()
         else:
             cancel_system_recovery_flow()
+
+    def is_recovery_needed(self):
+        """Check if the recovery flow should start.
+
+        This checks whether the Updater state was last set to any "installing
+        updates" to determine if an update was interrupted and recovery is needed.
+
+        Returns:
+            bool: Whether the Updater was interrupted and recovery needs to start
+        """
+
+        return (
+            self._state in
+            [self.INSTALLING_UPDATES, self.INSTALLING_INDEPENDENT]
+        )
 
     # -- state
     @property

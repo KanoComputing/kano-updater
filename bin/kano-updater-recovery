@@ -144,7 +144,7 @@ def get_wifi_retries():
 
     try:
         with open(RECOVERY_STATUS_PATH, 'r') as status:
-            return int(status.read())
+            return int(status.read().strip())
     except (IOError, ValueError):
         return 0
 
@@ -176,26 +176,6 @@ def reset_wifi_retries():
         pass
 
 
-def is_recovery_needed():
-    """Check if the recovery flow should start.
-
-    This checks whether the Updater state was last set to ``INSTALLING_UPDATES``
-    to determine if an update was interrupted and recovery is needed.
-
-    Returns:
-        bool: Whether the Updater was interrupted and recovery needs to start
-    """
-
-    from kano_updater.status import UpdaterStatus
-
-    status = UpdaterStatus.get_instance()
-
-    if status.state == UpdaterStatus.INSTALLING_UPDATES:
-        return True
-
-    return False
-
-
 def is_err_being_shown():
     """Check if a UFx error splash is currently being shown.
 
@@ -218,9 +198,6 @@ def run_updater():
 
     import os
     import subprocess
-
-    from kano_updater.commands.clean import clean
-    clean()
 
     return subprocess.Popen(
         ['kano-updater', 'install', '--no-power-check'],
@@ -310,7 +287,8 @@ def infinite_loop():
 def main():
     """Main recovery program."""
 
-    if not is_recovery_needed():
+    from kano_updater.status import UpdaterStatus
+    if not UpdaterStatus.get_instance().is_recovery_needed():
         return RC.SUCCESS
 
     # Check if any UFx is being shown, e.g. kano-os-recovery had a timeout.

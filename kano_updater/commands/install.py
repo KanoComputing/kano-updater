@@ -75,13 +75,6 @@ def install(progress=None, gui=True):
         progress.abort(_(space_msg))
         return False
 
-    if (status.state == UpdaterStatus.INSTALLING_UPDATES or
-        status.state == UpdaterStatus.INSTALLING_INDEPENDENT):
-        msg = "The install is already running"
-        logger.warn(msg)
-        progress.abort(msg)
-        return False
-
     logger.debug("Downloading any new updates that might be available.")
     progress.start('download')
     if not download(progress):
@@ -130,6 +123,7 @@ def do_install(progress, status, priority=Priority.NONE):
 
     progress.finish(_("Update completed"))
     return True
+
 
 def install_ind_package(progress, package):
     status = UpdaterStatus.get_instance()

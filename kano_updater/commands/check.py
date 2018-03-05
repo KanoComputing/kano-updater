@@ -17,18 +17,11 @@ from kano_updater.status import UpdaterStatus
 from kano_updater.progress import DummyProgress
 from kano_updater.utils import is_server_available
 import kano_updater.priority as Priority
-
-KANO_SOURCES_LIST = '/etc/apt/sources.list.d/kano.list'
+from kano_updater.paths import KANO_SOURCES_LIST
 
 
 def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
     status = UpdaterStatus.get_instance()
-
-    # FIXME: FOR DEBUGGING ONLY
-    #status.state = UpdaterStatus.UPDATES_AVAILABLE
-    #status.last_check = int(time.time())
-    #status.save()
-    #return True
 
     if not progress:
         progress = DummyProgress()

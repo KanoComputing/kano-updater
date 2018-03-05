@@ -15,7 +15,7 @@ from kano_updater.status import UpdaterStatus
 from kano_updater.apt_wrapper import AptWrapper
 from kano_updater.progress import DummyProgress, Phase
 from kano_updater.utils import run_pip_command, is_server_available,\
-        show_kano_dialog, make_normal_prio
+    show_kano_dialog, make_normal_prio
 from kano_updater.commands.check import check_for_updates
 import kano_updater.priority as Priority
 
@@ -66,12 +66,6 @@ def download(progress=None, gui=True):
 
     elif status.state == UpdaterStatus.DOWNLOADING_UPDATES:
         err_msg = N_("The download is already running")
-        logger.error(err_msg)
-        progress.abort(_(err_msg))
-        return False
-
-    elif status.state == UpdaterStatus.INSTALLING_UPDATES:
-        err_msg = N_("Updates are already being installed")
         logger.error(err_msg)
         progress.abort(_(err_msg))
         return False
