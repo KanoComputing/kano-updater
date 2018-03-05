@@ -10,8 +10,10 @@ import sys
 
 from kano.logging import logger
 
-# Placeholder function to translate encoding only when necessary
-def encode(x): return x.encode('utf-8') if isinstance(x,unicode) else x
+
+def encode(x):
+    """Placeholder function to translate encoding only when necessary"""
+    return x.encode('utf-8') if isinstance(x, unicode) else x
 
 
 class ProgressError(Exception):
@@ -300,8 +302,9 @@ class DummyProgress(Progress):
         pass
 
     # TODO: Not disabling this method, we need to relaunch in any case
-    #def relaunch(self):
-    #    pass
+    # def relaunch(self):
+    #     pass
+
 
 class CLIProgress(Progress):
     def _change(self, phase, msg):
@@ -321,8 +324,10 @@ class CLIProgress(Progress):
 
     def _prompt(self, msg, question, answers):
         if not os.isatty(sys.stdin.fileno()):
-            warn = "No tty, selecting the default answer for " \
-                   "'{}' which is: {}".format(question.encode('utf-8'), answers[0].encode('utf-8'))
+            warn = (
+                "No tty, selecting the default answer for '{}' which is: {}"
+                .format(question.encode('utf-8'), answers[0].encode('utf-8'))
+            )
             logger.warn(warn)
             return answers[0]
         else:
