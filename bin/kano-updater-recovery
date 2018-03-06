@@ -16,10 +16,6 @@ SYSTEM_PROGRESS_TIMEOUT = 2 * HOUR
 
 PERMITTED_WIFI_RETRIES = 3
 
-# TODO: Ensure these are implemented in the Updater.
-NO_INTERNET_RC = 123
-UPDATER_HANGED_RC = 124
-
 RECOVERY_STATUS_PATH = '/var/cache/kano-updater/recovery.txt'
 
 
@@ -218,11 +214,10 @@ def stop_updater(proc):
     os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
 
 
-def parse_proc_rc(rc):
+def parse_updater_rc(rc):
     """
     Parses the return code from the updater terminating to the language of the
-    UFx codes. Shows the appropriate message upon calculation and returns the
-    code itself.
+    UFx codes.
 
     Args:
         rc (int): Return code from the updater's termination
@@ -232,22 +227,24 @@ def parse_proc_rc(rc):
         of :class:`RC` class).
     """
 
-    if rc == 0:
-        reset_wifi_retries()
-        return show_success_splash()
+    from kano_updater.return_codes import RC as UpdaterRC
 
-    elif rc == NO_INTERNET_RC:
+    if rc == UpdaterRC.SUCCESS:
+        reset_wifi_retries()
+        return rc
+
+    elif rc in [UpdaterRC.NO_NETWORK, UpdaterRC.CANNOT_REACH_KANO]:
         if get_wifi_retries() > PERMITTED_WIFI_RETRIES:
-            return show_err(RC.UF4)
+            return RC.UF4
         else:
             increment_wifi_retries()
-            return show_err(RC.UF3)
+            return RC.UF3
 
-    elif rc == UPDATER_HANGED_RC:
-        return show_err(RC.UF5)
+    elif rc == UpdaterRC.HANGED_INDEFINITELY:
+        return RC.UF5
 
     else:
-        return show_err(RC.UF2)
+        return RC.UF2
 
 
 def reboot(delay=0):
@@ -312,11 +309,14 @@ def main():
         updater_rc = proc.poll()
 
         if updater_rc is not None:
-            rc = parse_proc_rc(updater_rc)
+            rc = parse_updater_rc(updater_rc)
 
             if rc == RC.SUCCESS:
-                return reboot(delay=10)
+                show_success_splash()
+                reboot(delay=10)
+                return rc
             else:
+                show_err(rc)
                 break
 
         now = time.time()

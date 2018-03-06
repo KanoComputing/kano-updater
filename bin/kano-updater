@@ -53,8 +53,7 @@ if __name__ == '__main__' and __package__ is None:
 import kano_i18n.init
 kano_i18n.init.install('kano-updater', LOCALE_PATH)
 
-from kano_profile.tracker import track_data
-from kano.utils import enforce_root, read_file_contents
+from kano.utils import enforce_root
 from kano.logging import logger
 from kano.gtk3.kano_dialog import KanoDialog
 
@@ -68,11 +67,12 @@ from kano_updater.status import UpdaterStatus
 from kano_updater.utils import make_low_prio, is_running, \
     remove_pid_file, pause_notifications, resume_notifications, show_kano_dialog, \
     run_bg, enable_power_button, disable_power_button, verify_kit_is_plugged
+from kano_updater.return_codes import RC
 import kano_updater.priority as Priority
 
 
 # Keep a global status of wether we are working in GUI or console mode
-gui_mode=False
+_g_gui_mode = False
 
 
 def sigterm_on_download(signo, frame):
@@ -83,11 +83,11 @@ def sigterm_on_download(signo, frame):
         # Download was interrupted, go back one state
         status.state = UpdaterStatus.UPDATES_AVAILABLE
     # Exit from the signal handler to trigger the atexit hook
-    sys.exit(0)
+    sys.exit(RC.SIG_INTERRUPTED)
 
 
 def clean_up():
-    global gui_mode
+    global _g_gui_mode
 
     status = UpdaterStatus.get_instance()
     status.notifications_muted = False
@@ -98,9 +98,10 @@ def clean_up():
 
     remove_pid_file()
 
-    if gui_mode:
+    if _g_gui_mode:
         # Restore the home button only if we are on Desktop mode
-        run_bg('systemctl --user status kano-desktop && /usr/bin/kano-home-button-visible yes')
+        run_bg('systemctl --user status kano-desktop &&'
+               ' /usr/bin/kano-home-button-visible yes')
 
         # Enable any hardware power button.
         enable_power_button()
@@ -115,8 +116,9 @@ def schedule_install(gui=False, confirm=True, splash_pid=None):
         confirm = False
 
         title = "Updater"
-        description = "Urgent updates have been downloaded! We'll need to install these as soon" \
-                      " as possible to ensure the best experience."
+        description = "Urgent updates have been downloaded! We'll need to" \
+                      " install these as soon as possible to ensure the" \
+                      " best experience."
         buttons = "INSTALL NOW:green:1,LATER:orange:0"
         install_now = show_kano_dialog(title, description, buttons)
 
@@ -145,8 +147,6 @@ def run_install(gui=False, confirm=True, splash_pid=None):
 
         from kano_updater.ui.main import launch_install_gui
 
-        run_bg('/usr/bin/kano-home-button-visible no')
-
         try:
             launch_install_gui(confirm=confirm, splash_pid=splash_pid)
         except Relaunch as relaunch_exception:
@@ -171,18 +171,27 @@ def run_install_ind_pkg(package):
 
 def main():
 
-    global gui_mode
+    global _g_gui_mode
 
     msg = _('Administrator priviledges are required to perform this operation')
     enforce_root(u"{}: {}".format(_('ERROR'), msg))
 
     args = docopt.docopt(__doc__, version=str(get_target_version()))
+    _g_gui_mode = args['--gui']
 
-    gui_mode = args['--gui']
+    if not args['relaunch-splash'] and is_running():
+        msg = _('An instance of Kano Updater is already running')
+        logger.error(msg)
+        sys.stderr.write("{}: {}\n".format(_('ERROR'), msg))
+        return RC.MULTIPLE_INSTANCES
 
-    if gui_mode:
+    # This is registered after the test for whether an updater was already
+    # running, because it deletes the pid file.
+    atexit.register(clean_up)
+
+    if _g_gui_mode:
         # Hide the home button only if we are on Desktop mode
-        run_bg('systemctl --user status kano-desktop && /usr/bin/kano-home-button-visible no')
+        run_bg('/usr/bin/kano-home-button-visible no')
 
         # Disable any hardware power button.
         disable_power_button()
@@ -190,26 +199,20 @@ def main():
     # We always want to keep the logs from updates
     logger.force_log_level('info')
 
-    if not args['relaunch-splash'] and is_running():
-        msg = _('An instance of Kano Updater is already running')
-        logger.error(msg)
-        sys.stderr.write("{}: {}\n".format(_('ERROR'), msg))
-        sys.exit(1)
-
-    # This is registered after the test for whether an updater was already
-    # running, because it deletes the pid file.
-    atexit.register(clean_up)
-
     if args['set-state']:
         status = UpdaterStatus.get_instance()
         status.state = args['<state>']
         status.save()
+
     elif args['set-scheduled']:
         status = UpdaterStatus.get_instance()
-        status.is_scheduled = args['1']  # if 1 was supplied, is_scheduled becomes True, else False
+        # if 1 was supplied, is_scheduled becomes True, else False
+        status.is_scheduled = args['1']
         status.save()
+
     elif args['clean']:
         clean()
+
     elif args['ui']:
         if args['relaunch-splash']:
             from kano_updater.ui.main import launch_relaunch_countdown_gui
@@ -221,6 +224,7 @@ def main():
             status.save()
             from kano_updater.ui.main import launch_shutdown_gui
             launch_shutdown_gui()
+
     elif args['first-boot']:
         # spoof the last_check timestamp to four days ago so the user won't
         # be prompted to update in the first three days after boot
@@ -235,14 +239,14 @@ def main():
         one_day_ago = int(time.time() - 24 * 60 * 60)
         status.last_check_urgent = one_day_ago
         status.save()
-    else:
 
+    else:
         # In fullscreen mode, make sure kit is plugged in before continuing.
         if args['--gui'] and \
            not args['--splash-pid'] and \
            not args['--no-power-check'] and \
            not verify_kit_is_plugged():
-            return 0
+            return RC.NOT_PLUGGED_IN
 
         clean()
 
@@ -255,6 +259,7 @@ def main():
                 make_low_prio()
             download(progress, gui=False)
             schedule_install(gui=True)
+
         elif args['install']:
             splash_pid = None
             if args['--splash-pid']:
@@ -262,13 +267,14 @@ def main():
 
             run_install(gui=args['--gui'], confirm=not args['--no-confirm'],
                         splash_pid=splash_pid)
+
         elif args['update-ind-pkg']:
             package = args['<package>']
             run_install_ind_pkg(package)
 
         elif args['avail-ind-pkgs']:
             print status.updatable_independent_packages
-            sys.exit(0)
+
         elif args['check']:
             if args['--interval']:
                 target_delta = float(args['<time>']) * 60 * 60
@@ -284,7 +290,7 @@ def main():
                     progress.abort(msg)
 
                     # Return if the check happened too early.
-                    return 2
+                    return RC.CHECK_QUIET_PERIOD
 
             priority = Priority.NONE
 
@@ -309,8 +315,8 @@ def main():
                     # Show dialogue
                     kdialog = KanoDialog(
                         "Updater",
-                        "My brain already has the latest bits and bytes - high" \
-                        " five!",
+                        "My brain already has the latest bits and bytes"
+                        " - high five!",
                         {
                             "OK": {
                                 "return_value": True,
@@ -322,15 +328,15 @@ def main():
                     del kdialog
                 logger.info(_('No updates found.'))
 
-            # Return 0 if there's an update, 1 if there isn't one
-            return not updates_available
+            # Return 0 if there's an update, non-zero if there isn't one
+            return RC.SUCCESS if updates_available else RC.NO_UPDATES_AVAILABLE
         else:
             # Launch the GUI if no arguments were given for
             # backwards compatiblity
             run_install(gui=True, confirm=False)
 
-    return 0
+    return RC.SUCCESS
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(main() or RC.SUCCESS)
