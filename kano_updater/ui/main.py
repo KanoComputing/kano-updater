@@ -12,10 +12,9 @@ import signal
 from kano.logging import logger
 
 from kano_updater.commands.check import check_for_updates
-from kano_updater.commands.clean import clean
 from kano_updater.progress import Relaunch
 from kano_updater.status import UpdaterStatus
-from kano_updater.utils import show_relaunch_splash, remove_pid_file
+from kano_updater.utils import show_relaunch_splash
 
 relaunch_required_flag = False
 launched_splash_pid = None
@@ -65,35 +64,6 @@ def launch_check_gui():
         Gtk.main()
 
     return rv
-
-
-def launch_boot_gui():
-    # FIXME: This window uses Gtk2 which requires the other Gtk imports to be
-    #        loaded in the scope of the functions that require them.
-    old_status = clean(dry_run=True)
-    status = UpdaterStatus.get_instance()
-
-    if old_status == UpdaterStatus.INSTALLING_UPDATES:
-        status.notifications_muted = True
-        status.state = UpdaterStatus.UPDATES_AVAILABLE
-        status.save()
-
-        remove_pid_file()
-
-        cmd_args = [
-            'kano-updater', 'install',
-            '--gui', '--no-confirm', '--no-power-check'
-        ]
-        os.execvp('kano-updater', cmd_args)
-
-    elif old_status == UpdaterStatus.UPDATES_INSTALLED:
-        try:
-            from kano_profile.badges import \
-                increment_app_state_variable_with_dialog
-            increment_app_state_variable_with_dialog(
-                'kano-updater', 'updated', 1)
-        except Exception:
-            pass
 
 
 def launch_shutdown_gui():

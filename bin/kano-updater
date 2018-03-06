@@ -19,7 +19,7 @@ Usage:
   kano-updater clean
   kano-updater avail-ind-pkgs
   kano-updater update-ind-pkg <package>
-  kano-updater ui (relaunch-splash <parent-pid> | boot-window | shutdown-window)
+  kano-updater ui (relaunch-splash <parent-pid> | shutdown-window)
   kano-updater [-f] [-n]
 
 Options:
@@ -214,21 +214,6 @@ def main():
         if args['relaunch-splash']:
             from kano_updater.ui.main import launch_relaunch_countdown_gui
             launch_relaunch_countdown_gui(int(args['<parent-pid>']))
-        elif args['boot-window']:
-
-            # Note that this code is gate by kano-updater-quickcheck,
-            # so additional cases must be inserted there too.
-
-            status = UpdaterStatus.get_instance()
-            status.is_shutdown = False
-            status.save()
-
-            if status.is_scheduled and status.is_urgent:
-                clean()
-                return run_install(gui=True, confirm=False)
-
-            from kano_updater.ui.main import launch_boot_gui
-            launch_boot_gui()
 
         elif args['shutdown-window']:
             status = UpdaterStatus.get_instance()
