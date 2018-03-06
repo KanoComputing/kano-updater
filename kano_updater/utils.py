@@ -16,9 +16,10 @@ import grp
 import signal
 
 from kano.logging import logger
-from kano.utils import run_print_output_error, run_cmd, run_bg, run_cmd_log, \
-    chown_path, is_gui, sed, get_user_unsudoed, open_locked
-from kano.network import is_internet
+from kano.utils.shell import run_cmd, run_bg, run_cmd_log
+from kano.utils.file_operations import chown_path, sed, open_locked
+from kano.utils.user import get_user_unsudoed
+from kano.utils.gui import is_gui
 from kano.timeout import timeout, TimeoutError
 
 #
@@ -191,20 +192,6 @@ def bring_flappy_judoka_to_front():
         logger.error("Unexpected error in bring_flappy_judoka_to_front()", exception=e)
 
 
-# TODO: Might be useful in kano.utils
-def supress_output(function, *args, **kwargs):
-    with open(os.devnull, 'w') as f:
-        orig_stdout = sys.stdout
-        orig_stderr = sys.stderr
-        sys.stderr = sys.stdout = f
-
-        try:
-            function(*args, **kwargs)
-        finally:
-            sys.stdout = orig_stdout
-            sys.stderr = orig_stderr
-
-
 def make_low_prio():
     # set IO class of this process to Idle
     pid = os.getpid()
@@ -371,74 +358,6 @@ def get_dpkg_dict(include_unpacked=False):
     return apps_ok, apps_other
 
 
-def fix_broken(msg):
-    # Try to fix incorrectly configured packages
-    run_cmd_log("dpkg --configure -a")
-
-    o, _, _ = run_cmd("dpkg -l | grep '^..R'")
-    reinstall = []
-    for line in o.splitlines():
-        pkg_info = line.split()
-        try:
-            reinstall.append(pkg_info[1])
-        except:
-            pass
-
-    if reinstall:
-        logger.error("Reinstalling broken packages: {}".format(" ".join(reinstall)))
-        cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' \
-          '-o Dpkg::Options::="--force-confold" install --reinstall {}'.format(" ".join(reinstall))
-        run_cmd_log(cmd)
-
-    cmd = 'yes "" | apt-get -y -o Dpkg::Options::="--force-confdef" ' \
-          '-o Dpkg::Options::="--force-confold" install -f'
-    run_cmd_log(cmd)
-
-
-def expand_rootfs():
-    cmd = '/usr/bin/expand-rootfs'
-    _, _, rc = run_print_output_error(cmd)
-    return rc == 0
-
-
-def get_installed_version(pkg):
-    out, _, _ = run_cmd('dpkg-query -s kano-updater | grep "Version:"')
-    return out.strip()[9:]
-
-
-def get_update_status():
-    status = {"last_update": 0, "update_available": 0, "last_check": 0, "last_check_urgent": 0}
-    if os.path.exists(STATUS_FILE):
-        with open(STATUS_FILE, 'r') as sf:
-            for line in sf:
-                name, value = line.strip().split("=")
-                status[name] = int(value)
-
-    return status
-
-
-def set_update_status(status):
-    try:
-        os.mkdir(UPDATER_CACHE_DIR)
-    except OSError as e:
-        if e.errno == errno.EEXIST and os.path.isdir(UPDATER_CACHE_DIR):
-            pass
-        else:
-            raise
-
-    with open(STATUS_FILE, 'w') as sf:
-        for name, value in status.iteritems():
-            sf.write("{}={}\n".format(name, value))
-
-
-def reboot_required(watched, changed):
-    for pkg in changed:
-        if pkg in watched:
-            return True
-
-    return False
-
-
 def reboot(title, description):
     from kano.gtk3 import kano_dialog
     kdialog = kano_dialog.KanoDialog(title, description)
@@ -458,29 +377,6 @@ def remove_user_files(files):
                         os.remove(file_path)
                     except:
                         logger.info("could not delete file: {}".format(file_path))
-
-
-def launch_gui():
-    process = subprocess.Popen("kano-updater-gui")
-    return process
-
-
-def launch_gui_if_not_running(process):
-    if process.poll() is not None:
-        return launch_gui()
-    return process
-
-
-def set_gui_stage(number):
-    tmp_filename = "/tmp/updater-progress"
-    f = open(tmp_filename, "w+")
-    f.write(str(number))
-    f.close()
-
-
-def kill_gui(process):
-    if process.poll() is None:
-        process.kill()
 
 
 def update_home_folders_from_skel():
@@ -585,43 +481,6 @@ def rclocal_executable():
         return False
 
 
-def check_for_multiple_instances():
-    cmd = 'pgrep -f "python /usr/bin/kano-updater" -l | grep -v pgrep'
-    o, _, _ = run_cmd(cmd)
-    num = len(o.splitlines())
-    logger.debug("Total number of kano-updater processes: {}".format(num))
-    if num > 1:
-        logger.error("Exiting kano-updater as there is an other instance already running!")
-        logger.debug(o)
-        sys.exit()
-
-
-def root_check():
-    from kano.gtk3 import kano_dialog
-
-    user = os.environ['LOGNAME']
-    if user != 'root':
-        description = 'kano-updater must be executed with root privileges'
-        logger.error(description)
-
-        if is_gui():
-            kdialog = kano_dialog.KanoDialog(
-                _("Error!"),
-                _("kano-updater must be executed with root privileges")
-            )
-            kdialog.run()
-        sys.exit(description)
-
-
-def check_internet():
-    if is_internet():
-        return True
-
-    logger.warn("No internet connection detected")
-    os.system("kano-settings 12")
-    return is_internet()
-
-
 def add_text_to_end(text_buffer, text, tag=None):
     end = text_buffer.get_end_iter()
     if tag is None:
@@ -641,6 +500,7 @@ def show_kano_dialog(title, description, buttons, blocking=True):
         retval = run_bg('exec ' + cmd)
 
     return retval
+
 
 def set_power_button(enabled):
     """

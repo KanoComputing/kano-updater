@@ -1,11 +1,10 @@
-
-# check-for-updates
+# available_window.py
 #
-# Copyright (C) 2014-2015 Kano Computing Ltd.
+# Copyright (C) 2014-2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Checks for updates of packages that are maintained by Kano
-#
+
 
 import os
 from gi.repository import Gtk
@@ -15,8 +14,7 @@ from kano.gtk3.heading import Heading
 from kano.gtk3.apply_styles import apply_common_to_screen
 
 from kano_updater.status import UpdaterStatus
-from kano_updater.utils import make_low_prio
-from kano_updater.ui.paths import CSS_PATH, IMAGE_PATH
+from kano_updater.ui.paths import IMAGE_PATH
 
 UPDATE_IMAGE = os.path.join(IMAGE_PATH, 'update-screen.gif')
 
@@ -47,7 +45,7 @@ class NotificationWindow(Gtk.Window):
         # Put the window above all the existing ones when it starts
         # FIXME: this needs to happen within a 'realized' signal handler
         #        disabled for now
-        #self.get_window().raise_()
+        # self.get_window().raise_()
 
         image = Gtk.Image()
         image.set_from_file(self._HEADER_IMAGE)
@@ -94,28 +92,6 @@ class NotificationWindow(Gtk.Window):
 
     def _action(self):
         raise NotImplementedError(_("The action needs to be implemented"))
-
-
-class UpdatesAvailableWindow(NotificationWindow):
-    _HEADER_IMAGE = UPDATE_IMAGE
-    _IMAGE_WIDTH = 590
-    _IMAGE_HEIGHT = 270
-
-    _TITLE = _("New Update")
-    _HEADING = _("Get new powers")
-    _BYLINE = _("Download the latest Kano OS")
-    _ACTION = _("Download")
-
-    def _action(self):
-        from kano_updater.commands.download import download
-
-        Gtk.main_quit()
-
-        while Gtk.events_pending():
-            Gtk.main_iteration()
-
-        make_low_prio()
-        download()
 
 
 class UpdatesDownloadedWindow(NotificationWindow):

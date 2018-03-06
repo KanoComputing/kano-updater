@@ -11,10 +11,10 @@ import signal
 
 from kano.logging import logger
 
-from kano_updater.commands.check import check_for_updates
 from kano_updater.progress import Relaunch
 from kano_updater.status import UpdaterStatus
 from kano_updater.utils import show_relaunch_splash
+
 
 relaunch_required_flag = False
 launched_splash_pid = None
@@ -50,20 +50,6 @@ def launch_install_gui(confirm=False, splash_pid=None):
         r_exc = Relaunch()
         r_exc.pid = launched_splash_pid
         raise r_exc
-
-
-def launch_check_gui():
-    from gi.repository import Gtk
-
-    rv = check_for_updates()
-    if rv:
-        from kano_updater.ui.available_window import UpdatesAvailableWindow
-
-        win = UpdatesAvailableWindow()
-        win.show()
-        Gtk.main()
-
-    return rv
 
 
 def launch_shutdown_gui():
