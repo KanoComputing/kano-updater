@@ -196,7 +196,7 @@ def run_updater():
     import subprocess
 
     return subprocess.Popen(
-        ['kano-updater', 'install', '--no-power-check'],
+        ['kano-updater', 'install'],
         shell=False,
         preexec_fn=os.setsid
     )

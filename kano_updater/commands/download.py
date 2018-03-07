@@ -14,10 +14,11 @@ from kano_updater.paths import PIP_PACKAGES_LIST, PIP_CACHE_DIR
 from kano_updater.status import UpdaterStatus
 from kano_updater.apt_wrapper import AptWrapper
 from kano_updater.progress import DummyProgress, Phase
-from kano_updater.utils import run_pip_command, is_server_available,\
+from kano_updater.utils import run_pip_command, is_server_available, \
     show_kano_dialog, make_normal_prio
 from kano_updater.commands.check import check_for_updates
 import kano_updater.priority as Priority
+from kano_updater.return_codes import RC, RcState
 
 
 class DownloadError(Exception):
@@ -74,12 +75,14 @@ def download(progress=None, gui=True):
         err_msg = N_("Must have internet to download the updates")
         logger.error(err_msg)
         progress.fail(_(err_msg))
+        RcState.get_instance().rc = RC.NO_NETWORK
         return False
 
     if not is_server_available():
         err_msg = N_("Could not connect to the download server")
         logger.error(err_msg)
         progress.fail(_(err_msg))
+        RcState.get_instance().rc = RC.CANNOT_REACH_KANO
         return False
 
     # show a dialog informing the user of an automatic urgent download
@@ -94,8 +97,11 @@ def download(progress=None, gui=True):
         buttons = _("OK:green:1")
         dialog_proc = show_kano_dialog(title, description, buttons, blocking=False)
 
-    status.state = UpdaterStatus.DOWNLOADING_UPDATES
-    status.save()
+    # If the Updater is running in recovery mode, do not update the state
+    # out of the installing ones, otherwise the recovery flow will quit.
+    if not status.is_recovery_needed():
+        status.state = UpdaterStatus.DOWNLOADING_UPDATES
+        status.save()
 
     priority = Priority.NONE
 
@@ -111,14 +117,16 @@ def download(progress=None, gui=True):
     except Exception as err:
         progress.fail(err.message)
         logger.error(err.message)
+        RcState.get_instance().rc = RC.UNEXPECTED_ERROR
 
         status.state = UpdaterStatus.UPDATES_AVAILABLE
         status.save()
 
         return False
 
-    status.state = UpdaterStatus.UPDATES_DOWNLOADED
-    status.save()
+    if not status.is_recovery_needed():
+        status.state = UpdaterStatus.UPDATES_DOWNLOADED
+        status.save()
 
     return success
 

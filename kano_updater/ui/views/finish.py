@@ -13,6 +13,7 @@ from threading import Timer
 
 from kano_updater.status import UpdaterStatus
 from kano_updater.ui.views.countdown import Countdown
+from kano_updater.return_codes import RcState
 
 
 class Finish(Countdown):
@@ -70,4 +71,4 @@ class Finish(Countdown):
         # Note that sys.exit() does not work, and os._exit() does work
         # but its does not call signal handlers.
         time.sleep(10)
-        os._exit(0)
+        os._exit(RcState.get_instance().rc)
