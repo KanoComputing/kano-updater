@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kano-updater\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-22 10:53+0000\n"
+"POT-Creation-Date: 2018-03-07 10:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,257 +17,91 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../bin/kano-updater:153
+#: ../bin/kano-updater:176
 msgid "Administrator priviledges are required to perform this operation"
 msgstr "Privilegios de administrador requeridos para realizar esta operación"
 
-#: ../bin/kano-updater:154 ../bin/kano-updater:169
+#: ../bin/kano-updater:177 ../bin/kano-updater:185
 msgid "ERROR"
 msgstr "ERROR"
 
-#: ../bin/kano-updater:167
+#: ../bin/kano-updater:183
 msgid "An instance of Kano Updater is already running"
 msgstr "Una instancia del Actualizador Kano ya se está ejecutando"
 
-#: ../bin/kano-updater:263
+#: ../bin/kano-updater:286
 msgid "Time check passed, doing update check!"
 msgstr "El tiempo ha pasado, comprobando si hay actualizaciones!"
 
-#: ../bin/kano-updater:265
+#: ../bin/kano-updater:288
 msgid "Not enough time passed for a new update check!"
-msgstr "No ha pasado suficiente tiempo para comprobar si hay nuevas actualizaciones!"
+msgstr ""
+"No ha pasado suficiente tiempo para comprobar si hay nuevas actualizaciones!"
 
-#: ../bin/kano-updater:290
+#: ../bin/kano-updater:307
 msgid "Urgent updates available."
 msgstr "Actualizaciones urgentes disponibles"
 
-#: ../bin/kano-updater:295
+#: ../bin/kano-updater:312
 msgid "Updates available."
 msgstr "Actualizaciones disponibles."
 
-#: ../bin/kano-updater:312
+#: ../bin/kano-updater:329
 msgid "No updates found."
 msgstr "No se han encontrado actualizaciones."
 
-#: ../kano_updater/apt_wrapper.py:49 ../kano_updater/commands/install.py:175
-#: ../kano_updater/commands/download.py:136
-msgid "Updating apt sources"
-msgstr "Actualizando apt sources"
+#: ../kano_updater/apt_progress_wrapper.py:40
+#: ../kano_updater/commands/download.py:180
+msgid "Downloading {}"
+msgstr "Descargando {}"
 
-#: ../kano_updater/apt_wrapper.py:50
-msgid "Initialising apt cache"
-msgstr "Inicializando apt cache"
+#: ../kano_updater/progress.py:96
+msgid "The root phase"
+msgstr "La fase root"
 
-#: ../kano_updater/apt_wrapper.py:64
-msgid "Reading package lists"
-msgstr "Leyendo lista de paquetes"
+#: ../kano_updater/progress.py:202
+msgid "yes"
+msgstr "sí"
 
-#: ../kano_updater/apt_wrapper.py:65
-msgid "Building dependency tree"
-msgstr "Creando árbol de dependencias"
+#: ../kano_updater/progress.py:202
+msgid "no"
+msgstr "no"
 
-#: ../kano_updater/apt_wrapper.py:66
-msgid "Reading state information"
-msgstr "Leyendo la información de estado"
+#: ../kano_updater/progress.py:314
+msgid "ERROR: {}"
+msgstr "ERROR: {}"
 
-#: ../kano_updater/apt_wrapper.py:67
-msgid "Building data structures"
-msgstr "Generando estructuras de datos"
+#: ../kano_updater/progress.py:317
+msgid "Aborting {}, {}"
+msgstr "Abortando {}, {}"
 
-#: ../kano_updater/apt_wrapper.py:122 ../kano_updater/apt_wrapper.py:149
-msgid "Downloading packages"
-msgstr "Descargando paquetes"
+#: ../kano_updater/progress.py:340
+msgid "Type one of these:  {}"
+msgstr "Escribe uno de estos: {}"
 
-#: ../kano_updater/apt_wrapper.py:123 ../kano_updater/apt_wrapper.py:150
-msgid "Installing packages"
-msgstr "Instalando paquetes"
+#: ../kano_updater/auxiliary_tasks.py:21
+msgid "Updating home folders from template"
+msgstr "Actualizando la carpeta home desde la plantilla"
 
-#: ../kano_updater/apt_wrapper.py:227
-msgid "Cleaning dpkg journal"
-msgstr "Limpiando dpkg diario"
+#: ../kano_updater/auxiliary_tasks.py:23
+msgid "Refreshing Kano Apps"
+msgstr "Recargando las Apps de Kano"
 
-#: ../kano_updater/apt_wrapper.py:229
-msgid "Fixing broken packages"
-msgstr "Reparando paquetes rotos"
+#: ../kano_updater/auxiliary_tasks.py:25
+msgid "Refreshing the desktop"
+msgstr "Recargando el escritorio"
 
-#: ../kano_updater/ui/stage_text.py:32
-msgid ""
-"In 1978, the fastest computer in the world was the Cray 1 — it cost $7 "
-"million and weighed as much as an average elephant! Your Kano is about 4 "
-"times faster than the Cray 1. To keep it up to speed, we're downloading new "
-"games, apps and projects, and streamlining the computer's memory. This "
-"should take about 15 minutes. In the meantime, why not take a phone picture "
-"of your Kano? Send it to us at <b>hello@kano.me</b> and we'll share it with "
-"the world. You can also search for the white rabbit on <b>http://world.kano."
-"me</b>"
-msgstr ""
-"En 1978, el ordenador más rápido del mundo fue el Cray 1 - costaba 7 millones "
-"de dólares y pesaba tanto como un elefante! Tu Kano es aproximadamente 4 "
-"veces más rápida que el Cray 1. Hablando de velocidad, vamos a descargar nuevos "
-"juegos, apps y proyectos, organizándolo en la memoria del ordenador. Esto "
-"debería tardar unos 15 minutos. Mientras tanto, que tal si le haces una foto "
-"a tu Kano? Envíanosla a <b>hello@kano.me</b> y la compartiremos con el "
-"mundo. También puedes buscar al conejo blanco en <b>http://world.kano."
-"me</b>"
+#: ../kano_updater/auxiliary_tasks.py:27
+msgid "Expanding filesystem partitions"
+msgstr "Expandiendo las particiones del sistema de archivos"
 
-#: ../kano_updater/ui/stage_text.py:44
-msgid ""
-"Computers can learn new ideas quickly. Right now, we're updating the Updater "
-"tool. Once this step is finished, the Updater will relaunch. How do "
-"computers think? They are made of electrical switches, connected together in "
-"clever ways. If a switch is on, that means \"yes\" or \"1\"; if it's off, "
-"that means \"no\" or \"0\". These little yes-no switches become a binary "
-"code — for words, sounds, rules, and more. Your computer has over 10 million "
-"tiny switches, called transistors, in its brain. In your brain, these "
-"switches are cells called neurons. They're talking to each other right now."
-msgstr ""
-"Los ordenadores pueden aprender nuevas ideas rápidamente. Ahora mismo, estamos actualizando la herramienta "
-"Updater. Una vez este paso haya acabado, el Updater será relanzado. Cómo "
-"piensan los ordenadores? Están hechos de interruptores eléctricos, conectados entre sí de "
-"manera inteligente. Si un interruptor está encendido, eso significa \"sí\" or \"1\"; si está apagado, "
-"significa \"no\" o \"0\". Estos pequeños interruptores se convierten en código "
-"binario — para palabras, sonidos, reglas y demás. Tu ordenador tiene más de 10 millones "
-"de pequeños interruptores, llamados transistores, en su cerebro. En tu cerebro, estos "
-"interruptores son células llamadas neuronas. Tus neuronas están hablando entre ellas justo ahora."
+#: ../kano_updater/auxiliary_tasks.py:29
+msgid "Removing unnecessary kano-content entries"
+msgstr "Eliminando entradas innecesarias de kano-content"
 
-#: ../kano_updater/ui/stage_text.py:57
-msgid ""
-"Python is one of the world's most popular programming languages. A "
-"programming language takes words that humans can understand, and translates "
-"them into instructions that the computer's switches can understand. A good "
-"\"make a sandwich\" program would go through all the steps necessary to get "
-"the sandwich made, from \"grab bread\" to \"pick up knife\" to \"put it on a "
-"plate.\" The computer follows a program in Python the way a cook follows a "
-"recipe in English. Python code can build volcanos in Minecraft, grab "
-"\"Gangnam Style\" from YouTube, and move millions of dollars in the New York "
-"Stock Exchange."
-msgstr ""
-"Python es uno de los lenguajes de programación más populares del mundo. Un "
-"lenguaje de programación coge palabras que los humanos pueden entender, y las traduce "
-"en unas instrucciones que los transistores del ordenador pueden entender. Un buen "
-"programa llamado \"haz un sándwich\" iría a través de todos los pasos necesarios para "
-"hacer el sándwich, desde \"coger el pan\" hasta \"coger un cuchillo\" hasta \"ponerlo en un "
-"plato.\" El ordenador sigue un programa en Pyrhon de la misma manera que un cocinero sigue una "
-"receta en español. Un código en Pyrhon puede construir volcanes en Minecraft, coger "
-"\"Gangnam Style\" de YouTube, y mover millones de dólares en la Bolsa "
-"de Nueva York."
-
-#: ../kano_updater/ui/stage_text.py:71
-msgid ""
-"The name \"Kano\" comes from Kanō Jigorō. He was a Japanese schoolteacher, "
-"inventor of the art of judo. His motto: Maximum efficiency, minimum effort. "
-"In Greek, Kano means \"I make\". (Kano is also the largest city in Northern "
-"Nigeria.) What makes Kano different to other computers? All of the ideas in "
-"its brain are open for you to see. Just visit <b>github.com/KanoComputing</"
-"b> to see the code. Kano can also change forms… You can turn it into a "
-"robot, server, radio, and more. Visit <b>world.kano.me/projects</b> for "
-"powerup ideas. Want a look inside Kano HQ? Hang with our wizards at <b>blog."
-"kano.me</b>"
-msgstr ""
-"El nombre \"Kano\" viene de Kanō Jigorō. Él fue un profesor japonés, "
-"inventor del arte del judo. Su lema: Máxima eficiencia, mínimo esfuerzo. "
-"En griego, Kano significa \"Yo hago\". (Kano es también la ciudad más grande de Nigeria del "
-"Norte.) Que hace a Kano diferente de los otros ordenadores? Todas las ideas de su "
-"cerebro están abiertas para que tú las veas. Visita <b>github.com/KanoComputing</"
-"b> para ver el código. Kano también puede cambiar de forma… Puedes convertirlo en un "
-"robot, servidor, radio, y más. Visita <b>world.kano.me/projects</b> para "
-"conseguir ideas. Quieres echar un vistazo en Kano HQ? Queda con nuestros magos en <b>blog."
-"kano.me</b>"
-
-#: ../kano_updater/ui/stage_text.py:83
-msgid ""
-"Kano OS is an operating system, which means it connects all the programs "
-"together. This OS is based on Linux, whose code is open — that means that "
-"it's free for anyone to download, change or even sell. Its code is written "
-"by hobbyists and makers worldwide, not just professionals. Kano uses Debian, "
-"a fun and powerful \"distribution\" of Linux which the International Space "
-"Station also uses to run its robotic systems — to keep the astronauts from "
-"losing their lunch!"
-msgstr ""
-"Kano SO es un sistema operativo, lo que significa que conecta todos los programas "
-"entre ellos. Este SO está basado en Linux, cuyo código es abierto — esto significa que "
-"para cualquiera es gratuito su descarga, cambio o incluso venta. Su código está escrito  "
-"por aficionados y creadores de todo el mundo, y no solamente por profesionales. Kano utiliza Debian, "
-"una divertida y poderosa \"distribución\" de Linux, la cual también es utilizada por la "
-"Estación Internacional Espacial para hacer mover su sistema robótico — evitando que los astronautas "
-"pierdan su comida!"
-
-#: ../kano_updater/ui/stage_text.py:94
-msgid ""
-"We're almost done! With your Kano computer, you'll make awesome games, code "
-"your own music, stream videos around your house, tell stories, and much "
-"more. Your computer is open, and its powers are at your command. If you want "
-"to get new cool projects from us each week, join the community at"
-msgstr ""
-"Ya casi estamos! Con tu ordenador Kano, podrás hacer increíbles juegos, crear "
-"tu propia música, mostrar vídeos por toda tu casa, contar historias, y mucho "
-"más. Tu ordenador está abierto, y sus poderes a tus ordenes. Si quieres "
-"ver nuevos proyectos increíbles cada semana, únete a la comunidad en"
-
-#: ../kano_updater/ui/stage_text.py:101
-msgid ""
-"Your Kano will now reboot!\n"
-"\n"
-"See you in a while…"
-msgstr ""
-"Tu Kano se reseteará ahora!\n"
-"\n"
-"Nos vemos en un momento…"
-
-#: ../kano_updater/ui/install_window.py:37
-#: ../kano_updater/commands/download.py:90
-msgid "Updater"
-msgstr "Actualizador"
-
-#: ../kano_updater/ui/install_window.py:78
-msgid "The install quit unexpectedly"
-msgstr "La instalación se cerró inesperadamente"
-
-#: ../kano_updater/ui/install_window.py:79
-msgid "Please try again later"
-msgstr "Por favor inténtalo de nuevo más tarde"
-
-#: ../kano_updater/ui/install_window.py:81
-#: ../kano_updater/ui/install_window.py:113
-#: ../kano_updater/commands/install.py:54
-#: ../kano_updater/commands/install.py:57
-msgid "OK"
-msgstr "OK"
-
-#: ../kano_updater/ui/install_window.py:110
-msgid "No updates available"
-msgstr "No hay actualizaciones disponibles"
-
-#: ../kano_updater/ui/install_window.py:111
-msgid "Your system is already up to date"
-msgstr "El sistema ya está actualizado"
-
-#: ../kano_updater/ui/install_window.py:130
-#: ../kano_updater/commands/install.py:143
-#: ../kano_updater/commands/install.py:200
-msgid "Update completed"
-msgstr "Actualización completa"
-
-#: ../kano_updater/ui/install_window.py:132
-#: ../kano_updater/commands/download.py:52
-msgid "No updates to download"
-msgstr "No hay actualizaciones que descargar"
-
-#: ../kano_updater/ui/install_window.py:161
-msgid "Error updating"
-msgstr "Error actualizando"
-
-#: ../kano_updater/ui/install_window.py:163
-msgid "CLOSE"
-msgstr "CERRAR"
-
-#: ../kano_updater/ui/install_window.py:178
-msgid "Reset called on locked user_input!"
-msgstr "Reseteo llamado desde un user_input bloqueado!"
-
-#: ../kano_updater/ui/changes_dialog.py:11
-msgid "Changes"
-msgstr "Cambios"
+#: ../kano_updater/auxiliary_tasks.py:31
+msgid "Syncing"
+msgstr "Sincronizando"
 
 #: ../kano_updater/ui/media/flappy-judoka/src/graphics/hud.py:55
 msgid "[SPACE] or [UP] to Jump"
@@ -306,33 +140,70 @@ msgstr "Presiona [ESPACIO] para jugar de nuevo!"
 msgid "Flappy Judoka"
 msgstr "Flappy Judoka"
 
-#: ../kano_updater/ui/progress.py:37
-msgid "Complete!"
-msgstr "Completado!"
+#: ../kano_updater/ui/available_window.py:65
+msgid "Later"
+msgstr "Después"
+
+#: ../kano_updater/ui/available_window.py:94
+msgid "The action needs to be implemented"
+msgstr "La acción necesita ser implementada"
+
+#: ../kano_updater/ui/available_window.py:102
+#: ../kano_updater/ui/available_window.py:120
+msgid "New Update"
+msgstr "Nueva Actualización"
+
+#: ../kano_updater/ui/available_window.py:103
+msgid "Almost there..."
+msgstr "Ya casi estamos..."
+
+#: ../kano_updater/ui/available_window.py:104
+msgid ""
+"Downloaded and ready to go! In a matter\n"
+"of minutes your Kano will be fresher than ever"
+msgstr ""
+"Descargado y listo para empezar! En cuestión\n"
+"de unos minutos tu Kano estará más limpia que nunca"
+
+#: ../kano_updater/ui/available_window.py:106
+msgid "Install"
+msgstr "Instalar"
+
+#: ../kano_updater/ui/available_window.py:121
+msgid "Best time to update is now!"
+msgstr "El mejor momento para actualizar es ahora!"
+
+#: ../kano_updater/ui/available_window.py:122
+msgid ""
+"Latest updates and content are ready to go! We\n"
+"will make sure to Shutdown once we finish installing!"
+msgstr ""
+"Actualizaciones recientes y contenido están listos! Vamos \n"
+"a asegurarnos de Apagar una vez estén instaladas!"
+
+#: ../kano_updater/ui/available_window.py:124
+msgid "Update Now"
+msgstr "Actualizar Ahora"
 
 #: ../kano_updater/ui/relaunch_window.py:32
 msgid "Updater Splash"
 msgstr "Actualizador Splash"
 
-#: ../kano_updater/ui/views/relaunch.py:24
-msgid "Relaunching the Updater"
-msgstr "Relanzando el Actualizador"
+#: ../kano_updater/ui/progress.py:37
+msgid "Complete!"
+msgstr "Completado!"
 
-#: ../kano_updater/ui/views/relaunch.py:27
-msgid "The Updater updated itself and is now starting again."
-msgstr "El Actualizador se ha actualizado solo y está reiniciándose"
-
-#: ../kano_updater/ui/views/install.py:53
-msgid "Do you want to play a cool game instead? PRESS [J] TO LAUNCH!"
-msgstr "Prefieres jugar a un juego muy guay en su lugar? PRESIONA [J] PARA EMPEZAR!"
-
-#: ../kano_updater/ui/views/install.py:134
-msgid "Time flies - {}% already!"
-msgstr "El tiempo vuela - {}% ya!"
-
-#: ../kano_updater/ui/views/finish.py:23
+#: ../kano_updater/ui/views/finish.py:22
 msgid "Update complete!"
 msgstr "Actualización completa!"
+
+#: ../kano_updater/ui/views/finish.py:29
+msgid "shutdown"
+msgstr ""
+
+#: ../kano_updater/ui/views/finish.py:31
+msgid "restart"
+msgstr ""
 
 #: ../kano_updater/ui/views/finish.py:34
 msgid ""
@@ -342,142 +213,88 @@ msgstr ""
 "Tu Kano está actualizado y \n"
 "se {} automáticamente en 10 segundos"
 
-#: ../kano_updater/ui/views/finish.py:39
+#: ../kano_updater/ui/views/finish.py:41
 msgid "Press ENTER to {} now"
 msgstr "Presiona INTRO para {} ahora"
 
-#: ../kano_updater/ui/available_window.py:67
-msgid "Later"
-msgstr "Después"
-
-#: ../kano_updater/ui/available_window.py:96
-msgid "The action needs to be implemented"
-msgstr "La acción necesita ser implementada"
-
-#: ../kano_updater/ui/available_window.py:104
-#: ../kano_updater/ui/available_window.py:126
-#: ../kano_updater/ui/available_window.py:144
-msgid "New Update"
-msgstr "Nueva Actualización"
-
-#: ../kano_updater/ui/available_window.py:105
-msgid "Get new powers"
-msgstr "Consigue nuevos poderes"
-
-#: ../kano_updater/ui/available_window.py:106
-msgid "Download the latest Kano OS"
-msgstr "Descarga el último Kano OS"
-
-#: ../kano_updater/ui/available_window.py:107
-msgid "Download"
-msgstr "Descargar"
-
-#: ../kano_updater/ui/available_window.py:127
-msgid "Almost there..."
-msgstr "Ya casi estamos..."
-
-#: ../kano_updater/ui/available_window.py:128
-msgid ""
-"Downloaded and ready to go! In a matter\n"
-"of minutes your Kano will be fresher than ever"
-msgstr ""
-"Descargado y listo para empezar! En cuestión\n"
-"de unos minutos tu Kano estará más limpia que nunca"
-
-#: ../kano_updater/ui/available_window.py:130
-msgid "Install"
-msgstr "Instalar"
-
-#: ../kano_updater/ui/available_window.py:145
-msgid "Best time to update is now!"
-msgstr "El mejor momento para actualizar es ahora!"
-
-#: ../kano_updater/ui/available_window.py:146
-msgid ""
-"Latest updates and content are ready to go! We\n"
-"will make sure to Shutdown once we finish installing!"
-msgstr ""
-"Actualizaciones recientes y contenido están listos! Vamos \n"
-"a asegurarnos de Apagar una vez estén instaladas!"
-
-#: ../kano_updater/ui/available_window.py:148
-msgid "Update Now"
-msgstr "Actualizar Ahora"
-
-#: ../kano_updater/commands/install.py:52
-msgid "Not enough space to update!"
-msgstr "No hay suficiente espacio para actualizar!"
-
-#: ../kano_updater/commands/install.py:53
-msgid "But I can make more room if you'd like?"
-msgstr "Pero puedo hacer más espacio si tu quieres"
-
-#: ../kano_updater/commands/install.py:54
-msgid "CANCEL"
-msgstr "CANCELAR"
-
-#: ../kano_updater/commands/install.py:82
-#: ../kano_updater/commands/download.py:43
-msgid "Downloading updates"
-msgstr "Descargando actualizaciones"
-
-#: ../kano_updater/commands/install.py:88
-msgid "Installing updates"
-msgstr "Instalando actualizaciones"
-
-#: ../kano_updater/commands/install.py:180
-msgid "Installing independent package"
-msgstr "Instalando un paquete independiente"
-
-#: ../kano_updater/commands/install.py:208
-msgid "Installing Hotfix"
-msgstr "Instalando Hotfix"
-
-#: ../kano_updater/commands/install.py:235
-msgid "Starting Update"
-msgstr "Iniciando Actualización"
-
-#: ../kano_updater/commands/install.py:241
-msgid "Updating Itself"
-msgstr "Actualizándose"
-
-#: ../kano_updater/commands/install.py:247
-msgid "Running The Preupdate Scripts"
-msgstr "Ejecutando los Scripts de Preupdate"
-
-#: ../kano_updater/commands/install.py:253
-msgid "Updating Pip Packages"
-msgstr "Actualizando los paquetes Pip"
-
-#: ../kano_updater/commands/install.py:259
-msgid "Updating Deb Packages"
-msgstr "Actualizando los paquetes Deb"
-
-#: ../kano_updater/commands/install.py:265
-msgid "Running The Postupdate Scripts"
+#: ../kano_updater/ui/views/relaunch.py:23
+msgid "Updater updated!"
 msgstr ""
 
-#: ../kano_updater/commands/install.py:271
-msgid "Performing auxiliary tasks"
-msgstr "Realizando tareas auxiliares"
-
-#: ../kano_updater/commands/install.py:292
-msgid ""
-"Unfortunately, your version of Kano OS is too old to be updated through the "
-"updater."
+#: ../kano_updater/ui/views/relaunch.py:26
+msgid "Relaunching..."
 msgstr ""
-"Desafortunadamente, tu version de Kano OS es demasiado vieja para ser actualizada a través del "
-"actualizador."
 
-#: ../kano_updater/commands/install.py:294
-msgid "You will need to download the image of the OS and reflash your SD card."
-msgstr "Es necesario descargar la imagen del OS i reflashear tu tarjeta SD"
+#: ../kano_updater/ui/views/install.py:49
+msgid "{}% Complete"
+msgstr ""
 
-#: ../kano_updater/commands/download.py:37
+#: ../kano_updater/ui/views/install.py:97
+msgid "Press [ J ] to play a game"
+msgstr ""
+
+#: ../kano_updater/ui/views/install.py:113
+msgid "Your computer needs to be plugged in and turned on while updating"
+msgstr ""
+
+#: ../kano_updater/ui/install_window.py:37
+#: ../kano_updater/commands/download.py:88
+msgid "Updater"
+msgstr "Actualizador"
+
+#: ../kano_updater/ui/install_window.py:78
+msgid "The install quit unexpectedly"
+msgstr "La instalación se cerró inesperadamente"
+
+#: ../kano_updater/ui/install_window.py:79
+msgid "Please try again later"
+msgstr "Por favor inténtalo de nuevo más tarde"
+
+#: ../kano_updater/ui/install_window.py:81
+#: ../kano_updater/ui/install_window.py:113
+msgid "OK"
+msgstr "OK"
+
+#: ../kano_updater/ui/install_window.py:110
+msgid "No updates available"
+msgstr "No hay actualizaciones disponibles"
+
+#: ../kano_updater/ui/install_window.py:111
+msgid "Your system is already up to date"
+msgstr "El sistema ya está actualizado"
+
+#: ../kano_updater/ui/install_window.py:130
+#: ../kano_updater/commands/install.py:124
+#: ../kano_updater/commands/install.py:184
+msgid "Update completed"
+msgstr "Actualización completa"
+
+#: ../kano_updater/ui/install_window.py:132
+msgid "No updates to download"
+msgstr "No hay actualizaciones que descargar"
+
+#: ../kano_updater/ui/install_window.py:161
+msgid "Error updating"
+msgstr "Error actualizando"
+
+#: ../kano_updater/ui/install_window.py:163
+msgid "CLOSE"
+msgstr "CERRAR"
+
+#: ../kano_updater/ui/install_window.py:178
+msgid "Reset called on locked user_input!"
+msgstr "Reseteo llamado desde un user_input bloqueado!"
+
+#: ../kano_updater/commands/download.py:38
 msgid "Checking for updates"
 msgstr "Comprobando actualizaciones"
 
-#: ../kano_updater/commands/download.py:91
+#: ../kano_updater/commands/download.py:44
+#: ../kano_updater/commands/install.py:47
+msgid "Downloading updates"
+msgstr "Descargando actualizaciones"
+
+#: ../kano_updater/commands/download.py:90
 msgid ""
 "Kano HQ has just released a critical update that will repair some important "
 "things on your system! We'll download these automatically, and ask you to "
@@ -492,6 +309,11 @@ msgstr "OK:verde:1"
 msgid "Downloading Python packages"
 msgstr "Descargando paquetes Python"
 
+#: ../kano_updater/commands/download.py:136
+#: ../kano_updater/commands/install.py:157 ../kano_updater/apt_wrapper.py:111
+msgid "Updating apt sources"
+msgstr "Actualizando apt sources"
+
 #: ../kano_updater/commands/download.py:142
 msgid "Downloading apt packages"
 msgstr "Descargando paquetes apt"
@@ -500,38 +322,61 @@ msgstr "Descargando paquetes apt"
 msgid "Done downloading"
 msgstr "Descarga finalizada"
 
-#: ../kano_updater/commands/download.py:180
-#: ../kano_updater/apt_progress_wrapper.py:40
-msgid "Downloading {}"
-msgstr "Descargando {}"
-
-#: ../kano_updater/utils.py:334
-msgid ""
-"We had a problem with the Update. Make sure you are connected to the "
-"Internet, and give it another go.\n"
-"\n"
-"If you still have problems, we can help at http://help.kano.me"
+#: ../kano_updater/commands/install.py:41
+msgid "Checking system"
 msgstr ""
 
-#: ../kano_updater/utils.py:339
-msgid "Update error"
-msgstr "Error en la actualización"
+#: ../kano_updater/commands/install.py:53
+msgid "Installing updates"
+msgstr "Instalando actualizaciones"
 
-#: ../kano_updater/utils.py:602
-msgid "Error!"
-msgstr "Error!"
+#: ../kano_updater/commands/install.py:162
+msgid "Installing independent package"
+msgstr "Instalando un paquete independiente"
 
-#: ../kano_updater/utils.py:603
-msgid "kano-updater must be executed with root privileges"
-msgstr "kano-updater tiene que ser ejecutado con privilegios de root"
+#: ../kano_updater/commands/install.py:192
+msgid "Installing Hotfix"
+msgstr "Instalando Hotfix"
 
-#: ../kano_updater/stages.py:31
-msgid "Preparing packages to be upgraded"
-msgstr "Preparando paquetes para ser actualizados"
+#: ../kano_updater/commands/install.py:220
+msgid "Starting Update"
+msgstr "Iniciando Actualización"
 
-#: ../kano_updater/stages.py:64
-msgid "Finalising package upgrade"
-msgstr "Finalizando la actualización del paquete"
+#: ../kano_updater/commands/install.py:226
+msgid "Updating Itself"
+msgstr "Actualizándose"
+
+#: ../kano_updater/commands/install.py:232
+msgid "Running The Preupdate Scripts"
+msgstr "Ejecutando los Scripts de Preupdate"
+
+#: ../kano_updater/commands/install.py:238
+msgid "Updating Pip Packages"
+msgstr "Actualizando los paquetes Pip"
+
+#: ../kano_updater/commands/install.py:244
+msgid "Updating Deb Packages"
+msgstr "Actualizando los paquetes Deb"
+
+#: ../kano_updater/commands/install.py:250
+msgid "Running The Postupdate Scripts"
+msgstr ""
+
+#: ../kano_updater/commands/install.py:256
+msgid "Performing auxiliary tasks"
+msgstr "Realizando tareas auxiliares"
+
+#: ../kano_updater/commands/install.py:279
+msgid ""
+"Unfortunately, your version of Kano OS is too old to be updated through the "
+"updater."
+msgstr ""
+"Desafortunadamente, tu version de Kano OS es demasiado vieja para ser "
+"actualizada a través del actualizador."
+
+#: ../kano_updater/commands/install.py:281
+msgid "You will need to download the image of the OS and reflash your SD card."
+msgstr "Es necesario descargar la imagen del OS i reflashear tu tarjeta SD"
 
 #: ../kano_updater/dialogs.py:33
 msgid "Update result"
@@ -606,55 +451,94 @@ msgstr "Actualización exitosa!"
 
 #: ../kano_updater/dialogs.py:94
 msgid "Now we just need to do a quick reboot. See you in a minute!"
-msgstr "Ahora solamente necesitamos un reinicio rápido. Nos vemos en un minuto!"
+msgstr ""
+"Ahora solamente necesitamos un reinicio rápido. Nos vemos en un minuto!"
 
-#: ../kano_updater/progress.py:94
-msgid "The root phase"
-msgstr "La fase root"
+#: ../kano_updater/apt_wrapper.py:112
+msgid "Initialising apt cache"
+msgstr "Inicializando apt cache"
 
-#: ../kano_updater/progress.py:200
-msgid "yes"
-msgstr "sí"
+#: ../kano_updater/apt_wrapper.py:126
+msgid "Reading package lists"
+msgstr "Leyendo lista de paquetes"
 
-#: ../kano_updater/progress.py:200
-msgid "no"
-msgstr "no"
+#: ../kano_updater/apt_wrapper.py:127
+msgid "Building dependency tree"
+msgstr "Creando árbol de dependencias"
 
-#: ../kano_updater/progress.py:311
-msgid "ERROR: {}"
-msgstr "ERROR: {}"
+#: ../kano_updater/apt_wrapper.py:128
+msgid "Reading state information"
+msgstr "Leyendo la información de estado"
 
-#: ../kano_updater/progress.py:314
-msgid "Aborting {}, {}"
-msgstr "Abortando {}, {}"
+#: ../kano_updater/apt_wrapper.py:129
+msgid "Building data structures"
+msgstr "Generando estructuras de datos"
 
-#: ../kano_updater/progress.py:335
-msgid "Type one of these:  {}"
-msgstr "Escribe uno de estos: {}"
+#: ../kano_updater/apt_wrapper.py:184 ../kano_updater/apt_wrapper.py:211
+msgid "Downloading packages"
+msgstr "Descargando paquetes"
 
-#: ../kano_updater/auxiliary_tasks.py:21
-msgid "Updating home folders from template"
-msgstr "Actualizando la carpeta home desde la plantilla"
+#: ../kano_updater/apt_wrapper.py:185 ../kano_updater/apt_wrapper.py:212
+msgid "Installing packages"
+msgstr "Instalando paquetes"
 
-#: ../kano_updater/auxiliary_tasks.py:23
-msgid "Refreshing Kano Apps"
-msgstr "Recargando las Apps de Kano"
+#: ../kano_updater/apt_wrapper.py:318
+msgid "Cleaning dpkg journal"
+msgstr "Limpiando dpkg diario"
 
-#: ../kano_updater/auxiliary_tasks.py:25
-msgid "Refreshing the desktop"
-msgstr "Recargando el escritorio"
+#: ../kano_updater/apt_wrapper.py:320
+msgid "Fixing broken packages"
+msgstr "Reparando paquetes rotos"
 
-#: ../kano_updater/auxiliary_tasks.py:27
-msgid "Expanding filesystem partitions"
-msgstr "Expandiendo las particiones del sistema de archivos"
+#: ../kano_updater/utils.py:328
+msgid ""
+"We had a problem with the Update. Make sure you are connected to the "
+"Internet, and give it another go.\n"
+"\n"
+"If you still have problems, we can help at http://help.kano.me"
+msgstr ""
 
-#: ../kano_updater/auxiliary_tasks.py:29
-msgid "Removing unnecessary kano-content entries"
-msgstr "Eliminando entradas innecesarias de kano-content"
+#: ../kano_updater/utils.py:333
+msgid "Update error"
+msgstr "Error en la actualización"
 
-#: ../kano_updater/auxiliary_tasks.py:31
-msgid "Syncing"
-msgstr "Sincronizando"
+#: ../kano_updater/utils.py:505
+msgid "Error!"
+msgstr "Error!"
+
+#: ../kano_updater/utils.py:506
+msgid "kano-updater must be executed with root privileges"
+msgstr "kano-updater tiene que ser ejecutado con privilegios de root"
+
+#: ../kano_updater/utils.py:582 ../kano_updater/utils.py:603
+msgid "Power Required"
+msgstr ""
+
+#: ../kano_updater/utils.py:583
+msgid "Is your computer plugged in?"
+msgstr ""
+
+#: ../kano_updater/utils.py:585
+msgid "Yes"
+msgstr ""
+
+#: ../kano_updater/utils.py:586
+msgid "No"
+msgstr ""
+
+#: ../kano_updater/utils.py:601
+msgid "Low Battery"
+msgstr ""
+
+#: ../kano_updater/utils.py:609
+msgid ""
+"Sorry! You cannot update unless your computer is plugged in.\n"
+"Plug it in and try again!"
+msgstr ""
+
+#: ../kano_updater/utils.py:612
+msgid "Continue"
+msgstr ""
 
 #: ../lxpanel-plugin/kano_updater.c:448
 msgid "Download updates"
@@ -683,3 +567,170 @@ msgstr "Comprobar de nuevo"
 #: ../lxpanel-plugin/kano_updater.c:538
 msgid "A reminder to keep your Kano OS up-to-date."
 msgstr "Un recordatorio para mantener Kano OS actualizado"
+
+#~ msgid ""
+#~ "In 1978, the fastest computer in the world was the Cray 1 — it cost $7 "
+#~ "million and weighed as much as an average elephant! Your Kano is about 4 "
+#~ "times faster than the Cray 1. To keep it up to speed, we're downloading "
+#~ "new games, apps and projects, and streamlining the computer's memory. "
+#~ "This should take about 15 minutes. In the meantime, why not take a phone "
+#~ "picture of your Kano? Send it to us at <b>hello@kano.me</b> and we'll "
+#~ "share it with the world. You can also search for the white rabbit on "
+#~ "<b>http://world.kano.me</b>"
+#~ msgstr ""
+#~ "En 1978, el ordenador más rápido del mundo fue el Cray 1 - costaba 7 "
+#~ "millones de dólares y pesaba tanto como un elefante! Tu Kano es "
+#~ "aproximadamente 4 veces más rápida que el Cray 1. Hablando de velocidad, "
+#~ "vamos a descargar nuevos juegos, apps y proyectos, organizándolo en la "
+#~ "memoria del ordenador. Esto debería tardar unos 15 minutos. Mientras "
+#~ "tanto, que tal si le haces una foto a tu Kano? Envíanosla a <b>hello@kano."
+#~ "me</b> y la compartiremos con el mundo. También puedes buscar al conejo "
+#~ "blanco en <b>http://world.kano.me</b>"
+
+#~ msgid ""
+#~ "Computers can learn new ideas quickly. Right now, we're updating the "
+#~ "Updater tool. Once this step is finished, the Updater will relaunch. How "
+#~ "do computers think? They are made of electrical switches, connected "
+#~ "together in clever ways. If a switch is on, that means \"yes\" or \"1\"; "
+#~ "if it's off, that means \"no\" or \"0\". These little yes-no switches "
+#~ "become a binary code — for words, sounds, rules, and more. Your computer "
+#~ "has over 10 million tiny switches, called transistors, in its brain. In "
+#~ "your brain, these switches are cells called neurons. They're talking to "
+#~ "each other right now."
+#~ msgstr ""
+#~ "Los ordenadores pueden aprender nuevas ideas rápidamente. Ahora mismo, "
+#~ "estamos actualizando la herramienta Updater. Una vez este paso haya "
+#~ "acabado, el Updater será relanzado. Cómo piensan los ordenadores? Están "
+#~ "hechos de interruptores eléctricos, conectados entre sí de manera "
+#~ "inteligente. Si un interruptor está encendido, eso significa \"sí\" or "
+#~ "\"1\"; si está apagado, significa \"no\" o \"0\". Estos pequeños "
+#~ "interruptores se convierten en código binario — para palabras, sonidos, "
+#~ "reglas y demás. Tu ordenador tiene más de 10 millones de pequeños "
+#~ "interruptores, llamados transistores, en su cerebro. En tu cerebro, estos "
+#~ "interruptores son células llamadas neuronas. Tus neuronas están hablando "
+#~ "entre ellas justo ahora."
+
+#~ msgid ""
+#~ "Python is one of the world's most popular programming languages. A "
+#~ "programming language takes words that humans can understand, and "
+#~ "translates them into instructions that the computer's switches can "
+#~ "understand. A good \"make a sandwich\" program would go through all the "
+#~ "steps necessary to get the sandwich made, from \"grab bread\" to \"pick "
+#~ "up knife\" to \"put it on a plate.\" The computer follows a program in "
+#~ "Python the way a cook follows a recipe in English. Python code can build "
+#~ "volcanos in Minecraft, grab \"Gangnam Style\" from YouTube, and move "
+#~ "millions of dollars in the New York Stock Exchange."
+#~ msgstr ""
+#~ "Python es uno de los lenguajes de programación más populares del mundo. "
+#~ "Un lenguaje de programación coge palabras que los humanos pueden "
+#~ "entender, y las traduce en unas instrucciones que los transistores del "
+#~ "ordenador pueden entender. Un buen programa llamado \"haz un sándwich\" "
+#~ "iría a través de todos los pasos necesarios para hacer el sándwich, desde "
+#~ "\"coger el pan\" hasta \"coger un cuchillo\" hasta \"ponerlo en un plato."
+#~ "\" El ordenador sigue un programa en Pyrhon de la misma manera que un "
+#~ "cocinero sigue una receta en español. Un código en Pyrhon puede construir "
+#~ "volcanes en Minecraft, coger \"Gangnam Style\" de YouTube, y mover "
+#~ "millones de dólares en la Bolsa de Nueva York."
+
+#~ msgid ""
+#~ "The name \"Kano\" comes from Kanō Jigorō. He was a Japanese "
+#~ "schoolteacher, inventor of the art of judo. His motto: Maximum "
+#~ "efficiency, minimum effort. In Greek, Kano means \"I make\". (Kano is "
+#~ "also the largest city in Northern Nigeria.) What makes Kano different to "
+#~ "other computers? All of the ideas in its brain are open for you to see. "
+#~ "Just visit <b>github.com/KanoComputing</b> to see the code. Kano can also "
+#~ "change forms… You can turn it into a robot, server, radio, and more. "
+#~ "Visit <b>world.kano.me/projects</b> for powerup ideas. Want a look inside "
+#~ "Kano HQ? Hang with our wizards at <b>blog.kano.me</b>"
+#~ msgstr ""
+#~ "El nombre \"Kano\" viene de Kanō Jigorō. Él fue un profesor japonés, "
+#~ "inventor del arte del judo. Su lema: Máxima eficiencia, mínimo esfuerzo. "
+#~ "En griego, Kano significa \"Yo hago\". (Kano es también la ciudad más "
+#~ "grande de Nigeria del Norte.) Que hace a Kano diferente de los otros "
+#~ "ordenadores? Todas las ideas de su cerebro están abiertas para que tú las "
+#~ "veas. Visita <b>github.com/KanoComputing</b> para ver el código. Kano "
+#~ "también puede cambiar de forma… Puedes convertirlo en un robot, servidor, "
+#~ "radio, y más. Visita <b>world.kano.me/projects</b> para conseguir ideas. "
+#~ "Quieres echar un vistazo en Kano HQ? Queda con nuestros magos en <b>blog."
+#~ "kano.me</b>"
+
+#~ msgid ""
+#~ "Kano OS is an operating system, which means it connects all the programs "
+#~ "together. This OS is based on Linux, whose code is open — that means that "
+#~ "it's free for anyone to download, change or even sell. Its code is "
+#~ "written by hobbyists and makers worldwide, not just professionals. Kano "
+#~ "uses Debian, a fun and powerful \"distribution\" of Linux which the "
+#~ "International Space Station also uses to run its robotic systems — to "
+#~ "keep the astronauts from losing their lunch!"
+#~ msgstr ""
+#~ "Kano SO es un sistema operativo, lo que significa que conecta todos los "
+#~ "programas entre ellos. Este SO está basado en Linux, cuyo código es "
+#~ "abierto — esto significa que para cualquiera es gratuito su descarga, "
+#~ "cambio o incluso venta. Su código está escrito  por aficionados y "
+#~ "creadores de todo el mundo, y no solamente por profesionales. Kano "
+#~ "utiliza Debian, una divertida y poderosa \"distribución\" de Linux, la "
+#~ "cual también es utilizada por la Estación Internacional Espacial para "
+#~ "hacer mover su sistema robótico — evitando que los astronautas pierdan su "
+#~ "comida!"
+
+#~ msgid ""
+#~ "We're almost done! With your Kano computer, you'll make awesome games, "
+#~ "code your own music, stream videos around your house, tell stories, and "
+#~ "much more. Your computer is open, and its powers are at your command. If "
+#~ "you want to get new cool projects from us each week, join the community at"
+#~ msgstr ""
+#~ "Ya casi estamos! Con tu ordenador Kano, podrás hacer increíbles juegos, "
+#~ "crear tu propia música, mostrar vídeos por toda tu casa, contar "
+#~ "historias, y mucho más. Tu ordenador está abierto, y sus poderes a tus "
+#~ "ordenes. Si quieres ver nuevos proyectos increíbles cada semana, únete a "
+#~ "la comunidad en"
+
+#~ msgid ""
+#~ "Your Kano will now reboot!\n"
+#~ "\n"
+#~ "See you in a while…"
+#~ msgstr ""
+#~ "Tu Kano se reseteará ahora!\n"
+#~ "\n"
+#~ "Nos vemos en un momento…"
+
+#~ msgid "Changes"
+#~ msgstr "Cambios"
+
+#~ msgid "Relaunching the Updater"
+#~ msgstr "Relanzando el Actualizador"
+
+#~ msgid "The Updater updated itself and is now starting again."
+#~ msgstr "El Actualizador se ha actualizado solo y está reiniciándose"
+
+#~ msgid "Do you want to play a cool game instead? PRESS [J] TO LAUNCH!"
+#~ msgstr ""
+#~ "Prefieres jugar a un juego muy guay en su lugar? PRESIONA [J] PARA "
+#~ "EMPEZAR!"
+
+#~ msgid "Time flies - {}% already!"
+#~ msgstr "El tiempo vuela - {}% ya!"
+
+#~ msgid "Get new powers"
+#~ msgstr "Consigue nuevos poderes"
+
+#~ msgid "Download the latest Kano OS"
+#~ msgstr "Descarga el último Kano OS"
+
+#~ msgid "Download"
+#~ msgstr "Descargar"
+
+#~ msgid "Not enough space to update!"
+#~ msgstr "No hay suficiente espacio para actualizar!"
+
+#~ msgid "But I can make more room if you'd like?"
+#~ msgstr "Pero puedo hacer más espacio si tu quieres"
+
+#~ msgid "CANCEL"
+#~ msgstr "CANCELAR"
+
+#~ msgid "Preparing packages to be upgraded"
+#~ msgstr "Preparando paquetes para ser actualizados"
+
+#~ msgid "Finalising package upgrade"
+#~ msgstr "Finalizando la actualización del paquete"
