@@ -13,7 +13,7 @@ class RC(object):
     """Return codes of binaries used throughout this project.
 
     Rather than doing an ``exit`` with an RC from here, it is preferable to set
-    the RcState.rc. The ``main`` function should perform the exit with that.
+    the RCState.rc. The ``main`` function should perform the exit with that.
 
     Note:
         ``kano-updater-recovery`` uses it's own RC class, see that source file.
@@ -37,7 +37,7 @@ class RC(object):
     NOT_ENOUGH_SPACE = 34
 
 
-class RcState(object):
+class RCState(object):
     """Application RC state to set and exit with specific return codes."""
 
     _singleton_instance = None
@@ -46,11 +46,11 @@ class RcState(object):
     def get_instance():
         """Get an instance to the singleton class."""
 
-        logger.debug("Getting RcState instance")
-        if not RcState._singleton_instance:
-            RcState()
+        logger.debug("Getting RCState instance")
+        if not RCState._singleton_instance:
+            RCState()
 
-        return RcState._singleton_instance
+        return RCState._singleton_instance
 
     def __init__(self):
         """Class constructor.
@@ -63,11 +63,11 @@ class RcState(object):
             Exception: When the constructor is explicitly called.
         """
 
-        logger.debug("Creating new RcState instance")
-        if RcState._singleton_instance:
+        logger.debug("Creating new RCState instance")
+        if RCState._singleton_instance:
             raise Exception("This class is a singleton!")
 
-        RcState._singleton_instance = self
+        RCState._singleton_instance = self
 
         self._rc = RC.SUCCESS
 
@@ -85,5 +85,5 @@ class RcState(object):
     def rc(self, value):
         """Setter for the property."""
 
-        logger.debug("Setting RcState.rc to: {}".format(value))
+        logger.debug("Setting RCState.rc to: {}".format(value))
         self._rc = value

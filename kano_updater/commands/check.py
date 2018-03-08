@@ -18,7 +18,7 @@ from kano_updater.progress import DummyProgress
 from kano_updater.utils import is_server_available
 import kano_updater.priority as Priority
 from kano_updater.paths import KANO_SOURCES_LIST
-from kano_updater.return_codes import RC, RcState
+from kano_updater.return_codes import RC, RCState
 
 
 def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
@@ -53,7 +53,7 @@ def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
         err_msg = N_("Must have internet to check for updates")
         logger.error(err_msg)
         progress.fail(_(err_msg))
-        RcState.get_instance().rc = RC.NO_NETWORK
+        RCState.get_instance().rc = RC.NO_NETWORK
 
         # Not updating the timestamp. The check failed.
         return False
@@ -62,7 +62,7 @@ def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
         err_msg = N_("Could not connect to the download server")
         logger.error(err_msg)
         progress.fail(_(err_msg))
-        RcState.get_instance().rc = RC.CANNOT_REACH_KANO
+        RCState.get_instance().rc = RC.CANNOT_REACH_KANO
 
         # Not updating the timestamp. The check failed.
         return False
@@ -74,7 +74,7 @@ def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
         if not status.is_recovery_needed():
             status.state = UpdaterStatus.NO_UPDATES
         logger.debug("No updates available")
-        RcState.get_instance().rc = RC.NO_UPDATES_AVAILABLE
+        RCState.get_instance().rc = RC.NO_UPDATES_AVAILABLE
         rv = False
     else:
         if update_type == Priority.URGENT:

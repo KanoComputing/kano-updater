@@ -66,7 +66,7 @@ from kano_updater.status import UpdaterStatus
 from kano_updater.utils import make_low_prio, is_running, \
     remove_pid_file, pause_notifications, resume_notifications, show_kano_dialog, \
     run_bg, enable_power_button, disable_power_button, verify_kit_is_plugged
-from kano_updater.return_codes import RC, RcState
+from kano_updater.return_codes import RC, RCState
 import kano_updater.priority as Priority
 
 
@@ -334,7 +334,7 @@ def main():
             # backwards compatiblity
             run_install(gui=True, confirm=False)
 
-    return RcState.get_instance().rc
+    return RCState.get_instance().rc
 
 
 if __name__ == '__main__':

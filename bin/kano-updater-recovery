@@ -191,6 +191,7 @@ def run_updater():
     import os
     import subprocess
 
+    # Launch the Updater in a subprocess and assign a group id to it.
     return subprocess.Popen(
         ['kano-updater', 'install'],
         shell=False,
@@ -199,7 +200,7 @@ def run_updater():
 
 
 def stop_updater(proc):
-    """Stops the Updater process
+    """Stops the Updater process.
 
     Args:
         proc (subprocess.Popen): The process of the Updater
@@ -207,6 +208,8 @@ def stop_updater(proc):
 
     import os
     import signal
+
+    # Stop the Updater subprocess with a signal to then entire procress group.
     os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
 
 
@@ -284,7 +287,8 @@ def main():
     if not UpdaterStatus.get_instance().is_recovery_needed():
         return RC.SUCCESS
 
-    # Check if any UFx is being shown, e.g. kano-os-recovery had a timeout.
+    # Check if any UFx error splash is being shown, e.g. kano-os-recovery had
+    # a timeout. Treat this external error as a recovery error and terminate.
     if is_err_being_shown():
         prepare_for_hard_shutdown()
         infinite_loop()

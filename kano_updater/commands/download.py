@@ -18,7 +18,7 @@ from kano_updater.utils import run_pip_command, is_server_available, \
     show_kano_dialog, make_normal_prio
 from kano_updater.commands.check import check_for_updates
 import kano_updater.priority as Priority
-from kano_updater.return_codes import RC, RcState
+from kano_updater.return_codes import RC, RCState
 
 
 class DownloadError(Exception):
@@ -75,14 +75,14 @@ def download(progress=None, gui=True):
         err_msg = N_("Must have internet to download the updates")
         logger.error(err_msg)
         progress.fail(_(err_msg))
-        RcState.get_instance().rc = RC.NO_NETWORK
+        RCState.get_instance().rc = RC.NO_NETWORK
         return False
 
     if not is_server_available():
         err_msg = N_("Could not connect to the download server")
         logger.error(err_msg)
         progress.fail(_(err_msg))
-        RcState.get_instance().rc = RC.CANNOT_REACH_KANO
+        RCState.get_instance().rc = RC.CANNOT_REACH_KANO
         return False
 
     # show a dialog informing the user of an automatic urgent download
@@ -117,7 +117,7 @@ def download(progress=None, gui=True):
     except Exception as err:
         progress.fail(err.message)
         logger.error(err.message)
-        RcState.get_instance().rc = RC.UNEXPECTED_ERROR
+        RCState.get_instance().rc = RC.UNEXPECTED_ERROR
 
         status.state = UpdaterStatus.UPDATES_AVAILABLE
         status.save()

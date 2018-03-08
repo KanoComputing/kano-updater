@@ -28,7 +28,7 @@ from kano_updater.utils import run_pip_command
 from kano_updater.commands.download import download
 from kano_updater.commands.check import get_ind_packages
 import kano_updater.priority as Priority
-from kano_updater.return_codes import RC, RcState
+from kano_updater.return_codes import RC, RCState
 
 
 class InstallError(Exception):
@@ -74,7 +74,7 @@ def install(progress=None, gui=True):
     if not enough_space:
         logger.error(space_msg)
         progress.abort(_(space_msg))
-        RcState.get_instance().rc = RC.NOT_ENOUGH_SPACE
+        RCState.get_instance().rc = RC.NOT_ENOUGH_SPACE
         return False
 
     logger.debug("Downloading any new updates that might be available.")
@@ -99,7 +99,7 @@ def install(progress=None, gui=True):
 
         logger.error(err.message)
         progress.fail(err.message)
-        RcState.get_instance().rc = RC.UNEXPECTED_ERROR
+        RCState.get_instance().rc = RC.UNEXPECTED_ERROR
         return False
 
 

@@ -3,7 +3,7 @@
 # Copyright (C) 2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
-# Runs initial the splash screen for the recovery mechanism when the system is
+# Runs the initial splash screen for the recovery mechanism when the system is
 # trying to boot to a point where the updater can fix it.
 
 
