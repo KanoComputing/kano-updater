@@ -1,9 +1,10 @@
-#
 # recovery-running-updater-splash.service
 #
-# Runs the splash screen for the recovery mechanism when it is running the
-# updater
+# Copyright (C) 2018 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
+# Runs the splash screen for the recovery mechanism when it is running the
+# updater.
 
 
 [Unit]

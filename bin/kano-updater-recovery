@@ -13,9 +13,7 @@ MINUTE = 60  # seconds
 HOUR = 60 * MINUTE
 
 SYSTEM_PROGRESS_TIMEOUT = 2 * HOUR
-
 PERMITTED_WIFI_RETRIES = 3
-
 RECOVERY_STATUS_PATH = '/var/cache/kano-updater/recovery.txt'
 
 
@@ -109,10 +107,8 @@ def show_err(err_code):
     Shows the error splash screen associated with the error code. Requires a
     directory in :attr:`kano_updater.ui.paths.MEDIA_PATH`.
 
-    TODO: Prepare the system for hard shutdown
-
     Args:
-        err_code (int): Error code to show. Should be a member of :class:`RC`
+        err_code (int): Error code to show. Should be a member of :class:`RC`.
 
     Returns:
         int: The supplied return code

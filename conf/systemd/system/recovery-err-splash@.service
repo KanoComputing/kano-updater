@@ -1,11 +1,12 @@
-#
 # recovery-err-splash@.service
+#
+# Copyright (C) 2018 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Runs the splash screen for the when recovery mechanism fails with an error
 # message. Add directories for error messages under
 #     /usr/lib/python2.7/dist-packages/kano_updater/ui/media/images/en_US/update-interrupted/
 # titled `<error_code>-err`
-#
 
 
 [Unit]

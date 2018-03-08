@@ -7,7 +7,6 @@
 
 
 import os
-import sys
 import errno
 import subprocess
 import shutil
@@ -19,7 +18,6 @@ from kano.logging import logger
 from kano.utils.shell import run_cmd, run_bg, run_cmd_log
 from kano.utils.file_operations import chown_path, sed, open_locked
 from kano.utils.user import get_user_unsudoed
-from kano.utils.gui import is_gui
 from kano.timeout import timeout, TimeoutError
 
 #
@@ -302,10 +300,6 @@ def install(pkgs, die_on_err=True):
     return rv
 
 
-def remove(pkgs):
-    pass  # TODO
-
-
 def purge(pkgs, die_on_err=False):
     if isinstance(pkgs, list):
         pkgs = ' '.join(pkgs)
@@ -325,13 +319,16 @@ def update_failed(err):
 
     logger.error("Update failed: {}".format(err))
 
-    msg = _("We had a problem with the Update. " \
-            "Make sure you are connected to the Internet, and give it another go.\n\n" \
-            "If you still have problems, we can help at http://help.kano.me")
+    msg = _(
+        "We had a problem with the Update. Make sure you are connected"
+        " to the Internet, and give it another go.\n\n"
+        "If you still have problems, we can help at http://help.kano.me"
+    )
 
     kill_flappy_judoka()
     kdialog = kano_dialog.KanoDialog(_("Update error"), msg)
     kdialog.run()
+
 
 # TODO: This function has been deprecated and should be removed in
 # one of the next few releases. Don't use this one (check out the
@@ -578,8 +575,10 @@ def verify_kit_is_plugged():
         if not is_plugged or is_battery_low:
             KanoDialog(
                 title_text=header,
-                description_text=_("Sorry! You cannot update unless your computer is"
-                                   " plugged in.\nPlug it in and try again!"),
+                description_text=_(
+                    "Sorry! You cannot update unless your computer is plugged in.\n"
+                    "Plug it in and try again!"
+                ),
                 button_dict={
                     _("Continue"): {'color': 'green'}
                 }

@@ -1,15 +1,16 @@
 # finish.py
 #
-# Copyright (C) 2015-2017 Kano Computing Ltd.
+# Copyright (C) 2015-2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Restart computer widget
 
 
-from gi.repository import Gtk
 import os
 import time
 from threading import Timer
+
+from gi.repository import Gtk
 
 from kano_updater.status import UpdaterStatus
 from kano_updater.ui.views.countdown import Countdown

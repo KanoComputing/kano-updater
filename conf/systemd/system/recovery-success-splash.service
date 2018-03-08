@@ -1,8 +1,9 @@
-#
 # recovery-success-splash.service
 #
-# Runs the splash screen for the recovery mechanism is successful
+# Copyright (C) 2018 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
+# Runs the splash screen for the recovery mechanism when it is successful.
 
 
 [Unit]
