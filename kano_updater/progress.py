@@ -10,6 +10,7 @@ import os
 import sys
 
 from kano.logging import logger
+import monitor
 
 
 def encode(x):
@@ -184,6 +185,7 @@ class Progress(object):
     def next_step(self, phase_name, msg):
         phase = self._get_phase_by_name(phase_name)
         self.set_step(phase_name, phase.step + 1, msg)
+        monitor.heartbeat()
 
     def _get_phase_by_name(self, name, do_raise=True):
         for phase in self._phases:

@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+#
+# kano-updater
+#
+# Copyright (C) 2015-2018 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
+#
+#  This actually launches kano-updater-internal
+#  and then monitors whether it has exited properly
+
+import sys
+from kano_updater.monitor import run
+import os
+import kano_i18n.init
+
+if __name__ == '__main__' and __package__ is None:
+    DIR_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    if DIR_PATH != '/usr':
+        sys.path.insert(0, DIR_PATH)
+        LOCALE_PATH = os.path.join(DIR_PATH, 'locale')
+    else:
+        LOCALE_PATH = None
+
+kano_i18n.init.install('kano-updater', LOCALE_PATH)
+
+if __name__ == "__main__":
+    cmdargs = ["/usr/bin/kano-updater-internal"] + sys.argv[1:]
+    sys.exit(run(cmdargs))

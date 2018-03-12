@@ -36,8 +36,8 @@ except ImportError:
     '''
     pass
 
-from kano_updater.apt_wrapper import AptWrapper
-from kano_updater.progress import DummyProgress
+import kano_updater.apt_wrapper
+import kano_updater.progress
 
 
 UPDATER_CACHE_DIR = "/var/cache/kano-updater/"
@@ -224,9 +224,9 @@ def migrate_repository(apt_file, old_repo, new_repo):
         return
 
     # TODO: track progress of this
-    apt_handle = AptWrapper.get_instance()
+    apt_handle = kano_updater.apt_wrapper.AptWrapper.get_instance()
     apt_handle.clear_cache()
-    apt_handle.update(DummyProgress())
+    apt_handle.update(kano_updater.progress.DummyProgress())
 
 
 def _handle_sigusr1(signum, frame):
@@ -577,3 +577,21 @@ def verify_kit_is_plugged():
             ).run()
 
     return is_plugged and not is_battery_low
+
+
+class signalPoll:
+    # A class to allow using signals without globals
+
+    def __init__(self, sigNum):
+        self.sigNum = sigNum
+        self.signalled = False
+        signal.signal(self.sigNum, self._handle)
+
+    def _handle(self, sigNum, stack):
+        if sigNum == self.sigNum:
+            self.signalled = True
+
+    def poll(self):
+        res = self.signalled
+        self.signalled = False
+        return res

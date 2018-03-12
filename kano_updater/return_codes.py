@@ -32,9 +32,10 @@ class RC(object):
 
     NO_NETWORK = 30
     CANNOT_REACH_KANO = 31
-    HANGED_INDEFINITELY = 32  # TODO
+    HANGED_INDEFINITELY = 32
     SIG_TERM = 33
     NOT_ENOUGH_SPACE = 34
+
 
 
 class RCState(object):
