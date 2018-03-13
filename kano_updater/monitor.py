@@ -5,8 +5,6 @@
 #
 # Module to allow us to detect when a process is stuck.
 
-# Also heartbeat() function for a monitored process
-# to notify the monitor that it is proceeding normally.
 
 import subprocess
 from collections import defaultdict
@@ -124,20 +122,6 @@ def monitor(watchproc, timeout):
             return True
 
         time.sleep(1)
-
-
-def heartbeat():
-    """
-    Inform monitor process, if it exists, that we are still alive
-    """
-
-    monitor_pid = os.environ.get("MONITOR_PID")
-    if monitor_pid:
-        try:
-            pid = int(monitor_pid)
-            os.kill(pid, signal.SIGUSR1)
-        except:
-            logger.error("Invalid monitor pid {}".format(monitor_pid))
 
 
 def run(cmdargs):
