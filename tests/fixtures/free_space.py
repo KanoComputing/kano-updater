@@ -9,10 +9,7 @@
 
 
 import pytest
-
-
-from kano_updater.disk_requirements import PIP_REQ_SPACE, SPACE_BUFFER, \
-    MIN_REQ_SPACE
+from kano_updater.disk_requirements import SPACE_BUFFER, MIN_REQ_SPACE
 
 
 REQUIRED_SPACE = -10000
@@ -39,7 +36,7 @@ def free_space(apt, request, monkeypatch):
     global space_available
 
     space_available = request.param
-    space_required = apt.required_test_space + PIP_REQ_SPACE + SPACE_BUFFER
+    space_required = apt.required_test_space + SPACE_BUFFER
 
     if space_available < 0:
         space_available += space_required - REQUIRED_SPACE

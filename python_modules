@@ -1,9 +1,0 @@
-pip
-ping
-requests==2.6.0
-tzupdate
-pam
-python-slugify
-decorator
-docopt
-futures==2.1.4

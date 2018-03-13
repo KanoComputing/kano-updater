@@ -13,6 +13,7 @@ from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable, migrate_repository, get_users, run_for_every_user
 from kano.utils import run_cmd_log, get_user_unsudoed, write_file_contents, \
     is_installed
+from kano_updater.paths import PYLIBS_DIR, PYFALLBACK_DIR
 from kano_init.utils import reconfigure_autostart_policy
 
 
@@ -375,7 +376,18 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_3_14_1_to_beta_3_15_0(self):
-        pass
+        """ Ensure the debianisation of this release
+        Keep an active depedencies fallback directory
+        in case of failure.
+        """
+        try:
+            import shutil
+            import os
+
+            shutil.move(PYLIBS_DIR, PYFALLBACK_DIR)
+            os.mkdir(PYLIBS_DIR)
+        except (OSError, IOError), e:
+            logger.error("System failed to modify the required lib directories.", e)
 
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
@@ -955,7 +967,7 @@ class PostUpdate(Scenarios):
             if c['rpi-chromium-mods-kano'].installed >= '20170809':
                 install('scratch2')
             else:
-                logger.error("beta_3_13_0_to_beta_3_14_0: wrong version of rpi-chomium-mods-kano installed: {}".format(
+                logger.error("beta_3_13_0_to_beta_3_14_0: wrong version of rpi-chromium-mods-kano installed: {}".format(
                              c['rpi-chromium-mods-kano'].installed.version)
                 )
         except Exception as e:

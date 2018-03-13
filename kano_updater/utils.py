@@ -13,6 +13,8 @@ import shutil
 import pwd
 import grp
 import signal
+import re
+import subprocess
 
 from kano.logging import logger
 from kano.utils.shell import run_cmd, run_bg, run_cmd_log
@@ -34,7 +36,6 @@ except ImportError:
     '''
     pass
 
-from kano_updater.paths import PIP_LOG_FILE
 from kano_updater.apt_wrapper import AptWrapper
 from kano_updater.progress import DummyProgress
 
@@ -102,14 +103,6 @@ def remove_pid_file():
     if os.path.exists(PID_FILE):
         os.remove(PID_FILE)
 
-
-def run_pip_command(pip_args):
-    # TODO Incorporate suppress_output when this is working
-
-    _, _, rv = run_cmd_log("pip {} --log {}".format(pip_args, PIP_LOG_FILE))
-    return rv == 0
-
-
 def get_users(minimum_id=1000):
     # TODO: this was taken from kano-greeter, but should be in toolset
     '''
@@ -134,22 +127,21 @@ def run_for_every_user(cmd):
     for user in get_users():
         run_cmd_log("sudo su -c '{cmd}' - {user}".format(cmd=cmd, user=user))
 
+def is_server_available(REPO_SERVER, count=5):
+    """ Pings REPO_SERVER to diagnose packet loss
+    and server availability.
 
-def is_server_available():
-    install_ping()
+    Args:
+        REPO_SERVER: is the pre-set address
+        count: Number of times to ping the server
+
+    Returns: A boolean, True for server availability.
+    """
     import ping
 
     lost_packet_percent = ping.quiet_ping(REPO_SERVER, timeout=3, count=5)[0]
 
     return lost_packet_percent < 50
-
-
-def install_ping():
-    try:
-        import ping
-    except ImportError:
-        logger.info("ping not found on the system, installing")
-        run_pip_command('install ping')
 
 
 def kill_apps():

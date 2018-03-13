@@ -111,6 +111,10 @@ msgstr "[ＥＳＣ]  ｏｒ  [Ｑ]  ｔｏ  Ｑｕｉｔ"
 msgid "FlappyJudoka"
 msgstr "ＦｌａｐｐｙＪｕｄｏｋａ"
 
+#: ../kano_updater/commands/install.py:259
+msgid "Updating Deb Packages"
+msgstr "Ｕｐｄａｔｉｎｇ  Ｄｅｂ  Ｐａｃｋａｇｅｓ"
+
 #: ../kano_updater/ui/media/flappy-judoka/src/graphics/hud.py:109
 #: ../kano_updater/ui/media/flappy-judoka/src/graphics/hud.py:139
 msgid "Press [SPACE] to start!"
@@ -350,14 +354,6 @@ msgstr "Ｕｐｄａｔｉｎｇ  Ｉｔｓｅｌｆ"
 #: ../kano_updater/commands/install.py:232
 msgid "Running The Preupdate Scripts"
 msgstr "Ｒｕｎｎｉｎｇ  Ｔｈｅ  Ｐｒｅｕｐｄａｔｅ  Ｓｃｒｉｐｔｓ"
-
-#: ../kano_updater/commands/install.py:238
-msgid "Updating Pip Packages"
-msgstr "Ｕｐｄａｔｉｎｇ  Ｐｉｐ  Ｐａｃｋａｇｅｓ"
-
-#: ../kano_updater/commands/install.py:244
-msgid "Updating Deb Packages"
-msgstr "Ｕｐｄａｔｉｎｇ  Ｄｅｂ  Ｐａｃｋａｇｅｓ"
 
 #: ../kano_updater/commands/install.py:250
 msgid "Running The Postupdate Scripts"

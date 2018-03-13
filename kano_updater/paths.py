@@ -5,14 +5,13 @@
 #
 # Paths used thoughout this project.
 
-
-PIP_PACKAGES_LIST = '/usr/share/kano-updater/python_modules'
-PIP_LOG_FILE = '/var/log/kano-updater-pip.log'
-PIP_CACHE_DIR = '/var/cache/kano-updater/pkg_cache'
-
 SYSTEM_ISSUE_FILE = '/etc/issue'
 SYSTEM_VERSION_FILE = '/etc/kanux_version'
 
 STATUS_FILE_PATH = '/var/cache/kano-updater/status.json'
 
 KANO_SOURCES_LIST = '/etc/apt/sources.list.d/kano.list'
+
+PYLIBS_DIR = '/usr/local/lib/python2.7/dist-packages'
+PYFALLBACK_DIR = '/usr/local/lib/python2.7/dist-packages.pip-fallback'
+PIP_CONF = '/usr/share/kano-updater/kano-pip-compat.pth'

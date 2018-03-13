@@ -12,8 +12,6 @@ TMP_FILE=/tmp/kano-updater_conf
 OLD_UPDATER_STATUS=/var/cache/kano-updater/status
 KANO_SOURCES="/etc/apt/sources.list.d/kano.list"
 
-PIP_DEPENDENCIES="docopt ping"
-
 case "$1" in
     configure)
 
@@ -36,8 +34,6 @@ case "$1" in
         if [ -f "$OLD_UPDATER_STATUS" ]; then
             rm $OLD_UPDATER_STATUS
         fi
-
-        pip install --upgrade $PIP_DEPENDENCIES
 
         # Add the urgent repo to sources - if not already existent (jessie users)
         grep -q 'release-urgent' $KANO_SOURCES || \

@@ -1,0 +1,7 @@
+# Copyright (C) 2014 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
+#
+# Function: Adds the old pip file depedencies in the following path
+# to be used in case of failure. See scenarios.py: 3.14.1 to 3.15
+
+/usr/local/lib/python2.7/dist-packages.pip-fallback

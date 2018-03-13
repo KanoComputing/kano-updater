@@ -1,8 +1,8 @@
 # German translations for kano-updater package
 # German messages for kano-updater.
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015 - 2018 Kano Computing Ltd.
 # This file is distributed under the same license as the kano-updater package.
-#  <kontakt@hanno.de>, 2015.
+# <kontakt@hanno.de>, 2015.
 #
 msgid ""
 msgstr ""
@@ -342,10 +342,6 @@ msgstr ""
 
 #: ../kano_updater/commands/install.py:232
 msgid "Running The Preupdate Scripts"
-msgstr ""
-
-#: ../kano_updater/commands/install.py:238
-msgid "Updating Pip Packages"
 msgstr ""
 
 #: ../kano_updater/commands/install.py:244

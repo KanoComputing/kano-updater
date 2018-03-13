@@ -12,7 +12,7 @@ from tests.fixtures.progress import PyTestProgress, AbortError
 import tests.fixtures.autologin_checks
 
 
-def test_install(apt, pip, state, system_version, free_space, pip_modules,
+def test_install(apt, state, system_version, free_space,
                  run_cmd, internet, server_available, autologin_checks):
     import kano_updater.commands.install
 

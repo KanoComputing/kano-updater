@@ -16,6 +16,7 @@ kano-updater (3.15.0-0) unstable; urgency=low
   * Implemented a Recovery Mode for interrupted updates
   * Removed deprecated code and general cleanup
   * Implemented various exit codes for the Updater
+  * Removed pip and replaced with debian package installation on depedencies
 
  -- Team Kano <dev@kano.me>  Tue, 8 Mar 2018 11:28:00 +0100
 

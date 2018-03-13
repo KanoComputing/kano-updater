@@ -14,17 +14,14 @@ from kano.utils.file_operations import read_file_contents_as_lines
 from kano.utils.shell import run_cmd, run_cmd_log
 from kano.network import is_internet
 
-from kano_updater.paths import PIP_PACKAGES_LIST, PIP_CACHE_DIR
 from kano_updater.status import UpdaterStatus
 from kano_updater.os_version import bump_system_version, get_target_version, \
     get_system_version, OSVersion
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.apt_wrapper import AptWrapper
 from kano_updater.auxiliary_tasks import run_aux_tasks
-from kano_updater.disk_requirements import PIP_REQ_SPACE, SPACE_BUFFER, \
-    MIN_REQ_SPACE, UPGRADE_3_8_0_SPACE
+from kano_updater.disk_requirements import SPACE_BUFFER, MIN_REQ_SPACE, UPGRADE_3_8_0_SPACE
 from kano_updater.progress import DummyProgress, Phase, Relaunch
-from kano_updater.utils import run_pip_command
 from kano_updater.commands.download import download
 from kano_updater.commands.check import get_ind_packages
 import kano_updater.priority as Priority
@@ -236,15 +233,9 @@ def install_standard(progress, status):
             is_main=True
         ),
         Phase(
-            'updating-pip-packages',
-            _("Updating Pip Packages"),
-            15,
-            is_main=True
-        ),
-        Phase(
             'updating-deb-packages',
             _("Updating Deb Packages"),
-            15,
+            30,
             is_main=True
         ),
         Phase(
@@ -315,10 +306,6 @@ def install_standard(progress, status):
         progress.abort("The pre-update tasks failed.")
         raise
 
-    logger.debug("Updating pip packages")
-    progress.start('updating-pip-packages')
-    install_pip_packages(progress)
-
     logger.debug("Updating deb packages")
     progress.start('updating-deb-packages')
     install_deb_packages(progress)
@@ -346,8 +333,7 @@ def check_disk_space(priority):
 
     apt_handle = AptWrapper.get_instance()
     mb_free = get_free_space()
-    required_space = apt_handle.get_required_upgrade_space() + \
-        PIP_REQ_SPACE + SPACE_BUFFER
+    required_space = apt_handle.get_required_upgrade_space() + SPACE_BUFFER
 
     # Allowance for installing extra packages in the postupdate scenarios
     # during the update to 3.8.0
@@ -373,39 +359,3 @@ def check_disk_space(priority):
 def install_deb_packages(progress, priority=Priority.NONE):
     apt_handle = AptWrapper.get_instance()
     apt_handle.upgrade_all(progress, priority=priority)
-
-
-def install_pip_packages(progress, priority=Priority.NONE):
-    # Urgent updates don't do PIP updates
-    if priority == Priority.URGENT:
-        return
-
-    phase_name = progress.get_current_phase().name
-
-    packages = read_file_contents_as_lines(PIP_PACKAGES_LIST)
-    progress.init_steps(phase_name, len(packages))
-
-    for pkg in packages:
-        progress.next_step(phase_name, "Installing {}".format(pkg))
-
-        success = run_pip_command(
-            "install --upgrade --no-index --find-links=file://{} '{}'".format(
-                PIP_CACHE_DIR, pkg)
-        )
-
-        if not success:
-            msg = "Installing the '{}' pip package failed".format(pkg)
-            logger.error(msg)
-            if not is_internet():
-                msg = "Network is down, aborting PIP install"
-                logger.error(msg)
-                raise IOError(msg)
-
-            # Try with the failsafe method
-            success_failsafe = run_pip_command(
-                "install --upgrade '{}'".format(pkg)
-            )
-            if not success_failsafe:
-                msg = "Installing the '{}' pip package failed (fsafe)".format(
-                    pkg)
-                logger.error(msg)

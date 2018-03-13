@@ -29,7 +29,7 @@ class Install(Gtk.Overlay):
         self.is_at_least_rpi2 = has_min_performance(RPI_2_B_SCORE)
         self.is_game_first_launch = True
         self.game_allowed_states = [
-            'downloading', 'downloading-pip-pkgs', 'init', 'installing-urgent'
+            'downloading', 'init', 'installing-urgent'
         ]
 
         self.get_style_context().add_class('install')

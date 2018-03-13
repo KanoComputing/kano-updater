@@ -17,14 +17,15 @@ Package: kano-updater
 Architecture: any
 Depends:
     ${misc:Depends},
+    kano-os-pip-transition,
     kano-toolset (>= 3.7.0-1),
     python,
     libkdesk-dev,
     gir1.2-gtk-3.0 (>= 3.10.2),
     kano-settings (>= 1.3-1),
     python-apt,
+    python-docopt (= 0.6.2),
     schedtool,
-    python-pip,
     kano-i18n (>= 3.15.0-1),
     jq,
     kano-init (>= 3.10.2-1),
@@ -39,3 +40,18 @@ Package: kano-updater-i18n-orig
 Architecture: all
 Description: Data for working on translations of kano-updater
 Multi-Arch: foreign
+
+Package: kano-os-pip-transition
+Architecture: any
+Depends:
+    python-pip (= 9.0.1),
+    python-ping (= 0.2),
+    python-requests (= 2.6.0),
+    python-tzupdate (= 1.2.0),
+    python-pam (= 0.1.4),
+    python-slugify (= 1.2.4),
+    python-decorator (= 4.1.2),
+    python-futures (= 2.1.4)
+Description: Transition from pip to debian
+ It pins the versions of the required packages (from Kanux 3.14.1) ensuring the safe
+ depedencies for the transition to the Debian packaging system.
