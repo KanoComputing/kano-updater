@@ -15,6 +15,7 @@ import time
 import signal
 import os
 from kano.logging import logger
+from kano_updater.signal_handling import SignalPoll
 import kano_updater.utils
 import kano_updater.return_codes
 
@@ -102,7 +103,7 @@ def monitor(watchproc, timeout):
     """
     watchpid = watchproc.pid
 
-    spoll = kano_updater.utils.SignalPoll(signal.SIGUSR1)
+    spoll = SignalPoll(signal.SIGUSR1)
 
     lastEvent = time.time()
 
