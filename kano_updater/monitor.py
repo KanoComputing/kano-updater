@@ -32,38 +32,47 @@ class MonitorPids(object):
 
     def _get_children(self):
         """
-        return a set() of all children (recursively) of
-        self.top_pid (inclusive)
+        Returns:
+           a set() of all children (recursively) of self.top_pid (inclusive)
         """
         try:
             stdout = subprocess.check_output(["/bin/ps", "-eo", "ppid,pid"])
+            # ps configured to output lines of the form "parent_pid child_pid"
             coll = defaultdict(set)
 
             for line in stdout.split('\n'):
                 items = line.split()
                 if len(items) >= 2:
                     ppid, pid = items[:2]
+                    # Ignore the heading line
                     if ppid == 'PPID':
                         continue
-            try:
-                coll[int(ppid)].add(int(pid))
-            except:
-                pass  # ignore int conversion failure
+                try:
+                    coll[int(ppid)].add(int(pid))
+                except:
+                    pass  # ignore int conversion failure
 
-            def closure(pids):
+            def transitive_closure(pids):
+                """
+                Perform a transitive closure to collect all children
+                Args:
+                   pids (set of int): partically closed set
+                Returns:
+                   transitive closure
+                """
                 curr = pids.copy()
                 for p in pids:
-                    curr = curr.union(closure(coll[p]))
+                    curr = curr.union(transitive_closure(coll[p]))
                 return curr
-            return closure(set([self.top_pid]))
+            return transitive_closure(set([self.top_pid]))
 
         except subprocess.CalledProcessError:
             return set()
 
     def is_changed(self):
         """
-        return True if we believe it is making progress
-        otherwise False
+        Returns:
+          True if we believe it is making progress otherwise False
         """
         changed = False
         new_children = self._get_children()
@@ -81,7 +90,13 @@ def monitor(watchproc, timeout):
     if it has not made progress for `timeout` seconds, or the process
     finished, exit.
 
-    Returns true if we timed out and false if the process finished
+    Args:
+         watchproc (subprocess.Popen): process to watch
+         timeout (int): time in seconds to wait without seeing activity
+                        before decalring the process stuck
+
+    Returns:
+         true if we timed out and false if the process finished
 
 
     """
@@ -125,26 +140,33 @@ def heartbeat():
 
 
 def run(cmdargs):
+    """
+    Run and monitor a command
+    Args:
+        cmdargs (list of string): command and args to run
+    Returns:
+       error code (integer)
+    """
     os.environ["MONITOR_PID"] = str(os.getpid())
     subproc = subprocess.Popen(cmdargs,
                                shell=False)
 
     if not monitor(subproc, MONITOR_TIMEOUT):
         return subproc.returncode
-    else:
-        if '--gui' in cmdargs:
-            from kano.gtk3 import kano_dialog
-            kdialog = kano_dialog.KanoDialog(
-                _("Update error"),
-                _("The updater seems to have got stuck. Press OK to reboot"))
-            kdialog.run()
-            os.system('systemctl reboot')
 
-            # for test purposes:
-            time.sleep(10)
-            os._exit(kano_updater.return_codes.RC.HANGED_INDEFINITELY)
+    if '--gui' in cmdargs:
+        from kano.gtk3 import kano_dialog
+        kdialog = kano_dialog.KanoDialog(
+            _("Update error"),
+            _("The updater seems to have got stuck. Press OK to reboot"))
+        kdialog.run()
+        os.system('systemctl reboot')
 
-        return kano_updater.return_codes.RC.HANGED_INDEFINITELY
+        # for test purposes:
+        time.sleep(10)
+        os._exit(kano_updater.return_codes.RC.HANGED_INDEFINITELY)
+
+    return kano_updater.return_codes.RC.HANGED_INDEFINITELY
 
 
 def manual_test_main(argv):

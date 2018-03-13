@@ -582,13 +582,13 @@ def verify_kit_is_plugged():
 class SignalPoll(object):
     # A class to allow using signals without globals
 
-    def __init__(self, sigNum):
-        self.sigNum = sigNum
+    def __init__(self, sig_num):
+        self.sig_num = sig_num
         self.signalled = False
-        signal.signal(self.sigNum, self._handle)
+        signal.signal(self.sig_num, self._handle)
 
-    def _handle(self, sigNum, stack):
-        if sigNum == self.sigNum:
+    def _handle(self, sig_num, stack):
+        if sig_num == self.sig_num:
             self.signalled = True
 
     def poll(self):
