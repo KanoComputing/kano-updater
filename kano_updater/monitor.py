@@ -1,6 +1,6 @@
 # monitor.py
 #
-# Copyright (C) 2014-2018 Kano Computing Ltd.
+# Copyright (C) 2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Module to allow us to detect when a process is stuck.
@@ -16,12 +16,12 @@ import signal
 import os
 from kano.logging import logger
 import kano_updater.utils
+import kano_updater.return_codes
 
 MONITOR_TIMEOUT = 20 * 60
-TIMEOUT_RC = 105
 
 
-class monitorPids:
+class MonitorPids(object):
     """
     Class for monitoring a subprocess tree. If the (recursive) set of child
     processes changes, we assume it is still making progress.
@@ -60,7 +60,7 @@ class monitorPids:
         except subprocess.CalledProcessError:
             return set()
 
-    def isChanged(self):
+    def is_changed(self):
         """
         return True if we believe it is making progress
         otherwise False
@@ -87,16 +87,16 @@ def monitor(watchproc, timeout):
     """
     watchpid = watchproc.pid
 
-    spoll = kano_updater.utils.signalPoll(signal.SIGUSR1)
+    spoll = kano_updater.utils.SignalPoll(signal.SIGUSR1)
 
     lastEvent = time.time()
 
-    pids = monitorPids(watchpid)
+    pids = MonitorPids(watchpid)
 
     while True:
         now = time.time()
         # check for child events
-        changed = pids.isChanged()
+        changed = pids.is_changed()
         if watchproc.poll() is not None:
             return False
 
@@ -140,8 +140,11 @@ def run(cmdargs):
             kdialog.run()
             os.system('systemctl reboot')
 
-        else:
-            return TIMEOUT_RC
+            # for test purposes:
+            time.sleep(10)
+            os._exit(kano_updater.return_codes.RC.HANGED_INDEFINITELY)
+
+        return kano_updater.return_codes.RC.HANGED_INDEFINITELY
 
 
 def manual_test_main(argv):
@@ -156,10 +159,9 @@ def manual_test_main(argv):
             LOCALE_PATH = None
 
     kano_i18n.init.install('kano-updater', LOCALE_PATH)
-    watchpid = int(argv[1])
-    timeout = int(argv[2])
-    monitor(watchpid, timeout)
+    global MONITOR_TIMEOUT
+    MONITOR_TIMEOUT = int(argv[1])
+    return run(argv[2:])
 
 if __name__ == '__main__':
-    
     exit(manual_test_main(sys.argv))

@@ -579,7 +579,7 @@ def verify_kit_is_plugged():
     return is_plugged and not is_battery_low
 
 
-class signalPoll:
+class SignalPoll(object):
     # A class to allow using signals without globals
 
     def __init__(self, sigNum):
