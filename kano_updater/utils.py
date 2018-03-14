@@ -127,7 +127,7 @@ def run_for_every_user(cmd):
     for user in get_users():
         run_cmd_log("sudo su -c '{cmd}' - {user}".format(cmd=cmd, user=user))
 
-def is_server_available(REPO_SERVER, count=5):
+def is_server_available():
     """ Pings REPO_SERVER to diagnose packet loss
     and server availability.
 

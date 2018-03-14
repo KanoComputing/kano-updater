@@ -14,4 +14,3 @@ locale/* /usr/share/locale
 conf/apt etc/
 conf/dhcpcd-hooks lib/dhcpcd/
 conf/systemd usr/lib/
-conf/dist-packages/kano-pip-compat.pth usr/lib/python2.7/dist-packages/
