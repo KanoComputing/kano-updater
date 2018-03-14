@@ -1,7 +1,0 @@
-Package: python-*
-Pin: origin dev.kano.me
-Pin-Priority: 1000
-
-Package: python-*
-Pin: origin repo.kano.me
-Pin-Priority: 1000
