@@ -15,6 +15,8 @@ import grp
 import signal
 import re
 import subprocess
+import fcntl
+import termios
 
 from kano.logging import logger
 from kano.utils.shell import run_cmd, run_bg, run_cmd_log
@@ -577,3 +579,15 @@ def verify_kit_is_plugged():
             ).run()
 
     return is_plugged and not is_battery_
+
+
+def detach_from_tty():
+    """
+    Detach from controlling tty
+    """
+    try:
+        myTTY = os.open("/dev/tty",os.O_RDWR)
+        fcntl.ioctl(myTTY, termios.TIOCNOTTY, 0)
+        os.close(myTTY)
+    except:
+        logger.error("Failed to close controlling terminal")

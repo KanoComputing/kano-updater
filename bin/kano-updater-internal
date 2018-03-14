@@ -65,7 +65,8 @@ from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
 from kano_updater.utils import make_low_prio, is_running, \
     remove_pid_file, pause_notifications, resume_notifications, show_kano_dialog, \
-    run_bg, enable_power_button, disable_power_button, verify_kit_is_plugged
+    run_bg, enable_power_button, disable_power_button, verify_kit_is_plugged, \
+    detach_from_tty
 from kano_updater.return_codes import RC, RCState
 import kano_updater.priority as Priority
 
@@ -174,6 +175,9 @@ def main():
 
     msg = _('Administrator priviledges are required to perform this operation')
     enforce_root(u"{}: {}".format(_('ERROR'), msg))
+
+    # detach from tty to avoid packages trying to run interactive commands
+    detach_from_tty()
 
     args = docopt.docopt(__doc__, version=str(get_target_version()))
     _g_gui_mode = args['--gui']
