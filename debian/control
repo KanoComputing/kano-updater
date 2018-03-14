@@ -24,7 +24,8 @@ Depends:
     gir1.2-gtk-3.0 (>= 3.10.2),
     kano-settings (>= 1.3-1),
     python-apt,
-    python-docopt (= 0.6.2),
+    python-docopt (>= 0.6.2),
+    python-ping (>= 0.2),
     schedtool,
     kano-i18n (>= 3.15.0-1),
     jq,
@@ -45,7 +46,6 @@ Package: kano-os-pip-transition
 Architecture: any
 Depends:
     python-pip (>= 9.0.1),
-    python-ping (>= 0.2),
     python-requests (>= 2.6.0),
     python-tzupdate (>= 1.2.0),
     python-pam (>= 0.1.4),
