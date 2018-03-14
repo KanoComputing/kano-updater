@@ -576,4 +576,4 @@ def verify_kit_is_plugged():
                 }
             ).run()
 
-    return is_plugged and not is_battery_
+    return is_plugged and not is_battery_low
