@@ -261,10 +261,21 @@ def reboot(delay=0):
     os.system('systemctl reboot')
 
 
-def prepare_for_hard_shutdown():
-    """Configure the system to handle a hard poweroff gracefully."""
+def prepare_for_hard_shutdown(sysrq_path='/proc/sysrq-trigger'):
+    """Set the system in a state where it is safe for a hard poweroff gracefully.
 
-    pass  # TODO: Insert black magic here.
+    The function requests the kernel - through sysrq calls -
+    to flush disk buffers, then remount the filesystems in read-only mode.
+    https://en.wikipedia.org/wiki/Magic_SysRq_key
+    """
+
+    import os
+
+    # Sync all mounted filesystems
+    os.system('echo s > {}'.format(sysrq_path)
+
+    # Remount all mounted filesystems in read-only mode
+    os.system('echo u > {}'.format(sysrq_path)
 
 
 def infinite_loop():
