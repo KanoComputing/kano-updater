@@ -12,7 +12,7 @@ import sys
 import time
 import signal
 import os
-from kano.logging import logger
+
 from kano_updater.signal_handling import SignalPoll
 import kano_updater.utils
 import kano_updater.return_codes
@@ -139,6 +139,9 @@ def run(cmdargs):
     if not monitor(subproc, MONITOR_TIMEOUT):
         return subproc.returncode
 
+    kano_updater.utils.track_data_and_sync('updater-hanged-indefinitely', dict())
+    kano_updater.utils.clear_tracking_uuid()
+
     if '--gui' in cmdargs:
         from kano.gtk3 import kano_dialog
         kdialog = kano_dialog.KanoDialog(
@@ -169,6 +172,7 @@ def manual_test_main(argv):
     global MONITOR_TIMEOUT
     MONITOR_TIMEOUT = int(argv[1])
     return run(argv[2:])
+
 
 if __name__ == '__main__':
     exit(manual_test_main(sys.argv))

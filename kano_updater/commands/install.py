@@ -25,6 +25,7 @@ from kano_updater.progress import DummyProgress, Phase, Relaunch
 from kano_updater.commands.download import download
 from kano_updater.commands.check import get_ind_packages
 import kano_updater.priority as Priority
+from kano_updater.utils import track_data_and_sync
 from kano_updater.return_codes import RC, RCState
 
 
@@ -104,6 +105,8 @@ def do_install(progress, status, priority=Priority.NONE):
     status.state = UpdaterStatus.INSTALLING_UPDATES
     status.save()
 
+    track_data_and_sync('update-install-started', dict())
+
     if priority == Priority.URGENT:
         install_urgent(progress, status)
     else:
@@ -121,6 +124,8 @@ def do_install(progress, status, priority=Priority.NONE):
     status.save()
 
     progress.finish(_("Update completed"))
+    track_data_and_sync('update-install-finished', dict())
+
     return True
 
 

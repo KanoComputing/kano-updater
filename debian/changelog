@@ -17,7 +17,8 @@ kano-updater (3.15.0-0) unstable; urgency=low
   * Removed deprecated code and general cleanup
   * Implemented various exit codes for the Updater
   * Removed pip and replaced with debian package installation on depedencies
-  * Added a monitor program to inform the user if the updater indefinitely hangs.
+  * Added a monitor program to inform the user if the updater indefinitely hangs
+  * Implemented installation and recovery process tracking events
 
  -- Team Kano <dev@kano.me>  Tue, 8 Mar 2018 11:28:00 +0100
 

@@ -89,9 +89,6 @@ def show_recovery_splash():
 def show_success_splash():
     """
     Shows the splash for a successful recovery
-
-    Returns:
-        int: Return code. Should be one of the members of the :class:`RC` class
     """
 
     _start_systemd_service('recovery-success-splash')
@@ -99,7 +96,8 @@ def show_success_splash():
     time.sleep(0.2)
     _stop_systemd_service('recovery-running-updater-splash')
 
-    return RC.SUCCESS
+    import kano_updater.utils
+    kano_updater.utils.track_data_and_sync('update-recovery-successful', dict())
 
 
 def show_err(err_code):
@@ -109,9 +107,6 @@ def show_err(err_code):
 
     Args:
         err_code (int): Error code to show. Should be a member of :class:`RC`.
-
-    Returns:
-        int: The supplied return code
     """
 
     err_str = RC.rc_to_str(err_code)
@@ -122,7 +117,10 @@ def show_err(err_code):
     time.sleep(0.2)
     _stop_systemd_service('recovery-running-updater-splash')
 
-    return err_code
+    import kano_updater.utils
+    kano_updater.utils.track_data_and_sync(
+        'update-recovery-failed', {'rc': err_str}
+    )
 
 
 def get_wifi_retries():
@@ -335,7 +333,8 @@ def main():
 
         if duration > SYSTEM_PROGRESS_TIMEOUT:
             stop_updater(proc)
-            rc = show_err(RC.UF6)
+            rc = RC.UF6
+            show_err(rc)
             break
 
         time.sleep(1)

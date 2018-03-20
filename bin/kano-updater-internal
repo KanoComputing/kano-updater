@@ -65,7 +65,8 @@ from kano_updater.progress import CLIProgress, Relaunch
 from kano_updater.status import UpdaterStatus
 from kano_updater.utils import make_low_prio, is_running, \
     remove_pid_file, pause_notifications, resume_notifications, show_kano_dialog, \
-    run_bg, enable_power_button, disable_power_button, verify_kit_is_plugged
+    run_bg, enable_power_button, disable_power_button, verify_kit_is_plugged, \
+    clear_tracking_uuid
 from kano_updater.return_codes import RC, RCState
 import kano_updater.priority as Priority
 
@@ -96,6 +97,8 @@ def clean_up():
     logger.flush()
 
     remove_pid_file()
+
+    clear_tracking_uuid()
 
     if _g_gui_mode:
         # Restore the home button only if we are on Desktop mode

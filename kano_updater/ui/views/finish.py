@@ -14,6 +14,7 @@ from gi.repository import Gtk
 
 from kano_updater.status import UpdaterStatus
 from kano_updater.ui.views.countdown import Countdown
+from kano_updater.utils import clear_tracking_uuid
 from kano_updater.return_codes import RCState
 
 
@@ -62,6 +63,8 @@ class Finish(Countdown):
     def _finish(self, window=None, event=None):
         if event and event.get_keycode()[1] != 36:  # ENTER
             return
+
+        clear_tracking_uuid()
 
         if self._shutdown_scheduled:
             os.system('systemctl poweroff')

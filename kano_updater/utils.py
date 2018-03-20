@@ -13,8 +13,7 @@ import shutil
 import pwd
 import grp
 import signal
-import re
-import subprocess
+import traceback
 
 from kano.logging import logger
 from kano.utils.shell import run_cmd, run_bg, run_cmd_log
@@ -45,6 +44,8 @@ STATUS_FILE = UPDATER_CACHE_DIR + "status"
 
 REPO_SERVER = 'repo.kano.me'
 PID_FILE = '/var/run/kano-updater.pid'
+
+TRACKING_UUID_KEY = 'kano-updater'
 
 # Pidfile handling taken from https://pypi.python.org/pypi/pid
 # By trbs and Naveen Nathan (Apache licence)
@@ -103,6 +104,7 @@ def remove_pid_file():
     if os.path.exists(PID_FILE):
         os.remove(PID_FILE)
 
+
 def get_users(minimum_id=1000):
     # TODO: this was taken from kano-greeter, but should be in toolset
     '''
@@ -126,6 +128,7 @@ def get_users(minimum_id=1000):
 def run_for_every_user(cmd):
     for user in get_users():
         run_cmd_log("sudo su -c '{cmd}' - {user}".format(cmd=cmd, user=user))
+
 
 def is_server_available():
     """ Pings REPO_SERVER to diagnose packet loss
@@ -577,3 +580,48 @@ def verify_kit_is_plugged():
             ).run()
 
     return is_plugged and not is_battery_low
+
+
+def track_data_and_sync(event_name, event_data):
+    """Create a tracking event with data and upload it to the servers.
+
+    This function also appends a uuid to the event data such that these
+    immediate events can be grouped more easily.
+    See :func:`kano_profile.tracker.tracking_uuids.get_tracking_uuid`.
+
+    Note:
+        This is a slow function, requires a network connection and the user
+        being logged into Kano World.
+
+    Args:
+        event_name (str): See :func:`kano_profile.tracker.track_data`
+        event_data (dict): See :func:`kano_profile.tracker.track_data`
+    """
+
+    try:
+        from kano_profile.tracker import track_data
+        from kano_profile.tracker.tracking_uuids import get_tracking_uuid
+
+        event_data['uuid'] = get_tracking_uuid(TRACKING_UUID_KEY)
+        track_data(event_name, event_data)
+        rc = os.system('kano-sync --skip-kdesk --upload-tracking-data --silent')
+        logger.debug(
+            'track_data_and_sync: {} {} and sync rc {}'
+            .format(event_name, event_data, rc)
+        )
+    except:
+        logger.error('Unexpected error:\n{}'.format(traceback.format_exc()))
+
+
+def clear_tracking_uuid():
+    """Remove the namespaced tracking uuid for this app.
+
+    Note:
+        This function must be reliably called before the app exits.
+    """
+
+    try:
+        from kano_profile.tracker.tracking_uuids import remove_tracking_uuid
+        remove_tracking_uuid(TRACKING_UUID_KEY)
+    except:
+        logger.error('Unexpected error:\n{}'.format(traceback.format_exc()))
