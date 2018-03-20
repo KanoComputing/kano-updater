@@ -272,10 +272,10 @@ def prepare_for_hard_shutdown(sysrq_path='/proc/sysrq-trigger'):
     import os
 
     # Sync all mounted filesystems
-    os.system('echo s > {}'.format(sysrq_path)
+    os.system('echo s > {}'.format(sysrq_path))
 
     # Remount all mounted filesystems in read-only mode
-    os.system('echo u > {}'.format(sysrq_path)
+    os.system('echo u > {}'.format(sysrq_path))
 
 
 def infinite_loop():
