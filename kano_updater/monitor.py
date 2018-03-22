@@ -133,14 +133,14 @@ def run(cmdargs):
        error code (integer)
     """
     os.environ["MONITOR_PID"] = str(os.getpid())
-    subproc = subprocess.Popen(cmdargs,
-                               shell=False)
+    subproc = subprocess.Popen(cmdargs, shell=False)
 
     if not monitor(subproc, MONITOR_TIMEOUT):
         return subproc.returncode
 
     kano_updater.utils.track_data_and_sync('updater-hanged-indefinitely', dict())
-    kano_updater.utils.clear_tracking_uuid()
+    if '--keep-uuid' not in cmdargs:
+        kano_updater.utils.clear_tracking_uuid()
 
     if '--gui' in cmdargs:
         from kano.gtk3 import kano_dialog

@@ -12,6 +12,7 @@ Usage:
   kano-updater check [--gui] [--interval <time>] [--urgent]
   kano-updater download [--low-prio]
   kano-updater install [--gui [--no-confirm] [--splash-pid <pid>] [--no-power-check]]
+  kano-updater install [--keep-uuid]
   kano-updater set-state <state>
   kano-updater set-scheduled (1|0)
   kano-updater first-boot
@@ -30,6 +31,7 @@ Options:
   --no-confirm      Don't confirm before installing
   --urgent          Check for urgent updates
   --no-power-check  Skip verifying if the kit is plugged in
+  --keep-uuid       Do not remove the tracking uuid when exiting (non-gui only)
 """
 
 
@@ -73,6 +75,7 @@ import kano_updater.priority as Priority
 
 # Keep a global status of wether we are working in GUI or console mode
 _g_gui_mode = False
+_g_keep_uuid = False
 
 
 def sigterm_on_download(signo, frame):
@@ -88,6 +91,7 @@ def sigterm_on_download(signo, frame):
 
 def clean_up():
     global _g_gui_mode
+    global _g_keep_uuid
 
     status = UpdaterStatus.get_instance()
     status.notifications_muted = False
@@ -98,7 +102,8 @@ def clean_up():
 
     remove_pid_file()
 
-    clear_tracking_uuid()
+    if not _g_keep_uuid:
+        clear_tracking_uuid()
 
     if _g_gui_mode:
         # Restore the home button only if we are on Desktop mode
@@ -174,12 +179,14 @@ def run_install_ind_pkg(package):
 def main():
 
     global _g_gui_mode
+    global _g_keep_uuid
 
     msg = _('Administrator priviledges are required to perform this operation')
     enforce_root(u"{}: {}".format(_('ERROR'), msg))
 
     args = docopt.docopt(__doc__, version=str(get_target_version()))
     _g_gui_mode = args['--gui']
+    _g_keep_uuid = args['--keep-uuid']
 
     if not args['relaunch-splash'] and is_running():
         msg = _('An instance of Kano Updater is already running')

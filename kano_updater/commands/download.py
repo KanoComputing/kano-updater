@@ -8,7 +8,6 @@
 
 from kano.network import is_internet
 from kano.logging import logger
-from kano.utils import read_file_contents_as_lines, ensure_dir
 
 from kano_updater.status import UpdaterStatus
 from kano_updater.apt_wrapper import AptWrapper
@@ -112,7 +111,9 @@ def download(progress=None, gui=True):
     logger.debug("Downloading with priority {}".format(priority.priority))
 
     try:
-        success = do_download(progress, status, priority=priority, dialog_proc=dialog_proc)
+        success = do_download(
+            progress, status, priority=priority, dialog_proc=dialog_proc
+        )
     except Exception as err:
         progress.fail(err.message)
         logger.error(err.message)
@@ -156,6 +157,7 @@ def do_download(progress, status, priority=Priority.NONE, dialog_proc=None):
 
     # TODO: Figure out if it has actually worked
     return True
+
 
 def _cache_deb_packages(progress, priority=Priority.NONE):
     apt_handle = AptWrapper.get_instance()

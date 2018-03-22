@@ -111,6 +111,7 @@ def do_install(progress, status, priority=Priority.NONE):
         install_urgent(progress, status)
     else:
         install_standard(progress, status)
+
     run_cmd_log('apt-get --yes autoremove')
 
     status.state = UpdaterStatus.UPDATES_INSTALLED

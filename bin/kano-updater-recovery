@@ -189,9 +189,12 @@ def run_updater():
     import os
     import subprocess
 
+    import kano_updater.utils
+    kano_updater.utils.track_data_and_sync('update-recovery-started', dict())
+
     # Launch the Updater in a subprocess and assign a group id to it.
     return subprocess.Popen(
-        ['kano-updater', 'install'],
+        ['kano-updater', 'install', '--keep-uuid'],
         shell=False,
         preexec_fn=os.setsid
     )
@@ -322,6 +325,8 @@ def main():
 
             if rc == RC.SUCCESS:
                 show_success_splash()
+                import kano_updater.utils
+                kano_updater.utils.clear_tracking_uuid()
                 reboot(delay=10)
                 return rc
             else:
@@ -338,6 +343,9 @@ def main():
             break
 
         time.sleep(1)
+
+    import kano_updater.utils
+    kano_updater.utils.clear_tracking_uuid()
 
     # If the script has gotten to this point, a UFx is being shown. It's
     # expected that the recovery shows the error indefinitely until the user
