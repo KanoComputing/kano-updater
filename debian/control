@@ -48,7 +48,7 @@ Depends:
     python-pip (>= 9.0.1),
     python-requests (>= 2.6.0),
     python-tzupdate (>= 1.2.0),
-    python-pam (>= 0.1.4),
+    pypy-python-pam (>= 0.1.4),
     python-slugify (>= 1.2.4),
     python-decorator (>= 4.1.2),
     python-futures (>= 2.1.4)
