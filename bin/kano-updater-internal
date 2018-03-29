@@ -102,7 +102,7 @@ def clean_up(relaunch=False):
 
     remove_pid_file()
 
-    if not _g_keep_uuid or not relaunch:
+    if not _g_keep_uuid and not relaunch:
         clear_tracking_uuid()
 
     if _g_gui_mode:
