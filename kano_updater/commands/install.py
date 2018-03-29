@@ -113,6 +113,7 @@ def do_install(progress, status, priority=Priority.NONE):
         install_standard(progress, status)
 
     run_cmd_log('apt-get --yes autoremove')
+    run_cmd_log('apt-get --yes clean')
 
     status.state = UpdaterStatus.UPDATES_INSTALLED
 
