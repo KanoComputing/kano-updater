@@ -89,7 +89,7 @@ def sigterm_on_download(signo, frame):
     sys.exit(RC.SIG_TERM)
 
 
-def clean_up():
+def clean_up(relaunch=False):
     global _g_gui_mode
     global _g_keep_uuid
 
@@ -102,7 +102,7 @@ def clean_up():
 
     remove_pid_file()
 
-    if not _g_keep_uuid:
+    if not _g_keep_uuid or not relaunch:
         clear_tracking_uuid()
 
     if _g_gui_mode:
@@ -157,7 +157,7 @@ def run_install(gui=False, confirm=True, splash_pid=None):
         try:
             launch_install_gui(confirm=confirm, splash_pid=splash_pid)
         except Relaunch as relaunch_exception:
-            clean_up()
+            clean_up(relaunch=True)
             cmd_args = ['kano-updater', 'install', '--gui', '--no-confirm']
             if relaunch_exception.pid:
                 cmd_args += ['--splash-pid', str(relaunch_exception.pid)]
@@ -167,7 +167,7 @@ def run_install(gui=False, confirm=True, splash_pid=None):
             progress = CLIProgress()
             install(progress, gui)
         except Relaunch:
-            clean_up()
+            clean_up(relaunch=True)
             os.execvp('kano-updater', ['kano-updater', 'install'])
 
 
