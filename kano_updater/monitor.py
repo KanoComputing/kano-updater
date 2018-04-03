@@ -9,6 +9,7 @@
 import subprocess
 from collections import defaultdict
 import sys
+from raw_clock import raw_clock
 import time
 import signal
 import os
@@ -103,12 +104,14 @@ def monitor(watchproc, timeout):
 
     spoll = SignalPoll(signal.SIGUSR1)
 
-    lastEvent = time.time()
+    raw_clk = raw_clock()
+
+    lastEvent = raw_clk.monotonic_time()
 
     pids = MonitorPids(watchpid)
 
     while True:
-        now = time.time()
+        now = raw_clk.monotonic_time()
         # check for child events
         changed = pids.is_changed()
         if watchproc.poll() is not None:
