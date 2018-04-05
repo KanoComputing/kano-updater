@@ -932,9 +932,6 @@ class PostUpdate(Scenarios):
             logger.error('Failed to check for CKC v1.0 Speaker')
 
     def beta_3_12_1_to_beta_3_13_0(self):
-        pass
-
-    def beta_3_12_1_to_beta_3_13_0(self):
         was_audio_hdmi = False
 
         # Get the currently set audio output channel.
