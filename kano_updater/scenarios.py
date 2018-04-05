@@ -227,6 +227,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.14.1-Lovelace", "Kanux-Beta-3.15.0-Lovelace",
                           self.beta_3_14_1_to_beta_3_15_0)
 
+        self.add_scenario("Kanux-Beta-3.15.0-Lovelace", "Kanux-Beta-4.0.0-Hopper",
+                          self.beta_3_15_0_to_beta_4_0_0)
+
     def beta_103_to_beta_110(self):
         pass
 
@@ -389,6 +392,9 @@ class PreUpdate(Scenarios):
         except (OSError, IOError), e:
             logger.error("System failed to modify the required lib directories.", e)
 
+    def beta_3_15_0_to_beta_4_0_0(self):
+        pass
+
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
         # Get around this by installing it first
@@ -536,6 +542,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-3.14.1-Lovelace", "Kanux-Beta-3.15.0-Lovelace",
                           self.beta_3_14_1_to_beta_3_15_0)
+
+        self.add_scenario("Kanux-Beta-3.15.0-Lovelace", "Kanux-Beta-4.0.0-Hopper",
+                          self.beta_3_15_0_to_beta_4_0_0)
 
     def beta_103_to_beta_110(self):
         rclocal_executable()
@@ -977,4 +986,7 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_3_14_1_to_beta_3_15_0(self):
+        pass
+
+    def beta_3_15_0_to_beta_4_0_0(self):
         pass
