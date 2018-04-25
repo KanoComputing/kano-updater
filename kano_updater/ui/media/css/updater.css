@@ -28,7 +28,8 @@ GtkLabel {
 
 .phase,
 .complete {
-    font: Bariol Bold 26px;
+    font-family: Bariol Bold;
+    font-size: 26pt;
     color: white;
 }
 
