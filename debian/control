@@ -8,9 +8,11 @@ Build-Depends:
     build-essential,
     pkg-config,
     libgtk2.0-dev,
-    lxpanel (>= 0.7.0),
+    lxpanel-dev,
+    lxpanel,
     libfm-dev,
     libkdesk-dev,
+    python-sphinx,
     gettext
 
 Package: kano-updater

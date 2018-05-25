@@ -5,10 +5,13 @@
 
 CC=gcc
 CFLAGS=`pkg-config --cflags lxpanel gtk+-2.0`
-LIBS=`pkg-config --libs lxpanel gtk+-2.0` -lkdesk-hourglass
+LIBS=`pkg-config --libs lxpanel gtk+-2.0` -lkdesk-hourglass -llxpanel
 SRC=kano_updater.c parson/parson.c
 BIN=kano_updater.so
 INSTALL_PATH=/usr/lib/`dpkg-architecture -qDEB_HOST_MULTIARCH`/lxpanel/plugins/
+
+# The liblxpanel.so is not reported by pkg-config, help shlibdeps locate it
+LXPANEL_RPATH=-Wl,-rpath=/usr/lib/arm-linux-gnueabihf/lxpanel
 
 .PHONY: init
 
@@ -22,4 +25,4 @@ install: $(BIN)
 	install -p -m 0644 $(BIN) $(INSTALL_PATH)
 
 $(BIN): $(SRC)
-	$(CC) -Wall $(CFLAGS) -shared -fPIC $(SRC) -o $(BIN) $(LIBS)
+	$(CC) -Wall $(CFLAGS) -shared -fPIC $(SRC) -o $(BIN) $(LIBS) $(LXPANEL_RPATH)
