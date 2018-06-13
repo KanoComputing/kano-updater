@@ -528,18 +528,18 @@ def verify_kit_is_plugged():
     Returns:
         is_plugged - bool whether the kit is plugged in (and battery isn't low) or not.
     """
-    ck2_pro = False
+    has_battery = False
     is_battery_low = False
     is_plugged = True
 
     try:
-        from kano_peripherals.wrappers.detection import is_ck2_pro
-        ck2_pro = is_ck2_pro(retry_count=0)
+        from kano_peripherals.wrappers.detection import is_ck2_pro, is_ckt
+        has_battery = is_ck2_pro(retry_count=0) or is_ckt(retry_count=0)
     except:
         # Kano Peripherals doesn't support this function
         pass
 
-    if ck2_pro:
+    if has_battery:
         from kano.gtk3.kano_dialog import KanoDialog
         # Run the first dialog asking the user a question.
         dialog = KanoDialog(

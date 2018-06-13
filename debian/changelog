@@ -2,6 +2,7 @@ kano-updater (4.0.0-0) unstable; urgency=low
 
   * Bump version for Kano OS v4.0.0 "Hopper"
   * Fix GTK compatibility for Stretch release
+  * Add support for CKT
 
  -- Team Kano <dev@kano.me>  Thu, 23 Apr 2018 11:48:00 +0100
 
