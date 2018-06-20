@@ -1,26 +1,18 @@
-GtkWindow {
+/**
+ * updater.css
+ *
+ * Copyright (C) 2014-2018 Kano Computing Ltd.
+ * License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPLv2
+ *
+ * Styling for the Updater app.
+ */
+
+
+window {
     background: #41464A;
 }
 
-GtkProgressBar {
-    background: #4e4e4e;
-    color: #ff7625;
-    border-width: 0;
-    padding: 0;
-    border-radius: 4px;
-
-    -GtkProgressBar-min-horizontal-bar-height: 8px;
-}
-
-GtkProgressBar.progressbar {
-    border-radius: 4px;
-    background-image: -gtk-gradient(linear, 0 0, 0 1,
-                                    color-stop(0, #f5902f),
-                                    color-stop(0.5, #ff7625),
-                                    color-stop(1, #f56721));
-}
-
-GtkLabel {
+label {
     font-family: Bariol;
     font-weight: normal;
     color: #FFFFFF;
@@ -29,39 +21,39 @@ GtkLabel {
 .phase,
 .complete {
     font-family: Bariol Bold;
-    font-size: 26pt;
+    font-size: 30pt;
     color: white;
 }
 
 .psa {
-    font-size: 20px;
+    font-size: 24px;
 }
 
 .countdown,
 .finish-now {
-    font-size: 16px;
+    font-size: 20px;
 }
 
 .percent {
     color: #D5E2EB;
-    font-size: 15px;
+    font-size: 19px;
 }
 
 .finish-now {
-    padding-top: 20px;
+    padding-top: 24px;
 }
 
 .H1 {
-    font-weight: bold;
-    font-size: 21px;
+    font-family: Bariol Bold;
+    font-size: 25px;
 }
 
 .H2 {
-    font-size: 15px;
+    font-size: 19px;
     color: #D5E2EB;
 }
 
 .H3 {
-    font-size: 13px;
+    font-size: 17px;
     color: #858B8F;
 }
