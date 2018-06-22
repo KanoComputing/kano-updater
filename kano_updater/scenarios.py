@@ -973,8 +973,9 @@ class PostUpdate(Scenarios):
             if c['rpi-chromium-mods-kano'].installed >= '20170809':
                 install('scratch2')
             else:
-                logger.error("beta_3_13_0_to_beta_3_14_0: wrong version of rpi-chromium-mods-kano installed: {}".format(
-                             c['rpi-chromium-mods-kano'].installed.version)
+                logger.error(
+                    "beta_3_13_0_to_beta_3_14_0: wrong version of rpi-chromium-mods-kano installed: {}"
+                    .format(c['rpi-chromium-mods-kano'].installed.version)
                 )
         except Exception as e:
             logger.error("beta_3_13_0_to_beta_3_14_0: Failed to install scratch2", exception=e)
@@ -986,4 +987,15 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_3_15_0_to_beta_4_0_0(self):
-        pass
+        try:
+            from textwrap import dedent
+            extra_config = dedent("""
+            # Disable the new audio pwm driver to avoid the risk of a kernel / firmware crash.
+            # https://www.raspberrypi.org/forums/viewtopic.php?f=29&t=195178
+            # https://github.com/raspberrypi/linux/issues/2587
+            audio_pwm_mode=1
+            """)
+            self._add_boot_config_options(extra_config)
+
+        except Exception as e:
+            logger.error("Failed to update config: {}".format(e))
