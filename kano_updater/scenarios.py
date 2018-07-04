@@ -973,8 +973,10 @@ class PostUpdate(Scenarios):
             if c['rpi-chromium-mods-kano'].installed >= '20170809':
                 install('scratch2')
             else:
-                logger.error("beta_3_13_0_to_beta_3_14_0: wrong version of rpi-chromium-mods-kano installed: {}".format(
-                             c['rpi-chromium-mods-kano'].installed.version)
+                logger.error(
+                    "beta_3_13_0_to_beta_3_14_0: "
+                    "wrong version of rpi-chromium-mods-kano installed: {}"
+                    .format(c['rpi-chromium-mods-kano'].installed.version)
                 )
         except Exception as e:
             logger.error("beta_3_13_0_to_beta_3_14_0: Failed to install scratch2", exception=e)
