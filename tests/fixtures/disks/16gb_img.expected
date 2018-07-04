@@ -1,0 +1,7 @@
+{
+    "commands": [
+        "parted unit s resizepart 2 31116287",
+        "partprobe /dev/mmcblk0",
+        "resize2fs /dev/mmcblk0p2"
+    ]
+}

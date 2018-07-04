@@ -1,0 +1,2 @@
+/dev/disks/by-label/boot -> ../../mmcblk0p1
+/dev/disks/by-label/rootfs -> ../../mmcblk0p2

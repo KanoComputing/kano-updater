@@ -1,79 +1,38 @@
 #!/bin/sh
-
+#
 # expand-rootfs
 #
-# Copyright (C) 2013 Kano Computing Ltd.
-# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
-#
-# Part of raspi-config http://github.com/asb/raspi-config
-# See LICENSE file for copyright and license details
+# Copyright (C) 2013 - 2018 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPLv2
 #
 # Used in Kanux during interactive partition resizing - kano-update
-# rc=0 means resize scheduled for next reboot
-# rc=1 means partition already resized
-# any other value means error, look at syslog for details
+#
+# rc = 0 means resize scheduled for next reboot
+# rc = 1 means partition already resized
+# Any other value means error, look at syslog for details
 #
 
-do_expand_rootfs() {
-    # Empty trash for all users.
-    kano-empty-trash
 
-    if [ -f /etc/root_has_been_expanded ]; then
-        logger -i "root partition has already been expanded - exiting"
-        return 1
-    fi
-
-    if ! [ -h /dev/disk/by-label/rootfs ]; then
-	logger -i "/dev/disk/by-label/rootfs does not exist or is not a symlink. Don't know how to expand"
-	return 2
-    fi
-
-    ROOT_PART=$(readlink /dev/disk/by-label/rootfs)
-    PART_NUM=${ROOT_PART#../../mmcblk0p}
-    if [ "$PART_NUM" = "$ROOT_PART" ]; then
-	logger -i "/dev/disk/by-label/rootfs is not an SD card. Don't know how to expand"
-	return 3
-    fi
-
-    LAST_PART_NUM=$(parted /dev/mmcblk0 -ms unit s p | tail -n 1 | cut -f 1 -d:)
-    if [ "$LAST_PART_NUM" != "$PART_NUM" ]; then
-	logger -i "/dev/disk/by-label/rootfs is not the last partition. Don't know how to expand"
-	return 4
-    fi
-
-    # Get the starting offset of the root partition
-    PART_START=$(parted /dev/mmcblk0 -ms unit s p | grep "^${PART_NUM}" | cut -f 2 -d:)
-    # Remove suffix:
-    PART_START=${PART_START%s} 
-    logger -i "resizing root partition, starts at offset: $PART_START"
-    [ "$PART_START" ] || return 5
-
-    # Return value will likely be error for fdisk as it fails to reload the
-    # partition table because the root fs is mounted
-    fdisk /dev/mmcblk0 <<EOF
-p
-d
-$PART_NUM
-n
-p
-$PART_NUM
-$PART_START
-
-p
-w
-EOF
-
-  partprobe /dev/mmcblk0 &&
-  resize2fs /dev/disk/by-label/rootfs &&
-  date > /etc/root_has_been_expanded &&
-  return 0
-
-}
+EXPAND_FLAG=/etc/root_has_been_expanded
 
 if [ `id -u` -ne 0 ]; then
    echo "you need to be root"
    exit 10
-else
-   do_expand_rootfs
-   exit $?
 fi
+
+# Empty trash for all users.
+kano-empty-trash
+
+# Check for the expand flag here to prevent loading Python during startup
+# if not needed
+if [ -f $EXPAND_FLAG ]; then
+    logger -i "root partition has already been expanded - exiting"
+    exit 1
+fi
+
+do-expand-rootfs
+rc=$?
+
+date > $EXPAND_FLAG
+
+exit $rc

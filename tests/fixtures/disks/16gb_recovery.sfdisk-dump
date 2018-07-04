@@ -1,0 +1,15 @@
+{
+    "partitiontable": {
+        "label": "dos",
+        "id": "0x000198c8",
+        "device": "/dev/mmcblk0",
+        "unit": "sectors",
+        "partitions": [
+                    {"node": "/dev/mmcblk0p1", "start": 8192, "size": 3378527, "type": "e"},
+                    {"node": "/dev/mmcblk0p2", "start": 3386719, "size": 27729569, "type": "5"},
+                    {"node": "/dev/mmcblk0p5", "start": 3391488, "size": 65534, "type": "83"},
+                    {"node": "/dev/mmcblk0p6", "start": 3457024, "size": 409598, "type": "c"},
+                    {"node": "/dev/mmcblk0p7", "start": 3866624, "size": 27249664, "type": "83"}
+        ]
+    }
+}

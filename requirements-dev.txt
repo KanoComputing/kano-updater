@@ -1,5 +1,6 @@
 behave
 coverage-badge
+mock
 pyfakefs
 pytest
 pytest-cov
