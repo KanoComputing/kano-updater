@@ -255,22 +255,41 @@ class AptWrapper(object):
               is in bytes
         '''
 
-        orig_state = []
+        logger.debug("Calculating required free space for upgrade..")
 
-        for pkg in self.upgradable_packages(priority=priority):
-            state = AptPkgState.get_package_state(pkg)
+        required_space = 0
 
-            if state != AptPkgState.MARKED_UPGRADE:
-                orig_state.append((pkg, state))
-                pkg.mark_upgrade()
+        if priority < Priority.URGENT:
+            self._cache.upgrade(dist_upgrade=True)
+            required_space = (self._cache.required_download +
+                              self._cache.required_space) / 1048576.  # 1024^2
+            self._cache.clear()
 
-        space = self._cache.required_download + self._cache.required_space
+        else:
+            orig_state = []
 
-        # Restore package states in reverse order
-        for pkg, state in reversed(orig_state):
-            AptPkgState.restore_pkg_state(pkg, state)
+            for pkg in self.upgradable_packages(priority=priority):
+                state = AptPkgState.get_package_state(pkg)
 
-        return space / 1048576.  # 1024 * 1024
+                if state != AptPkgState.MARKED_UPGRADE:
+                    orig_state.append((pkg, state))
+                    logger.debug("Marking {} ({}) for upgrade from state {}".format(
+                        pkg.shortname, pkg.candidate.version, state
+                    ))
+                    pkg.mark_upgrade()
+
+            required_space = (self._cache.required_download +
+                              self._cache.required_space) / 1048576.  # 1024^2
+
+            # Restore package states in reverse order
+            for pkg, state in reversed(orig_state):
+                logger.debug("Restoring the pkg state {} for {} ({})".format(
+                    state, pkg.shortname, pkg.candidate.version
+                ))
+                AptPkgState.restore_pkg_state(pkg, state)
+
+        logger.info("Required upgrade size is {} MB".format(required_space))
+        return required_space
 
     @staticmethod
     def _is_package_upgradable(pkg, priority=Priority.NONE):
