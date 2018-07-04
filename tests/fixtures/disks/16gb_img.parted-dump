@@ -1,0 +1,10 @@
+Model: SD SB16G (sd/mmc)
+Disk /dev/mmcblk0: 31116288s
+Sector size (logical/physical): 512B/512B
+Partition Table: msdos
+Disk Flags: 
+
+Number  Start    End        Size       Type     File system  Flags
+ 1      8192s    409600s    401409s    primary  fat16        lba
+ 2      425984s  11698175s  11272192s  primary  ext4
+

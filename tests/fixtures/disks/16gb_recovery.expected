@@ -1,0 +1,8 @@
+{
+    "commands": [
+        "parted /dev/mmcblk0 --script unit % resizepart 2 100 || parted /dev/mmcblk0 unit % resizepart 2 Yes 100",
+        "parted /dev/mmcblk0 --script unit % resizepart 7 100 || parted /dev/mmcblk0 unit % resizepart 7 Yes 100",
+        "partprobe /dev/mmcblk0",
+        "resize2fs /dev/mmcblk0p7"
+    ]
+}

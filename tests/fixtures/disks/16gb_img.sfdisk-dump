@@ -1,0 +1,12 @@
+{
+   "partitiontable": {
+      "label": "dos",
+      "id": "0x5b205377",
+      "device": "/dev/mmcblk0",
+      "unit": "sectors",
+      "partitions": [
+         {"node": "/dev/mmcblk0p1", "start": 8192, "size": 401409, "type": "c"},
+         {"node": "/dev/mmcblk0p2", "start": 425984, "size": 11272192, "type": "83"}
+      ]
+   }
+}

@@ -1,0 +1,4 @@
+/dev/disk/by-label/boot -> ../../mmcblk0p6
+/dev/disk/by-label/RECOVERY -> ../../mmcblk0p1
+/dev/disk/by-label/root -> ../../mmcblk0p7
+/dev/disk/by-label/SETTINGS -> ../../mmcblk0p5
