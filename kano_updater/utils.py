@@ -14,6 +14,8 @@ import pwd
 import grp
 import signal
 import traceback
+import fcntl
+import termios
 
 from kano.logging import logger
 from kano.utils.shell import run_cmd, run_bg, run_cmd_log
@@ -625,3 +627,16 @@ def clear_tracking_uuid():
         remove_tracking_uuid(TRACKING_UUID_KEY)
     except:
         logger.error('Unexpected error:\n{}'.format(traceback.format_exc()))
+
+
+def detach_from_tty():
+    """
+    Detach from controlling tty
+    """
+    try:
+        myTTY = os.open("/dev/tty", os.O_RDWR)
+
+        fcntl.ioctl(myTTY, termios.TIOCNOTTY, 0)
+        os.close(myTTY)
+    except:
+        logger.error("Failed to close controlling terminal")
