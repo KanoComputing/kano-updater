@@ -42,6 +42,7 @@ import time
 import signal
 import docopt
 
+os.environ['DEBIAN_FRONTEND'] = 'noninteractive'
 
 if __name__ == '__main__' and __package__ is None:
     DIR_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
