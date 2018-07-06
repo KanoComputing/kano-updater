@@ -11,8 +11,9 @@ kano-updater (3.16.2-0) unstable; urgency=low
   * Backport: Added free disk space check before download phase
   * Backport: Migrate to using mirrored version of Raspbian repo
   * PreUpdate workaround for installing firmware-ralink over firmware-misc-nonfree
+  * Backport: Configure dpkg to run in noninteractive mode to avoid potential update freezes
 
- -- Team Kano <dev@kano.me>  Tue, 29 Jan 2019 15:12:00 +0000
+ -- Team Kano <dev@kano.me>  Thu, 31 Jan 2019 15:12:00 +0000
 
 kano-updater (3.16.1-0) unstable; urgency=low
 
