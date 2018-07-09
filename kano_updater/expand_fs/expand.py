@@ -95,16 +95,20 @@ def expand_partition(partition):
     # a question, revert to command which auto-answers yes
     cmd = (
         "parted {disk} --script unit % resizepart {partition} 100 || "
-        "parted {disk} unit % resizepart {partition} Yes 100"
+        "parted {disk} ---pretend-input-tty unit % resizepart {partition} "
+        "Yes 100"
         .format(
             disk=DISK,
             partition=partition_number,
         )
     )
-    dummy_out, dummy_err, rc = run_cmd(cmd)
+    out, err, rc = run_cmd(cmd)
 
     if rc != 0:
         logger.error('Partition expand command failed: {cmd}'.format(cmd=cmd))
+        logger.warn('Parted stdout: {out}'.format(out=out))
+        logger.warn('Parted stderr: {err}'.format(err=err))
+
         return RC.E_PARTITION_EXPAND_FAILED
 
     return RC.SUCCESS
