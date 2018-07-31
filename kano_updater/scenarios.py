@@ -41,7 +41,8 @@ class Scenarios(object):
         while current_version < max_version:
             next_step = None
             for from_version, to_version in self._scenarios.iterkeys():
-                if current_version == from_version:
+                if current_version == from_version \
+                        and to_version <= max_version:
                     next_step = to_version
                     break
 
