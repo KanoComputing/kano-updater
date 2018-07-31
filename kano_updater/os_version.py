@@ -80,6 +80,9 @@ class OSVersion(object):
     def __str__(self):
         return self.to_version_string()
 
+    def __repr__(self):
+        return str(self)
+
     def __cmp__(self, other):
         this_version = LooseVersion(self.version)
         other_version = LooseVersion(other.version)
