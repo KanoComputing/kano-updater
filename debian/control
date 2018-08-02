@@ -15,10 +15,15 @@ Build-Depends:
     python-sphinx,
     gettext
 
+Package: kano-os-sources
+Architecture: all
+Description: Debian sources for Kano OS
+
 Package: kano-updater
 Architecture: any
 Depends:
     ${misc:Depends},
+    kano-os-sources,
     kano-os-pip-transition,
     kano-toolset (>= 4.0.0-0),
     python,

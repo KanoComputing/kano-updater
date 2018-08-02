@@ -1,0 +1,4 @@
+conf/apt/sources.list.d/kano-stretch.list etc/apt/sources.list.d/
+conf/apt/apt.conf.d/* etc/apt/apt.conf.d/
+conf/apt/preferences.d/* etc/apt/preferences.d/
+conf/apt usr/share/kano-os-sources/

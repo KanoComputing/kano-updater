@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+# postinst
+#
+# Copyright (C) 2018 Kano Computing Ltd.
+# License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
+#
+# Post deb package install script.
+#
+
+
+SOURCES_DIR="/etc/apt/"
+SOURCES_FILES=(
+    sources.list
+    sources.list.d/kano.list
+    sources.list.d/raspi.list
+    sources.list.d/collabora.list
+)
+
+case "$1" in
+    configure)
+        last_configured_version="$2"
+
+        # This package now handles the sources, remove others on install
+        if [ -z "$last_configured_version" ]; then
+            for DEB_SRC in ${SOURCES_FILES[@]}; do
+                rm -f $SOURCES_DIR/$DEB_SRC
+            done
+        fi
+
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0
