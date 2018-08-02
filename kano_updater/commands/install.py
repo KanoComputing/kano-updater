@@ -305,7 +305,9 @@ def install_standard(progress, status):
 
     progress.start('preupdate')
     try:
-        preup.run()
+        preup.run(progress)
+    except Relaunch:
+        raise
     except Exception as err:
         logger.error("The pre-update scenarios failed.")
         logger.error(err.encode('utf-8'))
@@ -318,7 +320,10 @@ def install_standard(progress, status):
 
     progress.start('postupdate')
     try:
-        postup.run()
+        postup.run(progress)
+    except Relaunch:
+        bump_system_version()
+        raise
     except Exception as err:
         logger.error("The post-update scenarios failed.")
         logger.error(err.encode('utf-8'))

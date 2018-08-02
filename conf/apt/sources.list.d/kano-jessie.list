@@ -1,0 +1,32 @@
+#
+# Kano OS Jessie Official Package Repository
+# Key:
+#   curl -L http://repo.kano.me/archive-stretch/repo.gpg.key | apt-key add -
+#
+
+deb http://repo.kano.me/archive-jessie/ release main
+deb http://dev.kano.me/archive-jessie/ devel main
+deb http://dev.kano.me/archive-jessie/ rc main
+deb http://dev.kano.me/archive-jessie/ scratch main
+
+# Release urgent repository
+deb http://repo.kano.me/archive-jessie/ release-urgent main
+
+# i18n Repository
+deb http://repo.kano.me/raspberrypi-jessie-i18n/ release-i18n main
+
+#
+# Mirrored version of Raspberry Pi Foundation's repository
+# Key:
+#   curl -L http://repo.kano.me/raspberrypi-stretch/raspberrypi.gpg.key | apt-key add -
+#
+# The original repo is avaiable at:
+#   http://archive.raspberrypi.org/debian/
+#
+deb http://repo.kano.me/raspberrypi-jessie/ jessie main ui
+
+
+#
+# Raspbian repository
+#
+deb http://mirrordirector.raspbian.org/raspbian/ jessie main contrib non-free rpi

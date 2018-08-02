@@ -10,7 +10,6 @@ icon/kano-updater.png usr/share/icons/Kano/66x66/apps/
 
 locale/* /usr/share/locale
 
-conf/apt etc/
 conf/dhcpcd-hooks lib/dhcpcd/
 conf/systemd usr/lib/
 conf/dist-packages usr/lib/python2.7/

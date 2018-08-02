@@ -8,4 +8,12 @@ Pin-Priority: 900
 
 Package: *
 Pin: release n=devel
-Pin-Priority: 500
+Pin-Priority: 100
+
+Package: *
+Pin: release n=rc
+Pin-Priority: 100
+
+Package: *
+Pin: release n=scratch
+Pin-Priority: 100

@@ -1,0 +1,33 @@
+#
+# Kano OS Stretch Official Package Repository
+# Key:
+#   curl -L http://repo.kano.me/archive-jessie/repo.gpg.key | apt-key add -
+#
+
+deb http://repo.kano.me/archive-stretch/ release main
+deb http://dev.kano.me/archive-stretch/ devel main
+deb http://dev.kano.me/archive-stretch/ rc main
+deb http://dev.kano.me/archive-stretch/ scratch main
+
+# Release urgent repository
+deb http://repo.kano.me/archive-stretch/ release-urgent main
+
+# i18n Repository
+# Note: Doesn't exist at the moment
+# deb http://repo.kano.me/raspberrypi-stretch-i18n/ release-i18n main
+
+#
+# Mirrored version of Raspberry Pi Foundation's repository
+# Key:
+#   curl -L http://repo.kano.me/raspberrypi-stretch/raspberrypi.gpg.key | apt-key add -
+#
+# The original repo is avaiable at:
+#   http://archive.raspberrypi.org/debian/
+#
+deb http://repo.kano.me/raspberrypi-stretch/ stretch main ui
+
+
+#
+# Raspbian repository
+#
+deb http://mirrordirector.raspbian.org/raspbian/ stretch main contrib non-free rpi
