@@ -1,0 +1,10 @@
+#
+# Kano OS Jessie Official Package Repository
+# Key:
+#   curl -L http://repo.kano.me/archive-stretch/repo.gpg.key | apt-key add -
+#
+
+deb http://repo.kano.me/archive-jessie/ release main
+deb http://dev.kano.me/archive-jessie/ devel main
+deb http://dev.kano.me/archive-jessie/ rc main
+deb http://dev.kano.me/archive-jessie/ scratch main

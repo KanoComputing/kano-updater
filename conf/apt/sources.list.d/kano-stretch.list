@@ -1,0 +1,10 @@
+#
+# Kano OS Stretch Official Package Repository
+# Key:
+#   curl -L http://repo.kano.me/archive-jessie/repo.gpg.key | apt-key add -
+#
+
+deb http://repo.kano.me/archive-stretch/ release main
+deb http://dev.kano.me/archive-stretch/ devel main
+deb http://dev.kano.me/archive-stretch/ rc main
+deb http://dev.kano.me/archive-stretch/ scratch main

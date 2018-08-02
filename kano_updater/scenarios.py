@@ -6,17 +6,37 @@
 #
 
 import os
+import shutil
 
 from kano.logging import logger
+
+from kano.utils.shell import run_cmd_log
+from kano.utils.user import get_user_unsudoed
+from kano.utils.file_operations import write_file_contents
+from kano.utils.misc import is_installed
+from kano.utils.hardware import has_min_performance, RPI_3_SCORE
+
+from kano_init.utils import reconfigure_autostart_policy
 
 from kano_updater.os_version import OSVersion, get_target_version
 from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable, migrate_repository, get_users, run_for_every_user
-from kano.utils import run_cmd_log, get_user_unsudoed, write_file_contents, \
-    is_installed
 from kano_updater.paths import PYLIBS_DIR, PYFALLBACK_DIR
-from kano_init.utils import reconfigure_autostart_policy
+from kano_updater.progress import Relaunch
 
+
+SOURCES_DIR = '/etc/apt/sources.list.d'
+STRETCH_MIGRATION_LIST = os.path.join(
+    SOURCES_DIR, 'kano-stretch.kano-updater.list'
+)
+
+
+# FIXME: Find way to properly handle references to these files owned by the
+#        'kano-os-sources' package
+OS_SOURCES_REFERENCE = '/usr/share/kano-os-sources/apt/sources.list.d'
+REFERENCE_STRETCH_LIST = os.path.join(
+    OS_SOURCES_REFERENCE, 'kano-stretch.list'
+)
 
 class Scenarios(object):
     _type = ""
@@ -59,7 +79,7 @@ class Scenarios(object):
         to_version = OSVersion.from_version_string(to_version)
         self._scenarios[(from_version, to_version)] = func
 
-    def run(self):
+    def run(self, progress):
         log = "Running the {}-update scripts...".format(self._type)
         logger.info(log)
 
@@ -76,7 +96,7 @@ class Scenarios(object):
                         to_version
                     )
                     logger.info(msg)
-                    func()
+                    func(progress)
                     current_version = to_version
                     step_found = True
                     break
@@ -238,67 +258,67 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-4.0.0-Lovelace", "Kanux-Beta-4.1.0-Hopper",
                           self.beta_4_0_0_to_beta_4_1_0)
 
-    def beta_103_to_beta_110(self):
+    def beta_103_to_beta_110(self, dummy_progress):
         pass
 
-    def beta_110_to_beta_111(self):
+    def beta_110_to_beta_111(self, dummy_progress):
         pass
 
-    def beta_111_to_beta_120(self):
+    def beta_111_to_beta_120(self, dummy_progress):
         purge("kano-unlocker")
         repo_url = "deb http://mirrordirector.raspbian.org/raspbian/ wheezy main contrib non-free rpi"
         write_file_contents('/etc/apt/sources.list', repo_url + '\n')
         run_cmd_log('apt-get -y clean')
         run_cmd_log('apt-get -y update')
 
-    def beta_120_to_beta_121(self):
+    def beta_120_to_beta_121(self, dummy_progress):
         pass
 
-    def beta_121_to_beta_122(self):
+    def beta_121_to_beta_122(self, dummy_progress):
         pass
 
-    def beta_122_to_beta_123(self):
+    def beta_122_to_beta_123(self, dummy_progress):
         # Migrate users from the official RaspberryPI repo to Kano mirrored site
         migrate_repository('/etc/apt/sources.list.d/raspi.list',
                            'archive.raspberrypi.org/debian',
                            'repo.kano.me/raspberrypi')
 
-    def beta_123_to_beta_124(self):
+    def beta_123_to_beta_124(self, dummy_progress):
         pass
 
-    def beta_124_to_beta_125(self):
+    def beta_124_to_beta_125(self, dummy_progress):
         pass
 
-    def beta_125_to_beta_131(self):
+    def beta_125_to_beta_131(self, dummy_progress):
         pass
 
-    def beta_131_to_beta_132(self):
+    def beta_131_to_beta_132(self, dummy_progress):
         pass
 
-    def beta_132_to_beta_133(self):
+    def beta_132_to_beta_133(self, dummy_progress):
         # Downgrade the improved FBTurbo X11 driver
         # to the official stable version
         run_cmd_log('apt-get -y remove xf86-video-fbturbo-improved')
         run_cmd_log('apt-get -y install xserver-xorg-video-fbturbo')
 
-    def beta_133_to_beta_134(self):
+    def beta_133_to_beta_134(self, dummy_progress):
         pass
 
-    def beta_134_to_beta_200(self):
+    def beta_134_to_beta_200(self, dummy_progress):
         pass
 
-    def beta_200_to_beta_201(self):
+    def beta_200_to_beta_201(self, dummy_progress):
         # All users upgrading from KanoOS 1.* should have their
         # users home directory permissions fixed
         run_cmd_log('/usr/bin/repair-homedir-permissions')
 
-    def beta_201_to_beta_210(self):
+    def beta_201_to_beta_210(self, dummy_progress):
         pass
 
-    def beta_210_to_beta_220(self):
+    def beta_210_to_beta_220(self, dummy_progress):
         pass
 
-    def beta_220_to_beta_230(self):
+    def beta_220_to_beta_230(self, dummy_progress):
         out, err, rv = run_cmd_log('apt-mark showauto | grep modemmanager')
         # If the user has manually installed modemmanager, it will be marked as
         # manually installed.
@@ -308,85 +328,85 @@ class PreUpdate(Scenarios):
             if rv == 0:
                 run_cmd_log('apt-get -y autoremove')
 
-    def beta_230_to_beta_240(self):
+    def beta_230_to_beta_240(self, dummy_progress):
         pass
 
-    def beta_240_to_beta_300(self):
+    def beta_240_to_beta_300(self, dummy_progress):
         pass
 
-    def beta_300_to_beta_310(self):
+    def beta_300_to_beta_310(self, dummy_progress):
         pass
 
-    def beta_310_to_beta_320(self):
+    def beta_310_to_beta_320(self, dummy_progress):
         pass
 
-    def beta_320_to_beta_330(self):
+    def beta_320_to_beta_330(self, dummy_progress):
         pass
 
-    def beta_330_to_beta_340(self):
+    def beta_330_to_beta_340(self, dummy_progress):
         pass
 
-    def beta_340_to_beta_350(self):
+    def beta_340_to_beta_350(self, dummy_progress):
         pass
 
-    def beta_350_to_beta_360(self):
+    def beta_350_to_beta_360(self, dummy_progress):
         pass
 
-    def beta_360_to_beta_361(self):
+    def beta_360_to_beta_361(self, dummy_progress):
         pass
 
-    def beta_361_to_beta_370(self):
+    def beta_361_to_beta_370(self, dummy_progress):
         pass
 
-    def beta_370_to_beta_380(self):
+    def beta_370_to_beta_380(self, dummy_progress):
         pass
 
-    def beta_380_to_beta_390(self):
+    def beta_380_to_beta_390(self, dummy_progress):
         pass
 
-    def beta_3_9_0_to_beta_3_9_1(self):
+    def beta_3_9_0_to_beta_3_9_1(self, dummy_progress):
         pass
 
-    def beta_3_9_1_to_beta_3_9_2(self):
+    def beta_3_9_1_to_beta_3_9_2(self, dummy_progress):
         pass
 
-    def beta_3_9_2_to_beta_3_10_0(self):
+    def beta_3_9_2_to_beta_3_10_0(self, dummy_progress):
         pass
 
-    def beta_3_10_0_to_beta_3_10_1(self):
+    def beta_3_10_0_to_beta_3_10_1(self, dummy_progress):
         pass
 
-    def beta_3_10_1_to_beta_3_10_2(self):
+    def beta_3_10_1_to_beta_3_10_2(self, dummy_progress):
         pass
 
-    def beta_3_10_2_to_beta_3_10_3(self):
+    def beta_3_10_2_to_beta_3_10_3(self, dummy_progress):
         pass
 
-    def beta_3_10_3_to_beta_3_10_4(self):
+    def beta_3_10_3_to_beta_3_10_4(self, dummy_progress):
         pass
 
-    def beta_3_10_4_to_beta_3_10_5(self):
+    def beta_3_10_4_to_beta_3_10_5(self, dummy_progress):
         pass
 
-    def beta_3_10_5_to_beta_3_11_0(self):
+    def beta_3_10_5_to_beta_3_11_0(self, dummy_progress):
         pass
 
-    def beta_3_11_0_to_beta_3_12_0(self):
+    def beta_3_11_0_to_beta_3_12_0(self, dummy_progress):
         pass
 
-    def beta_3_12_0_to_beta_3_12_1(self):
+    def beta_3_12_0_to_beta_3_12_1(self, dummy_progress):
         pass
 
-    def beta_3_12_1_to_beta_3_13_0(self):
+    def beta_3_12_1_to_beta_3_13_0(self, dummy_progress):
         pass
 
-    def beta_3_13_0_to_beta_3_14_0(self):
+    def beta_3_13_0_to_beta_3_14_0(self, dummy_progress):
         pass
 
-    def beta_3_14_0_to_beta_3_14_1(self):
+    def beta_3_14_0_to_beta_3_14_1(self, dummy_progress):
         pass
 
-    def beta_3_14_1_to_beta_3_15_0(self):
+    def beta_3_14_1_to_beta_3_15_0(self, dummy_progress):
         """ Ensure the debianisation of this release
         Keep an active depedencies fallback directory
         in case of failure.
@@ -400,16 +420,35 @@ class PreUpdate(Scenarios):
         except (OSError, IOError), e:
             logger.error("System failed to modify the required lib directories.", e)
 
-    def beta_3_15_0_to_beta_3_16_0(self):
-        pass
+    def beta_3_15_0_to_beta_3_16_0(self, progress):
+        ''' 3.16.0 is the last release for Debian Jessie. Every update past
+        this point must update to 3.16.0 and then progress onwards, it can
+        never happen that the system is of version 3.x.x (!= 3.16.0) and
+        update directly to 4.x.x.
 
-    def beta_3_16_0_to_beta_4_0_0(self):
+                          ->  3.16.0 Jessie (<= RPi 2)
+        3.x.x -> 3.16.0 -{
+                          ->  4.x.x Stretch (>= RPi 3)
+
+        For those where the update should proceed past 3.16.0, duplicate the
+        Stretch sources to a temporary list so that the new update can be
+        located and the new sources package can be installed.
+        '''
+
+        if not has_min_performance(RPI_3_SCORE):
+            return
+
+        # Proceeding to update to 4.x.x - add new sources and relaunch
+        shutil.copy(REFERENCE_STRETCH_LIST, STRETCH_MIGRATION_LIST)
+        progress.relaunch()
+
+    def beta_3_16_0_to_beta_4_0_0(self, dummy_progress):
         ''' 4.0.0 is the first Debian Stretch version. All the work for
         upgrade has already been handled by the update to 3.16.0.
         '''
         pass
 
-    def beta_4_0_0_to_beta_4_1_0(self):
+    def beta_4_0_0_to_beta_4_1_0(self, dummy_progress):
         pass
 
     def _finalise(self):
@@ -569,12 +608,12 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-4.0.0-Lovelace", "Kanux-Beta-4.1.0-Hopper",
                           self.beta_4_0_0_to_beta_4_1_0)
 
-    def beta_103_to_beta_110(self):
+    def beta_103_to_beta_110(self, dummy_progress):
         rclocal_executable()
         remove_user_files(['.kdeskrc'])
         install('kano-widgets')
 
-    def beta_110_to_beta_111(self):
+    def beta_110_to_beta_111(self, dummy_progress):
         install('kano-sound-files kano-init-flow')
         # Create first boot file so we don't annoy existent users
         username = get_user_unsudoed()
@@ -584,14 +623,14 @@ class PostUpdate(Scenarios):
         except:
             pass
 
-    def beta_111_to_beta_120(self):
+    def beta_111_to_beta_120(self, dummy_progress):
         run_cmd_log("kano-apps install --no-gui painter epdfview geany "
                     "codecademy calculator leafpad vnc")
 
-    def beta_120_to_beta_121(self):
+    def beta_120_to_beta_121(self, dummy_progress):
         install('espeak')
 
-    def beta_121_to_beta_122(self):
+    def beta_121_to_beta_122(self, dummy_progress):
         run_cmd_log("kano-apps install --no-gui --icon-only xbmc")
 
         if not os.path.exists("/etc/apt/sources.list.d/kano-xbmc.list"):
@@ -600,10 +639,10 @@ class PostUpdate(Scenarios):
             with open("/etc/apt/sources.list.d/kano-xbmc.list", "w") as f:
                 f.write("deb http://repo.kano.me/xbmc/ wheezy contrib\n")
 
-    def beta_122_to_beta_123(self):
+    def beta_122_to_beta_123(self, dummy_progress):
         pass
 
-    def beta_123_to_beta_124(self):
+    def beta_123_to_beta_124(self, dummy_progress):
         # Rename Snake custom theme
         username = get_user_unsudoed()
         path = '/home/%s/Snake-content/' % username
@@ -615,22 +654,22 @@ class PostUpdate(Scenarios):
             except Exception:
                 pass
 
-    def beta_124_to_beta_125(self):
+    def beta_124_to_beta_125(self, dummy_progress):
         pass
 
-    def beta_125_to_beta_131(self):
+    def beta_125_to_beta_131(self, dummy_progress):
         install('kano-draw')
 
-    def beta_131_to_beta_132(self):
+    def beta_131_to_beta_132(self, dummy_progress):
         pass
 
-    def beta_132_to_beta_133(self):
+    def beta_132_to_beta_133(self, dummy_progress):
         run_cmd_log('kano-apps install --no-gui terminal-quest')
 
-    def beta_133_to_beta_134(self):
+    def beta_133_to_beta_134(self, dummy_progress):
         pass
 
-    def beta_134_to_beta_200(self):
+    def beta_134_to_beta_200(self, dummy_progress):
         if not is_installed('kano-character-cli'):
             logger.info(
                 "kano-character-cli not installed,"
@@ -641,14 +680,14 @@ class PostUpdate(Scenarios):
             'kano-character-cli -c "judoka" "Hair_Black" "Skin_Orange" -s'
         )
 
-    def beta_200_to_beta_201(self):
+    def beta_200_to_beta_201(self, dummy_progress):
         remove_user_files(['.kdesktop/YouTube.lnk'])
 
-    def beta_201_to_beta_210(self):
+    def beta_201_to_beta_210(self, dummy_progress):
         from kano_settings.system.advanced import set_everyone_cookies
         set_everyone_cookies()
 
-    def beta_210_to_beta_220(self):
+    def beta_210_to_beta_220(self, dummy_progress):
         install('telnet python-serial')
         try:
             from kano_profile.apps import save_app_state_variable_all_users
@@ -660,7 +699,7 @@ class PostUpdate(Scenarios):
                 "Could not award Computer Commander badge, import error"
             )
 
-    def beta_220_to_beta_230(self):
+    def beta_220_to_beta_230(self, dummy_progress):
         # A few helper fns to keep the scenario tidy
         def ensure_system_group_exists(group):
             if(os.system('getent group {}'.format(group)) != 0):
@@ -745,10 +784,10 @@ class PostUpdate(Scenarios):
         # enable spi device
         enable_spi_device()
 
-    def beta_230_to_beta_240(self):
+    def beta_230_to_beta_240(self, dummy_progress):
         pass
 
-    def beta_240_to_beta_300(self):
+    def beta_240_to_beta_300(self, dummy_progress):
         def enable_audio_device():
             from kano_settings.boot_config import set_config_value
             set_config_value("dtparam=audio", "on")
@@ -765,10 +804,10 @@ class PostUpdate(Scenarios):
         # tell dashboard to skip Overworld and kit setup onboarding phase
         run_for_every_user('touch ~/.dashboard-click-onboarding-done')
 
-    def beta_300_to_beta_310(self):
+    def beta_300_to_beta_310(self, dummy_progress):
         pass
 
-    def beta_310_to_beta_320(self):
+    def beta_310_to_beta_320(self, dummy_progress):
         try:
             from textwrap import dedent
             extra_config = dedent("""
@@ -782,7 +821,7 @@ class PostUpdate(Scenarios):
         except Exception as e:
             logger.error("Failed to update config: {}".format(e))
 
-    def beta_320_to_beta_330(self):
+    def beta_320_to_beta_330(self, dummy_progress):
         def disable_audio_dither():
             from kano_settings.boot_config import set_config_value
             set_config_value("disable_audio_dither", "1")
@@ -793,21 +832,21 @@ class PostUpdate(Scenarios):
                 logger.error("end_config_transaction not present")
         disable_audio_dither()
 
-    def beta_330_to_beta_340(self):
+    def beta_330_to_beta_340(self, dummy_progress):
         # fix locale database if it was
         # corrupted by the NOOBS file hole problem
         run_cmd_log('locale-gen')
 
-    def beta_340_to_beta_350(self):
+    def beta_340_to_beta_350(self, dummy_progress):
         pass
 
-    def beta_350_to_beta_360(self):
+    def beta_350_to_beta_360(self, dummy_progress):
         pass
 
-    def beta_360_to_beta_361(self):
+    def beta_360_to_beta_361(self, dummy_progress):
         pass
 
-    def beta_361_to_beta_370(self):
+    def beta_361_to_beta_370(self, dummy_progress):
         pass
 
     def _bootconfig_set_value_helper(self, setting, value):
@@ -820,7 +859,7 @@ class PostUpdate(Scenarios):
         except ImportError:
             logger.error("end_config_transaciton not present - update to kano-settings failed?")
 
-    def beta_370_to_beta_380(self):
+    def beta_370_to_beta_380(self, dummy_progress):
         # linux kernel 4.4.21 shipped with Kano 3.8.0 emits systemd boot messages.
         # fix by telling the kernel to enable an empty splash screen.
         command = "sed -i 's/\\bsystemd.show_status=0\\b/splash/' {}".format('/boot/cmdline.txt')
@@ -848,39 +887,39 @@ class PostUpdate(Scenarios):
         # Tell kano-init to put the automatic logins up-to-date
         reconfigure_autostart_policy()
 
-    def beta_380_to_beta_390(self):
+    def beta_380_to_beta_390(self, dummy_progress):
         pass
 
-    def beta_3_9_0_to_beta_3_9_1(self):
+    def beta_3_9_0_to_beta_3_9_1(self, dummy_progress):
         pass
 
-    def beta_3_9_1_to_beta_3_9_2(self):
+    def beta_3_9_1_to_beta_3_9_2(self, dummy_progress):
         pass
 
-    def beta_3_9_2_to_beta_3_10_0(self):
+    def beta_3_9_2_to_beta_3_10_0(self, dummy_progress):
         # The new Overture onboarding needs to be enabled - disabling old tty-based kano-init
         run_cmd_log('kano-init finalise --force')
 
         # Install the kano-os metapackage for top level OS packages.
         install('kano-os')
 
-    def beta_3_10_0_to_beta_3_10_1(self):
+    def beta_3_10_0_to_beta_3_10_1(self, dummy_progress):
         pass
 
-    def beta_3_10_1_to_beta_3_10_2(self):
+    def beta_3_10_1_to_beta_3_10_2(self, dummy_progress):
         pass
 
-    def beta_3_10_2_to_beta_3_10_3(self):
+    def beta_3_10_2_to_beta_3_10_3(self, dummy_progress):
         # Attempt to fix overture starting after the update.
         run_cmd_log('kano-init finalise --force')
 
-    def beta_3_10_3_to_beta_3_10_4(self):
+    def beta_3_10_3_to_beta_3_10_4(self, dummy_progress):
         pass
 
-    def beta_3_10_4_to_beta_3_10_5(self):
+    def beta_3_10_4_to_beta_3_10_5(self, dummy_progress):
         pass
 
-    def beta_3_10_5_to_beta_3_11_0(self):
+    def beta_3_10_5_to_beta_3_11_0(self, dummy_progress):
         try:
             from textwrap import dedent
             extra_config = dedent("""
@@ -934,11 +973,11 @@ class PostUpdate(Scenarios):
         except:
             logger.error("failed to update config")
 
-    def beta_3_11_0_to_beta_3_12_0(self):
+    def beta_3_11_0_to_beta_3_12_0(self, dummy_progress):
         # Remove .asoundrc files from all users (see kano-desktop & kano-settings).
         remove_user_files(['.asoundrc'])
 
-    def beta_3_12_0_to_beta_3_12_1(self):
+    def beta_3_12_0_to_beta_3_12_1(self, dummy_progress):
         try:
             '''
             Any CKC user passing through this function must have updated and
@@ -954,7 +993,7 @@ class PostUpdate(Scenarios):
         except Exception:
             logger.error('Failed to check for CKC v1.0 Speaker')
 
-    def beta_3_12_1_to_beta_3_13_0(self):
+    def beta_3_12_1_to_beta_3_13_0(self, dummy_progress):
         was_audio_hdmi = False
 
         # Get the currently set audio output channel.
@@ -989,7 +1028,7 @@ class PostUpdate(Scenarios):
         # Remove the orphan udhcpc client, it is now obsoleted by dhcpcd5
         run_cmd_log('apt-get -y purge udhcpc')
 
-    def beta_3_13_0_to_beta_3_14_0(self):
+    def beta_3_13_0_to_beta_3_14_0(self, dummy_progress):
         try:
             import apt.cache
             c = apt.cache.Cache()
@@ -1004,17 +1043,25 @@ class PostUpdate(Scenarios):
         except Exception as e:
             logger.error("beta_3_13_0_to_beta_3_14_0: Failed to install scratch2", exception=e)
 
-    def beta_3_14_0_to_beta_3_14_1(self):
+    def beta_3_14_0_to_beta_3_14_1(self, dummy_progress):
         pass
 
-    def beta_3_14_1_to_beta_3_15_0(self):
+    def beta_3_14_1_to_beta_3_15_0(self, dummy_progress):
         pass
 
-    def beta_3_15_0_to_beta_3_16_0(self):
+    def beta_3_15_0_to_beta_3_16_0(self, dummy_progress):
+        ''' Finalises the 3.16.0 update. Those destined for Stretch shouldn't
+        ever find themselves running this. For those being left behind on
+        Jessie, this is the final cleanup.
+        '''
         pass
 
-    def beta_3_16_0_to_beta_4_0_0(self):
-        pass
+    def beta_3_16_0_to_beta_4_0_0(self, dummy_progress):
+        ''' Cleanup all evidence of Jessie on the system; from this moment
+        onwards, everything is Stretch
+        '''
 
-    def beta_4_0_0_to_beta_4_1_0(self):
+        os.remove(STRETCH_MIGRATION_LIST)
+
+    def beta_4_0_0_to_beta_4_1_0(self, dummy_progress):
         pass
