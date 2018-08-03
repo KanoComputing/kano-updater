@@ -5,7 +5,7 @@
 
 CC=gcc
 CFLAGS=`pkg-config --cflags lxpanel gtk+-2.0`
-LIBS=`pkg-config --libs lxpanel gtk+-2.0` -lkdesk-hourglass -llxpanel
+LIBS=`pkg-config --libs lxpanel gtk+-2.0` -lkdesk-hourglass
 SRC=kano_updater.c parson/parson.c
 BIN=kano_updater.so
 INSTALL_PATH=/usr/lib/`dpkg-architecture -qDEB_HOST_MULTIARCH`/lxpanel/plugins/
