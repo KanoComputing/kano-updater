@@ -234,11 +234,14 @@ class AptWrapper(object):
                 yield pkg
 
     def _mark_all_for_update(self, priority=Priority.NONE):
-        for pkg in self.upgradable_packages(priority=priority):
-            logger.debug("Marking {} ({}) for upgrade".format(
-                pkg.shortname, pkg.candidate.version
-            ))
-            pkg.mark_upgrade()
+        if priority < Priority.URGENT:
+            self._cache.upgrade(dist_upgrade=True)
+        else:
+            for pkg in self.upgradable_packages(priority=priority):
+                logger.debug("Marking {} ({}) for upgrade".format(
+                    pkg.shortname, pkg.candidate.version
+                ))
+                pkg.mark_upgrade()
 
     def packages_to_be_upgraded(self):
         ret = {}
