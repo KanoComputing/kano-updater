@@ -13,7 +13,8 @@ deb http://dev.kano.me/archive-jessie/ scratch main
 deb http://repo.kano.me/archive-jessie/ release-urgent main
 
 # i18n Repository
-deb http://repo.kano.me/raspberrypi-jessie-i18n/ release-i18n main
+# Note: i18n needs revision
+# deb http://repo.kano.me/raspberrypi-jessie-i18n/ release-i18n main
 
 #
 # Mirrored version of Raspberry Pi Foundation's repository

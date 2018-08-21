@@ -118,9 +118,11 @@ class AptWrapper(object):
             self._cache.update(fetch_progress=apt_progress,
                                sources_list=sources_list)
         except apt.cache.FetchFailedException:
+            # Continue regardless, if it fails later because it can't grab a
+            # package then let it fail because of that; now that we've added
+            # in the development repositories it is more likely to happen.
             err_msg = N_("Failed to update sources")
             logger.error(err_msg)
-            progress.fail(_(err_msg))
 
         progress.start(cache_init)
         ops = [("reading-package-lists", _("Reading package lists")),
