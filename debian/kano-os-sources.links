@@ -1,0 +1,3 @@
+usr/share/kano-os-sources/apt/sources.list.d/kano-stretch.list etc/apt/sources.list.d/kano-stretch.list
+usr/share/kano-os-sources/apt/apt.conf.d/00-kano-default-release etc/apt/apt.conf.d/00-kano-default-release
+usr/share/kano-os-sources/apt/preferences.d/99-kano-pinning etc/apt/preferences.d/99-kano-pinning
