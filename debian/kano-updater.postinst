@@ -1,11 +1,16 @@
 #!/bin/bash
-
+#
 # postinst
 #
-# Copyright (C) 2014-2018 Kano Computing Ltd.
+# Copyright (C) 2014 - 2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Post deb package install script.
+#
+
+# Remove obsolete conffiles
+dpkg-maintscript-helper rm_conffile \
+     /etc/apt/preferences 4.1.0-0~ kano-updater -- "$@"
 
 
 TMP_FILE=/tmp/kano-updater_conf

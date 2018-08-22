@@ -1,23 +1,11 @@
 #!/bin/bash
 #
-# postrm
+# preinst
 #
-# Copyright (C) 2014 - 2018 Kano Computing Ltd.
+# Copyright (C) 2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPLv2
 #
 
 # Remove obsolete conffiles
 dpkg-maintscript-helper rm_conffile \
      /etc/apt/preferences 4.1.0-0~ kano-updater -- "$@"
-
-case "$1" in
-    remove|upgrade)
-        # Remove config file
-        rm /etc/sudoers.d/kano-updater_conf
-
-        ;;
-esac
-
-#DEBHELPER#
-
-exit 0
