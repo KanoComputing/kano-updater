@@ -83,6 +83,10 @@ class AptWrapper(object):
         else:
             AptWrapper._singleton_instance = self
 
+        self._cache = None
+        self.refresh_instance()
+
+    def refresh_instance(self):
         apt.apt_pkg.init_config()
 
         # We disable downloading translations, because we don't have them

@@ -1048,6 +1048,7 @@ class PostUpdate(Scenarios):
         # Proceeding to update to 4.x.x - add new sources and relaunch
         shutil.copy(REFERENCE_STRETCH_LIST, STRETCH_MIGRATION_LIST)
         apt_handle = AptWrapper.get_instance()
+        apt_handle.refresh_instance()
         apt_handle.update(progress)
         progress.relaunch()
 
