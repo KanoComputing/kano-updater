@@ -37,6 +37,11 @@ OS_SOURCES_REFERENCE = '/usr/share/kano-os-sources/apt/sources.list.d'
 REFERENCE_STRETCH_LIST = os.path.join(
     OS_SOURCES_REFERENCE, 'kano-stretch.list'
 )
+# File for use when testing the update path prior to release. Will be installed by the
+# QA test framework, and override REFERENCE_STRETCH_LIST
+REFERENCE_STRETCH_LIST_QA_TEST = os.path.join(
+    OS_SOURCES_REFERENCE, 'kano-stretch-qa-test.list'
+)
 
 class Scenarios(object):
     _type = ""
@@ -1046,7 +1051,12 @@ class PostUpdate(Scenarios):
             return
 
         # Proceeding to update to 4.x.x - add new sources and relaunch
-        shutil.copy(REFERENCE_STRETCH_LIST, STRETCH_MIGRATION_LIST)
+        if os.path.exists(REFERENCE_STRETCH_LIST_QA_TEST):
+            # If there is a QA TEST version of the list, use that, otherwise
+            # use the release version.
+            shutil.copy(REFERENCE_STRETCH_LIST_QA_TEST, STRETCH_MIGRATION_LIST)
+        else:
+            shutil.copy(REFERENCE_STRETCH_LIST, STRETCH_MIGRATION_LIST)
         apt_handle = AptWrapper.get_instance()
         apt_handle.refresh_instance()
         apt_handle.update(progress)
