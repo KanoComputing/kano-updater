@@ -5,9 +5,6 @@
 #
 
 deb http://repo.kano.me/archive-stretch/ release main
-deb http://dev.kano.me/archive-stretch/ devel main
-deb http://dev.kano.me/archive-stretch/ rc main
-deb http://dev.kano.me/archive-stretch/ scratch main
 
 # Release urgent repository
 deb http://repo.kano.me/archive-stretch/ release-urgent main
