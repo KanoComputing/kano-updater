@@ -5,9 +5,6 @@
 #
 
 deb http://repo.kano.me/archive-jessie/ release main
-deb http://dev.kano.me/archive-jessie/ devel main
-deb http://dev.kano.me/archive-jessie/ rc main
-deb http://dev.kano.me/archive-jessie/ scratch main
 
 # Release urgent repository
 deb http://repo.kano.me/archive-jessie/ release-urgent main
