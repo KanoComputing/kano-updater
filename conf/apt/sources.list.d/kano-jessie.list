@@ -27,4 +27,4 @@ deb http://repo.kano.me/raspberrypi-jessie/ jessie main ui
 #
 # Raspbian repository
 #
-deb http://mirrordirector.raspbian.org/raspbian/ jessie main contrib non-free rpi
+deb http://raspbian.raspberrypi.org/raspbian/ jessie main contrib non-free rpi

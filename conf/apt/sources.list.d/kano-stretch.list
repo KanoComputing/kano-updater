@@ -27,4 +27,4 @@ deb http://repo.kano.me/raspberrypi-stretch/ stretch main ui
 #
 # Raspbian repository
 #
-deb http://mirrordirector.raspbian.org/raspbian/ stretch main contrib non-free rpi
+deb http://raspbian.raspberrypi.org/raspbian/ stretch main contrib non-free rpi
