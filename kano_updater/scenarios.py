@@ -1058,9 +1058,7 @@ class PostUpdate(Scenarios):
             shutil.copy(REFERENCE_STRETCH_LIST_QA_TEST, STRETCH_MIGRATION_LIST)
         else:
             shutil.copy(REFERENCE_STRETCH_LIST, STRETCH_MIGRATION_LIST)
-        apt_handle = AptWrapper.get_instance()
-        apt_handle.refresh_instance()
-        apt_handle.update(progress)
+        run_cmd_log("apt-get update")
         raise Relaunch()
 
     def beta_3_16_0_to_beta_4_0_0(self, dummy_progress):
