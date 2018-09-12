@@ -158,17 +158,17 @@ def run_install(gui=False, confirm=True, splash_pid=None):
             launch_install_gui(confirm=confirm, splash_pid=splash_pid)
         except Relaunch as relaunch_exception:
             clean_up(relaunch=True)
-            cmd_args = ['kano-updater', 'install', '--gui', '--no-confirm']
+            cmd_args = ['kano-updater-internal', 'install', '--gui', '--no-confirm']
             if relaunch_exception.pid:
                 cmd_args += ['--splash-pid', str(relaunch_exception.pid)]
-            os.execvp('kano-updater', cmd_args)
+            os.execvp('kano-updater-internal', cmd_args)
     else:
         try:
             progress = CLIProgress()
             install(progress, gui)
         except Relaunch:
             clean_up(relaunch=True)
-            os.execvp('kano-updater', ['kano-updater', 'install'])
+            os.execvp('kano-updater-internal', ['kano-updater-internal', 'install'])
 
 
 def run_install_ind_pkg(package):
