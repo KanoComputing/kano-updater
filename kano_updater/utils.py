@@ -240,7 +240,7 @@ def show_relaunch_splash():
     # register a handler for SIGUSR1
     signal.signal(signal.SIGUSR1, _handle_sigusr1)
 
-    cmd = ["kano-updater", "ui", "relaunch-splash", str(os.getpid())]
+    cmd = ["kano-updater-internal", "ui", "relaunch-splash", str(os.getpid())]
     p = subprocess.Popen(cmd, shell=False)
 
     # wait until the child process signals that it's ready
