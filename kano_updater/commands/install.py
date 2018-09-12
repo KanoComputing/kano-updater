@@ -108,9 +108,12 @@ def do_install(progress, status, priority=Priority.NONE):
     track_data_and_sync('update-install-started', dict())
 
     if priority == Priority.URGENT:
-        install_urgent(progress, status)
+        res = install_urgent(progress, status)
     else:
-        install_standard(progress, status)
+        res = install_standard(progress, status)
+
+    if not res:
+        return False
 
     run_cmd_log('apt-get --yes autoremove')
 
@@ -216,6 +219,8 @@ def install_urgent(progress, status):
                      "tracking module: [{}]".format(imp_exc))
     except Exception:
         pass
+
+    return True
 
 
 def install_standard(progress, status):
@@ -337,6 +342,8 @@ def install_standard(progress, status):
     # We don't care too much when these fail
     progress.start('aux-tasks')
     run_aux_tasks(progress)
+
+    return True
 
 
 def check_disk_space(priority):
