@@ -22,6 +22,7 @@ from kano_updater.os_version import OSVersion, get_target_version
 from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable, migrate_repository, get_users, run_for_every_user
 from kano_updater.paths import PYLIBS_DIR, PYFALLBACK_DIR
+from kano_updater.progress import Relaunch
 
 
 SOURCES_DIR = '/etc/apt/sources.list.d'
@@ -1056,7 +1057,7 @@ class PostUpdate(Scenarios):
         apt_handle = AptWrapper.get_instance()
         apt_handle.refresh_instance()
         apt_handle.update(progress)
-        progress.relaunch()
+        raise Relaunch()
 
     def beta_3_16_0_to_beta_4_0_0(self, dummy_progress):
         ''' 4.0.0 is the first Debian Stretch version. All the work for
