@@ -238,13 +238,16 @@ def _handle_sigusr1(signum, frame):
 
 def show_relaunch_splash():
     # register a handler for SIGUSR1
+    logger.debug(" entering show_relaunch_spash")
     signal.signal(signal.SIGUSR1, _handle_sigusr1)
 
     cmd = ["kano-updater-internal", "ui", "relaunch-splash", str(os.getpid())]
     p = subprocess.Popen(cmd, shell=False)
+    logger.debug("Started splash process, pid {}".format(p.pid))
 
     # wait until the child process signals that it's ready
     signal.pause()
+    logger.debug("Splash process pid {} is ready, continuing".format(p.pid))
 
     return p.pid
 
@@ -625,3 +628,11 @@ def clear_tracking_uuid():
         remove_tracking_uuid(TRACKING_UUID_KEY)
     except:
         logger.error('Unexpected error:\n{}'.format(traceback.format_exc()))
+
+
+def thread_id():
+    try:
+        import thread
+        return thread.get_ident()
+    except:
+        return None

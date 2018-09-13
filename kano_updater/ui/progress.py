@@ -10,8 +10,8 @@ from gi.repository import GLib, Gtk
 
 from kano_updater.progress import Progress
 from kano_updater.ui.main import relaunch_required
-from kano_updater.utils import kill_flappy_judoka
-
+from kano_updater.utils import kill_flappy_judoka, thread_id
+from kano.logging import logger
 
 class GtkProgress(Progress):
 
@@ -53,5 +53,7 @@ class GtkProgress(Progress):
         GLib.idle_add(self._do_relaunch)
 
     def _do_relaunch(self):
+        logger.debug("_do_relaunch {}".format(thread_id()))
         relaunch_required()
+        logger.debug("running main_quit()")
         Gtk.main_quit()

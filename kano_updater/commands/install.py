@@ -88,6 +88,7 @@ def install(progress=None, gui=True):
     try:
         return do_install(progress, status, priority=priority)
     except Relaunch as err:
+        logger.debug("Relaunch exception in install: reraised (install)")
         raise
     except Exception as err:
         # Reset the state back to the previous one, so the updater
@@ -313,6 +314,7 @@ def install_standard(progress, status):
     try:
         preup.run(progress)
     except Relaunch:
+        logger.debug("Relaunch in install")
         progress.relaunch()
         return False
     except Exception as err:
@@ -329,7 +331,9 @@ def install_standard(progress, status):
     try:
         postup.run(progress)
     except Relaunch:
+        logger.debug("Relaunch in postupdate: (bump)")
         bump_system_version()
+        logger.debug("Relaunch in postupdate")
         progress.relaunch()
         return False
     except Exception as err:

@@ -23,6 +23,7 @@ launched_splash_pid = None
 def relaunch_required():
     global relaunch_required_flag
     global launched_splash_pid
+    logger.debug("Relaunch required")
 
     relaunch_required_flag = True
     launched_splash_pid = show_relaunch_splash()
@@ -34,6 +35,7 @@ def launch_install_gui(confirm=False, splash_pid=None):
     from kano_updater.ui.available_window import UpdatesDownloadedWindow
     from kano_updater.ui.install_window import InstallWindow
 
+    logger.debug("launch_install_gui")
     GObject.threads_init()
 
     win = UpdatesDownloadedWindow() if confirm else InstallWindow()
@@ -45,8 +47,9 @@ def launch_install_gui(confirm=False, splash_pid=None):
         os.kill(splash_pid, signal.SIGKILL)
 
     Gtk.main()
-
+    logger.debug("gtk main exitted {} {}".format(relaunch_required_flag, launched_splash_pid))
     if relaunch_required_flag:
+        logger.debug("raising relaunch exception passing it pid {}".format(launched_splash_pid))
         r_exc = Relaunch()
         r_exc.pid = launched_splash_pid
         raise r_exc

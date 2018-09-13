@@ -8,6 +8,7 @@
 
 import os
 import signal
+from kano.logging import logger
 
 from gi.repository import Gtk
 
@@ -33,4 +34,5 @@ class Relaunch(Countdown):
         self.connect('map', self._on_map)
 
     def _on_map(self, widget=None):
+        logger.debug("splash signalling parent {}".format(self._parent_pid))
         os.kill(self._parent_pid, signal.SIGUSR1)

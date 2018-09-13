@@ -69,7 +69,7 @@ from kano_updater.status import UpdaterStatus
 from kano_updater.utils import make_low_prio, is_running, \
     remove_pid_file, pause_notifications, resume_notifications, show_kano_dialog, \
     run_bg, enable_power_button, disable_power_button, verify_kit_is_plugged, \
-    clear_tracking_uuid
+    clear_tracking_uuid, thread_id
 from kano_updater.return_codes import RC, RCState
 import kano_updater.priority as Priority
 
@@ -158,10 +158,13 @@ def run_install(gui=False, confirm=True, splash_pid=None):
         try:
             launch_install_gui(confirm=confirm, splash_pid=splash_pid)
         except Relaunch as relaunch_exception:
+            logger.debug("Caught relaunch exception")
             clean_up(relaunch=True)
             cmd_args = ['kano-updater-internal', 'install', '--gui', '--no-confirm']
             if relaunch_exception.pid:
+                logger.debug("Relaunch exception with pid {}".format(relaunch_exception.pid))
                 cmd_args += ['--splash-pid', str(relaunch_exception.pid)]
+            logger.debug("Relaunch exec with args {}".format(cmd_args))
             os.execvp('kano-updater-internal', cmd_args)
     else:
         try:
@@ -169,6 +172,7 @@ def run_install(gui=False, confirm=True, splash_pid=None):
             install(progress, gui)
         except Relaunch:
             clean_up(relaunch=True)
+            logger.debug("Relaunch exec with args {}".format(cmd_args))
             os.execvp('kano-updater-internal', ['kano-updater-internal', 'install'])
 
 
@@ -178,6 +182,7 @@ def run_install_ind_pkg(package):
 
 
 def main():
+    logger.debug("thread id {}".format(thread_id()))
 
     global _g_gui_mode
     global _g_keep_uuid
@@ -227,6 +232,7 @@ def main():
         if args['relaunch-splash']:
             from kano_updater.ui.main import launch_relaunch_countdown_gui
             logger.set_app_name('kano-updater-splash') # avoid overwriting logs from other process
+            logger.debug("launch_relaunch_countdown_gui parent pid {}".format(args['<parent-pid>']))
             launch_relaunch_countdown_gui(int(args['<parent-pid>']))
 
         elif args['shutdown-window']:
@@ -275,6 +281,7 @@ def main():
             splash_pid = None
             if args['--splash-pid']:
                 splash_pid = int(args['<pid>'])
+            logger.debug("install passed splash_pid {}".format(splash_pid))
 
             run_install(gui=args['--gui'], confirm=not args['--no-confirm'],
                         splash_pid=splash_pid)
