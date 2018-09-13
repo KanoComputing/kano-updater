@@ -225,6 +225,7 @@ def main():
     elif args['ui']:
         if args['relaunch-splash']:
             from kano_updater.ui.main import launch_relaunch_countdown_gui
+            logger.set_app_name('kano-updater-splash') # avoid overwriting logs from other process
             launch_relaunch_countdown_gui(int(args['<parent-pid>']))
 
         elif args['shutdown-window']:
