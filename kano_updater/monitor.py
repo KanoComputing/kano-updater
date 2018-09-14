@@ -102,6 +102,7 @@ def monitor(watchproc, timeout):
     watchpid = watchproc.pid
 
     spoll = SignalPoll(signal.SIGUSR1)
+    tpoll = SignalPoll(signal.SIGTERM)
 
     lastEvent = time.time()
 
@@ -117,6 +118,11 @@ def monitor(watchproc, timeout):
         signalled = spoll.poll()
         if changed or signalled:
             lastEvent = now
+
+        # if we were sent a terminate signal
+        # forward it to the child process
+        if tpoll.poll():
+            watchproc.terminate()
 
         if lastEvent + timeout < now:
             return True
