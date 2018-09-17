@@ -138,6 +138,9 @@ def run(cmdargs):
     Returns:
        error code (integer)
     """
+    if 'MONITOR_PID' in os.environ:
+        os.execvp(cmdargs[0], cmdargs[1:])
+
     os.environ["MONITOR_PID"] = str(os.getpid())
     subproc = subprocess.Popen(cmdargs, shell=False)
 
