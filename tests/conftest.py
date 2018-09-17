@@ -17,3 +17,4 @@ from tests.fixtures.network import *
 from tests.fixtures.run_cmd import *
 from tests.fixtures.state import *
 from tests.fixtures.version import *
+from tests.fixtures.environ import *
