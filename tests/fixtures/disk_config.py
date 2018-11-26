@@ -96,7 +96,7 @@ def disk_config(request, fs):
 
     expected_info = json.loads(disk_paths.get('expected'))
 
-    fs.CreateDirectory('/etc')
+    fs.create_dir('/etc')
 
     for links in disk_paths.get('links', '').splitlines():
         link, target = links.split(' -> ')
@@ -105,8 +105,8 @@ def disk_config(request, fs):
         abs_target = target if os.path.isabs(target) \
                 else os.path.abspath(os.path.join(link_dir, target))
 
-        fs.CreateFile(abs_target)
-        fs.CreateLink(link, target)
+        fs.create_file(abs_target)
+        fs.create_symlink(link, target)
 
     return {
         'expected': expected_info,

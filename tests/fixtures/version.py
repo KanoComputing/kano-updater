@@ -83,7 +83,7 @@ def system_version(fs, request):
     '''
 
     version = request.param
-    fs.CreateFile(
+    fs.create_file(
         '/etc/kanux_version',
         contents=version.to_version_string()
     )

@@ -37,7 +37,7 @@ def state(fs, request):
     state_file = STATUS_TEMPLATE.copy()
     state_file['state'] = state
 
-    fs.CreateFile(
+    fs.create_file(
         '/var/cache/kano-updater/status.json',
         contents=json.dumps(state_file)
     )
