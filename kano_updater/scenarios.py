@@ -264,6 +264,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-4.0.0-Lovelace", "Kanux-Beta-4.1.0-Hopper",
                           self.beta_4_0_0_to_beta_4_1_0)
 
+        self.add_scenario("Kanux-Beta-4.1.0-Lovelace", "Kanux-Beta-4.1.1-Hopper",
+                          self.beta_4_1_0_to_beta_4_1_1)
+
     def beta_103_to_beta_110(self, dummy_progress):
         pass
 
@@ -435,6 +438,9 @@ class PreUpdate(Scenarios):
     def beta_4_0_0_to_beta_4_1_0(self, dummy_progress):
         pass
 
+    def beta_4_1_0_to_beta_4_1_1(self, dummy_progress):
+        pass
+
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
         # Get around this by installing it first
@@ -591,6 +597,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-4.0.0-Lovelace", "Kanux-Beta-4.1.0-Hopper",
                           self.beta_4_0_0_to_beta_4_1_0)
+
+        self.add_scenario("Kanux-Beta-4.1.0-Lovelace", "Kanux-Beta-4.1.1-Hopper",
+                          self.beta_4_1_0_to_beta_4_1_1)
 
     def beta_103_to_beta_110(self, dummy_progress):
         rclocal_executable()
@@ -1071,4 +1080,7 @@ class PostUpdate(Scenarios):
         os.remove(STRETCH_MIGRATION_LIST)
 
     def beta_4_0_0_to_beta_4_1_0(self, dummy_progress):
+        pass
+
+    def beta_4_1_0_to_beta_4_1_1(self, dummy_progress):
         pass
