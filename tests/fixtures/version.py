@@ -62,6 +62,7 @@ VERSIONS = [
     OSVersion(devstage='Beta', version='4.0.0', name='Hopper'),
     OSVersion(devstage='Beta', version='4.1.0', name='Hopper'),
     OSVersion(devstage='Beta', version='4.1.1', name='Hopper'),
+    OSVersion(devstage='Beta', version='4.1.2', name='Hopper'),
 ]
 
 

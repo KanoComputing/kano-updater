@@ -1,3 +1,9 @@
+kano-updater (4.1.2-0) unstable; urgency=low
+
+  * Bump version for Kano OS v4.1.2 "Hopper"
+
+ -- Team Kano <dev@kano.me>  Tue, 27 Nov 2018 19:07:00 +0100
+
 kano-updater (4.1.1-0) unstable; urgency=low
 
   * Bump version for Kano OS v4.1.1 "Hopper"
