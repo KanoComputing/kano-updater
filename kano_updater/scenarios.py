@@ -255,19 +255,19 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.14.1-Lovelace", "Kanux-Beta-3.15.0-Lovelace",
                           self.beta_3_14_1_to_beta_3_15_0)
 
-        self.add_scenario("Kanux-Beta-3.15.0-Lovelace", "Kanux-Beta-3.16.0-Hopper",
+        self.add_scenario("Kanux-Beta-3.15.0-Lovelace", "Kanux-Beta-3.16.0-Lovelace",
                           self.beta_3_15_0_to_beta_3_16_0)
 
         self.add_scenario("Kanux-Beta-3.16.0-Lovelace", "Kanux-Beta-4.0.0-Hopper",
                           self.beta_3_16_0_to_beta_4_0_0)
 
-        self.add_scenario("Kanux-Beta-4.0.0-Lovelace", "Kanux-Beta-4.1.0-Hopper",
+        self.add_scenario("Kanux-Beta-4.0.0-Hopper", "Kanux-Beta-4.1.0-Hopper",
                           self.beta_4_0_0_to_beta_4_1_0)
 
-        self.add_scenario("Kanux-Beta-4.1.0-Lovelace", "Kanux-Beta-4.1.1-Hopper",
+        self.add_scenario("Kanux-Beta-4.1.0-Hopper", "Kanux-Beta-4.1.1-Hopper",
                           self.beta_4_1_0_to_beta_4_1_1)
 
-        self.add_scenario("Kanux-Beta-4.1.1-Lovelace", "Kanux-Beta-4.1.2-Hopper",
+        self.add_scenario("Kanux-Beta-4.1.1-Hopper", "Kanux-Beta-4.1.2-Hopper",
                           self.beta_4_1_1_to_beta_4_1_2)
 
     def beta_103_to_beta_110(self, dummy_progress):
@@ -595,19 +595,19 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.14.1-Lovelace", "Kanux-Beta-3.15.0-Lovelace",
                           self.beta_3_14_1_to_beta_3_15_0)
 
-        self.add_scenario("Kanux-Beta-3.15.0-Lovelace", "Kanux-Beta-3.16.0-Hopper",
+        self.add_scenario("Kanux-Beta-3.15.0-Lovelace", "Kanux-Beta-3.16.0-Lovelace",
                           self.beta_3_15_0_to_beta_3_16_0)
 
         self.add_scenario("Kanux-Beta-3.16.0-Lovelace", "Kanux-Beta-4.0.0-Hopper",
                           self.beta_3_16_0_to_beta_4_0_0)
 
-        self.add_scenario("Kanux-Beta-4.0.0-Lovelace", "Kanux-Beta-4.1.0-Hopper",
+        self.add_scenario("Kanux-Beta-4.0.0-Hopper", "Kanux-Beta-4.1.0-Hopper",
                           self.beta_4_0_0_to_beta_4_1_0)
 
-        self.add_scenario("Kanux-Beta-4.1.0-Lovelace", "Kanux-Beta-4.1.1-Hopper",
+        self.add_scenario("Kanux-Beta-4.1.0-Hopper", "Kanux-Beta-4.1.1-Hopper",
                           self.beta_4_1_0_to_beta_4_1_1)
 
-        self.add_scenario("Kanux-Beta-4.1.1-Lovelace", "Kanux-Beta-4.1.2-Hopper",
+        self.add_scenario("Kanux-Beta-4.1.1-Hopper", "Kanux-Beta-4.1.2-Hopper",
                           self.beta_4_1_1_to_beta_4_1_2)
 
     def beta_103_to_beta_110(self, dummy_progress):
