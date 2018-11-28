@@ -16,6 +16,7 @@ from tests.fixtures.fake_apt import *
 from tests.fixtures.free_space import *
 from tests.fixtures.network import *
 from tests.fixtures.run_cmd import *
+from tests.fixtures.scenarios import *
 from tests.fixtures.state import *
 from tests.fixtures.version import *
 from tests.fixtures.environ import *

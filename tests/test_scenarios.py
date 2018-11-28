@@ -1,5 +1,5 @@
 #
-# scenarios.py
+# test_scenarios.py
 #
 # Copyright (C) 2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
@@ -25,3 +25,15 @@ def test_postupdate_covers_upgrade_to_later_versions(upgrade_version_pairs,
     post = PostUpdate(start_version)
 
     assert post.covers_update()
+
+
+def test_preupdate_scenarios_version_naming(add_scenario_verifier):
+    from kano_updater.scenarios import PreUpdate
+    from kano_updater.version import VERSION
+    PreUpdate(VERSION)
+
+
+def test_postupdate_scenarios_version_naming(add_scenario_verifier):
+    from kano_updater.scenarios import PostUpdate
+    from kano_updater.version import VERSION
+    PostUpdate(VERSION)
