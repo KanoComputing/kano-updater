@@ -1049,4 +1049,5 @@ class PostUpdate(Scenarios):
         else:
             shutil.copy(REFERENCE_STRETCH_LIST, STRETCH_MIGRATION_LIST)
         run_cmd_log("apt-get update")
-        raise Relaunch()
+# Separate the updater in two parts
+#        raise Relaunch()
