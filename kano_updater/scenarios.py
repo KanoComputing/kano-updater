@@ -1089,7 +1089,8 @@ class PostUpdate(Scenarios):
         else:
             shutil.copy(REFERENCE_STRETCH_LIST, STRETCH_MIGRATION_LIST)
         run_cmd_log("apt-get update")
-        raise Relaunch()
+# Separate the updater in two parts
+#        raise Relaunch()
 
     def beta_3_16_1_to_beta_4_0_0(self, dummy_progress):
         ''' 4.0.0 is the first Debian Stretch version. All the work for
