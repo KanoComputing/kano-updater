@@ -17,7 +17,6 @@ from kano.utils.hardware import has_min_performance, RPI_3_SCORE
 
 from kano_init.utils import reconfigure_autostart_policy
 
-from kano_updater.apt_wrapper import AptWrapper
 from kano_updater.os_version import OSVersion, get_target_version
 from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable, migrate_repository, get_users, run_for_every_user
@@ -42,6 +41,7 @@ REFERENCE_STRETCH_LIST = os.path.join(
 REFERENCE_STRETCH_LIST_QA_TEST = os.path.join(
     OS_SOURCES_REFERENCE, 'kano-stretch-qa-test.list'
 )
+
 
 class Scenarios(object):
     _type = ""
@@ -253,14 +253,11 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.14.1-Lovelace", "Kanux-Beta-3.15.0-Lovelace",
                           self.beta_3_14_1_to_beta_3_15_0)
 
-        self.add_scenario("Kanux-Beta-3.15.0-Lovelace", "Kanux-Beta-3.16.0-Hopper",
+        self.add_scenario("Kanux-Beta-3.15.0-Lovelace", "Kanux-Beta-3.16.0-Lovelace",
                           self.beta_3_15_0_to_beta_3_16_0)
 
-        self.add_scenario("Kanux-Beta-3.16.0-Lovelace", "Kanux-Beta-4.0.0-Hopper",
-                          self.beta_3_16_0_to_beta_4_0_0)
-
-        self.add_scenario("Kanux-Beta-4.0.0-Lovelace", "Kanux-Beta-4.1.0-Hopper",
-                          self.beta_4_0_0_to_beta_4_1_0)
+        self.add_scenario("Kanux-Beta-3.16.0-Lovelace", "Kanux-Beta-3.16.1-Lovelace",
+                          self.beta_3_16_0_to_beta_3_16_1)
 
     def beta_103_to_beta_110(self, dummy_progress):
         pass
@@ -427,10 +424,7 @@ class PreUpdate(Scenarios):
     def beta_3_15_0_to_beta_3_16_0(self, dummy_progress):
         pass
 
-    def beta_3_16_0_to_beta_4_0_0(self, dummy_progress):
-        pass
-
-    def beta_4_0_0_to_beta_4_1_0(self, dummy_progress):
+    def beta_3_16_0_to_beta_3_16_1(self, dummy_progress):
         pass
 
     def _finalise(self):
@@ -581,14 +575,11 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.14.1-Lovelace", "Kanux-Beta-3.15.0-Lovelace",
                           self.beta_3_14_1_to_beta_3_15_0)
 
-        self.add_scenario("Kanux-Beta-3.15.0-Lovelace", "Kanux-Beta-3.16.0-Hopper",
+        self.add_scenario("Kanux-Beta-3.15.0-Lovelace", "Kanux-Beta-3.16.0-Lovelace",
                           self.beta_3_15_0_to_beta_3_16_0)
 
-        self.add_scenario("Kanux-Beta-3.16.0-Lovelace", "Kanux-Beta-4.0.0-Hopper",
-                          self.beta_3_16_0_to_beta_4_0_0)
-
-        self.add_scenario("Kanux-Beta-4.0.0-Lovelace", "Kanux-Beta-4.1.0-Hopper",
-                          self.beta_4_0_0_to_beta_4_1_0)
+        self.add_scenario("Kanux-Beta-3.16.0-Lovelace", "Kanux-Beta-3.16.1-Lovelace",
+                          self.beta_3_16_0_to_beta_3_16_1)
 
     def beta_103_to_beta_110(self, dummy_progress):
         rclocal_executable()
@@ -1030,16 +1021,19 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_3_15_0_to_beta_3_16_0(self, progress):
-        ''' 3.16.0 is the last release for Debian Jessie. Every update past
-        this point must update to 3.16.0 and then progress onwards, it can
-        never happen that the system is of version 3.x.x (!= 3.16.0) and
+        pass
+
+    def beta_3_16_0_to_beta_3_16_1(self, progress):
+        ''' 3.16.1 is the last release for Debian Jessie. Every update past
+        this point must update to 3.16.1 and then progress onwards, it can
+        never happen that the system is of version 3.x.x (!= 3.16.1) and
         update directly to 4.x.x.
 
-                          ->  3.16.0 Jessie (<= RPi 2)
-        3.x.x -> 3.16.0 -{
+                          ->  3.16.1 Jessie (<= RPi 2)
+        3.x.x -> 3.16.1 -{
                           ->  4.x.x Stretch (>= RPi 3)
 
-        For those where the update should proceed past 3.16.0, duplicate the
+        For those where the update should proceed past 3.16.1, duplicate the
         Stretch sources to a temporary list so that the new update can be
         located and the new sources package can be installed.
         '''
@@ -1056,15 +1050,3 @@ class PostUpdate(Scenarios):
             shutil.copy(REFERENCE_STRETCH_LIST, STRETCH_MIGRATION_LIST)
         run_cmd_log("apt-get update")
         raise Relaunch()
-
-    def beta_3_16_0_to_beta_4_0_0(self, dummy_progress):
-        ''' 4.0.0 is the first Debian Stretch version. All the work for
-        upgrade has already been handled by the update to 3.16.0.
-        Cleanup all evidence of Jessie on the system; from this moment
-        onwards, everything is Stretch
-        '''
-
-        os.remove(STRETCH_MIGRATION_LIST)
-
-    def beta_4_0_0_to_beta_4_1_0(self, dummy_progress):
-        pass
