@@ -124,7 +124,8 @@ class Progress(object):
               )
         logger.debug(log)
 
-        # Calculate current progres and emitt an event
+        # Calculate current progress and emit an event
+        monitor_heartbeat.heartbeat()
         self._change(phase, phase.label)
 
     def get_current_phase(self):
@@ -180,12 +181,12 @@ class Progress(object):
                   encode(msg)
               )
         logger.debug(log)
+        monitor_heartbeat.heartbeat()
         self._change(phase, msg)
 
     def next_step(self, phase_name, msg):
         phase = self._get_phase_by_name(phase_name)
         self.set_step(phase_name, phase.step + 1, msg)
-        monitor_heartbeat.heartbeat()
 
     def _get_phase_by_name(self, name, do_raise=True):
         for phase in self._phases:
@@ -215,6 +216,7 @@ class Progress(object):
 
     def relaunch(self):
         logger.debug("Scheduling relaunch")
+        monitor_heartbeat.heartbeat()
         self._relaunch()
 
     def abort(self, msg):
