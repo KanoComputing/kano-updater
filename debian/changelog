@@ -2,6 +2,7 @@ kano-updater (3.16.1-0) unstable; urgency=low
 
   * Minor backport fixes update for Jessie users
   * Backport: Increase update recovery timeout from 2h to 3h
+  * Backport: Split v3.x to v4.x update into two distinct updates
 
  -- Team Kano <dev@kano.me>  Wed, 5 Dec 2018 13:12:00 +0000
 
