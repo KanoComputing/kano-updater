@@ -11,6 +11,7 @@
 
 
 from tests.fixtures.autologin_checks import *
+from tests.fixtures.debian import *
 from tests.fixtures.disk_config import *
 from tests.fixtures.fake_apt import *
 from tests.fixtures.free_space import *

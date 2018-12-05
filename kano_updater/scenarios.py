@@ -21,22 +21,16 @@ from kano_init.utils import reconfigure_autostart_policy
 from kano_updater.os_version import OSVersion, get_target_version
 from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable, migrate_repository, get_users, run_for_every_user
-from kano_updater.paths import PYLIBS_DIR, PYFALLBACK_DIR
+from kano_updater.paths import PYLIBS_DIR, PYFALLBACK_DIR, SOURCES_DIR, \
+    OS_SOURCES_REFERENCE, REFERENCE_STRETCH_LIST
 from kano_updater.progress import Relaunch
 
 
-SOURCES_DIR = '/etc/apt/sources.list.d'
 STRETCH_MIGRATION_LIST = os.path.join(
     SOURCES_DIR, 'kano-stretch.kano-updater.list'
 )
 
 
-# FIXME: Find way to properly handle references to these files owned by the
-#        'kano-os-sources' package
-OS_SOURCES_REFERENCE = '/usr/share/kano-os-sources/apt/sources.list.d'
-REFERENCE_STRETCH_LIST = os.path.join(
-    OS_SOURCES_REFERENCE, 'kano-stretch.list'
-)
 # File for use when testing the update path prior to release. Will be installed by the
 # QA test framework, and override REFERENCE_STRETCH_LIST
 REFERENCE_STRETCH_LIST_QA_TEST = os.path.join(
