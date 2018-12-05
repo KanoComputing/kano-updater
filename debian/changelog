@@ -4,6 +4,7 @@ kano-updater (4.2.0-0) unstable; urgency=low
   * Send heartbeat signal with every progress change event
   * Increase update recovery timeout from 2h to 3h
   * Split v3.x to v4.x update into two distinct updates
+  * Increase monitor timeout to 30 minutes
 
  -- Team Kano <dev@kano.me>  Wed, 5 Dec 2018 13:07:00 +0000
 
@@ -34,6 +35,7 @@ kano-updater (3.16.1-0) unstable; urgency=low
    * Minor backport fixes update for Jessie users
    * Backport: Increase update recovery timeout from 2h to 3h
    * Backport: Split v3.x to v4.x update into two distinct updates
+   * Backport: Increase monitor timeout to 30 minutes
 
  -- Team Kano <dev@kano.me>  Wed, 5 Dec 2018 13:12:00 +0000
 
