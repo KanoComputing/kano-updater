@@ -27,6 +27,12 @@ kano-updater (4.0.0-0) unstable; urgency=low
 
  -- Team Kano <dev@kano.me>  Fri, 6 Jul 2018 11:48:00 +0100
 
+kano-updater (3.16.1-0) unstable; urgency=low
+
+   * Minor backport fixes update for Jessie users
+
+ -- Team Kano <dev@kano.me>  Tue, 4 Dec 2018 20:12:00 +0000
+
 kano-updater (3.16.0-0) unstable; urgency=low
 
   * Bump version for Kano OS v3.16.0 "Lovelace". Provides the final update for
