@@ -3,6 +3,7 @@ kano-updater (4.2.0-0) unstable; urgency=low
   * Bump version for Kano OS v4.2.0 "Hopper"
   * Send heartbeat signal with every progress change event
   * Increase update recovery timeout from 2h to 3h
+  * Split v3.x to v4.x update into two distinct updates
 
  -- Team Kano <dev@kano.me>  Wed, 5 Dec 2018 13:07:00 +0000
 
