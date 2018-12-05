@@ -1,2 +1,2 @@
-usr/share/kano-os-sources/apt/sources.list.d/kano-jessie.list etc/apt/sources.list.d/kano-jessie.list
+usr/share/kano-os-sources/apt/sources.list.d/kano-jessie.list etc/apt/sources.list.d/kano-repos.list
 usr/share/kano-os-sources/apt/preferences.d/99-kano-pinning etc/apt/preferences.d/99-kano-pinning

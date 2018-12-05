@@ -4,6 +4,8 @@ kano-updater (3.16.1-0) unstable; urgency=low
   * Backport: Increase update recovery timeout from 2h to 3h
   * Backport: Split v3.x to v4.x update into two distinct updates
   * Backport: Increase monitor timeout to 30 minutes
+  * Backport: Change the install location of Kano sources to be version agnostic
+  * Backport: Fix problem which prevents update check from working
 
  -- Team Kano <dev@kano.me>  Wed, 5 Dec 2018 13:12:00 +0000
 
