@@ -17,7 +17,7 @@ from kano_updater.signal_handling import SignalPoll
 import kano_updater.utils
 import kano_updater.return_codes
 
-MONITOR_TIMEOUT = 20 * 60
+MONITOR_TIMEOUT = 30 * 60
 
 
 class MonitorPids(object):
