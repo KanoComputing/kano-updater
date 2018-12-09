@@ -11,6 +11,7 @@ import sys
 
 from kano.logging import logger
 import monitor_heartbeat
+from kano_updater.reporting import send_crash_report
 
 
 def encode(x):
@@ -199,6 +200,10 @@ class Progress(object):
     def fail(self, msg):
         phase = self._phases[self._current_phase_idx]
         logger.error("Error {}: {}".format(phase.label.encode('utf-8'), encode(msg)))
+        send_crash_report(
+            'Updater failure',
+            'Failed with error: {}'.format(msg)
+        )
         self._error(phase, msg)
 
     def prompt(self, msg, question, answers=None):
@@ -225,6 +230,10 @@ class Progress(object):
         """
         phase = self._phases[self._current_phase_idx]
         logger.error("Aborting {}, {}".format(phase.label, msg))
+        send_crash_report(
+            'Updater aborted',
+            'Aborted with error: {}'.format(msg)
+        )
         self._abort(phase, msg)
 
     def _change(self, phase, msg):

@@ -9,6 +9,7 @@ kano-updater (4.2.0-0) unstable; urgency=low
   * Fix problem which prevents update check from working
   * Increase the logging level so that by default more details are in crash
     reports
+  * Send crash report on fail
 
  -- Team Kano <dev@kano.me>  Wed, 5 Dec 2018 13:07:00 +0000
 

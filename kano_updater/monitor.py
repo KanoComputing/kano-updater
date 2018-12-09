@@ -14,6 +14,7 @@ import signal
 import os
 
 from kano_updater.signal_handling import SignalPoll
+from kano_updater.reporting import send_crash_report
 import kano_updater.utils
 import kano_updater.return_codes
 
@@ -148,6 +149,14 @@ def run(cmdargs):
         return subproc.returncode
 
     kano_updater.utils.track_data_and_sync('updater-hanged-indefinitely', dict())
+
+    send_crash_report(
+        'Updater monitor timeout',
+        'The monitored process ({}) did not respond for {} seconds'.format(
+            cmdargs, MONITOR_TIMEOUT
+        )
+    )
+
     if '--keep-uuid' not in cmdargs:
         kano_updater.utils.clear_tracking_uuid()
 

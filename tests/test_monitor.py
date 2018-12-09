@@ -8,11 +8,13 @@
 #
 
 
-import pytest
+import imp
 
 
 def run_monitor(mon_timeout, test_cmd):
+    # Ensure that all patched changes propagate
     import kano_updater.monitor
+    imp.reload(kano_updater.monitor)
     kano_updater.monitor.MONITOR_TIMEOUT = mon_timeout
     rc = kano_updater.monitor.run(test_cmd)
 
@@ -33,15 +35,26 @@ def test_return_code(monitor_pid, apt):
     assert rc == expected_rc
 
 
-def test_return_timeout(monitor_pid, apt):
-    import os
+def test_return_timeout(monitor_pid, apt, send_crash_report):
     import random
     import kano_updater.return_codes
     # When command returns in time,
     # Then rc should be HANGED_INDEFINITELY
     command_rc = random.randint(1, 20)
-    rc = run_monitor(5, ["./tests/monitor_stub.py", "10", str(command_rc)])
-    assert rc == kano_updater.return_codes.RC.HANGED_INDEFINITELY 
+    args = ["./tests/monitor_stub.py", "10", str(command_rc)]
+    timeout = 5
+
+    rc = run_monitor(timeout, args)
+
+    assert rc == kano_updater.return_codes.RC.HANGED_INDEFINITELY
+
+    assert send_crash_report.call_count == 1
+    send_crash_report.assert_called_once_with(
+        'Updater monitor timeout',
+        'The monitored process ({}) did not respond for {} seconds'.format(
+            args, timeout
+        )
+    )
 
 
 def test_forking(monitor_pid, apt):
