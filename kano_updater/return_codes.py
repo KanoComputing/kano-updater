@@ -86,5 +86,5 @@ class RCState(object):
     def rc(self, value):
         """Setter for the property."""
 
-        logger.debug("Setting RCState.rc to: {}".format(value))
+        logger.info("Setting RCState.rc to: {}".format(value))
         self._rc = value

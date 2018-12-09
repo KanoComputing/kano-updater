@@ -16,7 +16,7 @@ def clean(dry_run=False):
 
     old_status = status.state
     msg = "The status of the updater at boot was: {}".format(status.state)
-    logger.debug(msg)
+    logger.info(msg)
 
     if status.state == UpdaterStatus.DOWNLOADING_UPDATES:
         # The download was interrupted, go back one state
@@ -29,7 +29,7 @@ def clean(dry_run=False):
 
     if status.state != old_status:
         msg = "The status was changed to: {}".format(status.state)
-        logger.debug(msg)
+        logger.info(msg)
 
     status.notifications_muted = False
 
