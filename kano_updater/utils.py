@@ -368,7 +368,7 @@ def remove_user_files(files):
                     try:
                         os.remove(file_path)
                     except:
-                        logger.info("could not delete file: {}".format(file_path))
+                        logger.warn("could not delete file: {}".format(file_path))
 
 
 def update_home_folders_from_skel():
@@ -392,7 +392,7 @@ def update_home_folders_from_skel():
 
 
 def update_folder_from_skel(user_name):
-    logger.info("Updating home folder of user: {}".format(user_name))
+    logger.warn("Updating home folder of user: {}".format(user_name))
     src_dir = '/etc/skel'
     dst_dir = os.path.join('/home', user_name)
 

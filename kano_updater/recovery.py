@@ -26,7 +26,7 @@ def enable_system_recovery_flow():
     Returns:
         bool - Whether the operation was successful
     """
-    logger.debug('Configuring recovery stategy for next boot')
+    logger.info('Configuring recovery stategy for next boot')
     successful = True
 
     # Set the recovery bootup splash and replace normal bootup one.
@@ -59,7 +59,7 @@ def cancel_system_recovery_flow():
         Be sure to reliably call this after the aforementioned function
         in order to prevent recovery boot loops.
     """
-    logger.debug('Aborting recovery for next boot')
+    logger.info('Aborting recovery for next boot')
 
     # Restore the normal bootup splash animation.
     clear_splash()

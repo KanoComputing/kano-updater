@@ -161,10 +161,10 @@ class UpdaterStatus(object):
     def state(self, value):
         if value not in self._valid_states:
             msg = "'{}' is not a valid state".format(value)
-            logger.debug(msg)
+            logger.warn(msg)
             raise UpdaterStatusError(msg)
 
-        logger.debug("Setting the status' state to: {}".format(value))
+        logger.info("Setting the status' state to: {}".format(value))
         self._state = value
 
     # -- scheduling
@@ -178,7 +178,7 @@ class UpdaterStatus(object):
             msg = "'is_scheduled' must be a boolean value."
             raise UpdaterStatusError(msg)
 
-        logger.debug("Setting the status' is_scheduled to: {}".format(value))
+        logger.info("Setting the status' is_scheduled to: {}".format(value))
         self._is_scheduled = value
 
     # -- last_update
@@ -192,7 +192,7 @@ class UpdaterStatus(object):
             msg = "'last_update' must be an Unix timestamp (int)."
             raise UpdaterStatusError(msg)
 
-        logger.debug("Setting the status' last_update to: {}".format(value))
+        logger.info("Setting the status' last_update to: {}".format(value))
         self._last_update = value
 
     # -- last_check
@@ -206,7 +206,7 @@ class UpdaterStatus(object):
             msg = "'last_check' must be an Unix timestamp (int)."
             raise UpdaterStatusError(msg)
 
-        logger.debug("Setting the status' last_check to: {}".format(value))
+        logger.info("Setting the status' last_check to: {}".format(value))
         self._last_check = value
 
     @property
@@ -218,7 +218,7 @@ class UpdaterStatus(object):
         if not isinstance(value, list) and all([isinstance(p, str) for p in value]):
             msg = "'ind_pkg' must be a list of package names"
             raise UpdaterStatusError(msg)
-        logger.debug("Setting the status' updatable_independent_packages to: {}".format(value))
+        logger.info("Setting the status' updatable_independent_packages to: {}".format(value))
         self._updatable_independent_packages = value
 
     # -- is_urgent - flag used to distinguish between update priority levels
@@ -232,7 +232,7 @@ class UpdaterStatus(object):
             msg = "'is_urgent' must be a boolean value."
             raise UpdaterStatusError(msg)
 
-        logger.debug("Setting the status' is_urgent to: {}".format(value))
+        logger.info("Setting the status' is_urgent to: {}".format(value))
         self._is_urgent = value
 
     # -- last_check_urgent - used for very urgent updates
@@ -246,7 +246,7 @@ class UpdaterStatus(object):
             msg = "'last_check_urgent' must be an Unix timestamp (int)."
             raise UpdaterStatusError(msg)
 
-        logger.debug("Setting the status' last_check_urgent to: {}"
+        logger.info("Setting the status' last_check_urgent to: {}"
                      .format(value))
         self._last_check_urgent = value
 
@@ -261,7 +261,7 @@ class UpdaterStatus(object):
             msg = "'first_boot_countdown' must be an Unix timestamp (int)."
             raise UpdaterStatusError(msg)
 
-        logger.debug("Setting the status' first_boot_countdown to: {}"
+        logger.info("Setting the status' first_boot_countdown to: {}"
                      .format(value))
         self._first_boot_countdown = value
 
@@ -280,7 +280,7 @@ class UpdaterStatus(object):
             msg = "'notifications_muted' must be a boolean value."
             raise UpdaterStatusError(msg)
 
-        logger.debug("Setting the status' notifications_muted to: {}"
+        logger.info("Setting the status' notifications_muted to: {}"
                      .format(value))
         self._notifications_muted = value
 
@@ -295,5 +295,5 @@ class UpdaterStatus(object):
             msg = "'is_shutdown' must be a boolean value."
             raise UpdaterStatusError(msg)
 
-        logger.debug("Setting the status' is_shutdown to: {}".format(value))
+        logger.info("Setting the status' is_shutdown to: {}".format(value))
         self._is_shutdown = value

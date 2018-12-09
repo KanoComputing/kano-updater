@@ -57,7 +57,7 @@ def install(progress=None, gui=True):
 
     progress.start('checks')
     status = UpdaterStatus.get_instance()
-    logger.debug("Installing update (updater state = {})".format(status.state))
+    logger.info("Installing update (updater state = {})".format(status.state))
 
     if not progress:
         progress = DummyProgress()
@@ -75,7 +75,7 @@ def install(progress=None, gui=True):
         RCState.get_instance().rc = RC.NOT_ENOUGH_SPACE
         return False
 
-    logger.debug("Downloading any new updates that might be available.")
+    logger.info("Downloading any new updates that might be available.")
     progress.start('download')
     if not download(progress):
         logger.error("Downloading updates failed, cannot update.")
@@ -83,7 +83,7 @@ def install(progress=None, gui=True):
 
     progress.start('install')
 
-    logger.debug("Installing with priority {}".format(priority.priority))
+    logger.info("Installing with priority {}".format(priority.priority))
 
     try:
         return do_install(progress, status, priority=priority)
@@ -203,7 +203,7 @@ def install_urgent(progress, status):
             is_main=True
         )
     )
-    logger.debug("Installing urgent hotfix")
+    logger.info("Installing urgent hotfix")
     apt_handle = AptWrapper.get_instance()
     packages_to_update = apt_handle.packages_to_be_upgraded()
     progress.start('installing-urgent')
@@ -214,7 +214,7 @@ def install_urgent(progress, status):
         track_data('updated_hotfix', {
             'packages': packages_to_update
         })
-        logger.debug("Tracking Data: '{}'".format(packages_to_update))
+        logger.info("Tracking Data: '{}'".format(packages_to_update))
     except ImportError as imp_exc:
         logger.error("Couldn't track hotfix installation, failed to import " \
                      "tracking module: [{}]".format(imp_exc))
@@ -321,7 +321,7 @@ def install_standard(progress, status):
         progress.abort("The pre-update tasks failed.")
         raise
 
-    logger.debug("Updating deb packages")
+    logger.info("Updating deb packages")
     progress.start('updating-deb-packages')
     install_deb_packages(progress)
 

@@ -122,7 +122,7 @@ class Progress(object):
                   phase.get_main_phase().label.encode('utf-8'),
                   phase.get_main_phase().name
               )
-        logger.debug(log)
+        logger.info(log)
 
         # Calculate current progress and emit an event
         monitor_heartbeat.heartbeat()
@@ -180,7 +180,7 @@ class Progress(object):
                   phase.get_main_phase().name,
                   encode(msg)
               )
-        logger.debug(log)
+        logger.info(log)
         monitor_heartbeat.heartbeat()
         self._change(phase, msg)
 
@@ -198,7 +198,7 @@ class Progress(object):
 
     def fail(self, msg):
         phase = self._phases[self._current_phase_idx]
-        logger.debug("Error {}: {}".format(phase.label.encode('utf-8'), encode(msg)))
+        logger.error("Error {}: {}".format(phase.label.encode('utf-8'), encode(msg)))
         self._error(phase, msg)
 
     def prompt(self, msg, question, answers=None):
@@ -211,11 +211,11 @@ class Progress(object):
         return self._prompt(msg, question, answers)
 
     def finish(self, msg):
-        logger.debug("Complete: {}".format(msg))
+        logger.info("Complete: {}".format(msg))
         self._done(msg)
 
     def relaunch(self):
-        logger.debug("Scheduling relaunch")
+        logger.info("Scheduling relaunch")
         monitor_heartbeat.heartbeat()
         self._relaunch()
 
@@ -224,7 +224,7 @@ class Progress(object):
             Akin a an exception
         """
         phase = self._phases[self._current_phase_idx]
-        logger.debug("Aborting {}, {}".format(phase.label, msg))
+        logger.error("Aborting {}, {}".format(phase.label, msg))
         self._abort(phase, msg)
 
     def _change(self, phase, msg):

@@ -38,7 +38,7 @@ def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
 
     if status.state not in [UpdaterStatus.NO_UPDATES, UpdaterStatus.UPDATES_DOWNLOADED]:
         msg = "No need to check for updates"
-        logger.debug(msg)
+        logger.info(msg)
 
         # This was a successful check, so we need to update the timestamp.
         status.last_check = int(time.time())
@@ -73,7 +73,7 @@ def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
         # out of the installing ones, otherwise the recovery flow will quit.
         if not status.is_recovery_needed():
             status.state = UpdaterStatus.NO_UPDATES
-        logger.debug("No updates available")
+        logger.info("No updates available")
         RCState.get_instance().rc = RC.NO_UPDATES_AVAILABLE
         rv = False
     else:
@@ -83,8 +83,8 @@ def check_for_updates(progress=None, priority=Priority.NONE, is_gui=False):
 
         if not status.is_recovery_needed():
             status.state = UpdaterStatus.UPDATES_AVAILABLE
-        logger.debug("Updates available")
-        logger.debug("Found update of priority: {}".format(priority.priority))
+        logger.info("Updates available")
+        logger.info("Found update of priority: {}".format(priority.priority))
         rv = True
 
     if priority <= Priority.STANDARD:
@@ -108,8 +108,8 @@ def _do_check(progress, priority=Priority.NONE):
     apt_handle = AptWrapper.get_instance()
 
     apt_handle.update(progress, sources_list=KANO_SOURCES_LIST)
-    logger.debug("Checking urgent: {}".format(priority <= Priority.URGENT))
-    logger.debug("Checking standard: {}".format(priority <= Priority.STANDARD))
+    logger.info("Checking urgent: {}".format(priority <= Priority.URGENT))
+    logger.info("Checking standard: {}".format(priority <= Priority.STANDARD))
     run_cmd_log('apt-get --yes autoclean')
 
     if (

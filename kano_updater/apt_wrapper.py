@@ -244,7 +244,7 @@ class AptWrapper(object):
             self._cache.upgrade(dist_upgrade=True)
         else:
             for pkg in self.upgradable_packages(priority=priority):
-                logger.debug("Marking {} ({}) for upgrade".format(
+                logger.info("Marking {} ({}) for upgrade".format(
                     pkg.shortname, pkg.candidate.version
                 ))
                 pkg.mark_upgrade()
@@ -264,7 +264,7 @@ class AptWrapper(object):
               is in bytes
         '''
 
-        logger.debug("Calculating required free space for upgrade..")
+        logger.info("Calculating required free space for upgrade..")
 
         required_space = 0
 
@@ -282,7 +282,7 @@ class AptWrapper(object):
 
                 if state != AptPkgState.MARKED_UPGRADE:
                     orig_state.append((pkg, state))
-                    logger.debug("Marking {} ({}) for upgrade from state {}".format(
+                    logger.info("Marking {} ({}) for upgrade from state {}".format(
                         pkg.shortname, pkg.candidate.version, state
                     ))
                     pkg.mark_upgrade()
@@ -292,7 +292,7 @@ class AptWrapper(object):
 
             # Restore package states in reverse order
             for pkg, state in reversed(orig_state):
-                logger.debug("Restoring the pkg state {} for {} ({})".format(
+                logger.info("Restoring the pkg state {} for {} ({})".format(
                     state, pkg.shortname, pkg.candidate.version
                 ))
                 AptPkgState.restore_pkg_state(pkg, state)
