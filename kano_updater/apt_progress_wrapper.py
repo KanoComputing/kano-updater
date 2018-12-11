@@ -1,16 +1,19 @@
 #
 # Interfacing updater progress objects with python-apt progress objects
 #
-# Copyright (C) 2015 Kano Computing Ltd.
+# Copyright (C) 2015-2018 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
 import os
 import sys
 import apt
-import re
 
 from kano_updater.progress import Phase
+
+
+class AptDownloadFailException(Exception):
+    pass
 
 
 class AptDownloadProgress(apt.progress.base.AcquireProgress):
@@ -46,7 +49,7 @@ class AptDownloadProgress(apt.progress.base.AcquireProgress):
         self._updater_progress.next_step(self._phase_name, msg)
 
     def fail(self, item_desc):
-        self._updater_progress.fail(item_desc.description)
+        raise AptDownloadFailException(item_desc.description)
 
     # TODO: Remove
     #def pulse(self, owner):

@@ -13,11 +13,12 @@ from kano.logging import logger
 from kano.utils import run_cmd_log
 
 from kano_updater.apt_progress_wrapper import AptDownloadProgress, \
-    AptOpProgress, AptInstallProgress
+    AptOpProgress, AptInstallProgress, AptDownloadFailException
 from kano_updater.os_version import get_system_version
 from kano_updater.progress import Phase
 import kano_updater.priority as Priority
 from kano_updater.special_packages import independent_install_list
+from kano_updater.retry import retry
 
 
 class AptPkgState(object):
@@ -99,6 +100,49 @@ class AptWrapper(object):
 
         self._cache = apt.cache.Cache()
 
+    def _update_cache(self, progress, src_count, sources_list):
+        try:
+            self._do_update_cache(progress, src_count, sources_list)
+        except (
+                apt.cache.FetchFailedException, AptDownloadFailException
+        ) as err:
+            # Continue regradless, if this fails then it may not matter later
+            err_msg = N_("Failed to update sources: {}")
+            logger.error(err_msg.format(err.message))
+            progress.fail(_(err_msg).format(err.message))
+
+    @retry((apt.cache.FetchFailedException, AptDownloadFailException))
+    def _do_update_cache(self, progress, src_count, sources_list):
+        '''
+        Raises: apt.cache.FetchFailedException
+        Raises: DownloadFailException
+        '''
+
+        apt_progress = AptDownloadProgress(progress, src_count)
+        self._cache.update(fetch_progress=apt_progress,
+                           sources_list=sources_list)
+
+    def _fetch_archives(self, progress):
+        try:
+            self._do_fetch_archives(progress)
+        except (
+                apt.cache.FetchFailedException, AptDownloadFailException
+        ) as err:
+            err_msg = N_("Failed to fetch sources: {}")
+            logger.error(err_msg.format(err.message))
+            progress.fail(_(err_msg).format(err.message))
+            raise err
+
+    @retry((apt.cache.FetchFailedException, AptDownloadFailException))
+    def _do_fetch_archives(self, progress):
+        '''
+        Raises: apt.cache.FetchFailedException
+        Raises: DownloadFailException
+        '''
+
+        apt_progress = AptDownloadProgress(progress, self._cache.install_count)
+        self._cache.fetch_archives(apt_progress)
+
     def update(self, progress, sources_list=None):
         src_list = aptsources.sourceslist.SourcesList()
 
@@ -117,16 +161,7 @@ class AptWrapper(object):
         )
 
         progress.start(updating_sources)
-        apt_progress = AptDownloadProgress(progress, src_count)
-        try:
-            self._cache.update(fetch_progress=apt_progress,
-                               sources_list=sources_list)
-        except apt.cache.FetchFailedException:
-            # Continue regardless, if it fails later because it can't grab a
-            # package then let it fail because of that; now that we've added
-            # in the development repositories it is more likely to happen.
-            err_msg = N_("Failed to update sources")
-            logger.error(err_msg)
+        self._update_cache(progress, src_count, sources_list)
 
         progress.start(cache_init)
         ops = [("reading-package-lists", _("Reading package lists")),
@@ -135,42 +170,6 @@ class AptWrapper(object):
                ("building-data-structures", _("Building data structures"))]
         op_progress = AptOpProgress(progress, ops)
         self._cache.open(op_progress)
-
-    """
-    def install(self, packages, progress=None):
-        if not isinstance(packages, list):
-            packages = [packages]
-
-        for pkg in self._cache:
-            if pkg.shortname in packages:
-                pkg.mark_install(purge=True)
-
-        # TODO Needs splitting
-        fetch_progress = AptDownloadProgress(progress,
-                                             self._cache.install_count)
-        inst_progress = AptInstallProgress(progress)
-        self._cache.commit(fetch_progress, inst_progress)
-        self._cache.open()
-        self._cache.clear()
-    """
-
-    """
-    def remove(self, packages, purge=False, progress=None):
-        if not isinstance(packages, list):
-            packages = [packages]
-
-        for pkg_name in packages:
-            if pkg_name in self._cache:
-                pkg = self._cache[pkg_name]
-                pkg.mark_delete(purge=purge)
-
-        # TODO needs splitting
-        fetch_progress = AptDownloadProgress(progress)
-        inst_progress = AptInstallProgress(progress)
-        self._cache.commit(fetch_progress, inst_progress)
-        self._cache.open()
-        self._cache.clear()
-    """
 
     def upgrade(self, packages, progress=None, priority=Priority.NONE):
         if not isinstance(packages, list):
@@ -192,9 +191,7 @@ class AptWrapper(object):
         )
 
         progress.start(download)
-        apt_progress = AptDownloadProgress(progress,
-                                           self._cache.install_count)
-        self._cache.fetch_archives(apt_progress)
+        self._fetch_archives(progress)
 
         progress.start(install)
         inst_progress = AptInstallProgress(progress)
@@ -229,10 +226,7 @@ class AptWrapper(object):
 
     def cache_updates(self, progress, priority=Priority.NONE):
         self._mark_all_for_update(priority=priority)
-
-        apt_progress = AptDownloadProgress(progress,
-                                           self._cache.install_count)
-        self._cache.fetch_archives(apt_progress)
+        self._fetch_archives(progress)
 
     def upgradable_packages(self, priority=Priority.NONE):
         for pkg in self._cache:
