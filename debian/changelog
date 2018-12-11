@@ -9,6 +9,7 @@ kano-updater (3.16.1-0) unstable; urgency=low
   * Backport: Increase the logging level so that by default more details are in crash
               reports
   * Backport: Send crash report on fail
+  * Backport: Retry updating sources before failure
 
  -- Team Kano <dev@kano.me>  Wed, 5 Dec 2018 13:12:00 +0000
 
