@@ -12,7 +12,7 @@ from kano.logging import logger
 
 from kano.utils.shell import run_cmd_log
 from kano.utils.user import get_user_unsudoed
-from kano.utils.file_operations import write_file_contents
+from kano.utils.file_operations import read_file_contents, write_file_contents
 from kano.utils.misc import is_installed
 from kano.utils.hardware import has_min_performance, RPI_3_SCORE
 
@@ -22,7 +22,7 @@ from kano_updater.os_version import OSVersion, get_target_version
 from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable, migrate_repository, get_users, run_for_every_user
 from kano_updater.paths import PYLIBS_DIR, PYFALLBACK_DIR, SOURCES_DIR, \
-    OS_SOURCES_REFERENCE, REFERENCE_STRETCH_LIST
+    OS_SOURCES_REFERENCE, REFERENCE_STRETCH_LIST, CMDLINE_TXT_PATH
 from kano_updater.progress import Relaunch
 
 
@@ -1101,5 +1101,19 @@ class PostUpdate(Scenarios):
     def beta_4_1_0_to_beta_4_1_1(self, dummy_progress):
         pass
 
+    def _ensure_netifnames(self):
+        """Add the kernel option ``net.ifnames=0`` to preserve old network
+        naming convention"""
+
+        data = read_file_contents(CMDLINE_TXT_PATH)
+
+        if 'net.ifnames=' not in data:
+            data = data + ' net.ifnames=0'
+
+        write_file_contents(CMDLINE_TXT_PATH, data)
+
     def beta_4_1_1_to_beta_4_2_0(self, dummy_progress):
-        pass
+        try:
+            self._ensure_netifnames()
+        except:
+            logger.error('Could not ensure net.ifnames=0 in cmdline.txt')

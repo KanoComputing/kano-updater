@@ -25,3 +25,5 @@ OS_SOURCES_REFERENCE = '/usr/share/kano-os-sources/apt/sources.list.d'
 REFERENCE_STRETCH_LIST = os.path.join(
     OS_SOURCES_REFERENCE, 'kano-stretch.list'
 )
+
+CMDLINE_TXT_PATH = '/boot/cmdline.txt'

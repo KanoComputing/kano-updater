@@ -11,8 +11,9 @@ kano-updater (4.2.0-0) unstable; urgency=low
     reports
   * Send crash report on fail
   * Retry updating sources before failure
+  * Ensuring old network iface naming scheme with net.ifnames=0
 
- -- Team Kano <dev@kano.me>  Wed, 5 Dec 2018 13:07:00 +0000
+ -- Team Kano <dev@kano.me>  Wed, 12 Dec 2018 18:07:00 +0000
 
 kano-updater (4.1.1-0) unstable; urgency=low
 
