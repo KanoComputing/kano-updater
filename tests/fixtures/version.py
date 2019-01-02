@@ -1,7 +1,7 @@
 #
 # version.py
 #
-# Copyright (C) 2018 Kano Computing Ltd.
+# Copyright (C) 2018-2019 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Fixtures for acertaining the system version
@@ -64,6 +64,7 @@ VERSIONS = [
     OSVersion(devstage='Beta', version='4.1.0', name='Hopper'),
     OSVersion(devstage='Beta', version='4.1.1', name='Hopper'),
     OSVersion(devstage='Beta', version='4.2.0', name='Hopper'),
+    OSVersion(devstage='Beta', version='4.2.1', name='Hopper'),
 ]
 
 

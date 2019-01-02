@@ -1,7 +1,7 @@
 #
 # scenarios.py
 #
-# Copyright (C) 2014-2018 Kano Computing Ltd.
+# Copyright (C) 2014-2019 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 
@@ -267,6 +267,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-4.1.1-Hopper", "Kanux-Beta-4.2.0-Hopper",
                           self.beta_4_1_1_to_beta_4_2_0)
 
+        self.add_scenario("Kanux-Beta-4.2.0-Hopper", "Kanux-Beta-4.2.1-Hopper",
+                          self.beta_4_2_0_to_beta_4_2_1)
+
     def beta_103_to_beta_110(self, dummy_progress):
         pass
 
@@ -447,6 +450,9 @@ class PreUpdate(Scenarios):
     def beta_4_1_1_to_beta_4_2_0(self, dummy_progress):
         pass
 
+    def beta_4_2_0_to_beta_4_2_1(self, dummy_progress):
+        pass
+
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
         # Get around this by installing it first
@@ -612,6 +618,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-4.1.1-Hopper", "Kanux-Beta-4.2.0-Hopper",
                           self.beta_4_1_1_to_beta_4_2_0)
+
+        self.add_scenario("Kanux-Beta-4.2.0-Hopper", "Kanux-Beta-4.2.1-Hopper",
+                          self.beta_4_2_0_to_beta_4_2_1)
 
     def beta_103_to_beta_110(self, dummy_progress):
         rclocal_executable()
@@ -1117,3 +1126,6 @@ class PostUpdate(Scenarios):
             self._ensure_netifnames()
         except:
             logger.error('Could not ensure net.ifnames=0 in cmdline.txt')
+
+    def beta_4_2_0_to_beta_4_2_1(self, dummy_progress):
+        pass
