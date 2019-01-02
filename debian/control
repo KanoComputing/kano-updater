@@ -30,6 +30,7 @@ Depends:
     libkdesk-dev,
     gir1.2-gtk-3.0 (>= 3.22.11),
     kano-settings (>= 1.3-1),
+    apt-transport-https (>= 1.4.8),
     python-apt,
     python-docopt (>= 0.6.2),
     python-jsonschema,

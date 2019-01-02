@@ -1,6 +1,7 @@
 kano-updater (4.2.1-0) unstable; urgency=low
 
   * Bump version for Kano OS v4.2.1 "Hopper"
+  * Add apt HTTPS dependency
 
  -- Team Kano <dev@kano.me>  Wed, 2 Jan 2019 15:15:00 +0000
 
