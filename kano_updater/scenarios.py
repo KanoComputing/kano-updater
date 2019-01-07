@@ -427,10 +427,11 @@ class PreUpdate(Scenarios):
             import shutil
             import os
 
-            shutil.move(PYLIBS_DIR, PYFALLBACK_DIR)
-            os.mkdir(PYLIBS_DIR)
-        except (OSError, IOError), e:
-            logger.error("System failed to modify the required lib directories.", e)
+            if os.path.exists(PYLIBS_DIR):
+                shutil.move(PYLIBS_DIR, PYFALLBACK_DIR)
+                os.makedirs(PYLIBS_DIR)
+        except Exception as e:
+            logger.error("System failed to modify the required lib directories: {}".format(e))
 
     def beta_3_15_0_to_beta_3_16_0(self, dummy_progress):
         pass
