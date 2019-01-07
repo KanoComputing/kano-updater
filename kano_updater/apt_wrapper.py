@@ -1,6 +1,6 @@
 # apt_wrapper.py
 #
-# Copyright (C) 2015-2018 Kano Computing Ltd.
+# Copyright (C) 2015-2019 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Interfacing with apt via python-apt
@@ -355,8 +355,8 @@ class AptWrapper(object):
         if self._cache._depcache.broken_count:
             try:
                 self._cache._depcache.fix_broken()
-            except SystemError as err:
-                logger.error(err)
+            except SystemError as e:
+                logger.error('Error attempting to fix broken pkgs', exception=e)
 
             self._cache.clear()
             self._cache.open()

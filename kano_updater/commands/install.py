@@ -1,6 +1,6 @@
 # install.py
 #
-# Copyright (C) 2015-2018 Kano Computing Ltd.
+# Copyright (C) 2015-2019 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Managing the upgrade procedure
@@ -10,9 +10,7 @@ import time
 
 from kano.logging import logger
 from kano.utils.disk import get_free_space
-from kano.utils.file_operations import read_file_contents_as_lines
 from kano.utils.shell import run_cmd, run_cmd_log
-from kano.network import is_internet
 
 from kano_updater.status import UpdaterStatus
 from kano_updater.os_version import bump_system_version, get_target_version, \
@@ -280,9 +278,9 @@ def install_standard(progress, status):
     preup = PreUpdate(system_version)
     postup = PostUpdate(system_version)
     if not (preup.covers_update() and postup.covers_update()):
-        title = _("Unfortunately, your version of Kano OS is too old " \
+        title = _("Unfortunately, your version of Kano OS is too old "
                   "to be updated through the updater.")
-        description = _("You will need to download the image of the " \
+        description = _("You will need to download the image of the "
                         "OS and reflash your SD card.")
 
         msg = "{}: {}".format(title, description)
@@ -314,9 +312,8 @@ def install_standard(progress, status):
     except Relaunch:
         progress.relaunch()
         return False
-    except Exception as err:
-        logger.error("The pre-update scenarios failed.")
-        logger.error(err.encode('utf-8'))
+    except Exception as e:
+        logger.error("The pre-update scenarios failed", exception=e)
         progress.abort("The pre-update tasks failed.")
         raise
 
@@ -331,9 +328,8 @@ def install_standard(progress, status):
         bump_system_version()
         progress.relaunch()
         return False
-    except Exception as err:
-        logger.error("The post-update scenarios failed.")
-        logger.error(err.encode('utf-8'))
+    except Exception as e:
+        logger.error("The post-update scenarios failed", exception=e)
         progress.abort("The post-update tasks failed.")
         raise
 
