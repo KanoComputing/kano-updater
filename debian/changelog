@@ -46,6 +46,12 @@ kano-updater (4.0.0-0) unstable; urgency=low
 
  -- Team Kano <dev@kano.me>  Fri, 6 Jul 2018 11:48:00 +0100
 
+kano-updater (3.16.2-0) unstable; urgency=low
+
+  * Minor backport fixes update for Jessie users
+
+ -- Team Kano <dev@kano.me>  Wed, 16 Jan 2019 19:12:00 +0000
+
 kano-updater (3.16.1-0) unstable; urgency=low
 
   * Minor backport fixes update for Jessie users

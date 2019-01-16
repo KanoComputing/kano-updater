@@ -255,8 +255,11 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.16.0-Lovelace", "Kanux-Beta-3.16.1-Lovelace",
                           self.beta_3_16_0_to_beta_3_16_1)
 
-        self.add_scenario("Kanux-Beta-3.16.1-Lovelace", "Kanux-Beta-4.0.0-Hopper",
-                          self.beta_3_16_1_to_beta_4_0_0)
+        self.add_scenario("Kanux-Beta-3.16.1-Lovelace", "Kanux-Beta-3.16.2-Lovelace",
+                          self.beta_3_16_1_to_beta_3_16_2)
+
+        self.add_scenario("Kanux-Beta-3.16.2-Lovelace", "Kanux-Beta-4.0.0-Hopper",
+                          self.beta_3_16_2_to_beta_4_0_0)
 
         self.add_scenario("Kanux-Beta-4.0.0-Hopper", "Kanux-Beta-4.1.0-Hopper",
                           self.beta_4_0_0_to_beta_4_1_0)
@@ -439,7 +442,10 @@ class PreUpdate(Scenarios):
     def beta_3_16_0_to_beta_3_16_1(self, dummy_progress):
         pass
 
-    def beta_3_16_1_to_beta_4_0_0(self, dummy_progress):
+    def beta_3_16_1_to_beta_3_16_2(self, dummy_progress):
+        pass
+
+    def beta_3_16_2_to_beta_4_0_0(self, dummy_progress):
         pass
 
     def beta_4_0_0_to_beta_4_1_0(self, dummy_progress):
@@ -608,8 +614,11 @@ class PostUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-3.16.0-Lovelace", "Kanux-Beta-3.16.1-Lovelace",
                           self.beta_3_16_0_to_beta_3_16_1)
 
-        self.add_scenario("Kanux-Beta-3.16.1-Lovelace", "Kanux-Beta-4.0.0-Hopper",
-                          self.beta_3_16_1_to_beta_4_0_0)
+        self.add_scenario("Kanux-Beta-3.16.1-Lovelace", "Kanux-Beta-3.16.2-Lovelace",
+                          self.beta_3_16_1_to_beta_3_16_2)
+
+        self.add_scenario("Kanux-Beta-3.16.2-Lovelace", "Kanux-Beta-4.0.0-Hopper",
+                          self.beta_3_16_2_to_beta_4_0_0)
 
         self.add_scenario("Kanux-Beta-4.0.0-Hopper", "Kanux-Beta-4.1.0-Hopper",
                           self.beta_4_0_0_to_beta_4_1_0)
@@ -1068,16 +1077,19 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_3_16_0_to_beta_3_16_1(self, progress):
-        ''' 3.16.1 is the last release for Debian Jessie. Every update past
-        this point must update to 3.16.1 and then progress onwards, it can
-        never happen that the system is of version 3.x.x (!= 3.16.1) and
+        pass
+
+    def beta_3_16_1_to_beta_3_16_2(self, progress):
+        ''' 3.16.2 is the last release for Debian Jessie. Every update past
+        this point must update to 3.16.2 and then progress onwards, it can
+        never happen that the system is of version 3.x.x (!= 3.16.2) and
         update directly to 4.x.x.
 
-                          ->  3.16.1 Jessie (<= RPi 2)
-        3.x.x -> 3.16.1 -{
+                          ->  3.16.2 Jessie (<= RPi 2)
+        3.x.x -> 3.16.2 -{
                           ->  4.x.x Stretch (>= RPi 3)
 
-        For those where the update should proceed past 3.16.1, duplicate the
+        For those where the update should proceed past 3.16.2, duplicate the
         Stretch sources to a temporary list so that the new update can be
         located and the new sources package can be installed.
         '''
@@ -1096,7 +1108,7 @@ class PostUpdate(Scenarios):
 # Separate the updater in two parts
 #        raise Relaunch()
 
-    def beta_3_16_1_to_beta_4_0_0(self, dummy_progress):
+    def beta_3_16_2_to_beta_4_0_0(self, dummy_progress):
         ''' 4.0.0 is the first Debian Stretch version. All the work for
         upgrade has already been handled by the update to 3.16.1.
         Cleanup all evidence of Jessie on the system; from this moment
