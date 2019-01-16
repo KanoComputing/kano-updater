@@ -457,7 +457,25 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_4_2_0_to_beta_4_2_1(self, dummy_progress):
-        pass
+        #
+        # On Kano OS 4.2.0 Christmas release, a hotfix was provided to a number of users
+        # to recover from a faulty wireless reconnection on boot, by executing the command below.
+        #
+        # "sudo mv /lib/dhcpcd/dhcpcd-hooks/10-wpa_supplicant /root"
+        #
+        # This step reinstalls the dhcpcd5 package so that the file is restored back,
+        # and the supplicant daemon is started correctly back again.
+        #
+        # Note that in 4.2.1 both kano-settings and kano-toolset were updated to use the original
+        # wpa_supplicant. Updater's dependency list was *specifically* not updated to reflect this
+        # in order to delay a potential issue for users with the workaround in case of a failed update.
+        # When the dependency versions will be bumped, keep this case in mind.
+        try:
+            if os.path.isfile('/root/10-wpa_supplicant'):
+                run_cmd_log('apt-get install --reinstall dhcpcd5')
+                os.remove('/root/10-wpa_supplicant')
+        except Exception as e:
+            logger.error('Could not restore DHCP WPA supplicant hook', exception=e)
 
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure

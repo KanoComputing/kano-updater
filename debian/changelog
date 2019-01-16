@@ -9,6 +9,7 @@ kano-updater (4.2.1-0) unstable; urgency=low
   * Added apt HTTPS dependency
   * Increased the minimum disk requirement buffer to 850MB for dpkg
   * Added free disk space check before download phase
+  * Restore DHCP hotfix for users experiencing Wireless reconnection issues on boot
 
  -- Team Kano <dev@kano.me>  Mon, 21 Jan 2019 14:12:00 +0000
 
