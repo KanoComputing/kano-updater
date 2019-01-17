@@ -128,7 +128,7 @@ class Install(Gtk.Overlay):
                timestamp > (self.game_launch_timestamp + self.FLAPPY_LAUNCH_COOLDOWN):
 
                 self.game_launch_timestamp = timestamp
-                os.system('{} &'.format(FLAPPY_PATH))
+                os.system('systemd-run --scope --nice=19 {} &'.format(FLAPPY_PATH))
         except:
             logger.error(
                 "Unexpected error in _launch_game()\n{}".format(traceback.format_exc())
