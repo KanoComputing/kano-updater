@@ -10,12 +10,17 @@
 
 import os
 
+from kano.logging import logger
+
 
 def send_crash_report(title, desc):
     '''
     Attempt to send a crash report. At this point the system may be seriously
     broken so wrap it all in a try for safety.
     '''
+
+    logger.info('Sending crash report: {}: {}'.format(title, desc))
+    logger.flush()
 
     try:
         os.system(
