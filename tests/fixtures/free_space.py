@@ -9,7 +9,7 @@
 
 
 import pytest
-from kano_updater.disk_requirements import SPACE_BUFFER, MIN_REQ_SPACE
+from kano_updater.disk_requirements import SPACE_BUFFER
 
 
 REQUIRED_SPACE = -10000
@@ -17,9 +17,9 @@ REQUIRED_SPACE = -10000
 SPACES = (
     0,
     1535,  # Limit used to be such that 1.5 GB (1536 MB) needed to be free
-    REQUIRED_SPACE,  # Exact space requred
+    REQUIRED_SPACE,  # Exact space required
     REQUIRED_SPACE - 1,  # Not quite enough
-    MIN_REQ_SPACE,
+    SPACE_BUFFER,
     999999
 )
 

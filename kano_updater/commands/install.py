@@ -18,7 +18,7 @@ from kano_updater.os_version import bump_system_version, get_target_version, \
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.apt_wrapper import AptWrapper
 from kano_updater.auxiliary_tasks import run_aux_tasks
-from kano_updater.disk_requirements import SPACE_BUFFER, MIN_REQ_SPACE, UPGRADE_3_8_0_SPACE
+from kano_updater.disk_requirements import SPACE_BUFFER, UPGRADE_3_8_0_SPACE
 from kano_updater.progress import DummyProgress, Phase, Relaunch
 from kano_updater.commands.download import download
 from kano_updater.commands.check import get_ind_packages
@@ -358,16 +358,10 @@ def check_disk_space(priority):
     if system_version < OSVersion.from_version_string("Kanux-Beta-3.8.0"):
         required_space += UPGRADE_3_8_0_SPACE
 
-    required_space = max(
-        required_space,
-        MIN_REQ_SPACE
-    )
-
     if mb_free < required_space:
         err_msg = N_("Only {}MB free, at least {}MB is needed.").format(
             mb_free, required_space
         )
-
         return False, err_msg
 
     return True, None
