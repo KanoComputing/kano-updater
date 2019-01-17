@@ -1,22 +1,25 @@
 # monitor.py
 #
-# Copyright (C) 2018 Kano Computing Ltd.
+# Copyright (C) 2018-2019 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Module to allow us to detect when a process is stuck.
 
 
 import subprocess
-from collections import defaultdict
 import sys
 import time
 import signal
 import os
+from collections import defaultdict
+
+from kano.logging import logger
 
 from kano_updater.signal_handling import SignalPoll
 from kano_updater.reporting import send_crash_report
-import kano_updater.utils
-import kano_updater.return_codes
+from kano_updater.utils import track_data_and_sync, clear_tracking_uuid
+from kano_updater.return_codes import RC
+
 
 MONITOR_TIMEOUT = 30 * 60
 
@@ -148,7 +151,12 @@ def run(cmdargs):
     if not monitor(subproc, MONITOR_TIMEOUT):
         return subproc.returncode
 
-    kano_updater.utils.track_data_and_sync('updater-hanged-indefinitely', dict())
+    logger.error(
+        'Updater monitor timeout: The monitored process ({}) did not respond for {} seconds'
+        .format(cmdargs, MONITOR_TIMEOUT)
+    )
+
+    track_data_and_sync('updater-hanged-indefinitely', dict())
 
     send_crash_report(
         'Updater monitor timeout',
@@ -158,7 +166,7 @@ def run(cmdargs):
     )
 
     if '--keep-uuid' not in cmdargs:
-        kano_updater.utils.clear_tracking_uuid()
+        clear_tracking_uuid()
 
     if '--gui' in cmdargs:
         from kano.gtk3 import kano_dialog
@@ -170,9 +178,9 @@ def run(cmdargs):
 
         # for test purposes:
         time.sleep(10)
-        os._exit(kano_updater.return_codes.RC.HANGED_INDEFINITELY)
+        os._exit(RC.HANGED_INDEFINITELY)
 
-    return kano_updater.return_codes.RC.HANGED_INDEFINITELY
+    return RC.HANGED_INDEFINITELY
 
 
 def manual_test_main(argv):

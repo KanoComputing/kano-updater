@@ -23,7 +23,6 @@ from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable, migrate_repository, get_users, run_for_every_user
 from kano_updater.paths import PYLIBS_DIR, PYFALLBACK_DIR, SOURCES_DIR, \
     OS_SOURCES_REFERENCE, REFERENCE_STRETCH_LIST, CMDLINE_TXT_PATH
-from kano_updater.progress import Relaunch
 
 
 STRETCH_MIGRATION_LIST = os.path.join(
