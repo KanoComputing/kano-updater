@@ -49,6 +49,9 @@ kano-updater (4.0.0-0) unstable; urgency=low
 kano-updater (3.16.2-0) unstable; urgency=low
 
   * Minor backport fixes update for Jessie users
+  * Backport: Fixed a few tbks when logging Exceptions
+  * Backport: Fixed an unhandled tbk in PreUpdate scenario from 3.14.1 to 3.15.0
+  * Backport: Fixed kano-profile dependency for import touch() tbk
 
  -- Team Kano <dev@kano.me>  Wed, 16 Jan 2019 19:12:00 +0000
 
