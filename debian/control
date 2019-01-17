@@ -35,7 +35,7 @@ Depends:
     kano-i18n (>= 3.15.0-1),
     jq,
     kano-init (>= 3.10.2-1),
-    kano-profile (>= 3.15.0),
+    kano-profile (>= 3.16.0),
     kano-peripherals (>= 3.10.0),
     kano-os-recovery
 Suggests: kano-profile
