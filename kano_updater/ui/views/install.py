@@ -1,12 +1,13 @@
 # install.py
 #
-# Copyright (C) 2015-2017 Kano Computing Ltd.
+# Copyright (C) 2015-2019 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Install widget
 
 
 import os
+import time
 import traceback
 
 from gi.repository import Gtk, Gdk
@@ -19,6 +20,8 @@ from kano.logging import logger
 
 class Install(Gtk.Overlay):
 
+    FLAPPY_LAUNCH_COOLDOWN = 10  # seconds
+
     def __init__(self):
         Gtk.Overlay.__init__(self, hexpand=True, vexpand=True)
 
@@ -27,7 +30,7 @@ class Install(Gtk.Overlay):
         self.play_game_label = None
 
         self.is_at_least_rpi2 = has_min_performance(RPI_2_B_SCORE)
-        self.is_game_first_launch = True
+        self.game_launch_timestamp = 0
         self.game_allowed_states = [
             'downloading', 'init', 'installing-urgent'
         ]
@@ -119,8 +122,12 @@ class Install(Gtk.Overlay):
 
     def _launch_game(self, window=None, event=None):
         """ Key release event handler for this view which only launches the game """
+        timestamp = time.time()
         try:
-            if event and event.get_keyval()[1] in [Gdk.KEY_j, Gdk.KEY_J]:
+            if event and event.get_keyval()[1] in [Gdk.KEY_j, Gdk.KEY_J] and \
+               timestamp > (self.game_launch_timestamp + self.FLAPPY_LAUNCH_COOLDOWN):
+
+                self.game_launch_timestamp = timestamp
                 os.system('{} &'.format(FLAPPY_PATH))
         except:
             logger.error(
