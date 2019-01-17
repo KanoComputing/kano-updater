@@ -53,6 +53,7 @@ kano-updater (3.16.2-0) unstable; urgency=low
   * Backport: Fixed an unhandled tbk in PreUpdate scenario from 3.14.1 to 3.15.0
   * Backport: Fixed kano-profile dependency for import touch() tbk
   * Backport: Added 10s cooldown to launching Flappy to prevent many instances
+  * Backport: Launching Flappy with systemd-run and low scheduling priority
 
  -- Team Kano <dev@kano.me>  Wed, 16 Jan 2019 19:12:00 +0000
 
