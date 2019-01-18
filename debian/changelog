@@ -1,15 +1,16 @@
 kano-updater (4.2.1-0) unstable; urgency=low
 
   * Bump version for Kano OS v4.2.1 "Hopper"
-  * Add apt HTTPS dependency
-  * Fixed an unhandled tbk in PreUpdate scenario from 3.14.1 to 3.15.0
+  * Fixed an unhandled traceback in PreUpdate scenario from 3.14.1 to 3.15.0
   * Fixed a few tracebacks when logging Exceptions
   * Fixed kano-profile dependency for import touch() traceback
   * Added 10s cooldown to launching Flappy to prevent many instances
   * Launching Flappy with systemd-run and low scheduling priority
+  * Added apt HTTPS dependency
   * Increased the minimum disk requirement buffer to 850MB for dpkg
+  * Added free disk space check before download phase
 
- -- Team Kano <dev@kano.me>  Thu, 17 Jan 2019 19:12:00 +0000
+ -- Team Kano <dev@kano.me>  Mon, 21 Jan 2019 14:12:00 +0000
 
 kano-updater (4.2.0-0) unstable; urgency=low
 
@@ -53,15 +54,16 @@ kano-updater (4.0.0-0) unstable; urgency=low
 kano-updater (3.16.2-0) unstable; urgency=low
 
   * Minor backport fixes update for Jessie users
-  * Backport: Add apt HTTPS dependency
-  * Backport: Fixed an unhandled tbk in PreUpdate scenario from 3.14.1 to 3.15.0
+  * Backport: Fixed an unhandled traceback in PreUpdate scenario from 3.14.1 to 3.15.0
   * Backport: Fixed a few tracebacks when logging Exceptions
   * Backport: Fixed kano-profile dependency for import touch() traceback
   * Backport: Added 10s cooldown to launching Flappy to prevent many instances
   * Backport: Launching Flappy with systemd-run and low scheduling priority
+  * Backport: Added apt HTTPS dependency
   * Backport: Increased the minimum disk requirement buffer to 850MB for dpkg
+  * Backport: Added free disk space check before download phase
 
- -- Team Kano <dev@kano.me>  Thu, 17 Jan 2019 19:12:00 +0000
+ -- Team Kano <dev@kano.me>  Mon, 21 Jan 2019 14:12:00 +0000
 
 kano-updater (3.16.1-0) unstable; urgency=low
 

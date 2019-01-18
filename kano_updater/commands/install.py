@@ -9,16 +9,15 @@
 import time
 
 from kano.logging import logger
-from kano.utils.disk import get_free_space
 from kano.utils.shell import run_cmd, run_cmd_log
 
 from kano_updater.status import UpdaterStatus
 from kano_updater.os_version import bump_system_version, get_target_version, \
-    get_system_version, OSVersion
+    get_system_version
 from kano_updater.scenarios import PreUpdate, PostUpdate
 from kano_updater.apt_wrapper import AptWrapper
 from kano_updater.auxiliary_tasks import run_aux_tasks
-from kano_updater.disk_requirements import SPACE_BUFFER, UPGRADE_3_8_0_SPACE
+from kano_updater.disk_requirements import check_disk_space
 from kano_updater.progress import DummyProgress, Phase, Relaunch
 from kano_updater.commands.download import download
 from kano_updater.commands.check import get_ind_packages
@@ -214,8 +213,8 @@ def install_urgent(progress, status):
         })
         logger.info("Tracking Data: '{}'".format(packages_to_update))
     except ImportError as imp_exc:
-        logger.error("Couldn't track hotfix installation, failed to import " \
-                     "tracking module: [{}]".format(imp_exc))
+        logger.error("Couldn't track hotfix installation, failed to import "
+                     "tracking module", exception=imp_exc)
     except Exception:
         pass
 
@@ -341,30 +340,6 @@ def install_standard(progress, status):
     run_aux_tasks(progress)
 
     return True
-
-
-def check_disk_space(priority):
-    '''
-    Check for available disk space before updating
-    '''
-
-    apt_handle = AptWrapper.get_instance()
-    mb_free = get_free_space()
-    required_space = apt_handle.get_required_upgrade_space() + SPACE_BUFFER
-
-    # Allowance for installing extra packages in the postupdate scenarios
-    # during the update to 3.8.0
-    system_version = get_system_version()
-    if system_version < OSVersion.from_version_string("Kanux-Beta-3.8.0"):
-        required_space += UPGRADE_3_8_0_SPACE
-
-    if mb_free < required_space:
-        err_msg = N_("Only {}MB free, at least {}MB is needed.").format(
-            mb_free, required_space
-        )
-        return False, err_msg
-
-    return True, None
 
 
 def install_deb_packages(progress, priority=Priority.NONE):
