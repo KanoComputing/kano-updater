@@ -16,7 +16,7 @@ _server_available = False
 
 
 @pytest.fixture(scope='function', params=(True, False))
-def internet(request, monkeypatch):
+def internet(fs, request, monkeypatch):
     '''
     Fakes the call to `kano.network.is_internet()` to simulate internet being
     available and not being so
@@ -25,6 +25,12 @@ def internet(request, monkeypatch):
     global _internet
 
     _internet = request.param
+
+    # TODO: kano-toolset/kano/paths.py throws an exception when it cannot find
+    # a project dir. This creates problems when using other fixtures with
+    # pyfakefs since the import below will be affected. Create the dir here
+    # next to the import from kano-toolset to avoid the exception.
+    fs.create_dir('/usr/share/kano/media')
 
     import kano.network
     monkeypatch.setattr(kano.network, 'is_internet', lambda: _internet)

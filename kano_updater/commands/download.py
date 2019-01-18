@@ -1,11 +1,12 @@
 # download.py
 #
-# Copyright (C) 2015-2018 Kano Computing Ltd.
+# Copyright (C) 2015-2019 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Managing downloads of apt packages for the upgrade
 
 
+from kano.utils.shell import run_cmd
 from kano.network import is_internet
 from kano.logging import logger
 
@@ -14,6 +15,7 @@ from kano_updater.apt_wrapper import AptWrapper
 from kano_updater.progress import DummyProgress, Phase
 from kano_updater.utils import is_server_available, show_kano_dialog, \
     make_normal_prio
+from kano_updater.disk_requirements import check_disk_space
 from kano_updater.commands.check import check_for_updates
 import kano_updater.priority as Priority
 from kano_updater.return_codes import RC, RCState
@@ -76,6 +78,11 @@ def download(progress=None, gui=True):
         RCState.get_instance().rc = RC.NO_NETWORK
         return False
 
+    priority = Priority.NONE
+
+    if status.is_urgent:
+        priority = Priority.URGENT
+
     if not is_server_available():
         err_msg = N_("Could not connect to the download server")
         logger.error(err_msg)
@@ -83,14 +90,22 @@ def download(progress=None, gui=True):
         RCState.get_instance().rc = RC.CANNOT_REACH_KANO
         return False
 
+    run_cmd('sudo kano-empty-trash')
+    enough_space, space_msg = check_disk_space(priority)
+    if not enough_space:
+        logger.error(space_msg)
+        progress.abort(_(space_msg))
+        RCState.get_instance().rc = RC.NOT_ENOUGH_SPACE
+        return False
+
     # show a dialog informing the user of an automatic urgent download
     if status.is_urgent and not gui:
         # TODO: mute notifications?
         title = _("Updater")
         description = _(
-            "Kano HQ has just released a critical update that will repair"
-            " some important things on your system! We'll download these"
-            " automatically, and ask you to schedule the install when they finish."
+            "Kano HQ has just released a critical update that will repair some"
+            " important things on your system! We'll download these automatically,"
+            " and ask you to schedule the install when they finish."
         )
         buttons = _("OK:green:1")
         dialog_proc = show_kano_dialog(title, description, buttons, blocking=False)

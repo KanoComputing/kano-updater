@@ -1,7 +1,7 @@
 #
 # free_space.py
 #
-# Copyright (C) 2018 Kano Computing Ltd.
+# Copyright (C) 2018-2019 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
 #
 # Fixtures for faking free disk space
@@ -9,6 +9,7 @@
 
 
 import pytest
+
 from kano_updater.disk_requirements import SPACE_BUFFER
 
 
