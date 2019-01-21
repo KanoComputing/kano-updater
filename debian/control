@@ -21,7 +21,7 @@ Package: kano-updater
 Architecture: any
 Depends:
     ${misc:Depends},
-    kano-os-sources,
+    kano-os-sources (>= 3.16.2),
     kano-os-pip-transition,
     kano-toolset (>= 3.7.0-1),
     python,

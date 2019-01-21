@@ -37,7 +37,7 @@ def test_installed_sources_are_correct(apt_sources_install):
         re.MULTILINE
     ).search(sources)
     assert re.compile(
-        r'^deb http://raspbian.raspberrypi.org/raspbian/ jessie main contrib non-free rpi$',
+        r'^deb http://jessie.raspbian.repo.os.kano.me/ jessie main contrib non-free rpi$',
         re.MULTILINE
     ).search(sources)
 
