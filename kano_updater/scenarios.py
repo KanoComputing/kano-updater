@@ -425,7 +425,12 @@ class PreUpdate(Scenarios):
         pass
 
     def beta_3_16_1_to_beta_3_16_2(self, dummy_progress):
-        pass
+        # Workaround for file ownership transfer from one package to another.
+        # Fixes the following issue: Error Installing packages:
+        # /var/cache/apt/archives/firmware-ralink_1%3a0.43+rpi6_all.deb: trying
+        # to overwrite '/lib/firmware/rt2661.bin', which is also in package
+        # firmware-misc-nonfree 20161130-4~deb8u1
+        run_cmd_log('apt-get remove -y firmware-misc-nonfree')
 
     def _finalise(self):
         # When bluez is installed through a dependency it fails to configure
