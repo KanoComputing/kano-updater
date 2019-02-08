@@ -1,9 +1,7 @@
-
 # utils.py
 #
-# Copyright (C) 2015-2016 Kano Computing Ltd.
+# Copyright (C) 2015-2019 Kano Computing Ltd.
 # License: http://www.gnu.org/licenses/gpl-2.0.txt GNU GPL v2
-#
 #
 # Various utilities used throught the game.
 
@@ -78,7 +76,7 @@ def load_image(name, colorkey=None, alpha=False):
     else:
         image = image.convert()
     if colorkey is not None:
-        if colorkey is -1:
+        if colorkey == -1:
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey, pygame.RLEACCEL)
     return image
