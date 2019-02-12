@@ -12,8 +12,10 @@ kano-updater (3.16.2-0) unstable; urgency=low
   * Backport: Migrate to using mirrored version of Raspbian repo
   * PreUpdate workaround for installing firmware-ralink over firmware-misc-nonfree
   * Backport: Configure dpkg to run in noninteractive mode to avoid potential update freezes
+  * Backport: Prioritised update from v3.7 to v3.8 over installation of 3rd 
+    party apps in PostUpdate scenario 
 
- -- Team Kano <dev@kano.me>  Thu, 31 Jan 2019 15:12:00 +0000
+ -- Team Kano <dev@kano.me>  Tue, 12 Feb 2019 15:12:00 +0000
 
 kano-updater (3.16.1-0) unstable; urgency=low
 

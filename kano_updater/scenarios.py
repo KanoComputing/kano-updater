@@ -6,6 +6,7 @@
 
 import os
 import shutil
+import traceback
 
 from kano.logging import logger
 
@@ -22,6 +23,7 @@ from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable, migrate_repository, get_users, run_for_every_user
 from kano_updater.paths import PYLIBS_DIR, PYFALLBACK_DIR, SOURCES_DIR, \
     OS_SOURCES_REFERENCE, REFERENCE_STRETCH_LIST
+from kano_updater.reporting import send_crash_report
 
 
 STRETCH_MIGRATION_LIST = os.path.join(
@@ -848,22 +850,60 @@ class PostUpdate(Scenarios):
 
         self._bootconfig_set_value_helper("gpu_mem", "256")
 
-        new_apps = [
-            'adventure',
-            'openttd',
-            'tux-paint',
-            'tux-typing',
-            'libreoffice',
-            'numpty-physics',
-            'gmail',
-            'google-drive',
-            'google-maps',
-            'wikipedia',
-            'whatsapp'
-        ]
+        try:
+            # Install 3rd party apps from Kano World using the App Store.
+            # Before, the disk space requirement was part of the update itself.
+            # Moved away from that model to install apps separately of the update
+            # to minimise the requirement (divide and conquer).
+            # However, the App Store does not check for disk space before
+            # installing an app so account for this here naively.
+            # Requirements (disk_req) in MB were made with apt on a clean system.
 
-        for app in new_apps:
-            run_cmd_log('kano-apps install --no-gui {app}'.format(app=app))
+            from kano.utils.disk import get_free_space
+
+            new_apps = [
+                {'kw_app': 'tux-paint', 'disk_req': 413},
+                {'kw_app': 'numpty-physics', 'disk_req': 2},
+                {'kw_app': 'gmail', 'disk_req': 1},
+                {'kw_app': 'google-drive', 'disk_req': 1},
+                {'kw_app': 'google-maps', 'disk_req': 1},
+                {'kw_app': 'wikipedia', 'disk_req': 1},
+                {'kw_app': 'whatsapp', 'disk_req': 1},
+                {'kw_app': 'adventure', 'disk_req': 5},
+                {'kw_app': 'openttd', 'disk_req': 21},
+                {'kw_app': 'tux-typing', 'disk_req': 26},
+                {'kw_app': 'libreoffice', 'disk_req': 385},
+            ]
+
+            run_cmd_log('apt-get autoremove -y')
+
+            for app in new_apps:
+                run_cmd_log('apt-get clean')
+
+                mb_free = get_free_space()
+                mb_required = app['disk_req'] + 250  # MB buffer
+
+                if mb_free > mb_required:
+                    run_cmd_log('kano-apps install --no-gui {app}'.format(app=app['kw_app']))
+                else:
+                    logger.warn(
+                        "Cannot install {app} as it requires {mb_required} but"
+                        " only has {mb_free}"
+                        .format(
+                            app=app['kw_app'],
+                            mb_required=mb_required,
+                            mb_free=mb_free
+                        )
+                    )
+        except Exception as e:
+            logger.error("Failed to install 3rd party apps", exception=e)
+            send_crash_report(
+                "PostUpdate 3.7 to 3.8 app install",
+                "Failed with unexpected exception\n{}"
+                .format(traceback.format_exc())
+            )
+        finally:
+            run_cmd_log('apt-get clean')
 
         # Tell kano-init to put the automatic logins up-to-date
         reconfigure_autostart_policy()
