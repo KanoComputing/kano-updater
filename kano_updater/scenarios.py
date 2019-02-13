@@ -19,6 +19,7 @@ from kano.utils.hardware import has_min_performance, RPI_3_SCORE
 
 from kano_init.utils import reconfigure_autostart_policy
 
+from kano_updater.progress import Phase
 from kano_updater.os_version import OSVersion, get_target_version
 from kano_updater.utils import install, remove_user_files, update_failed, \
     purge, rclocal_executable, migrate_repository, get_users, run_for_every_user
@@ -902,7 +903,7 @@ class PostUpdate(Scenarios):
         except ImportError:
             logger.error("end_config_transaciton not present - update to kano-settings failed?")
 
-    def beta_370_to_beta_380(self, dummy_progress):
+    def beta_370_to_beta_380(self, progress):
         # linux kernel 4.4.21 shipped with Kano 3.8.0 emits systemd boot messages.
         # fix by telling the kernel to enable an empty splash screen.
         command = "sed -i 's/\\bsystemd.show_status=0\\b/splash/' {}".format('/boot/cmdline.txt')
@@ -934,6 +935,25 @@ class PostUpdate(Scenarios):
                 {'kw_app': 'tux-typing', 'disk_req': 26},
                 {'kw_app': 'libreoffice', 'disk_req': 385},
             ]
+            phases = [
+                Phase(
+                    app['kw_app'],
+                    _("Installing {} from the App Store")
+                    .format(app['kw_app']),
+                    app['disk_req']
+                )
+                for app in new_apps
+            ]
+            # TODO: Because the Pre/PostUpdate scenarios don't split the
+            # progress, this last phase essentially is used to preserve the
+            # phase from install.
+            phases.append(
+                Phase(
+                    'continue-postupdate',
+                    _("Running The Postupdate Scripts")
+                )
+            )
+            progress.split(*phases)
 
             run_cmd_log('apt-get autoremove -y')
 
@@ -944,6 +964,7 @@ class PostUpdate(Scenarios):
                 mb_required = app['disk_req'] + 250  # MB buffer
 
                 if mb_free > mb_required:
+                    progress.start(app['kw_app'])
                     run_cmd_log('kano-apps install --no-gui {app}'.format(app=app['kw_app']))
                 else:
                     logger.warn(
@@ -964,6 +985,7 @@ class PostUpdate(Scenarios):
             )
         finally:
             run_cmd_log('apt-get clean')
+            progress.start('continue-postupdate')
 
         # Tell kano-init to put the automatic logins up-to-date
         reconfigure_autostart_policy()
