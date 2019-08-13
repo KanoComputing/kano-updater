@@ -278,6 +278,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-4.2.1-Hopper", "Kanux-Beta-4.3.0-Hopper",
                           self.beta_4_2_1_to_beta_4_3_0)
 
+        self.add_scenario("Kanux-Beta-4.3.0-Hopper", "Kanux-Beta-4.3.1-Hopper",
+                          self.beta_4_3_0_to_beta_4_3_1)
+
     def beta_103_to_beta_110(self, dummy_progress):
         pass
 
@@ -491,6 +494,9 @@ class PreUpdate(Scenarios):
     def beta_4_2_1_to_beta_4_3_0(self, dummy_progress):
         pass
 
+    def beta_4_3_0_to_beta_4_3_1(self, dummy_progress):
+        pass
+
     # Not used at the moment: dev.kano.me > repo.kano.me
     def _migrate_repo_url(self):
         migrate_repository('/etc/apt/sources.list.d/kano.list',
@@ -660,6 +666,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-4.2.1-Hopper", "Kanux-Beta-4.3.0-Hopper",
                           self.beta_4_2_1_to_beta_4_3_0)
+
+        self.add_scenario("Kanux-Beta-4.3.0-Hopper", "Kanux-Beta-4.3.1-Hopper",
+                          self.beta_4_3_0_to_beta_4_3_1)
 
     def beta_103_to_beta_110(self, dummy_progress):
         rclocal_executable()
@@ -1232,4 +1241,7 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_4_2_1_to_beta_4_3_0(self, dummy_progress):
+        pass
+
+    def beta_4_3_0_to_beta_4_3_1(self, dummy_progress):
         pass

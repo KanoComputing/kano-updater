@@ -1,3 +1,9 @@
+kano-updater (4.3.1-0) unstable; urgency=low
+
+  * Bump version for Kano OS v4.3.1 "Hopper"
+
+ -- Team Kano <dev@kano.me>  Tue, 13 Aug 2019 10:12:00 +0100
+
 kano-updater (4.3.0-0) unstable; urgency=low
 
   * Bump version for Kano OS v4.3.0 "Hopper"
@@ -17,8 +23,8 @@ kano-updater (4.2.1-0) unstable; urgency=low
   * Added free disk space check before download phase
   * Restore DHCP hotfix for users experiencing Wireless reconnection issues on boot
   * Migrate to using mirrored version of Raspbian repo
-  * Prioritised update from v3.7 to v3.8 over installation of 3rd party 
-    apps in PostUpdate scenario 
+  * Prioritised update from v3.7 to v3.8 over installation of 3rd party
+    apps in PostUpdate scenario
   * Report UI progress in v3.7 to v3.8 PostUpdate scenario when installing
     3rd party apps
 
@@ -77,8 +83,8 @@ kano-updater (3.16.2-0) unstable; urgency=low
   * Backport: Migrate to using mirrored version of Raspbian repo
   * PreUpdate workaround for installing firmware-ralink over firmware-misc-nonfree
   * Backport: Configure dpkg to run in noninteractive mode to avoid potential update freezes
-  * Backport: Prioritised update from v3.7 to v3.8 over installation of 3rd 
-    party apps in PostUpdate scenario 
+  * Backport: Prioritised update from v3.7 to v3.8 over installation of 3rd
+    party apps in PostUpdate scenario
   * Backport: Report UI progress in v3.7 to v3.8 PostUpdate scenario when
     installing 3rd party apps
 
