@@ -1256,4 +1256,5 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_4_3_1_to_beta_4_3_2(self, dummy_progress):
-        pass
+        # Set Parental Controls to Ultimate for all existing users. COPPA.
+        run_for_every_user('sudo kano-settings-cli set parental --level=3 "kano"')
