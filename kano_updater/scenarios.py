@@ -7,6 +7,7 @@
 
 import os
 import shutil
+import time
 import traceback
 
 from kano.logging import logger
@@ -1269,4 +1270,11 @@ class PostUpdate(Scenarios):
         run_cmd_log('rm -f /usr/share/icons/Kano/66x66/apps/pidgin.png')
 
         # Set Parental Controls to Ultimate for all existing users. COPPA.
-        run_for_every_user('sudo kano-settings-cli set parental --level=3 "kano"')
+        # FIXME: The parental command sets the parental level and then
+        #        restarts the sentry server, blocking on the process. We kick
+        #        it off in the background here and wait a bit for things to
+        #        happen but the settings command shouldn't block
+        run_for_every_user(
+            'sudo kano-settings-cli set parental --level=3 "kano" &'
+        )
+        time.sleep(10)
