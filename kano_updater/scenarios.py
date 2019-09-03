@@ -1256,5 +1256,17 @@ class PostUpdate(Scenarios):
         pass
 
     def beta_4_3_1_to_beta_4_3_2(self, dummy_progress):
+        # Remove non COPPA compliant apps
+
+        # web whatsapp has no debian candidate, remove manually
+        run_cmd_log('rm -f /usr/share/applications/*whatsapp*')
+        run_cmd_log('rm -f /usr/share/icons/Kano/66x66/apps/whatsapp.png')
+
+        # aptitude purge removes package and all its exclusive dependencies
+        run_cmd_log('aptitude purge pidgin -y')
+        run_cmd_log('rm -f /usr/share/applications/pidgin*')
+        run_for_every_user('rm -fv $HOME/.kdesktop/Pidgin.lnk')
+        run_cmd_log('rm -f /usr/share/icons/Kano/66x66/apps/pidgin.png')
+
         # Set Parental Controls to Ultimate for all existing users. COPPA.
         run_for_every_user('sudo kano-settings-cli set parental --level=3 "kano"')
