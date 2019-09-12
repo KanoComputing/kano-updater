@@ -284,6 +284,9 @@ class PreUpdate(Scenarios):
         self.add_scenario("Kanux-Beta-4.3.1-Hopper", "Kanux-Beta-4.3.2-Hopper",
                           self.beta_4_3_1_to_beta_4_3_2)
 
+        self.add_scenario("Kanux-Beta-4.3.2-Hopper", "Kanux-Beta-4.3.3-Hopper",
+                          self.beta_4_3_2_to_beta_4_3_3)
+
     def beta_103_to_beta_110(self, dummy_progress):
         pass
 
@@ -503,6 +506,9 @@ class PreUpdate(Scenarios):
     def beta_4_3_1_to_beta_4_3_2(self, dummy_progress):
         pass
 
+    def beta_4_3_2_to_beta_4_3_3(self, dummy_progress):
+        pass
+
     # Not used at the moment: dev.kano.me > repo.kano.me
     def _migrate_repo_url(self):
         migrate_repository('/etc/apt/sources.list.d/kano.list',
@@ -678,6 +684,9 @@ class PostUpdate(Scenarios):
 
         self.add_scenario("Kanux-Beta-4.3.1-Hopper", "Kanux-Beta-4.3.2-Hopper",
                           self.beta_4_3_1_to_beta_4_3_2)
+
+        self.add_scenario("Kanux-Beta-4.3.2-Hopper", "Kanux-Beta-4.3.3-Hopper",
+                          self.beta_4_3_2_to_beta_4_3_3)
 
     def beta_103_to_beta_110(self, dummy_progress):
         rclocal_executable()
@@ -1268,6 +1277,7 @@ class PostUpdate(Scenarios):
         run_for_every_user('rm -fv $HOME/.kdesktop/Pidgin.lnk')
         run_cmd_log('rm -f /usr/share/icons/Kano/66x66/apps/pidgin.png')
 
+    def beta_4_3_2_to_beta_4_3_3(self, dummy_progress):
         # Set Parental Controls to Ultimate for all existing users. COPPA.
         # FIXME: The parental command sets the parental level and then
         #        restarts the sentry server, blocking on the process. For now
@@ -1275,3 +1285,4 @@ class PostUpdate(Scenarios):
         # run_for_every_user(
         #     'sudo kano-settings-cli set parental --level=3 "kano"'
         # )
+        pass

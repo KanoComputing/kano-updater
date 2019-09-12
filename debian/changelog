@@ -1,7 +1,13 @@
+kano-updater (4.3.3-0) unstable; urgency=low
+
+  * Bump version for Kano OS v4.3.3 "Hopper"
+  * Enabled Ultimate parental control level for all users
+
+ -- Team Kano <dev@kano.me>  Thu, 12 Sep 2019 16:52:00 +0100
+
 kano-updater (4.3.2-0) unstable; urgency=low
 
   * Bump version for Kano OS v4.3.2 "Hopper"
-  * Enabled Ultimate parental control level for all users
   * Remove non COPPA compliant apps during upgrade
 
  -- Team Kano <dev@kano.me>  Fri, 30 Aug 2019 11:12:00 +0100
