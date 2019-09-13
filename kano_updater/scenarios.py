@@ -1279,10 +1279,6 @@ class PostUpdate(Scenarios):
 
     def beta_4_3_2_to_beta_4_3_3(self, dummy_progress):
         # Set Parental Controls to Ultimate for all existing users. COPPA.
-        # FIXME: The parental command sets the parental level and then
-        #        restarts the sentry server, blocking on the process. For now
-        #        just disable this and we will re-enable later.
-        # run_for_every_user(
-        #     'sudo kano-settings-cli set parental --level=3 "kano"'
-        # )
-        pass
+        run_for_every_user(
+            'sudo kano-settings-cli set parental --level=3 kano'
+        )

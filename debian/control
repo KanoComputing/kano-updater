@@ -29,7 +29,7 @@ Depends:
     python,
     libkdesk-dev,
     gir1.2-gtk-3.0 (>= 3.22.11),
-    kano-settings (>= 4.3.2),
+    kano-settings (>= 4.3.3),
     apt-transport-https (>= 1.4.8),
     python-apt,
     python-docopt (>= 0.6.2),
